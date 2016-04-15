@@ -1,0 +1,49 @@
+<%=
+  FB::Helpers::commentify(
+    'Do not remove the following lines, or various programs that require' +
+    ' network functionality will fail.')
+%>
+<% if node.macosx? %>
+127.0.0.1 localhost
+255.255.255.255 broadcasthost
+::1 localhost
+fe80::1%lo0 localhost
+<% else %>
+127.0.0.1 localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1 localhost localhost.localdomain localhost6 localhost6.localdomain6
+<% end %>
+<%
+  ip = ip6 = nil
+  hosts_names = "#{node['fqdn']} #{node['hostname']}"
+  unless node['fb_hosts']['host_aliases'].empty?
+    hosts_names = hosts_names + " " +
+       node['fb_hosts']['host_aliases'].join(' ')
+  end
+  if node['fb_hosts']['primary_ipaddress']
+    # make sure that if the user sets it to empty, we take that
+    # as a sign to not have a line for this proto
+    unless node['fb_hosts']['primary_ipaddress'].empty?
+      ip = node['fb_hosts']['primary_ipaddress']
+    end
+  else
+    ip = node['ipaddress']
+  end
+  if node['fb_hosts']['primary_ip6address']
+    unless node['fb_hosts']['primary_ip6address'].empty?
+      ip6 = node['fb_hosts']['primary_ip6address']
+    end
+  else
+    ip6 = node['ip6address']
+  end
+%>
+<% if ip %>
+<%=  ip %> <%= hosts_names %>
+<% end %>
+<% if ip6 %>
+<%=  ip6 %> <%= hosts_names %>
+<% end %>
+<% unless node['fb_hosts']['extra_entries'].empty? %>
+<%   node['fb_hosts'][ 'extra_entries'].to_hash.each do |ip, names| %>
+<%=    ip %> <%= names.join(' ') %>
+<%   end %>
+<% end %>

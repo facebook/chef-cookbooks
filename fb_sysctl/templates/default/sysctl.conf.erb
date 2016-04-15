@@ -1,0 +1,4 @@
+# This file is created by Chef. See fb_sysctl/README.md
+<% node['fb_sysctl'].keys.sort.each do |key| %>
+<%=  key %> = <%= node['fb_sysctl'][key] %>
+<% end %>

@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# excluded rules
+# FC014 - long ruby blocks
+# FC017 - LWRP does not notify
+# FC024 - platform equivs
+# FC059 - LWRP does not use_inline_resoures
+# FC064 - issues URL - same as source_url, come on
+excluded_rules="FC014 FC017 FC024 FC059 FC064"
+exclude_flags=$(for r in $excluded_rules; do echo -t ~$r; done)
+exec bundle exec foodcritic -f any $exclude_flags .

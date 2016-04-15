@@ -1,0 +1,6 @@
+# This file is maintained by Chef. Do not edit, all changes will be
+# overwritten. See fb_modprobe/README.md
+
+<% node['fb_modprobe']['modules_to_load_on_boot'].each do |kmod| %>
+<%=  kmod %>
+<% end %>

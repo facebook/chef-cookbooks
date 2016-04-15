@@ -1,0 +1,12 @@
+# This file is maintained by Chef. Do not edit, all changes will be
+# overwritten. See fb_hostconf/README.md
+
+<%  node['fb_hostconf'].to_hash.each do |k, v| %>
+<%    if v.is_a?(Array) %>
+<%=     k %> <%= v.join(',') %>
+<%    elsif %w{spoof trim}.include?(k) %>
+<%=     k %> <%= v  %>
+<%    else %>
+<%=     k %> <%= v ? 'on' : 'off' %>
+<%    end %>
+<%  end %>

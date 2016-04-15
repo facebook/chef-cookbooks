@@ -1,0 +1,7 @@
+# This file is owned by Chef. See fb_syslog/README.md
+<% node['fb_syslog']['sysconfig']['vars'].to_hash.each do |key, val| %>
+<%=  key.upcase %>="<%= val %>"
+<% end %>
+<% node['fb_syslog']['sysconfig']['extra_lines'].each do |line| %>
+<%=  line %>
+<% end %>

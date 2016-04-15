@@ -1,0 +1,16 @@
+# This file is maintained by Chef. Do not edit, all changes will be
+# overwritten. See fb_systemd/README.md
+
+[<%= @section %>]
+<% keys = node['fb_systemd'][@config].to_hash.keys
+   keys.sort.each do |key|
+     value = node['fb_systemd'][@config][key]
+     if value.is_a?(TrueClass)
+       v = 'yes'
+     elsif value.is_a?(FalseClass)
+       v = 'no'
+     else
+       v = value
+     end %>
+<%=  key %>=<%= v %>
+<% end %>

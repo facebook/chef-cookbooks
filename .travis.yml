@@ -1,0 +1,11 @@
+language: ruby
+sudo: false
+rvm:
+  - 2.0.0
+  - 2.2.0
+gemfile:
+  Gemfile
+script:
+  - bundle exec rspec --format=d --color */spec/*rb
+  - bundle exec rubocop --display-cop-names -c .rubocop.yml
+  - ./run_foodcritic

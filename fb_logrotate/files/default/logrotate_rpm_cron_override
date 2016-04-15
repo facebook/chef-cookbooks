@@ -1,0 +1,25 @@
+#!/bin/sh
+
+LOGROTATE="/usr/sbin/logrotate"
+IONICE="/usr/bin/ionice"
+FLOCK_FILE="/var/run/logrotate.flock"
+PATH="/usr/bin:/usr/sbin"
+
+[ -x ${IONICE} ] && LOGROTATE="${IONICE} -c3 ${LOGROTATE}"
+
+# Implement a flock to make sure our logrotate processes are not running
+# on top of each other! t3385026
+(
+    flock -n 200
+    if [ $? != 0 ]; then
+        logger -t logrotate "ERROR: logrotate already running"
+        exit
+    fi
+
+    ${LOGROTATE} /etc/logrotate.conf >/dev/null 2>&1 200>/dev/null
+    EXITVALUE=$?
+    if [ $EXITVALUE != 0 ]; then
+        logger -t logrotate "ALERT exited abnormally with [$EXITVALUE]"
+    fi
+    exit 0
+) 200> ${FLOCK_FILE}

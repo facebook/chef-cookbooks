@@ -1,0 +1,14 @@
+# This file is maintained by Chef. Do not edit, all changes will be
+# overwritten. See opsfiles/chef/cookbooks/core/fb_systemd/README.md
+
+# Type Path Mode UID GID Age Argument
+<% node['fb_systemd']['tmpfiles'].to_hash.each do |name, conf|
+     type = conf['type'] ? conf['type'] : 'f'
+     path = conf['path'] ? conf['path'] : name
+     mode = conf['mode'] ? conf['mode'] : '-'
+     uid = conf['uid'] ? conf['uid'] : '-'
+     gid = conf['gid'] ? conf['gid'] : '-'
+     age = conf['age'] ? conf['age'] : '-'
+     arg = conf['argument'] ? conf['argument'] : '-' -%>
+<%=  type %> <%= path %> <%= mode %> <%= uid %> <%= gid %> <%= age %> <%= arg %>
+<% end -%>

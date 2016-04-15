@@ -1,0 +1,42 @@
+# globals
+daily
+rotate <%= node['fb_logrotate']['globals']['rotate'] %>
+maxage <%= node['fb_logrotate']['globals']['maxage'] %>
+compresscmd <%= node['fb_logrotate']['globals']['compresscmd'] %>
+copytruncate
+compress
+notifempty
+missingok
+<% if node['fb_logrotate']['globals']['size'] -%>
+size  <%= node['fb_logrotate']['globals']['size'] %>
+<% end -%>
+
+<% node['fb_logrotate']['configs'].to_hash.each do |name, block| -%>
+## fb.fb_logrotate.configs.<%= name %>
+<%=  block['files'].join(' ') %> {
+<%   if block['time'] -%>
+  <%= block['time'] %>
+<%   end -%>
+<%   if block['overrides'] -%>
+<%     block['overrides'].keys.sort.each do |k| -%>
+<%       case k -%>
+<%       when 'rotate', 'maxage', 'minsize', 'create', 'olddir', 'su', 
+              'compressoptions', 'dateformat' -%>
+  <%=      k %> <%= block['overrides'][k] %>
+<%       when 'copytruncate', 'ifempty', 'nocompress', 'missingok',
+              'delaycompress', 'sharedscripts', 'nomail', 'dateext',
+              'nodateext', 'noolddir', 'nocopytruncate' -%>
+<%#        check that the value is true -%>
+<%         if block['overrides'][k] -%>
+  <%=        k %>
+<%         end -%>
+<%       when 'postrotate', 'prerotate' -%>
+  <%=      k %>
+    <%=    block['overrides'][k] %>
+  endscript
+<%       end -%>
+<%     end -%>
+<%   end -%>
+}
+
+<% end -%>

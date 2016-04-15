@@ -1,0 +1,142 @@
+#
+# Disabled rules
+#
+
+Encoding:
+  Enabled: false
+
+NumericLiterals:
+  Enabled: false
+
+MultilineTernaryOperator:
+  Enabled: false
+
+ModuleLength:
+  Enabled: false
+
+MethodLength:
+  Enabled: false
+
+ClassLength:
+  Enabled: false
+
+CyclomaticComplexity:
+  Enabled: false
+
+# So just keep iterating instead of breaking? wtf.
+Next:
+  Enabled: false
+
+# While this can be nice, it also can promote errors. Let people
+# use what's comfortable for them
+GuardClause:
+  Enabled: false
+
+AbcSize:
+  Enabled: false
+
+# less readable, not more
+IfUnlessModifier:
+  Enabled: false
+
+# Really?
+PerlBackrefs:
+  Enabled: false
+
+# Unrealistic
+BlockNesting:
+  Enabled: false
+
+# Disabled because of the way 'variables' works.
+BracesAroundHashParameters:
+  Enabled: false
+
+WordArray:
+  Enabled: false
+
+RedundantReturn:
+  Enabled: false
+
+RedundantSelf:
+  Enabled: false
+
+CommentAnnotation:
+  Enabled: false
+
+# this trips on *any* method called 'get_*' wtf.
+AccessorMethodName:
+  Enabled: false
+
+# backslash is extra dumb in ruby, we want the OPPOSITE of this rule
+LineEndConcatenation:
+  Enabled: false
+
+# this isn't testing for consistency it always wants %w() which is dumb
+PercentLiteralDelimiters:
+  Enabled: false
+
+# it wants File.exist? instead of File.exists?
+DeprecatedClassMethods:
+  Enabled: false
+
+# This blows up on things like base_packages-redhat
+FileName:
+  Enabled: false
+
+# I don't know what it's metric for "human complexity" is, but it's wrong.
+PerceivedComplexity:
+  Enabled: false
+
+UnneededDisable:
+  Enabled: false
+
+# Seems buggy - https://github.com/bbatsov/rubocop/issues/2690
+MultilineOperationIndentation:
+  Enabled: false
+
+# buggy: https://github.com/bbatsov/rubocop/issues/2639
+Performance/RedundantMatch:
+  Enabled: false
+
+# We don't use CAPS just for constants.
+Style/MutableConstant:
+  Enabled: false
+
+# We'll .times.map all we want.
+Performance/TimesMap:
+  Enabled: false
+
+# https://github.com/bbatsov/rubocop/issues/2676
+Performance/RedundantMerge:
+  Enabled: false
+
+# Bug with constants? https://phabricator.fb.com/P56108678
+Style/ConditionalAssignment:
+  Enabled: false
+
+#
+# Modified rules
+#
+LineLength:
+  Max: 80
+
+DotPosition:
+  EnforcedStyle: trailing
+
+HashSyntax:
+  EnforcedStyle: hash_rockets
+
+Style/Documentation:
+  Enabled: false
+
+TrailingCommaInLiteral:
+  EnforcedStyleForMultiline: comma
+
+TrailingCommaInArguments:
+  EnforcedStyleForMultiline: comma
+
+Style/IndentArray:
+  EnforcedStyle: consistent
+
+Style/SignalException:
+  EnforcedStyle: semantic
