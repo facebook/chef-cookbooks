@@ -1,5 +1,7 @@
 # Facebook Cookbooks Suite
 
+[![Build Status](https://travis-ci.org/facebook/chef-cookbooks.svg)](http://travis-ci.org/facebook/chef-cookbooks)
+
 This repo contains attribute-driven-API cookbooks maintained by Facebook. It's
 a large chunk of what we refer to as our "core cookbooks."
 
