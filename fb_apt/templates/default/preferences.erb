@@ -1,0 +1,7 @@
+<% node['fb_apt']['preferences'].to_hash.each do |explanation, config| -%>
+Explanation: <%= explanation %>
+<%   config.each do |key, val| -%>
+<%=    key %>: <%= val %>
+<%   end -%>
+
+<% end -%>
