@@ -45,7 +45,7 @@ It's useful to think of things in a 3-pass system:
     cookbooks the core OS team writes that should be applicable in general to
     all machines unless someone has a more specific desire. Owners then can
     include other cookbooks that are more specific - maybe for a specific
-    cluster, location, type of service. Finally tne last cookbooks should be the
+    cluster, location, type of service. Finally the last cookbooks should be the
     most specific ones for that service or machine which gets the final say.
     Anytime someone removes a node assignment the next-most-specific setting
     will take precdent.
