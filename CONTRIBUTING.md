@@ -4,7 +4,7 @@
 This repository is synced from an internal repository. We absolutely accept pull
 requests and will deal with the merging appropriately.
 
-We use Foodcritic for Chef correctness testing and Rubocopy for Ruby style
+We use Foodcritic for Chef correctness testing and Rubocop for Ruby style
 linting. Our rulesets are synced both internally and externally to ensure
 consistent code quality and style for all.
 
