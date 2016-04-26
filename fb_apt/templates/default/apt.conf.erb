@@ -1,30 +1,5 @@
 // This file is maintained by Chef. Do not edit, all changes will be
 // overwritten. See fb_apt/README.md
-<%
-  def make_option(k, v, i)
-    indent = ' ' * i
-    if v.is_a?(Hash)
-      s = "\n#{indent}#{k} {"
-      v.each do |kk, vv|
-        s += make_option(kk, vv, i+2)
-      end
-      s += "\n#{indent}};"
-      return s
-    elsif v.is_a?(Array)
-      s = ''
-      v.each do |vv|
-        s += make_option(k, vv, i)
-      end
-      return s
-    elsif v.is_a?(TrueClass)
-      return "\n#{indent}#{k} \"true\";"
-    elsif v.is_a?(FalseClass)
-      return "\n#{indent}#{k} \"false\";"
-    else
-      return "\n#{indent}#{k} \"#{v}\";"
-    end
-  end
-
-  node['fb_apt']['config'].to_hash.each do |key, val| -%>
-<%= make_option(key, val, 0) %>
+<% node['fb_apt']['config'].to_hash.each do |key, val| -%>
+<%=  FB::Apt.gen_apt_conf_entry(key, val) %>
 <% end -%>

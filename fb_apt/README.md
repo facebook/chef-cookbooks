@@ -27,9 +27,7 @@ To install and configure APT include `fb_apt`, which will populate the
 repository sources in `/etc/apt/sources.list` and update the package cache 
 every `node['fb_apt']['update_delay']` seconds (defaults to 86400) using the 
 `execute[apt-get update]` resource (which other cookbooks can suscribe to or 
-notify against). Note that the `node['fb_apt']['update_delay']` attribute is 
-evaluated at compile time, so you'd need to set it before including `fb_apt` if
-you'd like to customize it.
+notify).
 
 ### Repository sources
 By default the cookbook will setup the base distribution repos based on the
@@ -52,13 +50,13 @@ Repository keys can be added to `node['fb_apt']['keys']` which is a hash in the
 from the `node['fb_apt']['keyserver']` keyserver (`keys.gnupg.net` by default).
 Example:
 
-  node.default['fb_apt']['keys'] = {
-    '94558F59' => nil,
-    'F3EFDBD9' => <<-eos
-  -----BEGIN PGP PUBLIC KEY BLOCK-----
-  ...
-  eos
-  }
+    node.default['fb_apt']['keys'] = {
+      '94558F59' => nil,
+      'F3EFDBD9' => <<-eos
+    -----BEGIN PGP PUBLIC KEY BLOCK-----
+    ...
+    eos
+    }
 
 Automatic key fetching can be disabled by setting the keyserver to `nil`; this 
 will produce an exception for any unspecified key. By default `fb_apt` will 
@@ -67,22 +65,25 @@ manage the keyring at `/etc/apt/trusted.gpg`; this can be customized with
 
 ### Configuration
 APT behaviour can be customized using `node['fb_apt']['config']`, which will be
-used to populate `/etc/apt/apt.conf`. Example:
+used to populate `/etc/apt/apt.conf`. Note that this will take precedence over
+anything in /etc/apt/apt.conf.d. Example:
 
-  node.default['fb_apt']['config'] = {
-    'Acquire::http' => {
+    node.default['fb_apt']['config'].merge!({
+      'Acquire::http' => {
       'Proxy' => 'http://myproxy:3412',
-    },
-  }
+      },
+    }
   
 ### Preferences
 You can fine tune which versions of packages will be selected for installation
-by tweaking APT preferences via `node['fb_apt']['preferences']`. Example:
+by tweaking APT preferences via `node['fb_apt']['preferences']`. Note that we
+clobber the contents of `/etc/apt/preferences.d` to ensure this always takes
+precedence. Example:
 
-  node.default['fb_apt']['preferences'] = {
-    'Pin dpatch package from experimental' => {
-      'Package' => 'dpatch',
-      'Pin' => 'release o=Debian,a=experimental',
-      'Pin-Priority' => 450,
+    node.default['fb_apt']['preferences'].merge!{
+      'Pin dpatch package from experimental' => {
+        'Package' => 'dpatch',
+        'Pin' => 'release o=Debian,a=experimental',
+        'Pin-Priority' => 450,
+      }
     }
-  }

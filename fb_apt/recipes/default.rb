@@ -2,7 +2,12 @@
 # Cookbook Name:: fb_apt
 # Recipe:: default
 #
-# Copyright 2014, Davide Cavalca
+# Copyright (c) 2016-present, Facebook, Inc.
+# All rights reserved.
+#
+# This source code is licensed under the BSD-style license found in the
+# LICENSE file in the root directory of this source tree. An additional grant
+# of patent rights can be found in the PATENTS file in the same directory.
 #
 
 unless node.debian? || node.ubuntu?
@@ -55,19 +60,17 @@ fb_apt_sources_list 'populate sources list' do
   notifies :run, 'execute[apt-get update]', :immediately
 end
 
-# TODO: this should be done at runtime
-pkgcache = '/var/cache/apt/pkgcache.bin'
-pkgcache_is_stale = !::File.exists?(pkgcache) || (
-  ::File.exists?(pkgcache) &&
-  ::File.mtime(pkgcache) < Time.now - node['fb_apt']['update_delay'])
-
-if pkgcache_is_stale
-  update_action = :run
-else
-  update_action = :nothing
-end
-
 execute 'apt-get update' do
   command 'apt-get update'
-  action update_action
+  action :nothing
+end
+
+ruby_block 'periodic package cache update' do
+  only_if do
+    pkgcache = '/var/cache/apt/pkgcache.bin'
+    !::File.exists?(pkgcache) || (
+      ::File.exists?(pkgcache) &&
+      ::File.mtime(pkgcache) < Time.now - node['fb_apt']['update_delay'])
+  end
+  notifies :run, 'execute[apt-get update]'
 end

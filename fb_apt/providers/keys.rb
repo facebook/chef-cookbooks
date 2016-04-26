@@ -1,4 +1,12 @@
 # vim: syntax=ruby:expandtab:shiftwidth=2:softtabstop=2:tabstop=2
+#
+# Copyright (c) 2016-present, Facebook, Inc.
+# All rights reserved.
+#
+# This source code is licensed under the BSD-style license found in the
+# LICENSE file in the root directory of this source tree. An additional grant
+# of patent rights can be found in the PATENTS file in the same directory.
+#
 
 def whyrun_supported?
   true
@@ -12,16 +20,20 @@ action :run do
   keys = node['fb_apt']['keys'].to_hash
 
   if keys && keyring
-    cmd = Mixlib::ShellOut.new("LANG=C apt-key --keyring #{keyring} list")
-    cmd.run_command
-    # Note: we deliberately ignore errors here, as this will fail if the keyring
-    # doesn't exist (e.g. because there are no keys yet).
-    output = cmd.stdout.split("\n")
-    Chef::Log.debug("apt-key output: #{output.join("\n")}")
-    installed_keys = output.select { |x| x.start_with?('pub') }.map do |x|
-      x[%r/pub.*\/(?<keyid>[A-Z0-9]*)/, 'keyid']
+    if ::File.exists?(keyring)
+      cmd = Mixlib::ShellOut.new("LANG=C apt-key --keyring #{keyring} list")
+      cmd.run_command
+      cmd.error!
+      output = cmd.stdout.split("\n")
+      Chef::Log.debug("apt-key output: #{output.join("\n")}")
+      installed_keys = output.select { |x| x.start_with?('pub') }.map do |x|
+        x[%r/pub.*\/(?<keyid>[A-Z0-9]*)/, 'keyid']
+      end
+      Chef::Log.info("Installed keys: #{installed_keys.join(', ')}")
+    else
+      installed_keys = []
+      Chef::Log.info('Keyring not found, assuming no keys are installed.')
     end
-    Chef::Log.info("Installed keys: #{installed_keys.join(', ')}")
 
     # Process keys to add
     keys.each do |keyid, key|

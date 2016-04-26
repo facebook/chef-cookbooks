@@ -24,6 +24,10 @@ class Chef
       return self.centos? && self['platform_version'].start_with?('5')
     end
 
+    def debian?
+      return self['platform'] == 'debian'
+    end
+
     def ubuntu?
       return self['platform'] == 'ubuntu'
     end
