@@ -20,6 +20,7 @@ action :run do
   keys = node['fb_apt']['keys'].to_hash
 
   if keys && keyring
+    installed_keys = []
     if ::File.exists?(keyring)
       cmd = Mixlib::ShellOut.new("LANG=C apt-key --keyring #{keyring} list")
       cmd.run_command
@@ -29,11 +30,8 @@ action :run do
       installed_keys = output.select { |x| x.start_with?('pub') }.map do |x|
         x[%r/pub.*\/(?<keyid>[A-Z0-9]*)/, 'keyid']
       end
-      Chef::Log.info("Installed keys: #{installed_keys.join(', ')}")
-    else
-      installed_keys = []
-      Chef::Log.info('Keyring not found, assuming no keys are installed.')
     end
+    Chef::Log.debug("Installed keys: #{installed_keys.join(', ')}")
 
     # Process keys to add
     keys.each do |keyid, key|

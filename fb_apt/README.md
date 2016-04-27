@@ -25,9 +25,9 @@ Usage
 -----
 To install and configure APT include `fb_apt`, which will populate the 
 repository sources in `/etc/apt/sources.list` and update the package cache 
-every `node['fb_apt']['update_delay']` seconds (defaults to 86400) using the 
-`execute[apt-get update]` resource (which other cookbooks can suscribe to or 
-notify).
+during the run if it's old than `node['fb_apt']['update_delay']` seconds
+(defaults to 86400). This uses the `execute[apt-get update]` resource, which
+other cookbooks can suscribe to or notify as well.
 
 ### Repository sources
 By default the cookbook will setup the base distribution repos based on the
@@ -72,10 +72,6 @@ anything in `/etc/apt/apt.conf.d`. Example:
         'Proxy' => 'http://myproxy:3412',
       },
     })
-
-Internally, `fb_apt` uses the `FB::Apt.gen_apt_conf_entry()` library function
-to generate this config file. This is an internal function that's not meant to 
-be used by other cookbooks.
 
 ### Preferences
 You can fine tune which versions of packages will be selected for installation

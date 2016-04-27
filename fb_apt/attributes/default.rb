@@ -9,7 +9,7 @@
 #
 
 if node.debian?
-  mirror = 'http://http.debian.net/debian'
+  mirror = 'http://httpredir.debian.org/debian'
 elsif node.ubuntu?
   mirror = 'http://archive.ubuntu.com/ubuntu'
 end

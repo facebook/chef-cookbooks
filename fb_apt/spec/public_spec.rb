@@ -42,7 +42,7 @@ APT {
         'Cache-Limit' => 10000000,
       },
     }.each do |key, val|
-      generated += FB::Apt.gen_apt_conf_entry(key, val)
+      generated += FB::Apt._gen_apt_conf_entry(key, val)
     end
     expect(generated).to eq(control)
   end

@@ -51,11 +51,14 @@ action :run do
         "http://security.ubuntu.com/ #{distro}-security #{components_entry}"
     end
 
-    # Stable updates
-    base_repos << "#{mirror} #{distro}-updates #{components_entry}"
+    # Debian Sid doesn't have updates or backports
+    unless node.debian? && distro == 'sid'
+      # Stable updates
+      base_repos << "#{mirror} #{distro}-updates #{components_entry}"
 
-    if node['fb_apt']['want_backports']
-      base_repos << "#{mirror} #{distro}-backports #{components_entry}"
+      if node['fb_apt']['want_backports']
+        base_repos << "#{mirror} #{distro}-backports #{components_entry}"
+      end
     end
 
     base_repos.each do |repo|

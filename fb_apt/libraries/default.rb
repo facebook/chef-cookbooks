@@ -11,20 +11,20 @@
 module FB
   # APT utility functions
   class Apt
-    # Helper function to generate /etc/apt.conf entries
-    def self.gen_apt_conf_entry(k, v, i = 0)
+    # Internal helper function to generate /etc/apt.conf entries
+    def self._gen_apt_conf_entry(k, v, i = 0)
       indent = ' ' * i
       if v.is_a?(Hash)
         s = "\n#{indent}#{k} {"
         v.each do |kk, vv|
-          s += self.gen_apt_conf_entry(kk, vv, i + 2)
+          s += self._gen_apt_conf_entry(kk, vv, i + 2)
         end
         s += "\n#{indent}};"
         return s
       elsif v.is_a?(Array)
         s = ''
         v.each do |vv|
-          s += self.gen_apt_conf_entry(k, vv, i)
+          s += self._gen_apt_conf_entry(k, vv, i)
         end
         return s
       elsif v.is_a?(TrueClass)
