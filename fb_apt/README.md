@@ -51,13 +51,11 @@ Repository keys can be added to `node['fb_apt']['keys']` which is a hash in the
 from the `node['fb_apt']['keyserver']` keyserver (`keys.gnupg.net` by default).
 Example:
 
-    node.default['fb_apt']['keys'] = {
-      '94558F59' => nil,
-      'F3EFDBD9' => <<-eos
+    node.default['fb_apt']['keys']['94558F59'] = nil
+    node.default['fb_apt']['keys']['F3EFDBD9'] = <<-eos
     -----BEGIN PGP PUBLIC KEY BLOCK-----
     ...
     eos
-    }
 
 Automatic key fetching can be disabled by setting the keyserver to `nil`; this 
 will produce an exception for any unspecified key. By default `fb_apt` will 
@@ -73,18 +71,22 @@ anything in `/etc/apt/apt.conf.d`. Example:
       'Acquire::http' => {
         'Proxy' => 'http://myproxy:3412',
       },
-    }
-  
+    })
+
+Internally, `fb_apt` uses the `FB::Apt.gen_apt_conf_entry()` library function
+to generate this config file. This is an internal function that's not meant to 
+be used by other cookbooks.
+
 ### Preferences
 You can fine tune which versions of packages will be selected for installation
 by tweaking APT preferences via `node['fb_apt']['preferences']`. Note that we
 clobber the contents of `/etc/apt/preferences.d` to ensure this always takes
 precedence. Example:
 
-    node.default['fb_apt']['preferences'].merge!{
+    node.default['fb_apt']['preferences'].merge!({
       'Pin dpatch package from experimental' => {
         'Package' => 'dpatch',
         'Pin' => 'release o=Debian,a=experimental',
         'Pin-Priority' => 450,
       }
-    }
+    })
