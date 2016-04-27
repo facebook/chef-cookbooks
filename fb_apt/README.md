@@ -31,15 +31,16 @@ notify).
 
 ### Repository sources
 By default the cookbook will setup the base distribution repos based on the
-codename (as defined in `node['lsb']['codename']`). The mirror can be
-customized with `node['fb_apt']['mirror']`; if set to `nil`, base repos will
-not be included at all in `/etc/apt/sources.list`. If base repos are enabled,
-the additional `backports` and `non-free` sources can be enabled with the
+codename (as defined in `node['lsb']['codename']`) using a sensible default 
+mirror for the package sources. The mirror can be customized with 
+`node['fb_apt']['mirror']`; if set to `nil`, base repos will not be included 
+at all in `/etc/apt/sources.list`. If base repos are enabled, the additional 
+`backports` and `non-free` sources can be enabled with the 
 `node['fb_apt']['want_backports']` and `node['fb_apt']['want_non_free']`
 attributes, and source code repos can be enabled with
 `node['fb_apt']['want_source']`; these all default to `false`.
 
-Additiona repository sources can be added with `node['fb_apt']['repos']`. By
+Additional repository sources can be added with `node['fb_apt']['repos']`. By
 default `fb_apt` will clobber existing contents in `/etc/apt/sources.list.d` to
 ensure it has full control on the repository list; this can be disabled with
 `node['fb_apt']['preserve_sources_list_d']`.
@@ -66,11 +67,11 @@ manage the keyring at `/etc/apt/trusted.gpg`; this can be customized with
 ### Configuration
 APT behaviour can be customized using `node['fb_apt']['config']`, which will be
 used to populate `/etc/apt/apt.conf`. Note that this will take precedence over
-anything in /etc/apt/apt.conf.d. Example:
+anything in `/etc/apt/apt.conf.d`. Example:
 
     node.default['fb_apt']['config'].merge!({
       'Acquire::http' => {
-      'Proxy' => 'http://myproxy:3412',
+        'Proxy' => 'http://myproxy:3412',
       },
     }
   
