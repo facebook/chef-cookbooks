@@ -15,7 +15,6 @@ end
 use_inline_resources
 
 action :run do
-  repos = []
   mirror = node['fb_apt']['mirror']
   distro = node['lsb']['codename']
 
@@ -61,22 +60,22 @@ action :run do
       end
     end
 
+    repos = []
     base_repos.each do |repo|
       repos << "deb #{repo}"
       if node['fb_apt']['want_source']
         repos << "deb-src #{repo}"
       end
     end
-  end
 
-  # add custom repos
-  repos += node['fb_apt']['repos']
+    # update repos list and ensure base repos come first
+    node.default['fb_apt']['repos'] = repos + node['fb_apt']['repos']
+  end
 
   template '/etc/apt/sources.list' do
     source 'sources.list.erb'
     owner 'root'
     group 'root'
     mode '0644'
-    variables(:repos => repos)
   end
 end

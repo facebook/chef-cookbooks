@@ -23,11 +23,12 @@ Attributes
 
 Usage
 -----
-To install and configure APT include `fb_apt`, which will populate the 
-repository sources in `/etc/apt/sources.list` and update the package cache 
-during the run if it's old than `node['fb_apt']['update_delay']` seconds
-(defaults to 86400). This uses the `execute[apt-get update]` resource, which
-other cookbooks can suscribe to or notify as well.
+To install and configure APT include `fb_apt`, which will populate the
+repository sources in `/etc/apt/sources.list` and update the package cache
+during the run if it's older than `node['fb_apt']['update_delay']` seconds
+(defaults to 86400). To force an update on every Chef run, set this attribute
+to 0. The actual update is done via the `execute[apt-get update]` resource,
+which other cookbooks can suscribe to or notify as well.
 
 ### Repository sources
 By default the cookbook will setup the base distribution repos based on the
