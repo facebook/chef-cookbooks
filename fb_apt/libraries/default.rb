@@ -17,14 +17,14 @@ module FB
       if v.is_a?(Hash)
         s = "\n#{indent}#{k} {"
         v.each do |kk, vv|
-          s += make_option(kk, vv, i + 2)
+          s += self.gen_apt_conf_entry(kk, vv, i + 2)
         end
         s += "\n#{indent}};"
         return s
       elsif v.is_a?(Array)
         s = ''
         v.each do |vv|
-          s += make_option(k, vv, i)
+          s += self.gen_apt_conf_entry(k, vv, i)
         end
         return s
       elsif v.is_a?(TrueClass)

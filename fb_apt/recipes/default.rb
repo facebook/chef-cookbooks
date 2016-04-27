@@ -65,7 +65,8 @@ execute 'apt-get update' do
   action :nothing
 end
 
-ruby_block 'periodic package cache update' do
+# Dummy resource to trigger an update when the package cache goes stale.
+log 'periodic package cache update' do
   only_if do
     pkgcache = '/var/cache/apt/pkgcache.bin'
     !::File.exists?(pkgcache) || (
