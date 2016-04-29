@@ -18,6 +18,15 @@ package 'apt' do
   action :upgrade
 end
 
+keyring_package = value_for_platform(
+  'debian' => 'debian-archive-keyring',
+  'ubuntu' => 'ubuntu-keyring',
+)
+
+package keyring_package do
+  action :upgrade
+end
+
 # This takes precedence over anything in /etc/apt/apt.conf.d. We can't just
 # clobber that as several packages will drop configs there.
 template '/etc/apt/apt.conf' do
