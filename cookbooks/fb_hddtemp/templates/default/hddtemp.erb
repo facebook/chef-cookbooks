@@ -1,0 +1,14 @@
+# This file is maintained by Chef. Do not edit, all changes will be
+# overwritten. See fb_hddtemp/README.md
+
+<%
+  # If disks is empty it will prevent the daemon from starting; delete it so
+  # it will autoprobe instead.
+  config = node['fb_hddtemp'].to_hash
+  if config['disks'] && config['disks'].empty?
+    config.delete('disks')
+  end
+-%>
+<% config.each do |key, val| -%>
+<%=  key.upcase %>="<%= val %>"
+<% end -%>

@@ -37,3 +37,4 @@ suites:
     run_list:
       - recipe[fb_init_sample]
       - recipe[fb_dnsmasq]
+      - recipe[fb_hddtemp]
