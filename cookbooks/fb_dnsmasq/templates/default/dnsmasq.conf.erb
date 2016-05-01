@@ -1,0 +1,17 @@
+# This file is maintained by Chef. Do not edit, all changes will be
+# overwritten. See fb_dnsmasq/README.md
+
+<% node['fb_dnsmasq']['config'].to_hash.each do |key, val|
+     if val
+       if val.is_a?(Array)
+         vals = val
+       else
+         vals = [val]
+       end
+       vals.each do |v| -%>
+<%=      key %><% if v %>=<%= v %><% end %>
+<%     end -%>
+<%   else -%>
+<%=    key %>
+<%   end -%>
+<% end -%>

@@ -10,6 +10,7 @@ version '0.0.1'
 %w{
   fb_apt
   fb_cron
+  fb_ethers
   fb_fstab
   fb_helpers
   fb_hostconf
