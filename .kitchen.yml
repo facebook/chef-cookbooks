@@ -1,0 +1,37 @@
+driver:
+  name: docker
+  privileged: true
+
+platforms:
+  - name: centos-6
+    driver_config:
+      provision_command:
+        # remove bogus entry to make fb_fstab happy
+        - sed -i '/UUID=/d' /etc/fstab
+  - name: centos-7
+    driver_config:
+      provision_command:
+        # remove bogus entry to make fb_fstab happy
+        - sed -i '/UUID=/d' /etc/fstab
+      run_command: /usr/sbin/init
+  - name: ubuntu-14.04
+  - name: ubuntu-16.04
+    driver_config:
+      run_command: /sbin/init
+  - name: debian-8
+    driver_config:
+      provision_command:
+        # https://github.com/test-kitchen/test-kitchen/issues/1018
+        # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=814070
+        - apt-get install -y wget
+      run_command: /sbin/init
+  - name: debian-sid
+    driver_config:
+      run_command: /sbin/init
+
+provisioner:
+  name: chef_zero
+
+suites:
+  - name: default
+    run_list: recipe[fb_init_sample]
