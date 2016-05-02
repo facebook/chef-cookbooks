@@ -124,4 +124,75 @@ If the has is specified, it takes one or more of the following keys:
       return final_comment
     end
   end
+
+  # Helper class to compare software versions.
+  # Sample usage:
+  #   Version.new('1.3') < Version.new('1.21')
+  #   => true
+  #   Version.new('4.5') < Version.new('4.5')
+  #   => false
+  #   Version.new('3.3.10') > Version.new('3.4')
+  #   => false
+  #   Version.new('10.2') >= Version.new('10.2')
+  #   => true
+  #   Version.new('1.2.36') == Version.new('1.2.36')
+  #   => true
+  #   Version.new('3.3.4') <= Version.new('3.3.02')
+  #   => false
+
+  # Our version comparison class
+  class Version < Array
+    def initialize(s)
+      @string_form = s
+      if s.nil?
+        @arr = []
+        return
+      end
+      @arr = s.split('.').map(&:to_i)
+    end
+
+    def to_s
+      return @string_form
+    end
+
+    def to_a
+      return @arr
+    end
+
+    def <=(other)
+      other = [] unless other
+      return (@arr <=> other.to_a) <= 0
+    end
+
+    def >=(other)
+      other = [] unless other
+      return (@arr <=> other.to_a) >= 0
+    end
+
+    def <(other)
+      other = [] unless other
+      return (@arr <=> other.to_a) < 0
+    end
+
+    def >(other)
+      other = [] unless other
+      return (@arr <=> other.to_a) > 0
+    end
+
+    def ==(other)
+      other = [] unless other
+      return (@arr <=> other.to_a) == 0
+    end
+
+    def <=>(other)
+      @arr <=> other.to_a
+    end
+
+    # Oh, come on rubocop...
+    # rubocop:disable TrivialAccessors
+    def inspect
+      @string_form
+    end
+    # rubocop:enable TrivialAccessors
+  end
 end

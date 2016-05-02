@@ -56,5 +56,35 @@ class Chef
         return false
       end
     end
+
+    # Take a string representing a mount point, and return the
+    # device it resides on.
+    def device_of_mount(m)
+      unless Pathname.new(m).mountpoint?
+        Chef::Log.warn(
+          "#{m} is not a mount point - I can't determine its device.")
+        return nil
+      end
+      node['filesystem2']['by_pair'].to_hash.each do |pair, info|
+        # we skip fake filesystems 'rootfs', etc.
+        next unless pair.start_with?('/')
+        # is this our FS?
+        next unless pair.end_with?(",#{m}")
+        # make sure this isn't some fake entry
+        next unless info['kb_size']
+        return info['device']
+      end
+      Chef::Log.warn(
+        "#{m} shows as valid mountpoint, but Ohai can't find it.")
+      return nil
+    end
+
+    def efi?
+      # We cannot rely on the existence of /sys/firmware/efi, as it only
+      # appears when the kernel module efivars is inserted, and that doesn't
+      # always happen. On the contrary, for booting into EFI you need /boot/efi
+      # mounted as a VFAT partition, and that's what we will use.
+      return File.exists?('/boot/efi') && node.device_of_mount('/boot/efi')
+    end
   end
 end

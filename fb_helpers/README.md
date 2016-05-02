@@ -47,6 +47,13 @@ your node.
 * `node.virtual?`
     Is a guest.
 
+* `node.efi?`
+    Is an EFI machine
+
+* `node.device_of_mount(m)`
+   Take a string representing a mount point, and return the device it resides 
+   on.
+
 ### FB::Helpers
 The following methods are available:
 
@@ -55,3 +62,18 @@ The following methods are available:
     for being a comment. By default it'll comment it ruby-style (leading "# ")
     with a width of 80 chars, but the arg hash can specify `start`, `finish`,
     and `width` to adjust it's behavior.
+*  `FB::Version.new(version)`
+   Helper class to compare software versions. Sample usage:
+
+      FB::Version.new('1.3') < FB::Version.new('1.21')
+      => true
+      FB::Version.new('4.5') < FB::Version.new('4.5')
+      => false
+      FB::Version.new('3.3.10') > FB::Version.new('3.4')
+      => false
+      FB::Version.new('10.2') >= FB::Version.new('10.2')
+      => true
+      FB::Version.new('1.2.36') == FB::Version.new('1.2.36')
+      => true
+      FB::Version.new('3.3.4') <= FB::Version.new('3.3.02')
+      => false
