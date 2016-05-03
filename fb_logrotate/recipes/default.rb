@@ -22,8 +22,14 @@ if node.macosx?
   return
 end
 
-# assume linux
-package %w{logrotate pigz} do
+# assume linux from here onwards
+
+pkgs = ['logrotate']
+unless node.centos6?
+  pkgs << 'pigz'
+end
+
+package pkgs do
   not_if { node.yocto? }
   action :upgrade
 end

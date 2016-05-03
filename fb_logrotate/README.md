@@ -44,7 +44,7 @@ Linux:
   rotate 14
   maxage 14
   compress
-  compresscmd /usr/bin/pigz
+  compresscmd /usr/bin/pigz (except on CentOS 6, where pigz is not available)
   copytruncate
   notifempty
   missingok

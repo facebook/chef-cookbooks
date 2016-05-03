@@ -1,4 +1,5 @@
 # vim: syntax=ruby:expandtab:shiftwidth=2:softtabstop=2:tabstop=2
+#
 # Copyright (c) 2016-present, Facebook, Inc.
 # All rights reserved.
 #
@@ -7,12 +8,17 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
+globals = {
+  'rotate' => '14',
+  'maxage' => '14',
+}
+
+unless node.centos6?
+  globals['compresscmd'] = '/usr/bin/pigz'
+end
+
 default['fb_logrotate'] = {
-  'globals' => {
-    'rotate' => '14',
-    'maxage' => '14',
-    'compresscmd' => '/usr/bin/pigz',
-  },
+  'globals' => globals,
   'configs' => {},
   'add_locking_to_logrotate' => false,
 }
