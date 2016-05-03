@@ -35,11 +35,6 @@ if node.centos?
     mode '0700'
   end
 
-  package package_name do
-    not_if { node.yocto? }
-    action :upgrade
-  end
-
   template '/etc/sysconfig/rsyslog' do
     source 'rsyslog-sysconf.erb'
     user 'root'
@@ -47,7 +42,11 @@ if node.centos?
     mode '0644'
     notifies :restart, 'service[rsyslog]'
   end
+end
 
+package package_name do
+  not_if { node.yocto? || node.macosx? }
+  action :upgrade
 end
 
 template config_file do

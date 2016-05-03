@@ -29,8 +29,8 @@ Attributes
 
 Usage
 -----
-fb_fstab will look at the state of the system and attempt to populate the basic
-system mounts into `node['fb_fstab']['mounts']` for you. You may then
+`fb_fstab` will look at the state of the system and attempt to populate the
+basic system mounts into `node['fb_fstab']['mounts']` for you. You may then
 add whatever filesystems you would like mounted and `fb_fstab` will, for each
 entry in the hash:
 * populate `/etc/fstab` for you
@@ -114,7 +114,7 @@ Using `only_if` is slightly different than with resources, and looks like this:
       'mount_point' => '/mnt/foobar-tmpfs',
     }
 
-Things that fail the only_if will not show up in /etc/fstab or be mounted.
+Things that fail the `only_if` will not show up in `/etc/fstab` or be mounted.
 
 ### Base-OS filesystems
 `fb_fstab` determines the base filesystems (root, boot, swap, etc.) that would
@@ -123,10 +123,10 @@ you have your instalation system create this file (e.g in an Anaconda
 post-script) with something like:
 
     grep -v '^#' /etc/fstab > /etc/.fstab.chef
-    chmod 400 /etc/.fstab.chef
+    chmod 444 /etc/.fstab.chef
 
 If such a file does not exist, `fb_fstab` will do it's best to generate one by
-pulling things it believes are "system filesystems" from /etc/fstab.
+pulling things it believes are "system filesystems" from `/etc/fstab`.
 
 Once this file exists it is considered a source of truth and will not be
 modified.

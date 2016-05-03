@@ -41,7 +41,7 @@ class Chef
     end
 
     def systemd?
-      return self.centos7?
+      return ::File.directory?('/run/systemd/system')
     end
 
     def virtual?

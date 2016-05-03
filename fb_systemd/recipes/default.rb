@@ -12,12 +12,22 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
-fail 'fb_systemd is only available on CentOS7' unless node.systemd?
+unless node.systemd?
+  fail 'fb_systemd is only available on systemd-enabled hosts'
+end
 
-systemd_packages = %w{
-  systemd
-  systemd-libs
-}
+systemd_packages = ['systemd']
+
+case node['platform_family']
+when 'rhel', 'fedora'
+  systemd_packages << 'systemd-libs'
+  systemd_prefix = '/usr'
+when 'debian'
+  systemd_packages += %w{libsystemd0 libpam-systemd}
+  systemd_prefix = ''
+else
+  fail 'fb_systemd is not supported on this platform.'
+end
 
 package systemd_packages do
   only_if { node['fb_systemd']['manage_systemd_packages'] }
@@ -60,7 +70,7 @@ service 'disable systemd-logind' do
 end
 
 execute 'process tmpfiles' do
-  command '/usr/bin/systemd-tmpfiles --create'
+  command "#{systemd_prefix}/bin/systemd-tmpfiles --create"
   action :nothing
 end
 
@@ -70,6 +80,11 @@ template '/etc/tmpfiles.d/chef.conf' do
   group 'root'
   mode '0644'
   notifies :run, 'execute[process tmpfiles]'
+end
+
+execute 'load modules' do
+  command "#{systemd_prefix}/lib/systemd/systemd-modules-load"
+  action :nothing
 end
 
 directory '/etc/systemd/system-preset' do

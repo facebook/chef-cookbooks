@@ -35,11 +35,6 @@ template '/etc/modprobe.d/fb_modprobe.conf' do
 end
 
 if node.systemd?
-  execute 'load modules' do
-    command '/usr/lib/systemd/systemd-modules-load'
-    action :nothing
-  end
-
   template '/etc/modules-load.d/chef.conf' do
     source 'modules-load.conf.erb'
     owner 'root'
@@ -48,6 +43,13 @@ if node.systemd?
     notifies :run, 'execute[load modules]'
   end
 else
+  directory '/etc/sysconfig/modules' do
+    only_if { node.centos? && !node.systemd? }
+    owner 'root'
+    group 'root'
+    mode '0755'
+  end
+
   template '/etc/sysconfig/modules/fb.modules' do
     only_if { node.centos? && !node.systemd? }
     source 'fb.modules.erb'
