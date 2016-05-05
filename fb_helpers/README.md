@@ -26,6 +26,9 @@ your node.
 * `node.centos7?`
     Is CentOS7
 
+* `node.debian?`
+    Is Debian
+
 * `node.ubuntu?`
     Is Ubuntu
 

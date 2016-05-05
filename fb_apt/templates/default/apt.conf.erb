@@ -1,0 +1,5 @@
+// This file is maintained by Chef. Do not edit, all changes will be
+// overwritten. See fb_apt/README.md
+<% node['fb_apt']['config'].to_hash.each do |key, val| -%>
+<%=  FB::Apt._gen_apt_conf_entry(key, val) %>
+<% end -%>
