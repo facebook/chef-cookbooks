@@ -30,14 +30,14 @@ if node.centos?
   end
 
   directory '/var/spool/rsyslog' do
-    user 'root'
+    owner 'root'
     group 'root'
     mode '0700'
   end
 
   template '/etc/sysconfig/rsyslog' do
     source 'rsyslog-sysconf.erb'
-    user 'root'
+    owner 'root'
     group 'root'
     mode '0644'
     notifies :restart, 'service[rsyslog]'
