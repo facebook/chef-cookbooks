@@ -1,11 +1,36 @@
 language: ruby
-sudo: false
+sudo: required
+services: docker
+env:
+  matrix:
+    - INSTANCE=default-centos-6
+    - INSTANCE=default-centos-7
+    - INSTANCE=default-ubuntu-1404
+    - INSTANCE=default-ubuntu-1604
+    - INSTANCE=default-debian-8
+    - INSTANCE=default-debian-sid
+
+matrix:
+  allow_failures:
+    - env: INSTANCE=default-debian-sid
+
 rvm:
-  - 2.0.0
-  - 2.2.0
+  # 2.1.0 is not supported anymore by chef-zero
+  # 2.2.0 fails due to https://github.com/flori/json/issues/253
+  - 2.2.2
+  - 2.3.0
+
 gemfile:
   Gemfile
+
+before_script:
+  # https://github.com/zuazo/kitchen-in-travis-native/issues/1#issuecomment-142455888
+  - sudo iptables -L DOCKER || sudo iptables -N DOCKER
+  # hack to make kitchen happy
+  - mkdir -p cookbooks && cp -a fb_* cookbooks/
+
 script:
   - bundle exec rspec --format=d --color */spec/*rb
   - bundle exec rubocop --display-cop-names -c .rubocop.yml
   - ./run_foodcritic
+  - bundle exec kitchen verify $INSTANCE

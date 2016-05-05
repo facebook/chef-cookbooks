@@ -9,8 +9,13 @@
 include_recipe 'fb_init_sample::site_settings'
 
 # HERE: yum
+if node.debian? || node.ubuntu?
+  include_recipe 'fb_apt'
+end
 # HERE: chef_client
-include_recipe 'fb_systemd'
+if node.systemd?
+  include_recipe 'fb_systemd'
+end
 # HERE: ssh
 include_recipe 'fb_modprobe'
 include_recipe 'fb_securetty'

@@ -2,3 +2,4 @@
 *.orig
 *.rej
 Gemfile.lock
+.kitchen
