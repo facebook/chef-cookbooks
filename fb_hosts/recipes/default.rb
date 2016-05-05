@@ -17,4 +17,6 @@ template '/etc/hosts' do
   owner 'root'
   group 'root'
   mode '0644'
+  # workaround for https://github.com/docker/docker/issues/9295
+  atomic_update false
 end

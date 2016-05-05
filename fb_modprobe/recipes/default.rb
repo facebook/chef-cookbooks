@@ -18,6 +18,12 @@ ohai 'reload kernel' do
   action :nothing
 end
 
+directory '/etc/modprobe.d' do
+  owner 'root'
+  group 'root'
+  mode '0755'
+end
+
 %w{
   /etc/modprobe.d/blacklist
   /etc/modprobe.d/blacklist.rpmsave

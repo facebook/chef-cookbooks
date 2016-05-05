@@ -47,7 +47,8 @@ action :run do
         "http://security.debian.org/ #{distro}/updates #{components_entry}"
     elsif node.ubuntu?
       base_repos <<
-        "http://security.ubuntu.com/ #{distro}-security #{components_entry}"
+        "http://security.ubuntu.com/ubuntu #{distro}-security " +
+        components_entry
     end
 
     # Debian Sid doesn't have updates or backports

@@ -19,8 +19,12 @@ package 'apt' do
 end
 
 keyring_package = value_for_platform(
-  'debian' => 'debian-archive-keyring',
-  'ubuntu' => 'ubuntu-keyring',
+  'debian' => {
+    'default' => 'debian-archive-keyring',
+  },
+  'ubuntu' => {
+    'default' => 'ubuntu-keyring',
+  },
 )
 
 package keyring_package do
