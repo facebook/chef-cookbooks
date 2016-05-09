@@ -26,11 +26,9 @@ gemfile:
 before_script:
   # https://github.com/zuazo/kitchen-in-travis-native/issues/1#issuecomment-142455888
   - sudo iptables -L DOCKER || sudo iptables -N DOCKER
-  # hack to make kitchen happy
-  - mkdir -p cookbooks && cp -a fb_* cookbooks/
 
 script:
-  - bundle exec rspec --format=d --color */spec/*rb
+  - bundle exec rspec --format=d --color */*/spec/*rb
   - bundle exec rubocop --display-cop-names -c .rubocop.yml
-  - ./run_foodcritic
+  - ./scripts/run_foodcritic
   - bundle exec kitchen verify $INSTANCE

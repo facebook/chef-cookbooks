@@ -8,4 +8,4 @@
 # FC064 - issues URL - same as source_url, come on
 excluded_rules="FC014 FC017 FC024 FC059 FC064"
 exclude_flags=$(for r in $excluded_rules; do echo -t ~$r; done)
-exec bundle exec foodcritic -f any $exclude_flags .
+exec bundle exec foodcritic -f any $exclude_flags cookbooks
