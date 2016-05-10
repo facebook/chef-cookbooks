@@ -1,0 +1,6 @@
+# This file is maintained by Chef. Do not edit, all changes will be
+# overwritten. See fb_ethers/README.md
+
+<% node['fb_ethers']['entries'].to_hash.each do |hwaddr, ipaddr| -%>
+<%=  hwaddr %> <%= ipaddr %>
+<% end -%>

@@ -34,4 +34,6 @@ provisioner:
 
 suites:
   - name: default
-    run_list: recipe[fb_init_sample]
+    run_list:
+      - recipe[fb_init_sample]
+      - recipe[fb_dnsmasq]
