@@ -1,0 +1,6 @@
+# This file is maintained by Chef. Do not edit, all changes will be
+# overwritten. See fb_collectd/README.md
+
+<% node['fb_collectd']['collection'].to_hash.each do |key, val| -%>
+<%=  key %>: "<%= val %>"
+<% end -%>
