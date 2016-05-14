@@ -8,11 +8,15 @@ platforms:
       provision_command:
         # remove bogus entry to make fb_fstab happy
         - sed -i '/UUID=/d' /etc/fstab
+	# enable EPEL (for stuff like hddtemp)
+	- rpm -Uvh http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
   - name: centos-7
     driver_config:
       provision_command:
         # remove bogus entry to make fb_fstab happy
         - sed -i '/UUID=/d' /etc/fstab
+	# enable EPEL (for stuff like hddtemp)
+	- rpm -Uvh http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-6.noarch.rpm
       run_command: /usr/sbin/init
   - name: ubuntu-14.04
   - name: ubuntu-16.04
