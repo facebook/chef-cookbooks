@@ -17,7 +17,7 @@ unless node['kernel']['machine'] == 'x86_64'
 end
 
 distro = node['lsb']['codename']
-unless distro == 'wheezy' || distro == 'jessie'
+unless ['wheezy', 'jessie'].include?(distro)
   fail 'fb_zfs is only supported on Debian Wheezy and Debian Jessie'
 end
 
