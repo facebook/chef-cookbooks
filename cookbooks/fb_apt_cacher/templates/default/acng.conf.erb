@@ -1,0 +1,6 @@
+# This file is maintained by Chef. Do not edit, all changes will be
+# overwritten. See fb_apt_cacher/README.md
+
+<% node['fb_apt_cacher'][@section].to_hash.each do |key, val| -%>
+<%=  key %>: <%= val %>
+<% end -%>
