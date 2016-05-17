@@ -1,0 +1,8 @@
+## apcupsd.conf v1.1 ##
+#
+# This file is maintained by Chef. Do not edit, all changes will be
+# overwritten. See fb_apcupsd/README.md
+
+<% node['fb_apcupsd']['config'].to_hash.sort.each do |key, val| -%>
+<%=  key.upcase %> <%= val %>
+<% end -%>

@@ -1,0 +1,8 @@
+# This file is maintained by Chef. Do not edit, all changes will be
+# overwritten. See fb_apcupsd/README.md
+
+# Defaults for apcupsd initscript
+
+# Apcupsd-devel internal configuration
+APCACCESS=/sbin/apcaccess
+ISCONFIGURED=yes
