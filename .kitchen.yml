@@ -5,6 +5,9 @@ driver:
 platforms:
   - name: centos-6
     driver_config:
+      # workaround for
+      # https://github.com/CentOS/sig-cloud-instance-images/issues/57
+      image: centos:6.7
       provision_command:
         # remove bogus entry to make fb_fstab happy
         - sed -i '/UUID=/d' /etc/fstab
@@ -40,5 +43,6 @@ suites:
   - name: default
     run_list:
       - recipe[fb_init_sample]
+      - recipe[fb_apcupsd]
       - recipe[fb_dnsmasq]
       - recipe[fb_hddtemp]
