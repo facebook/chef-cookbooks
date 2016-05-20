@@ -23,7 +23,7 @@ when 'rhel', 'fedora'
   systemd_packages << 'systemd-libs'
   systemd_prefix = '/usr'
 when 'debian'
-  systemd_packages += %w{libsystemd0 libpam-systemd}
+  systemd_packages += %w{libsystemd0 libpam-systemd udev}
   systemd_prefix = ''
 else
   fail 'fb_systemd is not supported on this platform.'

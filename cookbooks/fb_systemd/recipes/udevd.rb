@@ -22,6 +22,12 @@ execute 'update hwdb' do
   action :nothing
 end
 
+directory '/etc/udev/hwdb.d' do
+  owner 'root'
+  group 'root'
+  mode '0755'
+end
+
 template '/etc/udev/hwdb.d/00-chef.hwdb' do
   source 'hwdb.erb'
   owner 'root'
