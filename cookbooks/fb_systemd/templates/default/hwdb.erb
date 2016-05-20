@@ -1,0 +1,9 @@
+# This file is maintained by Chef. Do not edit, all changes will be
+# overwritten. See fb_systemd/README.md
+
+<% node['fb_systemd']['udevd']['hwdb'].to_hash.each do |mapping, entries| -%>
+<%=  mapping %>
+<%   entries.each do |key, val| -%>
+  <%=  key.upcase %>=<%= val %>
+<%   end
+   end -%>

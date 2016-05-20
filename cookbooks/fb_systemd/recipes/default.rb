@@ -56,18 +56,35 @@ template '/etc/systemd/system.conf' do
   notifies :run, 'fb_systemd_reload[system instance]', :immediately
 end
 
-include_recipe 'fb_systemd::journal'
-
-# this has to be running for user sessions to work properly
-service 'systemd-logind' do
-  only_if { node['fb_systemd']['logind']['enable'] }
-  action [:enable, :start]
+template '/etc/systemd/user.conf' do
+  source 'systemd.conf.erb'
+  owner 'root'
+  group 'root'
+  mode '0644'
+  variables(
+    :config => 'user',
+    :section => 'Manager',
+  )
+  notifies :run, 'fb_systemd_reload[all user instances]', :immediately
 end
 
-service 'disable systemd-logind' do
-  not_if { node['fb_systemd']['logind']['enable'] }
-  action [:enable, :start]
+template '/etc/systemd/coredump.conf' do
+  source 'systemd.conf.erb'
+  owner 'root'
+  group 'root'
+  mode '0644'
+  variables(
+    :config => 'coredump',
+    :section => 'Coredump',
+  )
 end
+
+include_recipe 'fb_systemd::udevd'
+include_recipe 'fb_systemd::journald'
+include_recipe 'fb_systemd::logind'
+include_recipe 'fb_systemd::networkd'
+include_recipe 'fb_systemd::resolved'
+include_recipe 'fb_systemd::timesyncd'
 
 execute 'process tmpfiles' do
   command "#{systemd_prefix}/bin/systemd-tmpfiles --create"

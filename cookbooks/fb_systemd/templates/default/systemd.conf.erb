@@ -2,15 +2,20 @@
 # overwritten. See fb_systemd/README.md
 
 [<%= @section %>]
-<% keys = node['fb_systemd'][@config].to_hash.keys
-   keys.sort.each do |key|
-     value = node['fb_systemd'][@config][key]
-     if value.is_a?(TrueClass)
+<% if node['fb_systemd'][@config]['config']
+     keys = node['fb_systemd'][@config]['config'].to_hash
+   else
+     keys = node['fb_systemd'][@config].to_hash
+   end
+   keys.sort.each do |key, val|
+     if val.is_a?(TrueClass)
        v = 'yes'
-     elsif value.is_a?(FalseClass)
+     elsif val.is_a?(FalseClass)
        v = 'no'
+     elsif val.is_a?(Array)
+       v = val.join(' ')
      else
-       v = value
+       v = val
      end %>
 <%=  key %>=<%= v %>
 <% end %>

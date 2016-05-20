@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: fb_systemd
-# Recipe:: journal
+# Recipe:: timesyncd
 #
 # vim: syntax=ruby:expandtab:shiftwidth=2:softtabstop=2:tabstop=2
 #
@@ -12,26 +12,25 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
-template '/etc/systemd/journald.conf' do
+template '/etc/systemd/timesyncd.conf' do
   source 'systemd.conf.erb'
   owner 'root'
   group 'root'
   mode '0644'
   variables(
-    :config => 'journald',
-    :section => 'Journal',
+    :config => 'timesyncd',
+    :section => 'Time',
   )
-  notifies :restart, 'service[systemd-journald]', :immediately
+  notifies :restart, 'service[systemd-timesyncd]'
 end
 
-service 'systemd-journald' do
+service 'systemd-timesyncd' do
+  only_if { node['fb_systemd']['timesyncd']['enable'] }
   action [:enable, :start]
 end
 
-directory '/var/log/journal' do
-  only_if do
-    %w{none volatile}.include?(node['fb_systemd']['journald']['storage'])
-  end
-  recursive true
-  action :delete
+service 'disable systemd-timesyncd' do
+  not_if { node['fb_systemd']['timesyncd']['enable'] }
+  service_name 'systemd-timesyncd'
+  action [:stop, :disable]
 end

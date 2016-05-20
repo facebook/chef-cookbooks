@@ -1,6 +1,6 @@
 # This file is maintained by Chef. Do not edit, all changes will be
 # overwritten. See fb_systemd/README.md
 
-<% node['fb_systemd']['preset'].to_hash.each do |service, state| -%>
-<%=  state %> <%= service %>
-<% end -%>
+<% node['fb_systemd']['udevd']['config'].to_hash.each do |key, val| -%>
+<%=  key %>=<%= val %>
+<% end %>
