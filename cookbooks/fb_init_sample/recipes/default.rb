@@ -16,6 +16,7 @@ end
 if node.systemd?
   include_recipe 'fb_systemd'
 end
+include_recipe 'fb_nsswitch'
 # HERE: ssh
 include_recipe 'fb_modprobe'
 include_recipe 'fb_securetty'
