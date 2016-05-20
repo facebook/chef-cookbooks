@@ -20,12 +20,12 @@ action :run do
       command '/bin/systemctl daemon-reload'
     end
   when 'user'
-    unless node['fb']['sessions'] && node['fb']['sessions']['by_user']
+    unless node['sessions'] && node['sessions']['by_user']
       Chef::Log.info('Requested to reload systemd user instance for all ' +
                      'users, but there are no sessions to reload')
       return
     end
-    logged_in = node['fb']['sessions']['by_user'].keys
+    logged_in = node['sessions']['by_user'].keys
     if new_resource.user
       unless logged_in.include?(new_resource.user)
         Chef::Log.info('Requested to reload systemd user instance for ' +
@@ -34,7 +34,7 @@ action :run do
       end
       users = [new_resource.user]
     else
-      users = node['fb']['sessions']['by_user'].to_hash.keys.sort
+      users = node['sessions']['by_user'].to_hash.keys.sort
     end
     users.each do |user|
       unless node['etc']['passwd'][user]
