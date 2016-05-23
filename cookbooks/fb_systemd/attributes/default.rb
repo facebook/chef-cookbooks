@@ -37,7 +37,7 @@ default['fb_systemd'] = {
     'config' => {},
   },
   'timesyncd' => {
-    'enable' => true,
+    'enable' => false,
     'config' => {},
   },
   'coredump' => {},

@@ -135,7 +135,7 @@ resolved, you'll need to add `resolve` to the `hosts` entry there.
 
 ### timesyncd configuration
 You can choose whether or not to enable `systemd-timesyncd` with the
-`node['fb_systemd']['timesyncd']['enable']` attribute, which defaults to `true`.
+`node['fb_systemd']['timesyncd']['enable']` attribute, which defaults to `false`.
 You'll want to disable this if you're running another NTP daemon such as ntpd.
 Timesyncd can be configured with the `node['fb_systemd']['timesyncd']['config']`
 attribute, as described in the
