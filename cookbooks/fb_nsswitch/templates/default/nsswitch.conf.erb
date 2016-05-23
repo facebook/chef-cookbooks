@@ -1,0 +1,6 @@
+# This file is maintained by Chef. Do not edit, all changes will be
+# overwritten. See fb_nsswitch/README.md
+
+<% node['fb_nsswitch']['databases'].to_hash.each do |db, sources| -%>
+<%=  db %>: <%= sources.join(' ') %>
+<% end -%>
