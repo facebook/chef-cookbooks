@@ -33,7 +33,8 @@ when 'debian'
     systemd_packages << 'udev'
   end
 
-  if FB::Version.new(node['platform_version']) > FB::Version.new('8')
+  # older versions of Debian and Ubuntu are missing some extra packages
+  unless ['trusty', 'jessie'].include?(node['lsb']['codename'])
     systemd_packages += %w{
       libnss-myhostname
       libnss-mymachines
