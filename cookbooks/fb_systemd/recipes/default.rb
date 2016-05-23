@@ -23,7 +23,26 @@ when 'rhel', 'fedora'
   systemd_packages << 'systemd-libs'
   systemd_prefix = '/usr'
 when 'debian'
-  systemd_packages += %w{libsystemd0 libpam-systemd udev}
+  systemd_packages += %w{
+    libpam-systemd
+    libsystemd0
+    libudev1
+  }
+
+  unless node.container?
+    systemd_packages << 'udev'
+  end
+
+  if FB::Version.new(node['platform_version']) > FB::Version.new('8')
+    systemd_packages += %w{
+      libnss-myhostname
+      libnss-mymachines
+      libnss-resolve
+      systemd-coredump
+      systemd-container
+    }
+  end
+
   systemd_prefix = ''
 else
   fail 'fb_systemd is not supported on this platform.'
@@ -79,7 +98,9 @@ template '/etc/systemd/coredump.conf' do
   )
 end
 
-include_recipe 'fb_systemd::udevd'
+unless node.container?
+  include_recipe 'fb_systemd::udevd'
+end
 include_recipe 'fb_systemd::journald'
 include_recipe 'fb_systemd::logind'
 include_recipe 'fb_systemd::networkd'

@@ -15,8 +15,6 @@
 execute 'reload udev' do
   command '/sbin/udevadm control --reload'
   action :nothing
-  # this will exit 2 if udev is not running, e.g. because we're in a container
-  returns [0, 2]
 end
 
 execute 'update hwdb' do

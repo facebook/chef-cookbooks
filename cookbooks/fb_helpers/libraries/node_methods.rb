@@ -49,16 +49,34 @@ class Chef
     end
 
     def virtual?
+      vm_systems = %w{
+        bhyve
+        hyperv
+        kvm
+        parallels
+        vbox
+        vmware
+        xen
+      }
       return self['virtualization'] &&
-        self['virtualization']['role'] == 'guest'
+        self['virtualization']['role'] == 'guest' &&
+        vm_systems.include?(self['virtualization']['system'])
     end
 
     def container?
-      if ENV['container'] && ENV['container_uuid']
-        return true
-      else
-        return false
-      end
+      container_systems = %w{
+        docker
+        linux-vserver
+        lxc
+        openvz
+      }
+      return self['virtualization'] &&
+        self['virtualization']['role'] == 'guest' &&
+        container_systems.include?(self['virtualization']['system'])
+    end
+
+    def vagrant?
+      return File.directory?('/vagrant')
     end
 
     # Take a string representing a mount point, and return the
