@@ -31,6 +31,9 @@ databases = {}
 end
 
 databases['hosts'] << 'dns'
+if node.systemd?
+  databases['hosts'] += %w{mymachines myhostname}
+end
 
 default['fb_nsswitch'] = {
   'databases' => databases,

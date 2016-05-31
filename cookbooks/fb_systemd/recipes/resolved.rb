@@ -24,6 +24,18 @@ template '/etc/systemd/resolved.conf' do
   notifies :restart, 'service[systemd-resolved]'
 end
 
+# nss-resolve enables DNS resolution via the systemd-resolved DNS/LLMNR caching
+# stub resolver. According to upstream this should replace the glibc "dns"
+# resolver and is required for systemd-resolved to work.
+ruby_block 'enable nss-resolve' do
+  only_if { node['fb_systemd']['resolved']['enable'] }
+  block do
+    node.default['fb_nsswitch']['databases']['hosts'].delete('dns')
+    idx = node['fb_nsswitch']['databases']['hosts'].index('mymachines')
+    node.default['fb_nsswitch']['databases']['hosts'].insert(idx + 1, 'resolve')
+  end
+end
+
 service 'systemd-resolved' do
   only_if { node['fb_systemd']['resolved']['enable'] }
   action [:enable, :start]

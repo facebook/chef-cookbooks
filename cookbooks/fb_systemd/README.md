@@ -149,15 +149,15 @@ service.
 ### resolved configuration
 You can choose whether or not to enable `systemd-resolved` with the
 `node['fb_systemd']['resolved']['enable']` attribute, which defaults to `false`.
-Resolved can be configured using the `node['fb_systemd']['resolved']['config']`
-attribute, as described in the
+Note that this will also enable the `nss-resolve` resolver in 
+`/etc/nsswitch.conf` in place of the glibc `dns` one (using the API provided by
+`fb_nsswitch`). Resolved can be configured using the
+`node['fb_systemd']['resolved']['config']` attribute, as described in the
 [resolved documentation](https://www.freedesktop.org/software/systemd/man/resolved.conf.html).
 
 Note that this cookbook does not manage `/etc/resolv.conf`. If you're using 
 resolved, you probably want to make that a symlink to 
-`/run/systemd/resolve/resolv.conf`. Also, this cookbook does not manage 
-`/etc/nsswitch.conf`. If you want to enable the resolved caching DNS stub
-resolved, you'll need to add `resolve` to the `hosts` entry there.
+`/run/systemd/resolve/resolv.conf`. 
 
 ### timesyncd configuration
 You can choose whether or not to enable `systemd-timesyncd` with the
