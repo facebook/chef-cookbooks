@@ -39,8 +39,9 @@ when 'debian'
       libnss-myhostname
       libnss-mymachines
       libnss-resolve
-      systemd-coredump
       systemd-container
+      systemd-coredump
+      systemd-journal-remote
     }
   end
 
@@ -103,6 +104,9 @@ unless node.container?
   include_recipe 'fb_systemd::udevd'
 end
 include_recipe 'fb_systemd::journald'
+include_recipe 'fb_systemd::journal-gatewayd'
+include_recipe 'fb_systemd::journal-remote'
+include_recipe 'fb_systemd::journal-upload'
 include_recipe 'fb_systemd::logind'
 include_recipe 'fb_systemd::networkd'
 include_recipe 'fb_systemd::resolved'

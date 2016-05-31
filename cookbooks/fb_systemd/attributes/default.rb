@@ -25,6 +25,17 @@ default['fb_systemd'] = {
       'Storage' => 'auto',
     },
   },
+  'journal-gatewayd' => {
+    'enable' => false,
+  },
+  'journal-remote' => {
+    'enable' => false,
+    'config' => {},
+  },
+  'journal-upload' => {
+    'enable' => false,
+    'config' => {},
+  },
   'logind' => {
     'enable' => true,
     'config' => {},

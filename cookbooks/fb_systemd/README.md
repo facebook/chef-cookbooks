@@ -14,6 +14,11 @@ Attributes
 * node['fb_systemd']['udevd']['hwdb']
 * node['fb_systemd']['udevd']['rules']
 * node['fb_systemd']['journald']['config']
+* node['fb_systemd']['journal-gatewayd']['enable']
+* node['fb_systemd']['journal-remote']['enable']
+* node['fb_systemd']['journal-remote']['config']
+* node['fb_systemd']['journal-upload']['enable']
+* node['fb_systemd']['journal-upload']['config']
 * node['fb_systemd']['logind']['enable']
 * node['fb_systemd']['logind']['config']
 * node['fb_systemd']['networkd']['enable']
@@ -103,6 +108,27 @@ settings and more through `node['fb_systemd']['journald']['config']`.
 Refer to the 
 [journald documentation](https://www.freedesktop.org/software/systemd/man/journald.conf.html)
 for more details on possible configurations.
+
+### journal-gatewayd configuration
+You can choose whether or not to enable `systemd-journal-gatewayd` with the
+`node['fb_systemd']['journal-gatewayd']['enable']` attribute, which defaults
+to `false`. Please refer to the
+[journal-gatewayd documentation](https://www.freedesktop.org/software/systemd/man/systemd-journal-gatewayd.html)
+for more information.
+
+### journal-remote configuration
+You can choose whether or not to enable `systemd-journal-remote` with the
+`node['fb_systemd']['journal-remote']['enable']` attribute, which defaults
+to `false`. journal-remote can be configured using the 
+`node['fb_systemd']['journal-remote']['config']` attribute, according to the
+[journal-remote documentation](https://www.freedesktop.org/software/systemd/man/journal-remote.conf.html).
+
+### journal-upload configuration
+You can choose whether or not to enable `systemd-journal-upload` with the
+`node['fb_systemd']['journal-upload']['enable']` attribute, which defaults
+to `false`. journal-upload can be configured using the
+`node['fb_systemd']['journal-upload']['config']` attribute, according to the
+[journal-upload documentation](https://www.freedesktop.org/software/systemd/man/systemd-journal-upload.html).
 
 ### logind configuration
 You can choose whether or not to enable `systemd-logind` with the
