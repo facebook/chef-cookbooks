@@ -11,14 +11,18 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 #
+%w{
+  systemd-networkd.socket
+  systemd-networkd.service
+}.each do |svc|
+  service svc do
+    only_if { node['fb_systemd']['networkd']['enable'] }
+    action [:enable, :start]
+  end
 
-service 'systemd-networkd' do
-  only_if { node['fb_systemd']['networkd']['enable'] }
-  action [:enable, :start]
-end
-
-service 'disable systemd-networkd' do
-  not_if { node['fb_systemd']['networkd']['enable'] }
-  service_name 'systemd-networkd'
-  action [:stop, :disable]
+  service "disable #{svc}" do
+    not_if { node['fb_systemd']['networkd']['enable'] }
+    service_name svc
+    action [:stop, :disable]
+  end
 end
