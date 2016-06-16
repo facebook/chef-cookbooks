@@ -6,19 +6,20 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 #
-def modprobe_module(module_name, params, timeout, verbose, unload)
-  verbose_flags = verbose ? '-v ' : ''
-  remove_flags = unload ? '-r ' : ''
-  should_run = !FB::Modprobe.module_loaded?(module_name) || unload
 
-  params =
-    if params.is_a?(Array)
-      ' ' + params.join(' ')
-    elsif !params
-      ''
-    else
-      ' ' + params
-    end
+# Note that we cannot use `use_inline_resources` because of the ohai
+# notification below.... later versions of Chef will allow that though.
+
+def whyrun_supported?
+  true
+end
+
+def modprobe_module(module_name, params, timeout, verbose, unload)
+  flags = []
+  flags << '-v' if verbose
+  flags << '-r' if unload
+
+  params = [params].flatten.compact
 
   # Correctly handle built-in modules. If no parameters were supplied, we just
   # return true. If the caller supplied parameters, we fail the Chef run and ask
@@ -26,7 +27,7 @@ def modprobe_module(module_name, params, timeout, verbose, unload)
   if ::File.exist?("/sys/modules/#{module_name}")
     unless ::File.exist?("/sys/modules/#{module_name}/initstate")
       ::Chef::Log.warn("fb_modprobe called on built-in module '#{module_name}'")
-      if params != ''
+      unless params.empty?
         fail <<-FAIL
           Cannot set parameters for built-in module '#{module_name}'!
           Parameters for built-in modules must be passed on the kernel cmdline.
@@ -39,30 +40,40 @@ def modprobe_module(module_name, params, timeout, verbose, unload)
     end
   end
 
+  args = flags + [module_name] + params
+
   execute "modprobe #{module_name}" do
-    only_if { should_run }
-    command '/sbin/modprobe' +
-      " #{verbose_flags}#{remove_flags}#{module_name}#{params}"
+    command "/sbin/modprobe #{args.join(' ')}"
     action :run
     notifies :reload, 'ohai[reload kernel]', :immediately
     timeout timeout
   end
-
-  return should_run
 end
 
 action :load do
-  updated = modprobe_module(new_resource.module_name,
-                            new_resource.module_params,
-                            new_resource.timeout,
-                            new_resource.verbose, false)
-  new_resource.updated_by_last_action(updated)
+  if FB::Modprobe.module_loaded?(new_resource.module_name)
+    Chef::Log.debug("#{new_resource}: Module already loaded")
+  else
+    converge_by("Load #{new_resource.module_name}") do
+      modprobe_module(new_resource.module_name,
+                      new_resource.module_params,
+                      new_resource.timeout,
+                      new_resource.verbose, false)
+    end
+    new_resource.updated_by_last_action(true)
+  end
 end
 
 action :unload do
-  updated = modprobe_module(new_resource.module_name,
-                            new_resource.module_params,
-                            new_resource.timeout,
-                            new_resource.verbose, true)
-  new_resource.updated_by_last_action(updated)
+  if !FB::Modprobe.module_loaded?(new_resource.module_name)
+    Chef::Log.debug("#{new_resource}: Module already unloaded")
+  else
+    converge_by("Unload #{new_resource.module_name}") do
+      modprobe_module(new_resource.module_name,
+                      new_resource.module_params,
+                      new_resource.timeout,
+                      new_resource.verbose, true)
+    end
+    new_resource.updated_by_last_action(true)
+  end
 end
