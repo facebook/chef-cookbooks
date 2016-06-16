@@ -1,4 +1,5 @@
 # vim: syntax=ruby:expandtab:shiftwidth=2:softtabstop=2:tabstop=2
+#
 # Copyright (c) 2016-present, Facebook, Inc.
 # All rights reserved.
 #
@@ -9,4 +10,5 @@
 
 default['fb_swap'] = {
   'enabled' => true,
+  'size' => nil,
 }
