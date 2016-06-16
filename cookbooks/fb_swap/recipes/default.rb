@@ -83,7 +83,7 @@ execute 'turn swap on' do
     node['memory']['swap']['total'] == '0kB' &&
     node['fb_swap']['enabled']
   end
-  command "/sbin/swapon #{swap_device}"
+  command '/sbin/swapon -a'
 end
 
 execute 'turn swap off' do
@@ -91,5 +91,5 @@ execute 'turn swap off' do
     node['memory']['swap']['total'] != '0kB' &&
     !node['fb_swap']['enabled']
   end
-  command "/sbin/swapoff #{swap_device}"
+  command '/sbin/swapoff -a'
 end
