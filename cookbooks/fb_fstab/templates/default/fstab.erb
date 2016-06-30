@@ -37,19 +37,22 @@
 # END OS-INCLUDED STUFF
 <%
     mounts.each do |name, data|
-     fs = data['uuid'] ? "UUID=#{data['uuid']}" : data['device']
-     data['type'] = 'auto' unless data['type']
-     data['pass'] = 2 unless data['pass']
-     data['dump'] = 0 unless data['dump']
-     data['opts'] = 'defaults' unless data['opts']
-     if data['comment']
-       puts data['comment']
-     end
-     #  We make a minmal effort here to have some formatting, but if you have
-     # obscenely long device names, it will just end up as space-delimited,
-     # which is fine.
-     _buf << sprintf("%-15s %-15s %s %s %s %s\n",
-                     fs, data['mount_point'], data['type'], data['opts'],
-                     data['dump'], data['pass'])
+      fs = data['uuid'] ? "UUID=#{data['uuid']}" : data['device']
+      data['type'] = 'auto' unless data['type']
+      unless data['pass']
+        # it doesn't make sense to fsck tmpfs filesystems
+        data['pass'] = (data['type'] == 'tmpfs') ? 0 : 2
+      end
+      data['dump'] = 0 unless data['dump']
+      data['opts'] = 'defaults' unless data['opts']
+      if data['comment']
+        puts data['comment']
+      end
+      # We make a minimal effort here to have some formatting, but if you have
+      # obscenely long device names, it will just end up as space-delimited,
+      # which is fine.
+      _buf << sprintf("%-15s %-15s %s %s %s %s\n",
+                      fs, data['mount_point'], data['type'], data['opts'],
+                      data['dump'], data['pass'])
     end
 %>
