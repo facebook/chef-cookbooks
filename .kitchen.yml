@@ -19,7 +19,7 @@ platforms:
         # remove bogus entry to make fb_fstab happy
         - sed -i '/UUID=/d' /etc/fstab
         # enable EPEL (for stuff like hddtemp)
-        - rpm -Uvh http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-6.noarch.rpm
+        - rpm -Uvh http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-7.noarch.rpm
       run_command: /usr/sbin/init
   - name: ubuntu-14.04
   - name: ubuntu-16.04
@@ -34,7 +34,7 @@ platforms:
       run_command: /sbin/init
   - name: debian-sid
     driver_config:
-      run_command: /sbin/init
+      run_command: /bin/systemd
 
 provisioner:
   name: chef_zero
