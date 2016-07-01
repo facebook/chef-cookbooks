@@ -140,3 +140,6 @@ Style/IndentArray:
 
 Style/SignalException:
   EnforcedStyle: semantic
+
+Style/NumericLiteralPrefix:
+  Enabled: false
