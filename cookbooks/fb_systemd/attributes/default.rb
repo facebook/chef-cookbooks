@@ -8,6 +8,19 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
+tmpfiles = {}
+{
+  '/dev/log' => '/run/systemd/journal/dev-log',
+  '/dev/initctl' => '/run/systemd/initctl/fifo',
+}.each do |dev, target|
+  if File.exists?(target)
+    tmpfiles[dev] = {
+      'type' => 'L+',
+      'argument' => target,
+    }
+  end
+end
+
 default['fb_systemd'] = {
   'default_target' => '/lib/systemd/system/multi-user.target',
   'modules' => [],
@@ -52,16 +65,7 @@ default['fb_systemd'] = {
     'config' => {},
   },
   'coredump' => {},
-  'tmpfiles' => {
-    '/dev/log' => {
-      'type' => 'L+',
-      'argument' => '/run/systemd/journal/dev-log',
-    },
-    '/dev/initctl' => {
-      'type' => 'L+',
-      'argument' => '/run/systemd/initctl/fifo',
-    },
-  },
+  'tmpfiles' => tmpfiles,
   'preset' => {},
   'manage_systemd_packages' => true,
 }
