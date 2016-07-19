@@ -261,8 +261,8 @@ module FB
         next if should_keep(mounted_data, desired_mounts, base_mounts)
 
         if node['fb_fstab']['allow_umount']
-          converge_by "unmount #{mounted_data['mount_point']}" do
-            unmount(data['mount_point'])
+          converge_by "unmount #{mounted_data['mount']}" do
+            umount(mounted_data['mount'])
           end
         else
           Chef::Log.warn(
