@@ -18,6 +18,9 @@ Attributes
 * node['fb_syslog']['rsyslog_escape_cchars']
 * node['fb_syslog']['rsyslog_additional_sockets']
 * node['fb_syslog']['rsyslog_facilities_sent_to_remote']
+* node['fb_syslog']['rsyslog_omprog_binary']
+* node['fb_syslog']['rsyslog_use_omprog']
+* node['fb_syslog']['rsyslog_stats_logging']
 * node['fb_syslog']['sysconfig']['vars'][$KEY][$VAL]
 * node['fb_syslog']['sysconfig']['extra_lines']
 
@@ -152,12 +155,23 @@ With that, you can bind mount /dev/rsyslog to your chroot and symlink
 
 ### Remote forwarding
 If you set `node['fb_syslog']['rsyslog_upstream']`, then any facilities you add
-to `node['fb_syslog']['rsyslog_facilities_sent_to_remote'] will be sent to that
+to `node['fb_syslog']['rsyslog_facilities_sent_to_remote']` will be sent to that
 upstream. For example:
 
     node.default['fb_syslog']['rsyslog_facilities_sent_to_remote'] << 'auth.*'
     node.default['fb_syslog']['rsyslog_upstream'] << 'syslog.mydomain.com'
 
+### Program forwarding
+If you set `node['fb_syslog']['rsyslog_use_omprog']` to true, rsyslog will
+use program forwarding (omprog) instead of remote forwarding (omfwd).
+You will need to specify the binary to forward syslog messages to in
+`node['fb_syslog']['rsyslog_omprog_binary']`. Logs from the facilities you set
+in `node['fb_syslog']['rsyslog_facilities_sent_to_remote']` will be forwarded to
+that binary. For example:
+
+    node.default['fb_syslog']['rsyslog_facilities_sent_to_remote'] << 'auth.*'
+    node.default['fb_syslog']['rsyslog_use_omprog'] = true
+    node.default['fb_syslog']['rsyslog_omprog_binary'] = '/usr/bin/myprogram'
 
 ### sysconfig settings
 On Redhat-like systems, `node['fb_syslog']['sysconfig']` can be used

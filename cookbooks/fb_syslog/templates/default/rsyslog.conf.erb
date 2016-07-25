@@ -26,8 +26,6 @@ module(load="omrelp")
 # UDP / TCP reception
 $ModLoad imudp
 $ModLoad imtcp
-# Provides periodic output of rsyslog internal counters
-module(load="impstats" severity="7" resetCounters="on")
 
 <%   non_ruleset_ports = node['fb_syslog']['rsyslog_nonruleset_ports'].to_hash %>
 <%   non_ruleset_ports.each do |proto, ports| -%>
@@ -41,9 +39,12 @@ $InputTCPServerRun <%= port %>
 <%       end -%>
 <%     end -%>
 <%   end -%>
-
+<% end -%>
+<% if node['fb_syslog']['rsyslog_stats_logging'] -%>
+# Provides periodic output of rsyslog internal counters
+module(load="impstats" severity="7" resetCounters="on")
 ## Stats logging
-syslog.=debug  /var/log/rsyslog-stats
+syslog.=debug  /var/log/rsyslog-stats.log
 <% end -%>
 
 #### GLOBAL DIRECTIVES ####
@@ -128,8 +129,24 @@ $InputTCPServerRun <%= specs['port'] %>
 <% end -%>
 
 <%
-   unless node['fb_syslog']['rsyslog_server']
-     unless node['fb_syslog']['rsyslog_facilities_sent_to_remote'].empty?
+   if !node['fb_syslog']['rsyslog_server'] &&
+      !node['fb_syslog']['rsyslog_facilities_sent_to_remote'].empty?
+     if node['fb_syslog']['rsyslog_use_omprog']
+       rsyslog_omprog_binary = node['fb_syslog']['rsyslog_omprog_binary']
+       if node.linux?
+%>
+# Program Logging
+<%=      node['fb_syslog']['rsyslog_facilities_sent_to_remote'].join(',') %> {
+  action(type="omprog"
+    name="Program_Logging"
+    binary="<%= rsyslog_omprog_binary %>"
+    action.reportSuspension="off"
+    action.reportSuspensionContinuation="off"
+    template="RSYSLOG_TraditionalFileFormat"
+  )
+}
+<%     end # if node.linux? %>
+<%   else # if rsyslog_use_omprog
        rsyslog_port = node['fb_syslog']['rsyslog_port']
        rsyslog_upstream = node['fb_syslog']['rsyslog_upstream']
        if node['fb_syslog']['rsyslog_relp_tls']
@@ -137,10 +154,10 @@ $InputTCPServerRun <%= specs['port'] %>
          extra_lines = %w{
            tls="on"
          }
-       else
-         rsyslog_type = 'omfwd'
-         extra_lines = []
-       end
+         else
+           rsyslog_type = 'omfwd'
+           extra_lines = []
+         end
        if node.linux?
 %>
 # Remote Logging
@@ -149,7 +166,7 @@ $InputTCPServerRun <%= specs['port'] %>
     name="Remote_Logging"
     target="<%= rsyslog_upstream %>"
     port="<%= rsyslog_port %>"
-<%       unless node['fb_syslog']['rsyslog_relp_tls'] %> 
+<%       unless node['fb_syslog']['rsyslog_relp_tls'] %>
     protocol="tcp"
 <%       end %>
     action.reportSuspension="off"
@@ -160,5 +177,5 @@ $InputTCPServerRun <%= specs['port'] %>
   )
 }
 <%     end # if node.linux? %>
-<%   end # if we have rsyslog_facilities_sent_to_remote %>
-<% end # unless server -%>
+<%   end # ending else rsyslog_use_omprog' %>
+<% end # if !rsyslog_server and !rsyslog_facilities_sent_to_remote.empty -%>
