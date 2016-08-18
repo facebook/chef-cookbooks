@@ -62,8 +62,7 @@ module FB
       # other FS's --no-canonicalize may not be safe. THUS, we cd to a place
       # that should be emptyish.
       s = Mixlib::ShellOut.new(
-        "cd /dev/shm && /bin/mount #{mount_data['mount_point']}",
-      )
+        "cd /dev/shm && /bin/mount #{mount_data['mount_point']}")
       s.run_command
       if mount_data['allow_mount_failure']
         Chef::Log.warn(

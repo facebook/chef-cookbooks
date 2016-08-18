@@ -46,8 +46,7 @@ whyrun_safe_ruby_block 'munge logrotate configs' do
         if block['overrides']['size']
           time = "size #{block['overrides']['size']}"
         elsif ['weekly', 'monthly', 'yearly'].include?(
-          block['overrides']['rotation'],
-        )
+          block['overrides']['rotation'])
           time = block['overrides']['rotation']
         end
       end
