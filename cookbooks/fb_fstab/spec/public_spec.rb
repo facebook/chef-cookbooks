@@ -722,7 +722,8 @@ EOF
         and_return(true)
       so = double('FSshell_out1')
       so.should_receive(:run_command).and_return(so)
-      so.should_receive(:error!).and_return(true)
+      so.should_receive(:error?).and_return(false)
+      so.should_receive(:error!).and_return(nil)
       Mixlib::ShellOut.should_receive(:new).with(
         "cd /dev/shm && /bin/mount #{desired_mount['mount_point']}",
       ).and_return(so)
@@ -739,6 +740,7 @@ EOF
         and_return(true)
       so = double('FSshell_out2')
       so.should_receive(:run_command).and_return(so)
+      so.should_receive(:error?).and_return(true)
       so.should_receive(:error!).and_raise(Mixlib::ShellOut::ShellCommandFailed)
       Mixlib::ShellOut.should_receive(:new).with(
         "cd /dev/shm && /bin/mount #{desired_mount['mount_point']}",
@@ -759,6 +761,7 @@ EOF
         and_return(true)
       so = double('FSshell_out3')
       so.should_receive(:run_command).and_return(so)
+      so.should_receive(:error?).and_return(true)
       Mixlib::ShellOut.should_receive(:new).with(
         "cd /dev/shm && /bin/mount #{desired_mount['mount_point']}",
       ).and_return(so)
@@ -799,7 +802,8 @@ EOF
       ).and_return(true)
       so = double('FSshell_out4')
       so.should_receive(:run_command).and_return(so)
-      so.should_receive(:error!).and_return(true)
+      so.should_receive(:error?).and_return(false)
+      so.should_receive(:error!).and_return(nil)
       Mixlib::ShellOut.should_receive(:new).with(
         "cd /dev/shm && /bin/mount #{desired_mount['mount_point']}",
       ).and_return(so)

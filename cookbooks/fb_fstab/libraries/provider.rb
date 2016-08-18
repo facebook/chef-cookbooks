@@ -64,7 +64,7 @@ module FB
       s = Mixlib::ShellOut.new(
         "cd /dev/shm && /bin/mount #{mount_data['mount_point']}")
       s.run_command
-      if mount_data['allow_mount_failure']
+      if s.error? && mount_data['allow_mount_failure']
         Chef::Log.warn(
           "fb_fstab: Mounting #{mount_data['mount_point']} failed, but " +
           '"allow_mount_failure" was set, so moving on.',
