@@ -38,6 +38,9 @@ your node.
 * `node.macosx?`
     Is Mac OS X
 
+* `node.windows?`
+    Is Windows
+
 * `node.yocto?`
     Is a Yocto platform
 

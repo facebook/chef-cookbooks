@@ -40,6 +40,10 @@ class Chef
       return self['platform'] == 'mac_os_x'
     end
 
+    def windows?
+      return self['os'] == 'windows'
+    end
+
     def yocto?
       return self['platform_family'] == 'yocto'
     end
