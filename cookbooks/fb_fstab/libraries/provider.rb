@@ -43,7 +43,7 @@ module FB
         # we pass in a relatively sane perm which is subject to umask If they
         # sent in perms, we'll do a real chmod right afterward which isn't
         # subject to umask.
-        FileUtils.mkdir_p(mount_data['mount_point'], :mode => 0755)
+        FileUtils.mkdir_p(mount_data['mount_point'], :mode => 0o755)
         if mount_data['mp_perms']
           FileUtils.chmod(mount_data['mp_perms'].to_i(8),
                           mount_data['mount_point'])
@@ -62,7 +62,8 @@ module FB
       # other FS's --no-canonicalize may not be safe. THUS, we cd to a place
       # that should be emptyish.
       s = Mixlib::ShellOut.new(
-        "cd /dev/shm && /bin/mount #{mount_data['mount_point']}")
+        "cd /dev/shm && /bin/mount #{mount_data['mount_point']}",
+      )
       s.run_command
       if s.error? && mount_data['allow_mount_failure']
         Chef::Log.warn(

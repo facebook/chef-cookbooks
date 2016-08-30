@@ -14,7 +14,7 @@ module FB
       # Get current settings
       s = Mixlib::ShellOut.new('/sbin/sysctl -a')
       s.run_command
-      unless s.exitstatus == 0
+      unless s.exitstatus.zero?
         Chef::Log.warn("fb_sysctl: error running /sbin/sysctl -a: #{s.stderr}")
         Chef::Log.debug("STDOUT: #{s.stdout}")
         Chef::Log.debug("STDERR: #{s.stderr}")

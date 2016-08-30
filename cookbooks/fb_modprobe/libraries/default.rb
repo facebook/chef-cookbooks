@@ -10,7 +10,7 @@ module FB
   class Modprobe
     def self.supports_ipv6_autoconf_param?
       cmd = '/sbin/modinfo ipv6 | /bin/grep -q autoconf:'
-      return Mixlib::ShellOut.new(cmd).run_command.exitstatus == 0
+      return Mixlib::ShellOut.new(cmd).run_command.exitstatus.zero?
     end
 
     def self.module_loaded?(loaded_mod)

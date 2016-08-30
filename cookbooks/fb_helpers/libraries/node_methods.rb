@@ -88,7 +88,8 @@ class Chef
     def device_of_mount(m)
       unless Pathname.new(m).mountpoint?
         Chef::Log.warn(
-          "#{m} is not a mount point - I can't determine its device.")
+          "#{m} is not a mount point - I can't determine its device.",
+        )
         return nil
       end
       node['filesystem2']['by_pair'].to_hash.each do |pair, info|
@@ -101,7 +102,8 @@ class Chef
         return info['device']
       end
       Chef::Log.warn(
-        "#{m} shows as valid mountpoint, but Ohai can't find it.")
+        "#{m} shows as valid mountpoint, but Ohai can't find it.",
+      )
       return nil
     end
 

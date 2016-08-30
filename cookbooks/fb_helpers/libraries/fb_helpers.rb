@@ -181,7 +181,7 @@ If the has is specified, it takes one or more of the following keys:
 
     def ==(other)
       other = [] unless other
-      return (@arr <=> other.to_a) == 0
+      return (@arr <=> other.to_a).zero?
     end
 
     def <=>(other)
