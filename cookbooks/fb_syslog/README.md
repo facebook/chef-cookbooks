@@ -21,6 +21,7 @@ Attributes
 * node['fb_syslog']['rsyslog_omprog_binary']
 * node['fb_syslog']['rsyslog_use_omprog']
 * node['fb_syslog']['rsyslog_stats_logging']
+* node['fb_syslog']['rsyslog_report_suspension']
 * node['fb_syslog']['sysconfig']['vars'][$KEY][$VAL]
 * node['fb_syslog']['sysconfig']['extra_lines']
 
@@ -172,6 +173,17 @@ that binary. For example:
     node.default['fb_syslog']['rsyslog_facilities_sent_to_remote'] << 'auth.*'
     node.default['fb_syslog']['rsyslog_use_omprog'] = true
     node.default['fb_syslog']['rsyslog_omprog_binary'] = '/usr/bin/myprogram'
+
+### Suspension reporting
+Setting `node['fb_syslog']['rsyslog_report_suspension']` controls suspension 
+reporting, which defaults to `off`. If the attriubte is set to `nil` suspension
+reporting will not be managed (useful e.g. if your version of rsyslog does not
+support it).
+
+### Statistics logging
+Set `node['fb_syslog']['rsyslog_stats_logging']` to true to enable periodic
+output of rsyslog internal counters. These will be logged using the `impstats`
+module to `/var/log/rsyslog-stats.log`.
 
 ### sysconfig settings
 On Redhat-like systems, `node['fb_syslog']['sysconfig']` can be used

@@ -17,8 +17,10 @@ $OmitLocalLogging off
 <% end -%>
 # Provides kernel logging support (previously done by rklogd)
 $ModLoad imklog
-# Log to programs. Used to log to scribe_cat
+<% if node['fb_syslog']['rsyslog_use_omprog'] -%>
+# Provides logging to external programs.
 module(load="omprog")
+<% end -%>
 <% if node['fb_syslog']['rsyslog_relp_tls'] -%>
 module(load="omrelp")
 <% end -%>
@@ -129,6 +131,12 @@ $InputTCPServerRun <%= specs['port'] %>
 <% end -%>
 
 <%
+   if node['fb_syslog']['rsyslog_report_suspension'].nil?
+     report_suspension = nil
+   else
+     report_suspension = 
+       node['fb_syslog']['rsyslog_report_suspension'] ? 'on' : 'off'
+   end
    if !node['fb_syslog']['rsyslog_server'] &&
       !node['fb_syslog']['rsyslog_facilities_sent_to_remote'].empty?
      if node['fb_syslog']['rsyslog_use_omprog']
@@ -140,8 +148,10 @@ $InputTCPServerRun <%= specs['port'] %>
   action(type="omprog"
     name="Program_Logging"
     binary="<%= rsyslog_omprog_binary %>"
-    action.reportSuspension="off"
-    action.reportSuspensionContinuation="off"
+<%       unless report_suspension.nil? -%>
+    action.reportSuspension="<%= report_suspension %>"
+    action.reportSuspensionContinuation="<%= report_suspension %>"
+<%       end -%>
     template="RSYSLOG_TraditionalFileFormat"
   )
 }
@@ -169,8 +179,10 @@ $InputTCPServerRun <%= specs['port'] %>
 <%       unless node['fb_syslog']['rsyslog_relp_tls'] %>
     protocol="tcp"
 <%       end %>
-    action.reportSuspension="off"
-    action.reportSuspensionContinuation="off"
+<%       unless report_suspension.nil? -%>
+    action.reportSuspension="<%= report_suspension %>"
+    action.reportSuspensionContinuation="<%= report_suspension %>"
+<%       end -%>
 <%       extra_lines.each do |line| %>
     <%=    line %>
 <%       end  # if extra_lines.each %>
