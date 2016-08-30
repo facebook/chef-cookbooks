@@ -5,9 +5,6 @@ driver:
 platforms:
   - name: centos-6
     driver_config:
-      # workaround for
-      # https://github.com/CentOS/sig-cloud-instance-images/issues/57
-      image: centos:6.7
       provision_command:
         # remove bogus entry to make fb_fstab happy
         - sed -i '/UUID=/d' /etc/fstab
@@ -19,7 +16,7 @@ platforms:
         # remove bogus entry to make fb_fstab happy
         - sed -i '/UUID=/d' /etc/fstab
         # enable EPEL (for stuff like hddtemp)
-        - rpm -Uvh http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-7.noarch.rpm
+        - rpm -Uvh http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-8.noarch.rpm
       run_command: /usr/sbin/init
   - name: ubuntu-14.04
   - name: ubuntu-16.04
