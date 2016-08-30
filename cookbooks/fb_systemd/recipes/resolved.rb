@@ -26,13 +26,26 @@ end
 
 # nss-resolve enables DNS resolution via the systemd-resolved DNS/LLMNR caching
 # stub resolver. According to upstream this should replace the glibc "dns"
-# resolver and is required for systemd-resolved to work.
+# resolver and is required for systemd-resolved to work. This block attempts
+# to place the resolver between mymachines and myhostname as recommended by
+# upstream.
 ruby_block 'enable nss-resolve' do
   only_if { node['fb_systemd']['resolved']['enable'] }
   block do
     node.default['fb_nsswitch']['databases']['hosts'].delete('dns')
     idx = node['fb_nsswitch']['databases']['hosts'].index('mymachines')
-    node.default['fb_nsswitch']['databases']['hosts'].insert(idx + 1, 'resolve')
+    if idx
+      node.default['fb_nsswitch']['databases']['hosts'].insert(idx + 1,
+                                                               'resolve')
+    else
+      idx = node['fb_nsswitch']['databases']['hosts'].index('myhostname')
+      if idx
+        node.default['fb_nsswitch']['databases']['hosts'].insert(idx - 1,
+                                                                 'resolve')
+      else
+        node.default['fb_nsswitch']['databases']['hosts'] << 'resolve'
+      end
+    end
   end
 end
 
