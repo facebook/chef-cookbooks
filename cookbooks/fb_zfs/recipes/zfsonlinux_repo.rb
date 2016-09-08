@@ -12,7 +12,7 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
-unless node['kernel']['machine'] == 'x86_64'
+unless node.x64?
   fail 'fb_zfs is only supported on x86_64 hosts.'
 end
 

@@ -114,5 +114,13 @@ class Chef
       # mounted as a VFAT partition, and that's what we will use.
       return File.exists?('/boot/efi') && node.device_of_mount('/boot/efi')
     end
+
+    def aarch64?
+      return node['kernel']['machine'] == 'aarch64'
+    end
+
+    def x64?
+      return node['kernel']['machine'] == 'x86_64'
+    end
   end
 end
