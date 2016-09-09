@@ -42,7 +42,7 @@ def modprobe_module(module_name, params, timeout, verbose, unload)
 
   args = flags + [module_name] + params
 
-  execute "modprobe #{module_name}" do
+  execute "modprobe #{args.join(' ')}" do
     command "/sbin/modprobe #{args.join(' ')}"
     action :run
     notifies :reload, 'ohai[reload kernel]', :immediately
