@@ -9,7 +9,12 @@ Currently only tested on Linux
 Attributes
 ----------
 * node['fb_apache']['manage_packages']
-* node['fb_apache']['sites'][$SITE][$CONFIG][$VALUE]
+* node['fb_apache']['sites'][$SITE][$CONFIG]
+* node['fb_apache']['sysconfig'][$KEY]
+* node['fb_apache']['sysconfig']['_extra_lines']
+* node['fb_apache']['modules']
+* node['fb_apache']['modules_directory']
+* node['fb_apache']['modules_mapping']
 
 Usage
 -----
@@ -112,3 +117,37 @@ Would produce:
   RewriteRule ^/(.*) https://www.example.com/real_site/$1
 </VirtualHost>
 ```
+
+### Sysconfig / Defaults
+`node['fb_apache']['sysconfig']` can be used to configure either
+`/etc/sysconfig/httpd` on Redhat-like systems or `/etc/default/apache2` on
+Debian-like systems.
+
+By default the key-value pairs in the hash are mapped to KEY="value" pairs in
+the file (the keys are up-cased and values are enclosed in quotes) with two
+exceptions:
+
+* If the value is an array, it is joined on strings. We preset 'options' (RHEL)
+  and 'htcacheclean_options' (Debian) to empty arrays for convenience
+* If the key is '_extra_lines`, see below.
+
+`node['fb_apache']['sysconfig']['_extra_lines']` is an array and every line in
+it is put at the end of the file verbatim.
+
+### Modules
+The list of modules in `node['fb_apache']['modules']` (which is an array) are
+all `LoadModule`d in `fb_modules.conf`. No config is done for them, as that
+should be done using `node['fb_apache']['extra_configs']`.
+
+Modules in there should not include the `_module` suffix.
+
+The mapping of names to files is held in `node['fb_apache']['modules_mapping']`
+and we've pre-populated all the common modules on both distro variants.
+
+Finally, `node['fb_apache']['modules_directory']` is set to the proper module
+directory for your distro, but you may override it if you'd like.
+
+### Extra Configs
+Everything in `node['fb_apache']['extra_configs']` will be converted from hash
+syntax to Apache Config syntax in the same 1:1 manner as the `sites` hash above
+and put into an `fb_apache.conf` config file.

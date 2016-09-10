@@ -1,0 +1,9 @@
+# This file is controlled by Chef do not edit!
+<% node['fb_apache']['sysconfig'].to_hash.each do |key, val| %>
+<%   next if val.empty? || key == '_extra_lines' %>
+<%   val = val.join(' ') if val.is_a?(Array) %>
+<%=  key %>="<%= val %>"
+<% end %>
+<% node['fb_apache']['sysconfig']['_extra_lines'].each do |line| %>
+<%=  line %>
+<% end %>

@@ -1,0 +1,7 @@
+# This file is controlled by Chef, do not edit!
+<% node['fb_apache']['sites'].to_hash.each do |vhost, conf| %>
+<VirtualHost <%= vhost %>>
+<%=  render 'apache_conf.erb', :variables => {:conf => conf} %>
+</VirtualHost>
+
+<% end %>

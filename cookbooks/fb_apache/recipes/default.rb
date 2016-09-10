@@ -7,19 +7,34 @@
 # All rights reserved - Do Not Redistribute
 #
 
-confdir = value_for_platform(
-  'redhat' => { :default => '/etc/httpd/conf.d' },
-  ['debian', 'ubuntu'] => { :default => '/etc/apache2/sites-enabled' },
+confdir = value_for_platform_family(
+  'rhel' => '/etc/httpd/conf.d',
+  'debian' => '/etc/apache2/conf.d',
 )
 
-pkgs = value_for_platform(
-  'redhat' => { :default => ['httpd', 'mod_ssl'] },
-  ['debian', 'ubuntu'] => { :default => ['apache2'] },
+sitesdir = value_for_platform_family(
+  'rhel' => confdir,
+  'debian' => '/etc/apache2/sites-enabled',
 )
 
-svc = value_for_platform(
-  'redhat' => { :default => 'httpd' },
-  ['debian', 'ubuntu'] => { :default => 'apache2' },
+moddir = value_for_platform_family(
+  'rhel' => '/etc/httpd/conf.modules.d',
+  'debian' => '/etc/apache2/modules-enabled',
+)
+
+sysconfig = value_for_platform_family(
+  'rhel' => '/etc/sysconfig/httpd',
+  'debian' => '/etc/default/apache2',
+)
+
+pkgs = value_for_platform_family(
+  'rhel' => ['httpd', 'mod_ssl'],
+  'debian' => ['apache2'],
+)
+
+svc = value_for_platform_family(
+  'rhel' => 'httpd',
+  'debian' => 'apache2',
 )
 
 package pkgs do
@@ -27,13 +42,36 @@ package pkgs do
   action :upgrade
 end
 
-template "#{confdir}/fb_apache_sites.cfg" do
-  source 'site.conf.erb'
+template sysconfig do
+  source 'sysconfig.erb'
   owner 'root'
   group 'root'
   mode '0644'
+  notifies :restart, 'service[apache]'
 end
 
-service svc do
+template "#{moddir}/fb_modules.conf" do
+  owner 'root'
+  group 'root'
+  mode '0644'
+  notifies :restart, 'service[apache]'
+end
+
+template "#{sitesdir}/fb_sites.conf" do
+  owner 'root'
+  group 'root'
+  mode '0644'
+  notifies :restart, 'service[apache]'
+end
+
+template "#{confdir}/fb_apache.conf" do
+  owner 'root'
+  group 'root'
+  mode '0644'
+  notifies :restart, 'service[apache]'
+end
+
+service 'apache' do
+  service_name svc
   action [:enable, :start]
 end
