@@ -1,0 +1,16 @@
+<% node['fb_apache']['sites'].to_hash.each do |vhost, conf| %>
+<VirtualHost <%= vhost %>
+<%   conf.each do |keyword, data| %>
+<%     if data.is_a?(String) %>
+  <%=    keyword %> <%= data %>
+<%     elsif data.is_a?(Array) %>
+<%       data.each do |entry| %>
+  <%=    keyword %> <%= entry %>
+<%       end %>
+<%     elsif data.is_a?(Hash) %>
+<%       FB::Apache.template_hash_handler(_buf, 1, keyword, data) %>
+<%     end %>
+<%   end %>
+</VirtualHost>
+
+<% end %>
