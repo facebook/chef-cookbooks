@@ -1,7 +1,7 @@
 name 'fb_apache'
 maintainer 'Facebook'
-maintainer_email 'phild@fb.com'
-license 'All rights reserved'
+maintainer_email 'noreply@facebook.com'
+license 'BSD'
 description 'Installs/Configures Apache'
 source_url 'https://github.com/facebook/chef-cookbooks/'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
