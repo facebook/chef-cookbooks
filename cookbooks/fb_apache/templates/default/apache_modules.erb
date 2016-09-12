@@ -1,0 +1,9 @@
+<%
+    node['fb_apache']['modules'].each do |mod|
+      sofile = node['fb_apache']['modules_mapping'][mod]
+      sofile = mod unless sofile
+      mod = "#{mod}_module"
+      so = ::File.join(node['fb_apache']['modules_directory'], sofile)
+%>
+LoadModule <%= mod %> <%= so %>
+<%  end %>

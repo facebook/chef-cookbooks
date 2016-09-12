@@ -47,5 +47,9 @@ module FB
         buf << "RewriteRule #{rule}\n"
       end
     end
+
+    def self.get_module_packages(mods, pkgs)
+      mods.map { |mod| pkgs[mod] }.uniq.compact
+    end
   end
 end

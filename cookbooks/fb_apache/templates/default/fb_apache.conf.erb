@@ -1,3 +1,7 @@
 # This file is controlled by Chef, do not edit!
+<%  if node.centos6? %>
+<%=   render 'apache_modules.erb' %>
+
+<%  end %>
 <%= render 'apache_conf.erb',
         :variables => {:conf => node['fb_apache']['extra_configs']} %>

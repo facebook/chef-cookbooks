@@ -42,6 +42,12 @@ svc = value_for_platform_family(
 
 package pkgs do
   only_if { node['fb_apache']['manage_packages'] }
+  package_name lazy {
+    pkgs + FB::Apache.get_module_packages(
+      node['fb_apache']['modules'],
+      node['fb_apache']['module_packages'],
+    )
+  }
   action :upgrade
 end
 
@@ -54,6 +60,7 @@ template sysconfig do
 end
 
 template "#{moddir}/fb_modules.conf" do
+  not_if { node.centos6? }
   owner 'root'
   group 'root'
   mode '0644'

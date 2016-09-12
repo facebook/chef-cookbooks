@@ -14,6 +14,8 @@ moddir = value_for_platform_family(
   'debian' => '/usr/lib/apache2/modules',
 )
 
+auth_core_suffix = node.centos6? ? 'default' : 'core'
+
 default['fb_apache'] = {
   'sysconfig' => {
     '_extra_lines' => [],
@@ -26,8 +28,8 @@ default['fb_apache'] = {
     'auth_basic',
     'auth_digest',
     'authn_file',
-    'authn_core',
-    'authz_core',
+    "authn_#{auth_core_suffix}",
+    "authz_#{auth_core_suffix}",
     'authz_groupfile',
     'authz_host',
     'authz_user',
@@ -111,6 +113,14 @@ default['fb_apache'] = {
     'version' => 'mod_version.so',
     'vhost_alias' => 'mod_vhost_alias.so',
     'wsgi' => 'mod_wsgi.so',
+  },
+  'module_packages' => {
+    'wsgi' => value_for_platform_family(
+      'redhat' => 'php',
+    ),
+    'php5' => value_for_platform_family(
+      'redhat' => 'mod_wsgi',
+    ),
   },
 }
 
