@@ -1,0 +1,3 @@
+<% node['fb_reprepro']['options'].to_hash.each do |key, val| -%>
+<%=  key %><% if val %>=<%= val %><% end %>
+<% end -%>
