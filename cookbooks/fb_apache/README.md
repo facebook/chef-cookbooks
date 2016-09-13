@@ -15,11 +15,18 @@ Attributes
 * node['fb_apache']['modules']
 * node['fb_apache']['modules_directory']
 * node['fb_apache']['modules_mapping']
+* node['fb_apache']['module_packages']
 
 Usage
 -----
 ### Packages
 My default `fb_apache` will install and keep up to date the apache and mod_ssl packages as relevant for your distribution. If you'd prefer to do this on your own then you can set `node['fb_apache']['manage_packages']` to false.
+
+For modules, we keep a mapping of the package required for modules in
+`node['fb_apache']['module_packages']`. If `manage_packages` is enabled, we will
+install the relevant packages for any modules you enable in
+`node['fb_apache']['modules']`. This is important since it'll happen before we
+attempt to start apache.
 
 ### Sites / VirtualHosts
 The `node['fb_apache']['sites']` hash configures virtual hosts. All virtual hosts are kept in a single file called `fb_apache_sites.cfg` in a directory relevant to your distribution. In general, it's a 1;1 mapping of the apache syntax to a hash. So for example:

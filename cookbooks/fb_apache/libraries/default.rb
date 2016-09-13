@@ -11,13 +11,16 @@
 
 module FB
   class Apache
+    # Any exceptions to the normal hash->apache 1:1 mapping
     HANDLERS = {
       '_rewrites' => 'template_rewrite_helper',
     }
+
     def self.indentstr(indent)
       indent.times.map { '  ' }.join('')
     end
 
+    # Map a hash to a apache-style syntax
     def self.template_hash_handler(buf, indent, kw, data)
       if HANDLERS.keys.include?(kw)
         self.send(HANDLERS[kw], buf, indent, kw, data)
@@ -37,6 +40,7 @@ module FB
       buf << "</#{kw.split(' ')[0]}>\n"
     end
 
+    # Helper for rewrite syntax
     def self.template_rewrite_helper(buf, _indent, _key, rules)
       rules.each do |rule, conditions|
         conditions.each do |cond|
@@ -48,6 +52,7 @@ module FB
       end
     end
 
+    # given a list of modules return the packages they require
     def self.get_module_packages(mods, pkgs)
       mods.map { |mod| pkgs[mod] }.uniq.compact
     end

@@ -10,7 +10,8 @@
 #
 
 moddir = value_for_platform_family(
-  'rhel' => '/usr/lib64/httpd/modules',
+  # will be a symlink to the right arch dir
+  'rhel' => '/etc/httpd/modules',
   'debian' => '/usr/lib/apache2/modules',
 )
 
@@ -116,10 +117,13 @@ default['fb_apache'] = {
   },
   'module_packages' => {
     'wsgi' => value_for_platform_family(
-      'redhat' => 'php',
+      'redhat' => 'mod_wshi',
     ),
     'php5' => value_for_platform_family(
-      'redhat' => 'mod_wsgi',
+      'redhat' => 'mod_php',
+    ),
+    'ssl' => value_for_platform_family(
+      'redhat' => 'mod_ssl',
     ),
   },
 }
