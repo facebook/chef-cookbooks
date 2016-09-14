@@ -24,6 +24,7 @@ end
 esp_path = nil
 %w{
   /boot/efi
+  /efi
   /boot
 }.each do |path|
   # we test for node['filesystem2'] as the plugin can occasionally fail
