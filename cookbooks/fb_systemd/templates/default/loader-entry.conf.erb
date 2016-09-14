@@ -1,0 +1,3 @@
+<% node['fb_systemd']['boot']['entries'][@entry].to_hash.each do |key, val| -%>
+<%=  key %> <%= val %>
+<% end -%>

@@ -21,6 +21,26 @@ tmpfiles = {}
   end
 end
 
+esp_path = nil
+%w{
+  /boot/efi
+  /boot
+}.each do |path|
+  if node['filesystem2']['by_mountpoint'][path] &&
+     node['filesystem2']['by_mountpoint'][path]['fs_type'] == 'vfat' &&
+     (File.exists?("#{path}/EFI") || File.exists?("#{path}/efi"))
+    esp_path = path
+    break
+  end
+end
+
+loader = {
+  'timeout' => 3,
+}
+if node['machine_id']
+  loader['default'] = "#{node['machine_id']}-*"
+end
+
 default['fb_systemd'] = {
   'default_target' => '/lib/systemd/system/multi-user.target',
   'modules' => [],
@@ -68,4 +88,10 @@ default['fb_systemd'] = {
   'tmpfiles' => tmpfiles,
   'preset' => {},
   'manage_systemd_packages' => true,
+  'boot' => {
+    'enable' => false,
+    'path' => esp_path,
+    'loader' => loader,
+    'entries' => {},
+  },
 }

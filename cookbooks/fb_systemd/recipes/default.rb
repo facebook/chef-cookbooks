@@ -50,7 +50,8 @@ else
   fail 'fb_systemd is not supported on this platform.'
 end
 
-package systemd_packages do
+package 'systemd packages' do
+  package_name systemd_packages
   only_if { node['fb_systemd']['manage_systemd_packages'] }
   action :upgrade
 end
@@ -111,6 +112,7 @@ include_recipe 'fb_systemd::logind'
 include_recipe 'fb_systemd::networkd'
 include_recipe 'fb_systemd::resolved'
 include_recipe 'fb_systemd::timesyncd'
+include_recipe 'fb_systemd::boot'
 
 execute 'process tmpfiles' do
   command "#{systemd_prefix}/bin/systemd-tmpfiles --create"

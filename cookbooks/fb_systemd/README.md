@@ -30,6 +30,10 @@ Attributes
 * node['fb_systemd']['tmpfiles']
 * node['fb_systemd']['preset']
 * node['fb_systemd']['manage_systemd_packages']
+* node['fb_systemd']['boot']['enable']
+* node['fb_systemd']['boot']['path']
+* node['fb_systemd']['boot']['loader']
+* node['fb_systemd']['boot']['entries']
 
 Usage
 -----
@@ -214,3 +218,18 @@ will take precedence over other preset files.
 By default this cookbook keeps the systemd packages up-to-date, but if you
 want to manage them locally, simply set
 `node['fb_systemd']['manage_systemd_packages']` to false.
+
+### Boot
+You can choose whether or not to enable `systemd-boot` with the
+`node['fb_systemd']['boot']['enable']` attribute, which defaults to `false`.
+This controls whether `systemd-boot` will be installed, or whether it will be
+updated on package updates. Note that `systemd-boot` only works on EFI systems
+and requires a mounted EFI Service Partition (ESP). The cookbook will attempt
+to autodetect the ESP mountpoint, which can be overwritten with 
+`node['fb_systemd']['boot']['path']`. General loader settings can be controlled
+with `node['fb_systemd']['boot']['loader']`. Finally, loader entries can be 
+defined by populating `node['fb_systemd']['boot']['entries']`, e.g. by writing
+a `ruby_block` to scan for installed kernels and set the appropriate entries.
+Please refer to the 
+[upstream documentation](https://www.freedesktop.org/wiki/Software/systemd/systemd-boot/)
+for more details.
