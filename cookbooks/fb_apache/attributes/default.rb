@@ -117,13 +117,13 @@ default['fb_apache'] = {
   },
   'module_packages' => {
     'wsgi' => value_for_platform_family(
-      'redhat' => 'mod_wshi',
+      'rhel' => 'mod_wsgi',
     ),
     'php5' => value_for_platform_family(
-      'redhat' => 'mod_php',
+      'rhel' => 'mod_php',
     ),
     'ssl' => value_for_platform_family(
-      'redhat' => 'mod_ssl',
+      'rhel' => 'mod_ssl',
     ),
   },
 }
