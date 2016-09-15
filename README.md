@@ -83,9 +83,9 @@ There are two reasons we use attribute-driven APIs:
    Chef run, those crons go away.
 
    Alternatively, consider a sysctl set by the "site" cookbook, then overwritten
-   but a later cookbook. When they remove that code, the entry in the hash is
-   now that set by the "site" cookbook. Automatically it falls back to the
-   next-most-specific value
+   by a later cookbook. When that code is removed, the entry in the hash falls
+   back to being set again by the next-most-specific value (i.e. the "site" 
+   cookbook in this case).
  
 
 ## Runlists
@@ -105,6 +105,8 @@ and the rest should make you a whatever-kind-of-server-you-are.
 
 ## Getting started
 
-Grab a copy of the repo, rename `fb_init_sample` to fb_init, and follow the
-instructions in the README.md (coordinating guidance is in comments in the
+Grab a copy of the repo, rename `fb_init_sample` to `fb_init`, and follow the
+instructions in its 
+[README.md](https://github.com/facebook/chef-cookbooks/blob/master/cookbooks/fb_init_sample/README.md)
+(coordinating guidance is in comments in the
 default recipe).
