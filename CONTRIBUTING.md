@@ -65,7 +65,9 @@ try to open-source, or other people may be writing one) before working on it.
 If you'd like to contribute a cookbook that doesn't fall in that category (e.g.
 managing desktop things or other services), then we suggest you point us to a PR
 on a repo where you'd like to keep it and we'll be happy to review it and add a
-pointer to your repo in our UNIVERSE.md file.
+pointer to your repo in our 
+[UNIVERSE.md](https://github.com/facebook/chef-cookbooks/blob/master/UNIVERSE.md)
+file.
 
  We use the `fb_` prefix to denote cookbooks that fit
 this model and come from this repo, but feel free to publish cookbooks elsewhere
