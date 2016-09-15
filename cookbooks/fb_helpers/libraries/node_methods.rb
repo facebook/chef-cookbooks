@@ -1,3 +1,5 @@
+# vim: syntax=ruby:expandtab:shiftwidth=2:softtabstop=2:tabstop=2
+#
 # Copyright (c) 2016-present, Facebook, Inc.
 # All rights reserved.
 #
@@ -5,6 +7,7 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 #
+
 class Chef
   # Our extensions of the node object
   class Node
@@ -105,6 +108,94 @@ class Chef
         "#{m} shows as valid mountpoint, but Ohai can't find it.",
       )
       return nil
+    end
+
+    def device_formatted_as?(device, fstype)
+      if node['filesystem2']['by_device'][device] &&
+         node['filesystem2']['by_device'][device]['fs_type']
+        return node['filesystem2']['by_device'][device]['fs_type'] == fstype
+      end
+      return false
+    end
+
+    def resolve_dns_name(hostname, brackets = false, force_v4 = false)
+      ip_addrs = Addrinfo.getaddrinfo(hostname, nil)
+      ip_addrs_v4 = ip_addrs.select(&:ipv4?)
+      ip_addrs_v6 = ip_addrs.select(&:ipv6?)
+      if !ip_addrs_v6.empty? && !force_v4
+        # Host supports IPv6, the answer has AAAA, let's go:
+        v6_addr = ip_addrs_v6.map(&:ip_address).uniq[0]
+        if brackets
+          return "[#{v6_addr}]"
+        else
+          return v6_addr
+        end
+      elsif !ip_addrs_v4.empty?
+        return ip_addrs_v4.map(&:ip_address).uniq[0]
+      else
+        fail SocketError, 'No ipv4 addrs found for a non-v6 host'
+      end
+    end
+
+    # Takes a string corresponding to a filesystem. Returns the size
+    # in GB of that filesystem.
+    def fs_value(p, val)
+      key = case val
+            when 'size'
+              'kb_size'
+            when 'used'
+              'kb_used'
+            when 'available'
+              'kb_available'
+            when 'percent'
+              'percent_used'
+            else
+              fail "fb_util[node.fs_val]: Unknown FS val #{val}"
+            end
+      if self['filesystem2']
+        fs = self['filesystem2']['by_mountpoint'][p]
+        # Some things like /dev/root and rootfs have same mount point...
+        if fs && fs[key]
+          return fs[key].to_f
+        end
+      else
+        self['filesystem'].to_hash.values.each do |fsm|
+          # Some things like /dev/root and rootfs have same mount point...
+          # centos7 reports label instead of mount point
+          if (fsm['mount'] == p || fsm['label'] == p) && fsm[key]
+            return fsm[key].to_f
+          end
+        end
+      end
+      Chef::Log.warn(
+        "Tried to get filesystem information for '#{p}', but it is not a " +
+        'recognized filesystem, or does not have the requested info.',
+      )
+      return nil
+    end
+
+    def fs_available_kb(p)
+      self.fs_value(p, 'available')
+    end
+
+    def fs_available_gb(p)
+      k = self.fs_value(p, 'available')
+      if k
+        return k / (1024 * 1024)
+      end
+      nil
+    end
+
+    def fs_size_kb(p)
+      self.fs_value(p, 'size')
+    end
+
+    def fs_size_gb(p)
+      k = self.fs_size_kb(p)
+      if k
+        return k / (1024 * 1024)
+      end
+      nil
     end
 
     def efi?

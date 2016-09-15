@@ -57,8 +57,41 @@ your node.
     Is an EFI machine
 
 * `node.device_of_mount(m)`
-   Take a string representing a mount point, and return the device it resides 
-   on.
+    Take a string representing a mount point, and return the device it resides 
+    on.
+
+* `node.device_formatted_as?(device, fstype)`
+    Returns true if device is formatted with the given filesystem type.
+
+* `node.fs_size_kb(mount_point)`
+    Returns the size of a filesystem mounted at `mount_point` in KB.
+
+* `node.fs_size_gb(mount_point)`
+    Returns the size of a filesystem mounted at `mount_point` in GB.
+
+* `node.fs_available_kb(mount_point)`
+    Returns the available size of a filesystem mounted at `mount_point` in KB.
+
+* `node.fs_available_gb(mount_point)`
+    Returns the available size of a filesystem mounted at `mount_point` in GB.
+
+* `node.fs_value(mount_point, value)`
+    Returns information about a filesystem mounted at `mount_point`, where
+    information is defined by `value`. Allowed values for `value` are:
+      `size` - size in KB
+      `available` - available space in KB
+      `used` - used space in KB
+      `percent` - used space as a percent (returned as a whole number, i.e. 15)
+
+*  `node.resolve_dns_name(hostname, brackets, force_v4)`
+    Resolves hostname and returns back one IP address.
+    If the host is IPv6-capable, IPv6 address is returned. The default is to
+    return IP address only, but if the second parameter (brackets) is set to
+    true, the IPv6 address gets wrapped in square brackets. If DNS name does
+    not exist or only resolves to an ipv6 address while your host is not
+    IPv6-capable, a `SocketError` is raised.
+    `force_v4` is set to false by default, if set to true then the IPv4 address
+    will be returned.
 
 ### FB::Helpers
 The following methods are available:
