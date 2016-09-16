@@ -1,0 +1,47 @@
+# This file is maintained by Chef. Do not edit, all changes will be
+# overwritten. See opsfiles/chef/cookbooks/core/fb_grub/README.md
+
+<%
+  root_arg = node['fb_grub']['rootfs_arg']
+  cmdline_args = node['fb_grub']['kernel_cmdline_args']
+
+  kargs = "ro root=#{root_arg} #{cmdline_args.uniq.join(' ')}"
+  root_device = node['fb_grub']['root_device_grub2']
+
+  terminal = node['fb_grub']['terminal'].join(' ')
+  serial = node['fb_grub']['serial'].to_hash
+
+  tboot_cmdline = "logging=#{node['fb_grub']['tboot']['logging'].join(',')}"
+  if node['fb_grub']['tboot']['logging'].include?('serial')
+    tboot_parity = serial['parity'][0]
+    tboot_cmdline += " serial=#{serial['speed']}," + 
+                     "#{serial['word']}#{tboot_parity}#{serial['stop']}"
+  end
+
+  # default is 0 because we'll automagically put the non-kdump kernel first
+-%>
+set default=0
+set timeout=<%= node['fb_grub']['timeout'] %>
+<% if node['fb_grub']['terminal'].include?('serial') -%>
+serial --speed=<%= serial['speed'] %> --unit=<%= serial['unit'] %> --word=<%= serial['word'] %> --parity=<%= serial['parity'] %> --stop=<%= serial['stop'] %>
+<% end -%>
+terminal_input <%= terminal %>
+terminal_output <%= terminal %>
+
+<% node['fb_grub']['kernels'].to_hash.each do |kernel, data| -%>
+menuentry '<%= kernel %>' {
+  set root='<%= root_device %>'
+<% if node['fb_grub']['tboot']['enable'] %>
+  multiboot2 /tboot.gz /tboot.gz <%= tboot_cmdline %>
+  module2 <%= @path_prefix %><%= data['path'] %> <%= @path_prefix %><%= data['path'] %> <%= kargs %> intel_iommu=on noefi
+<%   if data['initrd_path'] -%>
+  module2 <%= @path_prefix %><%= data['initrd_path'] %> <%= @path_prefix %><%= data['initrd_path'] %>
+<%   end -%>
+<% else # regular boot %>
+  <%= node['fb_grub']['_grub2_linux_statement'] %> <%= @path_prefix %><%= data['path'] %> <%= kargs %>
+<%   if data['initrd_path'] -%>
+  <%= node['fb_grub']['_grub2_initrd_statement'] %> <%= @path_prefix %><%= data['initrd_path'] %>
+<%   end -%>
+<% end %>
+}
+<% end -%>

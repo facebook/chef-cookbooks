@@ -1,0 +1,6 @@
+# This file is maintained by Chef. Do not edit, all changes will be
+# overwritten. See fb_iptables/README.md
+<% prefix = @ipversion == 4 ? 'IPTABLES' : 'IP6TABLES' %>
+<% node['fb_iptables']['sysconfig'].to_hash.each do |key, val| %>
+<%=  prefix %>_<%= key.tr('a-z', 'A-Z') %>="<%= val %>"
+<% end %>

@@ -1,0 +1,19 @@
+# This file managed by chef.
+# Local changes to this file will be overwritten.
+
+[Unit]
+Description=Run scheduled task <%= @conf['name'] %>
+After=network.target
+
+[Install]
+WantedBy=multi-user.target
+
+[Timer]
+OnCalendar=<%= @conf['calendar'] %>
+AccuracySec=<%= @conf['accuracy'] %>
+Persistent=<%= @conf['persistent'] %>
+RandomizedDelaySec=<%= @conf['splay'] %>
+Unit=<%= @conf['name'] %>.service
+<% @conf['timer_options'].each do |name, value| %>
+<%= name %>=<%= value %>
+<% end %>
