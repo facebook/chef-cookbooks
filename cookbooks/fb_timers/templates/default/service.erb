@@ -1,0 +1,18 @@
+# This file managed by chef.
+# Local changes to this file will be overwritten.
+
+[Unit]
+Description=Run scheduled task <%= @conf['name'] %>
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=<%= @conf['command'] %>
+TimeoutSec=<%= @conf['timeout'] %>
+<% if @conf['syslog'] %>
+StandardOutput=syslog
+SyslogIdentifier=<%= @conf['name'] %>
+<% end %>
+<% @conf['service_options'].each do |name, value| %>
+<%= name %>=<%= value %>
+<% end %>

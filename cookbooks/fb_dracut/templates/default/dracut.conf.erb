@@ -1,0 +1,13 @@
+# This file is maintained by Chef. Do not edit, all changes will be
+# overwritten. See fb_dracut/README.md
+
+<% node['fb_dracut']['conf'].to_hash.sort.each do |k,v|
+     next if v.nil?
+     if v.is_a?(Array)
+       next if v.empty?
+       sep = (k == 'fw_dir' ? ':' : ' ') -%>
+<%=    k %>="<%= v.join(sep) %>"
+<%   else -%>
+<%=    k %>="<%= v ? 'yes' : 'no' %>"
+<%   end
+   end -%>

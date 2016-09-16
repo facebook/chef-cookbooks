@@ -1,0 +1,124 @@
+#!/bin/bash
+#
+# vim: syntax=ruby:expandtab:shiftwidth=2:softtabstop=2:tabstop=2
+#
+# Copyright (c) 2016-present, Facebook, Inc.
+# All rights reserved.
+#
+# This source code is licensed under the BSD-style license found in the
+# LICENSE file in the root directory of this source tree. An additional grant
+# of patent rights can be found in the PATENTS file in the same directory.
+#
+
+# Simple script for chef to call to
+# dump and reload custom chain rules
+
+set -u 
+
+CONFIG='/etc/fb_iptables.conf'
+TMPDIR=$(mktemp -d /tmp/fb_iptables.XXXXXXXXXXXX)
+trap "rm -rf $TMPDIR &>/dev/null" exit INT TERM KILL
+
+help_print() {
+  echo "$0 [4|6] <action>"
+  exit;
+}
+
+exit_error() {
+  msg="$@"
+  echo "ERROR: $msg"
+  exit 1
+}
+
+# Walk dynamic changes for a table and dump them to temp files in, if they exist
+dump_dynamic_chains() {
+  local table="$1"
+  local dynamic_chains="$2"
+  local outfile
+  local chain_regex
+  for chain in $dynamic_chains; do
+    echo -n "Stashing $chain on $table: "
+    "${IPTABLES}" -t "$table" -S | grep -q "\-N $chain"
+    if [ $? -ne 0 ]; then
+      echo 'no chain yet, nothing to stash.'
+      return
+    fi
+    outfile=$TMPDIR/${table}_${chain}_rules
+    chain_regex="\-A $chain"
+    out=$("${IPTABLES}" -t "$table" -S)
+    if [ $? -ne 0 ]; then
+      exit_error "Failed to stash $chain on $table"
+    fi
+    if [ -n "$out" ]; then
+      echo "$out" | grep "$chain_regex" > "$outfile"
+    fi
+    echo 'done.'
+  done
+}
+
+# Restore any registered chains we found and backed up
+restore_dynamic_chains() {
+  local table="$1"
+  local dynamic_chains="$2"
+
+  for chain in $dynamic_chains; do
+    echo -n "Restoring $chain on $table: "
+    local rules_file=$TMPDIR/${table}_${chain}_rules
+    if [ ! -r $rules_file ]; then
+      echo 'no chain to restore.'
+      return
+    fi
+  
+    while read -r rule
+    do
+      ${IPTABLES} -t $table $rule
+    done < "$rules_file"
+    echo 'done.'
+  done
+}
+
+reload_static_chains() {
+  local table="$1"
+  local dynamic_chains="$2"
+
+  echo "Restoring the rest of $table"
+  cat /etc/sysconfig/$IPTABLES | ${IPTABLES}-restore -T $table
+}
+
+reload() {
+  for table in $TABLES; do
+    cap_table=$(echo $table | tr 'a-z' 'A-Z')
+    dynamic_chains=$(eval echo \$${cap_table}_CHAINS)
+    dump_dynamic_chains $table "$dynamic_chains"
+    reload_static_chains $table "$dynamic_chains"
+    restore_dynamic_chains $table "$dynamic_chains"
+  done
+}
+
+[ -r "$CONFIG" ] && . $CONFIG
+
+# Poor mans help print
+if [ "$1" == "help" ]; then
+  help_print
+fi
+
+# v4 or v6
+IPTABLES=ip6tables
+if [ "$1" == "4" ]; then
+  IPTABLES=iptables
+fi
+ACTION="$2"
+
+if [ ! -x $(which "${IPTABLES}") ]; then
+  echo "ERROR: No ${IPTABLES} in path bro ..."
+  exit 1
+fi
+
+case "$ACTION" in
+  reload)
+    reload
+    ;;
+  *)
+    help_print
+    ;;
+esac

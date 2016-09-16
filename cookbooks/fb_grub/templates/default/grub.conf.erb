@@ -1,0 +1,25 @@
+# This file is maintained by Chef. Do not edit, all changes will be
+# overwritten. See opsfiles/chef/cookbooks/core/fb_grub/README.md
+
+<%
+  root_arg = node['fb_grub']['rootfs_arg']
+  cmdline_args = node['fb_grub']['kernel_cmdline_args']
+
+  kargs = "ro root=#{root_arg} #{cmdline_args.uniq.join(' ')}"
+  root_device = node['fb_grub']['root_device']
+
+  terminal = node['fb_grub']['terminal'].join(' ')
+
+  # default is 0 because we'll automagically put the non-kdump kernel first
+-%>
+default=0
+timeout=<%= node['fb_grub']['timeout'] %>
+terminal --timeout=<%= node['fb_grub']['timeout'] %> <%= terminal %>
+<% node['fb_grub']['kernels'].to_hash.each do |kernel, data| -%>
+title <%= kernel %>
+  root <%= root_device %>
+  kernel <%= @path_prefix %><%= data['path'] %> <%= kargs %>
+<%   if data['initrd_path'] -%>
+  initrd <%= @path_prefix %><%= data['initrd_path'] %>
+<%   end -%>
+<% end -%>
