@@ -9,10 +9,12 @@ Requirements
 Attributes
 ----------
 * node['fb_dnsmasq']['config']
+* node['fb_dnsmasq']['enable']
 
 Usage
 -----
-Include `fb_dnsmasq` in your runlist to install dnsmasq and enable its service.
+Include `fb_dnsmasq` in your runlist to install dnsmasq. By default we enable
+the daemon, set `node['fb_dnsmasq']['enable']` to `false` to disable it.
 Configuration can be customized using `node['fb_dnsmasq']['config']` according
 to the [upstream documentation](http://www.thekelleys.org.uk/dnsmasq/docs/dnsmasq-man.html). Example:
 
