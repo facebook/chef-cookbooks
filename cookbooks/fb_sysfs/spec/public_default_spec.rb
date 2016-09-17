@@ -9,7 +9,6 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
-require './spec/spec_helper'
 require_relative '../libraries/default'
 
 describe FB::Sysfs do
