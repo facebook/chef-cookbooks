@@ -21,8 +21,11 @@ other cookbooks that are internal to give you a better idea of our full
 runlist. We hope to be able to release more of these as time allows and where
 appropriate.
 
-It is highly recommended you read through the README.md in the root of GitHub
-repo as well as Philosophy.md. The general idea though is that cookbooks are
+It is highly recommended you read through the
+[README.md](https://github.com/facebook/chef-cookbooks/blob/master/README.md)
+in the root of GitHub repo as well as
+[Philosophy.md](https://github.com/facebook/chef-utils/blob/master/Philosophy.md).
+The general idea though is that cookbooks are
 ordered least specific to most specific. This allows a small core team to make
 APIs and defaults and then let individual service owners' cookbooks at the end
 overwrite whatever they ened to. This also ensures that all things the service
@@ -54,9 +57,9 @@ It's useful to think of things in a 3-pass system:
     so APIs must be consumed only at runtime: templates, ruby_blocks, providers,
     etc.
 
-We have provided an early recipe called site-settings.rb in which you can set
+We have provided an early recipe called `site-settings.rb` in which you can set
 the defaults for your organization for all settings Facebook cookbooks provide.
-For example, setting all the most reasoanble sysctl settings here is advisable
-- then let others override them in their later cookbooks. Assuming fb_init is
+For example, setting all the most reasonable sysctl settings here is advisable
+- then let others override them in their later cookbooks. Assuming `fb_init` is
 the first thing in your runlist, this is basically the first thing, so any
 other cookbooks in your runlist will have time to overwrite them.
