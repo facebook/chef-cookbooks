@@ -48,7 +48,7 @@ module FB
           buf << "RewriteCond #{cond}\n"
         end
         buf << indentstr(1)
-        buf << "RewriteRule #{rule}\n"
+        buf << "RewriteRule #{rule}\n\n"
       end
     end
 
