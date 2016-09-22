@@ -102,15 +102,18 @@ Hashes like this work for all nested tags such as `Directory` and `Location`.
 
 #### Rewrite rules
 
-One exception to this generic 1:1 mapping is rewrite rules. Because of the complicated nature of rewrite rules and because they are not structured like most of Apache VirtualHost configuration, these are special-cased in this cookbook. These can be stored in the special `_rewrites` key in the hash. Since multiple conditions can be mapped to a given rule for ease of reading and conciseness, the API here is a mappig of **rules** to **list of conditions** (which is the opposite order they'd come in the actual config). So for example:
+One exception to this generic 1:1 mapping is rewrite rules. Because of the complicated nature of rewrite rules and because they are not structured like most of Apache VirtualHost configuration, these are special-cased in this cookbook. These can be stored in the special `_rewrites` key in the hash. Each conditional/rewrite set is an entry in the hash. The key is a human-readable name (will be used as a comment) and the value is another hash with a "conditions" array and a "rule" array. Note that you just like conditionals in apache, multiple conditionals in the same block will be ANDed together. To get OR, make an additional entry in the hash. So for example:
 
 ```
 node.default['fb_apache']['sites']['*:80'] = {
   '_rewrites' => {
-    '^/(.*) https://www.example.com/real_site/$1' => [
-      '%{REQUEST_URI} ^/old_thing',
-      '%{REQUEST_URI} ^/other_old_thing',
-    ]
+    'rewrite old thing to new thing' => {
+      'conditions' => [
+        '%{REQUEST_URI} ^/old_thing',
+        '%{REQUEST_URI} ^/other_old_thing',
+      ],
+      'rule' => '^/(.*) https://www.example.com/real_site/$1',
+    }
   }
 }
 ```
@@ -119,6 +122,7 @@ Would produce:
 
 ```
 <VirtualHost *:80>
+  # rewrite old thing to new thing
   RewriteCond %{REQUEST_URI} ^/old_thing
   RewriteCond %{REQUEST_URI} ^/other_old_thing
   RewriteRule ^/(.*) https://www.example.com/real_site/$1

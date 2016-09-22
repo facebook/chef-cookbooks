@@ -42,13 +42,15 @@ module FB
 
     # Helper for rewrite syntax
     def self.template_rewrite_helper(buf, _indent, _key, rules)
-      rules.each do |rule, conditions|
-        conditions.each do |cond|
+      rules.each do |name, ruleset|
+        buf << indentstr(1)
+        buf << "# #{name}\n"
+        ruleset['conditions'].each do |cond|
           buf << indentstr(1)
           buf << "RewriteCond #{cond}\n"
         end
         buf << indentstr(1)
-        buf << "RewriteRule #{rule}\n\n"
+        buf << "RewriteRule #{ruleset['rule']}\n\n"
       end
     end
 
