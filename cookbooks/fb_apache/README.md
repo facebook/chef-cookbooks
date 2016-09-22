@@ -41,7 +41,7 @@ node.default['fb_apache']['sites']['*:80'] = {
 
 Will produce:
 
-``
+```
 <VirtualHost *:80>
   ServerName example.com
   ServerAdmin l33t@example.com
@@ -62,7 +62,7 @@ node.default['fb_apache']['sites']['*:80'] = {
 
 Would produce:
 
-``
+```
 <VirtualHost *:80>
   ServerAlias cool.example.com
   ServerAlias awesome.example.com
