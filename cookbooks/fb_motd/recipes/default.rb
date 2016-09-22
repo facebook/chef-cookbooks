@@ -13,7 +13,6 @@
 #
 
 template '/etc/motd' do
-  not_if { node['motd_exempt'] }
   group 'root'
   mode '0644'
   owner 'root'
