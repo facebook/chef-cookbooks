@@ -1,0 +1,12 @@
+# This file is maintained by Chef. Do not edit, all changes will be
+# overwritten. See fb_vsftpd/README.md
+
+<% node['fb_vsftpd']['config'].to_hash.each do |key, val| -%>
+<%   if val.kind_of?(TrueClass) -%>
+<%=    key %>=YES
+<%   elsif val.kind_of?(FalseClass) -%>
+<%=    key %>=NO
+<%   else -%>
+<%=    key %>=<%= val.to_s %>
+<%   end -%>
+<% end -%>

@@ -43,3 +43,4 @@ suites:
       - recipe[fb_apcupsd]
       - recipe[fb_dnsmasq]
       - recipe[fb_hddtemp]
+      - recipe[fb_vsftpd]
