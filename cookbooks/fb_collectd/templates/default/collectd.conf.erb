@@ -1,0 +1,18 @@
+# This file is maintained by Chef. Do not edit, all changes will be
+# overwritten. See fb_collectd/README.md
+<% config = node['fb_collectd'].to_hash -%>
+
+<% config['globals'].each do |key, val| -%>
+<%=  FB::Collectd._gen_collectd_conf_entry(key, val) %>
+<% end -%>
+
+<% config['plugins'].each do |plugin, config| -%>
+LoadPlugin <%= plugin %>
+<%   if config -%>
+<Plugin <%= plugin %>>
+<%     config.each do |key, val| -%>
+<%=      FB::Collectd._gen_collectd_conf_entry(key, val, 2) %>
+<%     end -%>
+</Plugin>
+<%   end -%>
+<% end -%>

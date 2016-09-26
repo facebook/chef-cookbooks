@@ -1,0 +1,13 @@
+# This file is maintained by Chef. Do not edit, all changes will be
+# overwritten. See fb_collectd/README.md
+
+<% node['fb_collectd']['sysconfig'].to_hash.each do |key, val|
+     if val.is_a?(TrueClass)
+       v = 1
+     elsif val.is_a?(FalseClass)
+       v = 0
+     else
+       v = val
+     end -%>
+<%=  key.upcase %>=<%= v %>
+<% end -%>

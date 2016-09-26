@@ -41,6 +41,7 @@ suites:
     run_list:
       - recipe[fb_init_sample]
       - recipe[fb_apcupsd]
+      - recipe[fb_collectd]
       - recipe[fb_dnsmasq]
       - recipe[fb_hddtemp]
       - recipe[fb_vsftpd]
