@@ -1,0 +1,6 @@
+<% node['fb_reprepro'][@config].to_hash.each do |_name, config| -%>
+<%   config.each do |key, val| -%>
+<%=    key %>: <%= val.is_a?(Array) ? val.join(' ') : val %>
+<%   end -%>
+
+<% end -%>
