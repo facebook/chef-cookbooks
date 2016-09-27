@@ -23,7 +23,7 @@ node.default['fb_grub']['_efi_vendor_dir'] = '/notdefined'
 node.default['fb_grub']['_grub2_linux_statement'] = 'linux'
 node.default['fb_grub']['_grub2_initrd_statement'] = 'initrd'
 
-ruby_block 'initialize_grub_variables' do
+whyrun_safe_ruby_block 'initialize_grub_variables' do
   only_if { node.efi? }
   block do
     if node.centos6?
@@ -87,7 +87,7 @@ elsif uuid && !uuid.empty?
   node.default['fb_grub']['rootfs_arg'] = "UUID=#{uuid}"
 end
 
-ruby_block 'check_root_device' do
+whyrun_safe_ruby_block 'check_root_device' do
   only_if { File.exists?(node['fb_grub']['_grub_config']) }
   block do
     File.open(node['fb_grub']['_grub_config']).each do |line|
