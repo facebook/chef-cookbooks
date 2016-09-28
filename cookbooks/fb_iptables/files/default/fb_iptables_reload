@@ -81,8 +81,10 @@ reload_static_chains() {
   local table="$1"
   local dynamic_chains="$2"
 
+  # NOTE: You cannot use '-t' here ... ip6tables-* choke on it... you must
+  # specify --table=
   echo "Restoring the rest of $table"
-  cat /etc/sysconfig/$IPTABLES | ${IPTABLES}-restore -T $table
+  cat /etc/sysconfig/$IPTABLES | ${IPTABLES}-restore --table=$table
 }
 
 reload() {
