@@ -18,6 +18,8 @@ end
 packages = ['iptables']
 if node.centos6?
   packages << 'iptables-ipv6'
+else
+  packages << 'iptables-services'
 end
 services = ['iptables', 'ip6tables']
 iptables_rules = '/etc/sysconfig/iptables'
