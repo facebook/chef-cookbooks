@@ -77,6 +77,7 @@ action :run do
         # It's safe to use here since it's in a provider and isn't used
         # directly.
         variables :conf => conf
+        notifies :run, 'fb_systemd_reload[system instance]', :immediately
       end
 
       execute "link unit file #{filename}" do
