@@ -10,8 +10,8 @@
 module FB
   # Fstab utilitiy functions
   class Fstab
-    BASE_FILENAME = '/etc/.fstab.chef'
-    IN_MAINT_DISKS_FILENAME = '/var/chef/in_maintenance_disks'
+    BASE_FILENAME = '/etc/.fstab.chef'.freeze
+    IN_MAINT_DISKS_FILENAME = '/var/chef/in_maintenance_disks'.freeze
 
     def self.determine_base_fstab_entries(full_fstab)
       core_fs_line_matching = [

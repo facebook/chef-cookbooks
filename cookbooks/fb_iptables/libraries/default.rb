@@ -10,11 +10,15 @@
 
 module FB
   module Iptables
+    # rubocop:disable Style/MutableConstant
+    # We let this particular constant remain mutable in case we need to shove in
+    # a nat table or something.
     TABLES_AND_CHAINS = {
       'mangle' => %w{PREROUTING INPUT OUTPUT FORWARD POSTROUTING},
       'filter' => %w{INPUT OUTPUT FORWARD},
       'raw'    => %w{PREROUTING OUTPUT},
     }
+    # rubocop:enable Style/MutableConstant
 
     # Is the given rule valid for the give ip version
     def self.rule_supports_ip_version?(rule, version)

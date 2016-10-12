@@ -16,11 +16,11 @@ module FB
     # were mixed into the normal system unit files, we wouldn't be able to
     # tell which were owned by fb_timers when they are deleted, leaving stale
     # services/timers around.
-    TIMER_PATH = '/etc/systemd/timers'
+    TIMER_PATH = '/etc/systemd/timers'.freeze
 
     # Path on the system where systemd units live.
     # This should be the path that `systemctl link` places the unit files at.
-    UNIT_PATH = '/etc/systemd/system'
+    UNIT_PATH = '/etc/systemd/system'.freeze
 
     # Sensible defaults for timer attributes.
     TIMER_DEFAULTS = {
@@ -35,7 +35,7 @@ module FB
       'syslog' => false,
       'service_options' => {},
       'timer_options' => {},
-    }
+    }.freeze
 
     module Calendar
       def every(value = nil)

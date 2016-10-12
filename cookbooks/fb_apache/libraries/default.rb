@@ -14,7 +14,7 @@ module FB
     # Any exceptions to the normal hash->apache 1:1 mapping
     HANDLERS = {
       '_rewrites' => 'template_rewrite_helper',
-    }
+    }.freeze
 
     def self.indentstr(indent)
       indent.times.map { '  ' }.join('')

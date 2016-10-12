@@ -8,7 +8,7 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
-DEFAULT_POLICY = 'ACCEPT'
+DEFAULT_POLICY = 'ACCEPT'.freeze
 
 iptables = {
   'sysconfig' => {
