@@ -20,6 +20,7 @@ node.default['fb_grub']['_grub_config'] = "#{grub_base_dir}/grub.conf"
 node.default['fb_grub']['_grub2_config'] = "#{grub2_base_dir}/grub.cfg"
 node.default['fb_grub']['_vendor'] = 'undefined'
 node.default['fb_grub']['_efi_vendor_dir'] = '/notdefined'
+node.default['fb_grub']['_grub2_module_path'] = '/notdefined'
 node.default['fb_grub']['_grub2_linux_statement'] = 'linux'
 node.default['fb_grub']['_grub2_initrd_statement'] = 'initrd'
 
@@ -53,6 +54,15 @@ whyrun_safe_ruby_block 'initialize_grub_variables' do
       "#{node['fb_grub']['_efi_vendor_dir']}/grub.conf"
     node.default['fb_grub']['_grub2_config'] =
       "#{node['fb_grub']['_efi_vendor_dir']}/grub.cfg"
+
+    # Calculate the grub2 partition for the OS
+    os_device = node.device_of_mount('/')
+    m = os_device.match(/[0-9]+$/)
+    fail 'fb_grub::default Cannot parse OS device!' unless m
+    os_partition_grub2 = "(hd0,#{m[0].to_i})"
+
+    node.default['fb_grub']['_grub2_module_path'] =
+      "#{os_partition_grub2}/usr/lib/grub/#{node['kernel']['machine']}-efi"
   end
 end
 

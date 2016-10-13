@@ -13,9 +13,14 @@
 
   tboot_cmdline = "logging=#{node['fb_grub']['tboot']['logging'].join(',')}"
   if node['fb_grub']['tboot']['logging'].include?('serial')
+    tboot_port = '0x3f8'  # I/O port for ttyS0
+    if serial['unit'] == '1'
+      tboot_port = '0x2f8'  # I/O port for ttyS1
+    end
     tboot_parity = serial['parity'][0]
     tboot_cmdline += " serial=#{serial['speed']}," + 
-                     "#{serial['word']}#{tboot_parity}#{serial['stop']}"
+                     "#{serial['word']}#{tboot_parity}#{serial['stop']}," +
+                     tboot_port
   end
 
   # default is 0 because we'll automagically put the non-kdump kernel first
@@ -29,19 +34,26 @@ terminal_input <%= terminal %>
 terminal_output <%= terminal %>
 
 <% node['fb_grub']['kernels'].to_hash.each do |kernel, data| -%>
-menuentry '<%= kernel %>' {
+
+<%   if node['fb_grub']['tboot']['enable'] && !kernel.include?('rescue') -%>
+
+menuentry 'tboot <%= kernel %>' {
   set root='<%= root_device %>'
-<% if node['fb_grub']['tboot']['enable'] %>
+  insmod <%= node['fb_grub']['_grub2_module_path'] %>/relocator.mod
+  insmod <%= node['fb_grub']['_grub2_module_path'] %>/multiboot2.mod
   multiboot2 /tboot.gz /tboot.gz <%= tboot_cmdline %>
   module2 <%= @path_prefix %><%= data['path'] %> <%= @path_prefix %><%= data['path'] %> <%= kargs %> intel_iommu=on noefi
-<%   if data['initrd_path'] -%>
+<%     if data['initrd_path'] -%>
   module2 <%= @path_prefix %><%= data['initrd_path'] %> <%= @path_prefix %><%= data['initrd_path'] %>
+<%     end -%>
+}
 <%   end -%>
-<% else # regular boot %>
+
+menuentry '<%= kernel %>' {
+  set root='<%= root_device %>'
   <%= node['fb_grub']['_grub2_linux_statement'] %> <%= @path_prefix %><%= data['path'] %> <%= kargs %>
 <%   if data['initrd_path'] -%>
   <%= node['fb_grub']['_grub2_initrd_statement'] %> <%= @path_prefix %><%= data['initrd_path'] %>
 <%   end -%>
-<% end %>
 }
 <% end -%>

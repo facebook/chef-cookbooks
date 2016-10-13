@@ -29,8 +29,8 @@ in `node['fb_grub']['kernels']`. In most cases you'll probably want to write a
 `ruby_block` to autodiscover these from the contents of `/boot` instead of 
 statically populating it. If you need to parse or compare kernel versions as
 part of this, you may find the `FB::Version` class in `fb_helpers` useful.
-Note, that this cookbook will not install any kernel for you, it will just 
-control the config.
+Note that this cookbook will not install a kernel for you, it will just
+control the GRUB config.
 
 This cookbook sets the GRUB timeout to 5 unless otherwise specified using
 `node['fb_grub']['timeout']`. It defaults GRUB output to the system
@@ -52,3 +52,10 @@ GRUB 2 and is disabled by default. It can be controlled with the attribute
 controlled with `node['fb_grub']['tboot']['logging']` (defaults to `memory`). 
 If `serial` output is requested, it will reuse `node['fb_grub']['serial']` for 
 its settings.
+
+When tboot is enabled, two menu entries are created for each kernel: one with
+tboot as the MLE before launching the kernel, and one launching the kernel
+directly without tboot.
+
+NOTE: tboot is not compatible with Secure Boot enabled. Please see the RedHat
+bug report for more information: https://bugzilla.redhat.com/show_bug.cgi?id=1318667
