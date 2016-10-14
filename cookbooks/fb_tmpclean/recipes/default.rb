@@ -17,23 +17,26 @@ when 'rhel'
   pkg = 'tmpwatch'
   config = '/etc/cron.daily/tmpwatch'
   config_src = 'tmpwatch.erb'
-when 'mac_os_x'
+when 'debian', 'mac_os_x'
   pkg = 'tmpreaper'
-  config = '/usr/bin/fb_tmpreaper'
+  config = '/etc/cron.daily/tmpreaper'
   config_src = 'tmpreaper.erb'
-  # we don't support cron.daily on OS X. Just make this a regular cronjob
-  node.default['fb_cron']['jobs']['tmpreaper'] = {
-    'time' => '@daily',
-    'user' => 'root',
-    'command' => config,
-    'splaysecs' => 7200,
-  }
+  if node.macosx?
+    config = '/usr/bin/fb_tmpreaper'
+    # we don't support cron.daily on OS X. Just make this a regular cronjob
+    node.default['fb_cron']['jobs']['tmpreaper'] = {
+      'time' => '@daily',
+      'user' => 'root',
+      'command' => config,
+      'splaysecs' => 7200,
+    }
+  end
 else
   fail "Unsupported platform_family #{node['platform_family']}, cannot" +
     'continue'
 end
 
-multipackage pkg do
+package pkg do
   action :upgrade
 end
 

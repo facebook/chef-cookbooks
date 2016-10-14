@@ -10,8 +10,11 @@ version '0.0.1'
 %w{
   fb_apt
   fb_cron
+  fb_dracut
   fb_ethers
   fb_fstab
+  fb_grub
+  fb_hdparm
   fb_helpers
   fb_hostconf
   fb_hosts
@@ -25,6 +28,8 @@ version '0.0.1'
   fb_sysctl
   fb_syslog
   fb_systemd
+  fb_timers
+  fb_tmpclean
 }.each do |cb|
   depends cb
 end

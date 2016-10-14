@@ -15,9 +15,16 @@ end
 # HERE: chef_client
 if node.systemd?
   include_recipe 'fb_systemd'
+  include_recipe 'fb_timers'
 end
 include_recipe 'fb_nsswitch'
 # HERE: ssh
+if node.linux? && !node.container?
+  include_recipe 'fb_grub'
+end
+if node.centos?
+  include_recipe 'fb_dracut'
+end
 include_recipe 'fb_modprobe'
 include_recipe 'fb_securetty'
 include_recipe 'fb_hosts'
@@ -28,6 +35,9 @@ include_recipe 'fb_hostconf'
 include_recipe 'fb_sysctl'
 # HERE: networking
 include_recipe 'fb_syslog'
+if node.linux? && !node.container?
+  include_recipe 'fb_hdparm'
+end
 # HERE: postfix
 # HERE: nfs
 include_recipe 'fb_swap'
@@ -37,7 +47,7 @@ include_recipe 'fb_swap'
 include_recipe 'fb_fstab'
 include_recipe 'fb_logrotate'
 # HERE: autofs
-# HERE: tmpclean
+include_recipe 'fb_tmpclean'
 # HERE: sudo
 # HERE: ntp
 include_recipe 'fb_motd'

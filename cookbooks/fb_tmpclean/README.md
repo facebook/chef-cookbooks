@@ -3,12 +3,12 @@ fb_tmpclean Cookbook
 This cookbook allows you to customize how you would like directories cleaned
 to ensure more appropriate filesystem cleanup.
 
-Supports two platforms:
-CentOS = tmpwatch
-OS X = tmpreaper
-
 Requirements
 ------------
+Supports three platforms:
+* CentOS = tmpwatch
+* Debian = tmpreaper
+* OS X = tmpreaper
 
 Attributes
 ----------
@@ -45,16 +45,15 @@ Add other entries as you need.
 This is an array of files to exclude from cleaning in all directories listed in
 `node['fb_tmpclean']['directories']`.
 
-Both tmpwatch (CentOS) and tmpreaper (OS X) use shell patterns for `excludes`.
-However, these "shell patterns" differ subtly on the two platforms, so test
-carefully. See P56078024 and P56078014 for a comparison. The defaults for
-`excludes` change per platform.
+Both tmpwatch (CentOS) and tmpreaper (Debian, OS X) use shell patterns for 
+`excludes`. However, these "shell patterns" differ subtly on the two platforms,
+so test carefully. The defaults for `excludes` change per platform.
 
 When the cron job is built, each of the excludes is appended to the list of
 directories with a slash appended to the directory name. An exclusion of
-/tmp/file with a directory of /tmp will result in a -X of /tmp//tmp/file.
-The way the options are constructed, each exclusion is appended to each
-directory to create absolute paths.
+`/tmp/file` with a directory of `/tmp` will result in a `-X` of 
+`/tmp//tmp/file`. The way the options are constructed, each exclusion is 
+appended to each directory to create absolute paths.
 
     for dir in directories:
         for exclusion in exclusions:
@@ -65,7 +64,7 @@ directory to create absolute paths.
 By default we tell tmpwatch (in CentOS) to use mtime, but you can change this
 by setting `node['fb_tmpclean']['timestamptype']` to `atime`.
 
-This setting has no effect on Mac OS X.
+This setting has no effect on Debian and Mac OS X.
 
 ### extra_lines
 
@@ -83,7 +82,8 @@ filetypes.
 
 Defaults:
 
-* default_files = 240 hours
+* `default_files` = 240 hours
 * excludes are set per-platform based on the tool's defaults. See
   `attributes/default.rb'
-* remove_special_files = false to avoid a default case that may be dangerous
+* `remove_special_files` defaults to false to avoid a default case that may be 
+  dangerous
