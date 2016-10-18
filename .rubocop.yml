@@ -98,10 +98,6 @@ MultilineOperationIndentation:
 Performance/RedundantMatch:
   Enabled: false
 
-# We don't use CAPS just for constants.
-Style/MutableConstant:
-  Enabled: false
-
 # We'll .times.map all we want.
 Performance/TimesMap:
   Enabled: false
@@ -145,4 +141,7 @@ Style/NumericLiteralPrefix:
   Enabled: false
 
 Style/VariableNumber:
+  Enabled: false
+
+Metrics/BlockLength:
   Enabled: false
