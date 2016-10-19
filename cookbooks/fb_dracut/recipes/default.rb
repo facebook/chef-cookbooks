@@ -29,6 +29,11 @@ template '/etc/dracut.conf' do
 end
 
 execute 'rebuild all initramfs' do
+  not_if { node.container? }
   command 'dracut --force'
   action :nothing
+  if node.systemd?
+    subscribes :run, 'package[systemd packages]'
+    subscribes :run, 'template[/etc/systemd/system.conf]'
+  end
 end
