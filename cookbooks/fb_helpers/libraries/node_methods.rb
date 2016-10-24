@@ -213,5 +213,23 @@ class Chef
     def x64?
       return node['kernel']['machine'] == 'x86_64'
     end
+
+    def get_flexible_shard(shard_size)
+      if node['shard_seed']
+        node['shard_seed'] % shard_size
+      else
+        # backwards compat for Facebook until
+        # https://github.com/chef/ohai/pull/877 is out
+        node['fb']['shard_seed'] % shard_size
+      end
+    end
+
+    def in_flexible_shard?(shard_threshold, shard_size)
+      self.get_flexible_shard(shard_size) <= shard_threshold
+    end
+
+    def in_shard?(shard_threshold)
+      self.in_flexible_shard?(shard_threshold, 100)
+    end
   end
 end
