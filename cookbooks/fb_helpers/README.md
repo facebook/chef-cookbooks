@@ -29,14 +29,44 @@ your node.
 * `node.debian?`
     Is Debian
 
+* `node.macosx?`
+    Is Mac OS X
+
 * `node.ubuntu?`
     Is Ubuntu
+
+* `def ubuntu12?`
+    Is ubuntu12
+
+* `def ubuntu14?`
+    Is ubuntu14
+
+* `def ubuntu16?`
+    Is ubuntu16
 
 * `node.linux?`
     Is Linux
 
-* `node.macosx?`
-    Is Mac OS X
+* `node.redhat?`
+    Is Redhat
+
+* `node.redhat6?`
+    Is Redhat6
+
+* `node.redhat7?`
+    Is Redhat7
+
+* `node.oracle?`
+    Is Oracle
+
+* `node.oracle5?`
+    Is Oracle5
+
+* `node.oracle6?`
+    Is Oracle6
+
+* `node.oracle7?`
+    Is Oracle7
 
 * `node.windows?`
     Is Windows

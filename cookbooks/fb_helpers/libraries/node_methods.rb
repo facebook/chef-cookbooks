@@ -35,8 +35,48 @@ class Chef
       return self['platform'] == 'ubuntu'
     end
 
+    def ubuntu12?
+      return self.ubuntu? && self['platform_version'].start_with?('12')
+    end
+
+    def ubuntu14?
+      return self.ubuntu? && self['platform_version'].start_with?('14')
+    end
+
+    def ubuntu16?
+      return self.ubuntu? && self['platform_version'].start_with?('16')
+    end
+
     def linux?
       return self['os'] == 'linux'
+    end
+
+    def redhat?
+      return self['platform'] == 'redhat'
+    end
+
+    def redhat6?
+      return self.redhat? && self['platform_version'].start_with?('6')
+    end
+
+    def redhat7?
+      return self.redhat? && self['platform_version'].start_with?('7')
+    end
+
+    def oracle?
+      return self['platform'] == 'oracle'
+    end
+
+    def oracle7?
+      return self.oracle? && self['platform_version'].start_with?('7')
+    end
+
+    def oracle6?
+      return self.oracle? && self['platform_version'].start_with?('6')
+    end
+
+    def oracle5?
+      return self.oracle? && self['platform_version'].start_with?('5')
     end
 
     def macosx?
