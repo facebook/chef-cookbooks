@@ -45,3 +45,12 @@ suites:
       - recipe[fb_dnsmasq]
       - recipe[fb_hddtemp]
       - recipe[fb_vsftpd]
+    excludes: centos-6
+  - name: centos-6
+    run_list:
+      - recipe[fb_init_sample]
+      - recipe[fb_collectd]
+      - recipe[fb_dnsmasq]
+      - recipe[fb_hddtemp]
+      - recipe[fb_vsftpd]
+    includes: centos-6

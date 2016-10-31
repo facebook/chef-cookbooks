@@ -16,6 +16,10 @@ unless node.debian? || node.ubuntu? || node.centos?
   fail 'fb_apcupsd is only supported on Debian, Ubuntu or CentOS.'
 end
 
+if node.centos6?
+  fail 'fb_apcupsd is not supported on CentOS 6.'
+end
+
 package 'apcupsd' do
   action :upgrade
 end

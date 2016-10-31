@@ -5,6 +5,7 @@ daemon and its web interface.
 
 Requirements
 ------------
+CentOS >= 7, Debian or Ubuntu
 
 Attributes
 ----------
