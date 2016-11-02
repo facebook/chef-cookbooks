@@ -68,22 +68,33 @@ end
 
 if Pathname.new('/boot').mountpoint?
   boot_device = node.device_of_mount('/boot')
+  boot_label = node['filesystem2']['by_mountpoint']['/boot']['label']
   path_prefix = ''
 else
   boot_device = node.device_of_mount('/')
+  boot_label = node['filesystem2']['by_mountpoint']['/']['label']
   path_prefix = '/boot'
 end
 
-# udev block device partitions start at 1
-# grub disks start at 0
-m = boot_device.match(/[0-9]+$/)
-fail 'fb_grub::default Cannot parse boot device!' unless m
-grub_partition = m[0].to_i - 1
-root_device = "(hd0,#{grub_partition})"
-node.default['fb_grub']['root_device'] = root_device
+if node['fb_grub']['use_labels']
+  if node['fb_grub']['version'] < 2
+    fail 'fb_grub: Booting by label requires grub2.'
+  end
+  # TODO: make this work with both uuid and label, like the rootfs_arg section
+  node.default['fb_grub']['_root_label'] = boot_label
+else
+  # udev block device partitions start at 1
+  # grub disks start at 0
+  m = boot_device.match(/[0-9]+$/)
+  fail 'fb_grub::default Cannot parse boot device!' unless m
 
-root_device_grub2 = "(hd0,#{grub_partition + 1})"
-node.default['fb_grub']['root_device_grub2'] = root_device_grub2
+  grub_partition = m[0].to_i - 1
+  root_device = "(hd0,#{grub_partition})"
+  node.default['fb_grub']['root_device'] = root_device
+
+  root_device_grub2 = "(hd0,#{grub_partition + 1})"
+  node.default['fb_grub']['root_device_grub2'] = root_device_grub2
+end
 
 # some provisioning configurations do not properly label the root filesystem
 # Ensure grub is put down with the label matching the fs mounted at / that

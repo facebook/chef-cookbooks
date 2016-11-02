@@ -6,7 +6,11 @@
   cmdline_args = node['fb_grub']['kernel_cmdline_args']
 
   kargs = "ro root=#{root_arg} #{cmdline_args.uniq.join(' ')}"
-  root_device = node['fb_grub']['root_device_grub2']
+  if node['fb_grub']['_root_label']
+    root_line = "search --set=root --label #{node['fb_grub']['_root_label']}"
+  else
+    root_line = "set root='#{node['fb_grub']['root_device_grub2']}'"
+  end
 
   terminal = node['fb_grub']['terminal'].join(' ')
   serial = node['fb_grub']['serial'].to_hash
@@ -18,7 +22,7 @@
       tboot_port = '0x2f8'  # I/O port for ttyS1
     end
     tboot_parity = serial['parity'][0]
-    tboot_cmdline += " serial=#{serial['speed']}," + 
+    tboot_cmdline += " serial=#{serial['speed']}," +
                      "#{serial['word']}#{tboot_parity}#{serial['stop']}," +
                      tboot_port
   end
@@ -38,7 +42,7 @@ terminal_output <%= terminal %>
 <%   if node['fb_grub']['tboot']['enable'] && !kernel.include?('rescue') -%>
 
 menuentry 'tboot <%= kernel %>' {
-  set root='<%= root_device %>'
+  <%= root_line %>
   insmod <%= node['fb_grub']['_grub2_module_path'] %>/relocator.mod
   insmod <%= node['fb_grub']['_grub2_module_path'] %>/multiboot2.mod
   multiboot2 /tboot.gz /tboot.gz <%= tboot_cmdline %>
@@ -50,7 +54,7 @@ menuentry 'tboot <%= kernel %>' {
 <%   end -%>
 
 menuentry '<%= kernel %>' {
-  set root='<%= root_device %>'
+  <%= root_line %>
   <%= node['fb_grub']['_grub2_linux_statement'] %> <%= @path_prefix %><%= data['path'] %> <%= kargs %>
 <%   if data['initrd_path'] -%>
   <%= node['fb_grub']['_grub2_initrd_statement'] %> <%= @path_prefix %><%= data['initrd_path'] %>
