@@ -21,7 +21,7 @@ action :run do
 
   if keys && keyring
     installed_keys = []
-    if ::File.exists?(keyring)
+    if ::File.exist?(keyring)
       cmd = Mixlib::ShellOut.new("LANG=C apt-key --keyring #{keyring} list")
       cmd.run_command
       cmd.error!

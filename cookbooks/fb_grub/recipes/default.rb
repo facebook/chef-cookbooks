@@ -109,7 +109,7 @@ elsif uuid && !uuid.empty?
 end
 
 whyrun_safe_ruby_block 'check_root_device' do
-  only_if { File.exists?(node['fb_grub']['_grub_config']) }
+  only_if { File.exist?(node['fb_grub']['_grub_config']) }
   block do
     File.open(node['fb_grub']['_grub_config']).each do |line|
       if !node.efi? && line.match(/^\s*root\s*/)

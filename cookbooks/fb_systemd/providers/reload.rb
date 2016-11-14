@@ -43,7 +43,7 @@ action :run do
       bus_path =
         "/run/user/#{node['etc']['passwd'][user]['uid']}/bus"
       execute "reload systemd --user for #{user}" do
-        only_if { ::File.exists?(bus_path) }
+        only_if { ::File.exist?(bus_path) }
         command '/bin/systemctl --user daemon-reload'
         environment 'DBUS_SESSION_BUS_ADDRESS' => "unix:path=#{bus_path}"
         user user

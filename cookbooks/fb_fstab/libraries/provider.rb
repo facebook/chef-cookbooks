@@ -27,7 +27,7 @@ module FB
       # Further, because we're called in a 'converge' block, this is whyrun
       # safe, just like the Mixlib::ShellOut below.
       Chef::Log.info("fb_fstab: Mounting #{mount_data['mount_point']}")
-      if ::File.exists?(mount_data['mount_point'])
+      if ::File.exist?(mount_data['mount_point'])
         if ::File.symlink?(mount_data['mount_point'])
           if mount_data['allow_mount_failure']
             msg = "fb_fstab: #{mount_data['mount_point']} is a symlink. " +

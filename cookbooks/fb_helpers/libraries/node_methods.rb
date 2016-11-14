@@ -203,7 +203,7 @@ class Chef
       # appears when the kernel module efivars is inserted, and that doesn't
       # always happen. On the contrary, for booting into EFI you need /boot/efi
       # mounted as a VFAT partition, and that's what we will use.
-      return File.exists?('/boot/efi') && node.device_of_mount('/boot/efi')
+      return File.exist?('/boot/efi') && node.device_of_mount('/boot/efi')
     end
 
     def aarch64?

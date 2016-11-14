@@ -13,7 +13,7 @@ tmpfiles = {}
   '/dev/log' => '/run/systemd/journal/dev-log',
   '/dev/initctl' => '/run/systemd/initctl/fifo',
 }.each do |dev, target|
-  if File.exists?(target)
+  if File.exist?(target)
     tmpfiles[dev] = {
       'type' => 'L+',
       'argument' => target,
@@ -32,7 +32,7 @@ esp_path = nil
   # with a misleading error
   if node['filesystem2'] && node['filesystem2']['by_mountpoint'][path] &&
      node['filesystem2']['by_mountpoint'][path]['fs_type'] == 'vfat' &&
-     (File.exists?("#{path}/EFI") || File.exists?("#{path}/efi"))
+     (File.exist?("#{path}/EFI") || File.exist?("#{path}/efi"))
     esp_path = path
     break
   end

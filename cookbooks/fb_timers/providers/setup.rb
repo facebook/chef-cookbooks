@@ -82,7 +82,7 @@ action :run do
 
       execute "link unit file #{filename}" do
         not_if do
-          ::File.exists?("/etc/systemd/system/#{conf['name']}.#{type}")
+          ::File.exist?("/etc/systemd/system/#{conf['name']}.#{type}")
         end
         command "systemctl link #{filename}"
         notifies :run, 'fb_systemd_reload[system instance]', :immediately

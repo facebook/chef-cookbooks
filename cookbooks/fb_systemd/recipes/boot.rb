@@ -49,9 +49,9 @@ execute 'install systemd-boot' do
   only_if do
     node['fb_systemd']['boot']['enable'] &&
     node['fb_systemd']['boot']['path'] &&
-    !File.exists?(
+    !File.exist?(
       "#{node['fb_systemd']['boot']['path']}/EFI/systemd/systemd-bootx64.efi",
-    ) && !File.exists?(
+    ) && !File.exist?(
       "#{node['fb_systemd']['boot']['path']}/efi/systemd/systemd-bootx64.efi",
     )
   end
@@ -76,9 +76,9 @@ execute 'remove systemd-boot' do
   only_if do
     !node['fb_systemd']['boot']['enable'] &&
     node['fb_systemd']['boot']['path'] && (
-    File.exists?(
+    File.exist?(
       "#{node['fb_systemd']['boot']['path']}/EFI/systemd/systemd-bootx64.efi",
-    ) || File.exists?(
+    ) || File.exist?(
       "#{node['fb_systemd']['boot']['path']}/efi/systemd/systemd-bootx64.efi",
     ))
   end

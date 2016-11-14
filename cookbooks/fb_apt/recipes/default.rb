@@ -82,8 +82,8 @@ end
 log 'periodic package cache update' do
   only_if do
     pkgcache = '/var/cache/apt/pkgcache.bin'
-    !::File.exists?(pkgcache) || (
-      ::File.exists?(pkgcache) &&
+    !::File.exist?(pkgcache) || (
+      ::File.exist?(pkgcache) &&
       ::File.mtime(pkgcache) < Time.now - node['fb_apt']['update_delay'])
   end
   notifies :run, 'execute[apt-get update]'

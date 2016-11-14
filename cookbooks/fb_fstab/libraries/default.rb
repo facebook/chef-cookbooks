@@ -44,7 +44,7 @@ module FB
     end
 
     def self.generate_base_fstab
-      unless File.exists?(BASE_FILENAME) && File.size(BASE_FILENAME) > 0
+      unless File.exist?(BASE_FILENAME) && File.size(BASE_FILENAME) > 0
         FileUtils.cp('/etc/fstab', '/root/fstab.before_fb_fstab')
         FileUtils.chmod(0400, '/root/fstab.before_fb_fstab')
         full_fstab = File.read('/etc/fstab')
@@ -60,7 +60,7 @@ module FB
 
     # Returns an array of disks
     def self.get_in_maint_disks
-      return [] unless File.exists?(FB::Fstab::IN_MAINT_DISKS_FILENAME)
+      return [] unless File.exist?(FB::Fstab::IN_MAINT_DISKS_FILENAME)
       age = (
         Time.now - File.stat(FB::Fstab::IN_MAINT_DISKS_FILENAME).mtime
       ).to_i
