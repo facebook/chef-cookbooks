@@ -49,7 +49,7 @@ EOF
 
   context 'generate_base_fstab' do
     it 'should not regenerate base fstab' do
-      File.should_receive(:exists?).with(FB::Fstab::BASE_FILENAME).
+      File.should_receive(:exist?).with(FB::Fstab::BASE_FILENAME).
         and_return(true)
       File.should_receive(:size).with(FB::Fstab::BASE_FILENAME).
         and_return(12)
@@ -57,7 +57,7 @@ EOF
       FB::Fstab.generate_base_fstab
     end
     it 'should generate new base fstab' do
-      File.should_receive(:exists?).with(FB::Fstab::BASE_FILENAME).
+      File.should_receive(:exist?).with(FB::Fstab::BASE_FILENAME).
         and_return(false)
       FileUtils.should_receive(:cp).and_return(nil)
       FileUtils.should_receive(:chmod).and_return([
@@ -174,14 +174,14 @@ EOF
   end
   context 'get_in_maint_disks' do
     it 'should return an empty array if file does not exist' do
-      File.should_receive(:exists?).with(FB::Fstab::IN_MAINT_DISKS_FILENAME).
+      File.should_receive(:exist?).with(FB::Fstab::IN_MAINT_DISKS_FILENAME).
         and_return(false)
       FB::Fstab.get_in_maint_disks.should eq([])
     end
     it 'should delete stale files' do
       stat = double('FSstat')
       stat.should_receive(:mtime).and_return(Time.new - 60 * 60 * 24 * 8)
-      File.should_receive(:exists?).with(FB::Fstab::IN_MAINT_DISKS_FILENAME).
+      File.should_receive(:exist?).with(FB::Fstab::IN_MAINT_DISKS_FILENAME).
         and_return(true)
       File.should_receive(:stat).with(FB::Fstab::IN_MAINT_DISKS_FILENAME).
         and_return(stat)
@@ -718,7 +718,7 @@ EOF
         'type' => 'xfs',
         'opts' => 'rw,noatime',
       }
-      File.should_receive(:exists?).with(desired_mount['mount_point']).
+      File.should_receive(:exist?).with(desired_mount['mount_point']).
         and_return(true)
       so = double('FSshell_out1')
       so.should_receive(:run_command).and_return(so)
@@ -736,7 +736,7 @@ EOF
         'type' => 'xfs',
         'opts' => 'rw,noatime',
       }
-      File.should_receive(:exists?).with(desired_mount['mount_point']).
+      File.should_receive(:exist?).with(desired_mount['mount_point']).
         and_return(true)
       so = double('FSshell_out2')
       so.should_receive(:run_command).and_return(so)
@@ -757,7 +757,7 @@ EOF
         'opts' => 'rw,noatime',
         'allow_mount_failure' => true,
       }
-      File.should_receive(:exists?).with(desired_mount['mount_point']).
+      File.should_receive(:exist?).with(desired_mount['mount_point']).
         and_return(true)
       so = double('FSshell_out3')
       so.should_receive(:run_command).and_return(so)
@@ -789,7 +789,7 @@ EOF
         'mp_owner' => 'nobody',
         'mp_group' => 'nobody',
       }
-      File.should_receive(:exists?).with(desired_mount['mount_point']).
+      File.should_receive(:exist?).with(desired_mount['mount_point']).
         and_return(false)
       FileUtils.should_receive(:mkdir_p).with(desired_mount['mount_point'],
                                               :mode => 0755).and_return(true)
