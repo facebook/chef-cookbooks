@@ -16,7 +16,7 @@ end
 
 def modprobe_module(new_resource, unload)
   module_name = new_resource.module_name
-  params = [new_resource.params].flatten.compact
+  params = [new_resource.module_params].flatten.compact
   timeout = new_resource.timeout
   verbose = new_resource.verbose
   fallback = new_resource.fallback
