@@ -4,15 +4,15 @@
 # You may add cronjobs following the instructions in
 #   fb_cron/README.md
 #
-<% node['fb_cron']['jobs'].to_hash.each do |name, job| -%>
-<% job['user'] = 'root' unless job['user'] -%>
+<% node['fb_cron']['jobs'].to_hash.each do |name, job| %>
+<%   job['user'] = 'root' unless job['user'] -%>
 # <%= name %>
-<% if job['mailto'] -%>
+<%   if job['mailto'] -%>
 MAILTO=<%= job['mailto'] %>
-<% end -%>
-<%= job['time'] %> <%= job['user'] %> <%= job['splaycmd'] -%><%= job['command'] %>
-<% if job['mailto'] -%>
+<%   end -%>
+<%=  job['time'] %> <%= job['user'] %> <%= job['splaycmd'] -%><%= job['command'] %>
+<%   if job['mailto'] -%>
 MAILTO=root
-<% end -%>
+<%   end -%>
 
 <% end -%>
