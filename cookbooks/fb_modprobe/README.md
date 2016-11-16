@@ -30,3 +30,17 @@ and module drivers.
 
 * `FB::Modprobe.module_loaded?`
 Checks if a module is loaded - a more naive version of the above method.
+
+### fb_modprobe_module
+
+Loading and unloading modules can be managed using `fb_modprobe_module`
+resource.
+
+Properties:
+* `module_name` - Name of the module to be loaded/unloaded (required)
+* `verbose` - Pass `-v` to modprobe (so make it verbose) (default: False)
+* `timeout` - Command timeout (default: 300)
+* `fallback` - When unloading, fallback to `rmmod` if modprobe fails (modprobe
+  can fail for various reasons, including the module being uninstalled before
+  being unloaded) (default: False)
+* `module_params` - Optional parameters to pass when loading the module

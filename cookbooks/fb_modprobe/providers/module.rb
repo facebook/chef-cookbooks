@@ -14,12 +14,16 @@ def whyrun_supported?
   true
 end
 
-def modprobe_module(module_name, params, timeout, verbose, unload)
+def modprobe_module(new_resource, unload)
+  module_name = new_resource.module_name
+  params = [new_resource.params].flatten.compact
+  timeout = new_resource.timeout
+  verbose = new_resource.verbose
+  fallback = new_resource.fallback
+
   flags = []
   flags << '-v' if verbose
   flags << '-r' if unload
-
-  params = [params].flatten.compact
 
   # Correctly handle built-in modules. If no parameters were supplied, we just
   # return true. If the caller supplied parameters, we fail the Chef run and ask
@@ -32,18 +36,24 @@ def modprobe_module(module_name, params, timeout, verbose, unload)
           Cannot set parameters for built-in module '#{module_name}'!
           Parameters for built-in modules must be passed on the kernel cmdline.
           Prefix the parameter with the module name and a dot.
-          Examples: "ipv6.autoconf=1", "mlx4_en.udp_rss=1
-          Contact the kernel oncall if you have any questions about this.
+          Examples: "ipv6.autoconf=1", "mlx4_en.udp_rss=1"
         FAIL
       end
       return True
     end
   end
 
-  args = flags + [module_name] + params
+  command = ['/sbin/modprobe'] + flags + [module_name] + params
 
-  execute "modprobe #{args.join(' ')}" do
-    command "/sbin/modprobe #{args.join(' ')}"
+  # Sometimes modprobe fails, like when the module was uninstalled
+  if fallback && unload
+    command << '||'
+    command << 'rmmod'
+    command << '-v' if verbose
+    command << module_name
+  end
+
+  execute command.join(' ') do
     action :run
     notifies :reload, 'ohai[reload kernel]', :immediately
     timeout timeout
@@ -55,10 +65,7 @@ action :load do
     Chef::Log.debug("#{new_resource}: Module already loaded")
   else
     converge_by("Load #{new_resource.module_name}") do
-      modprobe_module(new_resource.module_name,
-                      new_resource.module_params,
-                      new_resource.timeout,
-                      new_resource.verbose, false)
+      modprobe_module(new_resource, false)
     end
     new_resource.updated_by_last_action(true)
   end
@@ -69,10 +76,7 @@ action :unload do
     Chef::Log.debug("#{new_resource}: Module already unloaded")
   else
     converge_by("Unload #{new_resource.module_name}") do
-      modprobe_module(new_resource.module_name,
-                      new_resource.module_params,
-                      new_resource.timeout,
-                      new_resource.verbose, true)
+      modprobe_module(new_resource, true)
     end
     new_resource.updated_by_last_action(true)
   end
