@@ -20,6 +20,8 @@ def modprobe_module(new_resource, unload)
   timeout = new_resource.timeout
   verbose = new_resource.verbose
   fallback = new_resource.fallback
+  retries = new_resource.retries
+  retry_delay = new_resource.retry_delay
 
   flags = []
   flags << '-v' if verbose
@@ -57,6 +59,8 @@ def modprobe_module(new_resource, unload)
     action :run
     notifies :reload, 'ohai[reload kernel]', :immediately
     timeout timeout
+    retries retries
+    retry_delay retry_delay
   end
 end
 

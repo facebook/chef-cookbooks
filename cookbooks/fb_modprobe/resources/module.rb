@@ -14,3 +14,5 @@ attribute :verbose, :kind_of => [TrueClass, FalseClass], :default => false
 attribute :timeout, :kind_of => Integer, :default => 300
 attribute :fallback, :kind_of => [TrueClass, FalseClass], :default => false
 attribute :module_params, :kind_of => [String, Array], :required => false
+attribute :retries, :kind_of => Integer, :default => 0
+attribute :retry_delay, :kind_of => Integer, :default => 2

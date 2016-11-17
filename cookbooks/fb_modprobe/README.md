@@ -44,3 +44,5 @@ Properties:
   can fail for various reasons, including the module being uninstalled before
   being unloaded) (default: False)
 * `module_params` - Optional parameters to pass when loading the module
+* `retries` - Number of times to try if loading/unloading failed (default: 0)
+* `retry_delay` - How long (in seconds) to wait between retries (default: 2)
