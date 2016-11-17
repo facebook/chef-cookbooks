@@ -35,6 +35,7 @@ add whatever filesystems you would like mounted and `fb_fstab` will, for each
 entry in the hash:
 * populate `/etc/fstab` for you
 * create the `mount_point` (but not parents) if it doesn't exist
+  (if you need parents created, please file a task against chef oncall)
 * mount the filesystem
 
 ### Global Options

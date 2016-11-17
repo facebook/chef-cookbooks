@@ -33,6 +33,7 @@ def modprobe_module(module_name, params, timeout, verbose, unload)
           Parameters for built-in modules must be passed on the kernel cmdline.
           Prefix the parameter with the module name and a dot.
           Examples: "ipv6.autoconf=1", "mlx4_en.udp_rss=1
+          Contact the kernel oncall if you have any questions about this.
         FAIL
       end
       return True
