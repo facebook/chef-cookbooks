@@ -13,6 +13,7 @@ Attributes
 * node['fb_fstab']['umount_ignores']['device_prefixes']
 * node['fb_fstab']['umount_ignores']['types']
 * node['fb_fstab']['umount_ignores']['mount_points']
+* node['fb_fstab']['umount_ignores']['mount_point_prefixes']
 * node['fb_fstab']['mounts'][$NAME]['device']
 * node['fb_fstab']['mounts'][$NAME]['mount_point']
 * node['fb_fstab']['mounts'][$NAME]['type']

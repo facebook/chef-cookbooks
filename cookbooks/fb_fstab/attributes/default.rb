@@ -62,5 +62,6 @@ default['fb_fstab'] = {
       '/sys/kernel/security',
       '/sys/fs/fuse/connections',
     ],
+    'mount_point_prefixes' => [],
   },
 }

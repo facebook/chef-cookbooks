@@ -203,6 +203,8 @@ module FB
         node['fb_fstab']['umount_ignores']['device_prefixes'].dup
       mounts_to_skip =
         node['fb_fstab']['umount_ignores']['mount_points'].dup
+      mount_prefixes_to_skip =
+        node['fb_fstab']['umount_ignores']['mount_point_prefixes'].dup
       fstypes_to_skip = node['fb_fstab']['umount_ignores']['types'].dup
 
       base_mounts = get_base_mounts
@@ -252,7 +254,15 @@ module FB
         end
           Chef::Log.debug(
             "fb_fstab: Skipping umount check for #{mounted_data['device']} " +
-            "(#{mounted_data['mount']}) - magic or unsupported",
+            "(#{mounted_data['mount']}) - exempted device prefix",
+          )
+          next
+        elsif mount_prefixes_to_skip.any? do |i|
+          mounted_data['mount'] && mounted_data['mount'].start_with?(i)
+        end
+          Chef::Log.debug(
+            "fb_fstab: Skipping umount check for #{mounted_data['device']} " +
+            "(#{mounted_data['mount']}) - exempted mount_point prefix",
           )
           next
         end
