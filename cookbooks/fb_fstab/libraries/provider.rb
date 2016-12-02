@@ -97,7 +97,7 @@ module FB
 
     def get_base_mounts
       mounts = {}
-      ::File.read(FB::Fstab::BASE_FILENAME).each_line do |line|
+      FB::Fstab.load_base_fstab.each_line do |line|
         next if line.strip.empty?
         bits = line.split
         begin
