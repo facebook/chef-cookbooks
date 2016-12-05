@@ -15,6 +15,8 @@
   terminal = node['fb_grub']['terminal'].join(' ')
   serial = node['fb_grub']['serial'].to_hash
 
+  kernel_extra_args = node['fb_grub']['tboot']['kernel_extra_args'].join(' ')
+
   tboot_cmdline = "logging=#{node['fb_grub']['tboot']['logging'].join(',')}"
   if node['fb_grub']['tboot']['logging'].include?('serial')
     tboot_port = '0x3f8'  # I/O port for ttyS0
@@ -46,7 +48,7 @@ menuentry 'tboot <%= kernel %>' {
   insmod <%= node['fb_grub']['_grub2_module_path'] %>/relocator.mod
   insmod <%= node['fb_grub']['_grub2_module_path'] %>/multiboot2.mod
   multiboot2 /tboot.gz /tboot.gz <%= tboot_cmdline %>
-  module2 <%= @path_prefix %><%= data['path'] %> <%= @path_prefix %><%= data['path'] %> <%= kargs %> intel_iommu=on noefi
+  module2 <%= @path_prefix %><%= data['path'] %> <%= @path_prefix %><%= data['path'] %> <%= kargs %> <%= kernel_extra_args %>
 <%     if data['initrd_path'] -%>
   module2 <%= @path_prefix %><%= data['initrd_path'] %> <%= @path_prefix %><%= data['initrd_path'] %>
 <%     end -%>

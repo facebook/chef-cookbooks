@@ -27,6 +27,10 @@ default['fb_grub'] = {
   'saved_opts' => '',
   'tboot' => {
     'enable' => false,
+    'kernel_extra_args' => [
+      'intel_iommu=on',
+      'noefi',
+    ],
     'logging' => [
       'memory',
     ],
