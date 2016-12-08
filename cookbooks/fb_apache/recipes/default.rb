@@ -10,20 +10,51 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
-confdir = value_for_platform_family(
-  'rhel' => '/etc/httpd/conf.d',
-  'debian' => '/etc/apache2/conf.d',
-)
+apache_version =
+  case node['platform_family']
+  when 'debian'
+    case node['platform']
+    when 'ubuntu'
+      node['platform_version'].to_f >= 13.10 ? '2.4' : '2.2'
+    when 'debian'
+      node['platform_version'].to_f >= 8.0 ? '2.4' : '2.2'
+    else
+      '2.4'
+    end
+  when 'rhel'
+    node['platform_version'].to_f >= 7.0 ? '2.4' : '2.2'
+  end
+
+confdir =
+  case node['platform_family']
+  when 'rhel'
+    '/etc/httpd/conf.d'
+  when 'debian'
+    case apache_version
+    when '2.2'
+      '/etc/apache2/conf.d'
+    when '2.4'
+      '/etc/apache2/conf-enabled'
+    end
+  end
 
 sitesdir = value_for_platform_family(
   'rhel' => confdir,
   'debian' => '/etc/apache2/sites-enabled',
 )
 
-moddir = value_for_platform_family(
-  'rhel' => '/etc/httpd/conf.modules.d',
-  'debian' => '/etc/apache2/modules-enabled',
-)
+moddir =
+  case node['platform_family']
+  when 'rhel'
+    '/etc/httpd/conf.modules.d'
+  when 'debian'
+    case apache_version
+    when '2.2'
+      '/etc/apache2/modules-enabled'
+    when '2.4'
+      '/etc/apache2/mods-enabled'
+    end
+  end
 
 sysconfig = value_for_platform_family(
   'rhel' => '/etc/sysconfig/httpd',
