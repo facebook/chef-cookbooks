@@ -105,6 +105,7 @@ default['fb_apache'] = {
     'rewrite' => 'mod_rewrite.so',
     'setenvif' => 'mod_setenvif.so',
     'speling' => 'mod_speling.so',
+    'ssl' => 'mod_ssl.so',
     'status' => 'mod_status.so',
     'substitute' => 'mod_substitute.so',
     'suexec' => 'mod_suexec.so',
