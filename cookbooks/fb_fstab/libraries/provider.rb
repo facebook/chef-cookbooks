@@ -11,10 +11,16 @@ module FB
   # Module to be loaded into the provider namespace
   module FstabProvider
     def mount(mount_data, in_maint_disks)
-      if in_maint_disks.include?(mount_data['device'])
+      relevant_disk = nil
+      if in_maint_disks.any? do |disk|
+        if mount_data['device'].start_with?(disk)
+          relevant_disk = disk
+          next true
+        end
+      end
         Chef::Log.warn(
           "fb_fstab: Skipping mount of #{mount_data['mount_point']} because " +
-          " device #{mount_data['device']} is marked as in-maintenance",
+          " device #{relevant_disk} is marked as in-maintenance",
         )
         return true
       end
