@@ -59,53 +59,58 @@ whyrun_safe_ruby_block 'initialize_grub_variables' do
     os_device = node.device_of_mount('/')
     m = os_device.match(/[0-9]+$/)
     fail 'fb_grub::default Cannot parse OS device!' unless m
-    os_partition_grub2 = "(hd0,#{m[0].to_i})"
+    os_partition_grub2 = "(#{node['fb_grub']['boot_disk']},#{m[0].to_i})"
 
     node.default['fb_grub']['_grub2_module_path'] =
       "#{os_partition_grub2}/usr/lib/grub/#{node['kernel']['machine']}-efi"
   end
 end
 
-if Pathname.new('/boot').mountpoint?
-  boot_device = node.device_of_mount('/boot')
-  boot_label = node['filesystem2']['by_mountpoint']['/boot']['label']
-  path_prefix = ''
-else
-  boot_device = node.device_of_mount('/')
-  boot_label = node['filesystem2']['by_mountpoint']['/']['label']
-  path_prefix = '/boot'
-end
+whyrun_safe_ruby_block 'initialize_grub_locations' do
+  block do
+    if Pathname.new('/boot').mountpoint?
+      boot_device = node.device_of_mount('/boot')
+      boot_label = node['filesystem2']['by_mountpoint']['/boot']['label']
+      node.default['fb_grub']['path_prefix'] = ''
+    else
+      boot_device = node.device_of_mount('/')
+      boot_label = node['filesystem2']['by_mountpoint']['/']['label']
+      node.default['fb_grub']['path_prefix'] = '/boot'
+    end
 
-if node['fb_grub']['use_labels']
-  if node['fb_grub']['version'] < 2
-    fail 'fb_grub: Booting by label requires grub2.'
+    if node['fb_grub']['use_labels']
+      if node['fb_grub']['version'] < 2
+        fail 'fb_grub: Booting by label requires grub2.'
+      end
+      # TODO: make this work with both uuid + label, like the rootfs_arg section
+      node.default['fb_grub']['_root_label'] = boot_label
+    else
+      # udev block device partitions start at 1
+      # grub disks start at 0
+      m = boot_device.match(/[0-9]+$/)
+      fail 'fb_grub::default Cannot parse boot device!' unless m
+
+      grub_partition = m[0].to_i - 1
+      root_device = "(#{node['fb_grub']['boot_disk']},#{grub_partition})"
+      node.default['fb_grub']['root_device'] = root_device
+
+      root_device_grub2 =
+        "(#{node['fb_grub']['boot_disk']},#{grub_partition + 1})"
+      node.default['fb_grub']['root_device_grub2'] = root_device_grub2
+    end
+
+    # some provisioning configurations do not properly label the root filesystem
+    # Ensure grub is put down with the label matching the fs mounted at / that
+    # has a valid uuid or label. This will skip over things like rootfs mounts.
+    node.default['fb_grub']['rootfs_arg'] = 'LABEL=/'
+    label = node['filesystem2']['by_mountpoint']['/']['label']
+    uuid = node['filesystem2']['by_mountpoint']['/']['uuid']
+    if label && !label.empty?
+      node.default['fb_grub']['rootfs_arg'] = "LABEL=#{label}"
+    elsif uuid && !uuid.empty?
+      node.default['fb_grub']['rootfs_arg'] = "UUID=#{uuid}"
+    end
   end
-  # TODO: make this work with both uuid and label, like the rootfs_arg section
-  node.default['fb_grub']['_root_label'] = boot_label
-else
-  # udev block device partitions start at 1
-  # grub disks start at 0
-  m = boot_device.match(/[0-9]+$/)
-  fail 'fb_grub::default Cannot parse boot device!' unless m
-
-  grub_partition = m[0].to_i - 1
-  root_device = "(hd0,#{grub_partition})"
-  node.default['fb_grub']['root_device'] = root_device
-
-  root_device_grub2 = "(hd0,#{grub_partition + 1})"
-  node.default['fb_grub']['root_device_grub2'] = root_device_grub2
-end
-
-# some provisioning configurations do not properly label the root filesystem
-# Ensure grub is put down with the label matching the fs mounted at / that
-# has a valid uuid or label. This will skip over things like rootfs mounts.
-node.default['fb_grub']['rootfs_arg'] = 'LABEL=/'
-label = node['filesystem2']['by_mountpoint']['/']['label']
-uuid = node['filesystem2']['by_mountpoint']['/']['uuid']
-if label && !label.empty?
-  node.default['fb_grub']['rootfs_arg'] = "LABEL=#{label}"
-elsif uuid && !uuid.empty?
-  node.default['fb_grub']['rootfs_arg'] = "UUID=#{uuid}"
 end
 
 whyrun_safe_ruby_block 'check_root_device' do
@@ -151,7 +156,6 @@ template 'grub_config' do
   owner 'root'
   group 'root'
   mode node.efi? ? '0700' : '0644'
-  variables(:path_prefix => path_prefix)
 end
 
 template 'Additional grub.conf' do
@@ -166,7 +170,6 @@ template 'Additional grub.conf' do
   owner 'root'
   group 'root'
   mode node.efi? ? '0700' : '0644'
-  variables(:path_prefix => path_prefix)
 end
 
 # GRUB 2
@@ -187,9 +190,6 @@ template 'grub2_config' do
   owner 'root'
   group 'root'
   mode node.efi? ? '0700' : '0644'
-  variables(
-    :path_prefix => path_prefix,
-  )
 end
 
 # cleanup configs for the grub that we're not using

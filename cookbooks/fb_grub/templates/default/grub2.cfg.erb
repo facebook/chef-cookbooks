@@ -29,6 +29,8 @@
                      tboot_port
   end
 
+  path_prefix = node['fb_grub']['path_prefix']
+
   # default is 0 because we'll automagically put the non-kdump kernel first
 -%>
 set default=0
@@ -48,18 +50,18 @@ menuentry 'tboot <%= kernel %>' {
   insmod <%= node['fb_grub']['_grub2_module_path'] %>/relocator.mod
   insmod <%= node['fb_grub']['_grub2_module_path'] %>/multiboot2.mod
   multiboot2 /tboot.gz /tboot.gz <%= tboot_cmdline %>
-  module2 <%= @path_prefix %><%= data['path'] %> <%= @path_prefix %><%= data['path'] %> <%= kargs %> <%= kernel_extra_args %>
+  module2 <%= path_prefix %><%= data['path'] %> <%= path_prefix %><%= data['path'] %> <%= kargs %> <%= kernel_extra_args %>
 <%     if data['initrd_path'] -%>
-  module2 <%= @path_prefix %><%= data['initrd_path'] %> <%= @path_prefix %><%= data['initrd_path'] %>
+  module2 <%= path_prefix %><%= data['initrd_path'] %> <%= path_prefix %><%= data['initrd_path'] %>
 <%     end -%>
 }
 <%   end -%>
 
 menuentry '<%= kernel %>' {
   <%= root_line %>
-  <%= node['fb_grub']['_grub2_linux_statement'] %> <%= @path_prefix %><%= data['path'] %> <%= kargs %>
+  <%= node['fb_grub']['_grub2_linux_statement'] %> <%= path_prefix %><%= data['path'] %> <%= kargs %>
 <%   if data['initrd_path'] -%>
-  <%= node['fb_grub']['_grub2_initrd_statement'] %> <%= @path_prefix %><%= data['initrd_path'] %>
+  <%= node['fb_grub']['_grub2_initrd_statement'] %> <%= path_prefix %><%= data['initrd_path'] %>
 <%   end -%>
 }
 <% end -%>

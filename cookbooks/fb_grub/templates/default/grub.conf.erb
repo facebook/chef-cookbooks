@@ -10,6 +10,8 @@
 
   terminal = node['fb_grub']['terminal'].join(' ')
 
+  path_prefix = node['fb_grub']['path_prefix']
+
   # default is 0 because we'll automagically put the non-kdump kernel first
 -%>
 default=0
@@ -18,8 +20,8 @@ terminal --timeout=<%= node['fb_grub']['timeout'] %> <%= terminal %>
 <% node['fb_grub']['kernels'].to_hash.each do |kernel, data| -%>
 title <%= kernel %>
   root <%= root_device %>
-  kernel <%= @path_prefix %><%= data['path'] %> <%= kargs %>
+  kernel <%= path_prefix %><%= data['path'] %> <%= kargs %>
 <%   if data['initrd_path'] -%>
-  initrd <%= @path_prefix %><%= data['initrd_path'] %>
+  initrd <%= path_prefix %><%= data['initrd_path'] %>
 <%   end -%>
 <% end -%>

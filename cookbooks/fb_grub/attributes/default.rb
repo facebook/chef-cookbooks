@@ -37,4 +37,5 @@ default['fb_grub'] = {
   },
   'version' => version,
   'use_labels' => false,
+  'boot_disk' => 'hd0',
 }
