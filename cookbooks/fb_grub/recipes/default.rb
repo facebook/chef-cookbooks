@@ -113,14 +113,18 @@ whyrun_safe_ruby_block 'initialize_grub_locations' do
   end
 end
 
+# For non-efi, non-labeled systems, double check root_device
 whyrun_safe_ruby_block 'check_root_device' do
-  only_if { File.exist?(node['fb_grub']['_grub_config']) }
+  only_if do
+    File.exist?(node['fb_grub']['_grub_config']) &&
+   !node['fb_grub']['use_labels']
+  end
   block do
     File.open(node['fb_grub']['_grub_config']).each do |line|
       if !node.efi? && line.match(/^\s*root\s*/)
         # we want to assert no change in root device when not using EFI
         current_root_device = line.split[1]
-        if current_root_device != root_device
+        if current_root_device != node['fb_grub']['root_device']
           fail 'fb_grub::default Grub root device mismatch: '\
                "expected #{root_device}, found #{current_root_device}"
         end
