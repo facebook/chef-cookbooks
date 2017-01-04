@@ -30,8 +30,8 @@ def modprobe_module(new_resource, unload)
   # Correctly handle built-in modules. If no parameters were supplied, we just
   # return true. If the caller supplied parameters, we fail the Chef run and ask
   # them to fix their cookbook, since we can't apply them.
-  if ::File.exist?("/sys/modules/#{module_name}")
-    unless ::File.exist?("/sys/modules/#{module_name}/initstate")
+  if ::File.exist?("/sys/module/#{module_name}")
+    unless ::File.exist?("/sys/module/#{module_name}/initstate")
       ::Chef::Log.warn("fb_modprobe called on built-in module '#{module_name}'")
       unless params.empty?
         fail <<-FAIL
