@@ -17,7 +17,7 @@ module FB
     }.freeze
 
     def self.indentstr(indent)
-      indent.times.map { '  ' }.join('')
+      '  ' * indent
     end
 
     # Map a hash to a apache-style syntax
