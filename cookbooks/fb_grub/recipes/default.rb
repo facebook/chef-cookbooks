@@ -16,58 +16,11 @@ fb_grub_packages 'install packages'
 
 grub_base_dir = '/boot/grub'
 grub2_base_dir = '/boot/grub2'
-node.default['fb_grub']['_grub_config'] = "#{grub_base_dir}/grub.conf"
-node.default['fb_grub']['_grub2_config'] = "#{grub2_base_dir}/grub.cfg"
-node.default['fb_grub']['_vendor'] = 'undefined'
-node.default['fb_grub']['_efi_vendor_dir'] = '/notdefined'
-node.default['fb_grub']['_grub2_module_path'] = '/notdefined'
-node.default['fb_grub']['_grub2_linux_statement'] = 'linux'
-node.default['fb_grub']['_grub2_initrd_statement'] = 'initrd'
-
-whyrun_safe_ruby_block 'initialize_grub_variables' do
-  only_if { node.efi? }
-  block do
-    if node.centos6?
-      node.default['fb_grub']['_vendor'] = 'redhat'
-    elsif node.debian?
-      node.default['fb_grub']['_vendor'] = 'debian'
-    else
-      node.default['fb_grub']['_vendor'] = 'centos'
-    end
-
-    if node['fb_grub']['version'] == 2
-      unless node.centos6?
-        node.default['fb_grub']['_grub2_linux_statement'] = 'linuxefi'
-        node.default['fb_grub']['_grub2_initrd_statement'] = 'initrdefi'
-      end
-      if node.debian?
-        node.default['fb_grub']['_vendor'] = 'debian'
-      else
-        node.default['fb_grub']['_vendor'] = 'centos'
-      end
-    end
-
-    node.default['fb_grub']['_efi_vendor_dir'] =
-      "/boot/efi/EFI/#{node['fb_grub']['_vendor']}"
-
-    node.default['fb_grub']['_grub_config'] =
-      "#{node['fb_grub']['_efi_vendor_dir']}/grub.conf"
-    node.default['fb_grub']['_grub2_config'] =
-      "#{node['fb_grub']['_efi_vendor_dir']}/grub.cfg"
-
-    # Calculate the grub2 partition for the OS
-    os_device = node.device_of_mount('/')
-    m = os_device.match(/[0-9]+$/)
-    fail 'fb_grub::default Cannot parse OS device!' unless m
-    os_partition_grub2 = "(#{node['fb_grub']['boot_disk']},#{m[0].to_i})"
-
-    node.default['fb_grub']['_grub2_module_path'] =
-      "#{os_partition_grub2}/usr/lib/grub/#{node['kernel']['machine']}-efi"
-  end
-end
 
 whyrun_safe_ruby_block 'initialize_grub_locations' do
   block do
+    bootdisk_guess = 'hd0'
+
     if Pathname.new('/boot').mountpoint?
       boot_device = node.device_of_mount('/boot')
       boot_label = node['filesystem2']['by_mountpoint']['/boot']['label']
@@ -85,18 +38,23 @@ whyrun_safe_ruby_block 'initialize_grub_locations' do
       # TODO: make this work with both uuid + label, like the rootfs_arg section
       node.default['fb_grub']['_root_label'] = boot_label
     else
-      # udev block device partitions start at 1
-      # grub disks start at 0
-      m = boot_device.match(/[0-9]+$/)
-      fail 'fb_grub::default Cannot parse boot device!' unless m
-
-      grub_partition = m[0].to_i - 1
-      root_device = "(#{node['fb_grub']['boot_disk']},#{grub_partition})"
-      node.default['fb_grub']['root_device'] = root_device
-
-      root_device_grub2 =
-        "(#{node['fb_grub']['boot_disk']},#{grub_partition + 1})"
-      node.default['fb_grub']['root_device_grub2'] = root_device_grub2
+      # If nothing has set the root_device so far, fall back to the old logic
+      # and set it by using the hardcoded boot_disk parameter
+      unless node['fb_grub']['root_device']
+        # This is the old, somewhat broken logic to use a hardcoded root
+        # udev block device partitions start at 1
+        # grub disks start at 0
+        m = boot_device.match(/[0-9]+$/)
+        fail 'fb_grub::default Cannot parse boot device!' unless m
+        grub_partition = m[0].to_i
+        grub_partition -= 1 if node['fb_grub']['version'] < 2
+        # In case somebody has set an override, just take whatever they set
+        # otherwise just use the default and hope for the best.
+        boot_disk = node['fb_grub']['boot_disk'] || bootdisk_guess
+        root_device = "#{boot_disk},#{grub_partition}"
+        Chef::Log.info("Using old root device logic: #{root_device}")
+        node.default['fb_grub']['root_device'] = root_device
+      end
     end
 
     # some provisioning configurations do not properly label the root filesystem
@@ -110,25 +68,25 @@ whyrun_safe_ruby_block 'initialize_grub_locations' do
     elsif uuid && !uuid.empty?
       node.default['fb_grub']['rootfs_arg'] = "UUID=#{uuid}"
     end
-  end
-end
-
-# For non-efi, non-labeled systems, double check root_device
-whyrun_safe_ruby_block 'check_root_device' do
-  only_if do
-    File.exist?(node['fb_grub']['_grub_config']) &&
-   !node['fb_grub']['use_labels']
-  end
-  block do
-    File.open(node['fb_grub']['_grub_config']).each do |line|
-      if !node.efi? && line.match(/^\s*root\s*/)
-        # we want to assert no change in root device when not using EFI
-        current_root_device = line.split[1]
-        if current_root_device != node['fb_grub']['root_device']
-          fail 'fb_grub::default Grub root device mismatch: '\
-               "expected #{root_device}, found #{current_root_device}"
-        end
+    # Calculate the grub2 partition for the OS
+    if node.efi? && node['fb_grub']['version'] == 2
+      os_device = node.device_of_mount('/')
+      m = os_device.match(/[0-9]+$/)
+      fail 'fb_grub::default Cannot parse OS device!' unless m
+      # People can override the boot_disk if they have a good reason.
+      if node['fb_grub']['boot_disk']
+        boot_disk = node['fb_grub']['boot_disk']
+      elsif node['fb_grub']['root_device']
+        boot_disk = node['fb_grub']['root_device'].split(',')[0]
+      else
+        # This basically just happens if someone enables labels
+        # but doesn't override the boot_disk param and we don't use our new
+        # logic to figure out the boot disk
+        boot_disk = bootdisk_guess
       end
+      os_part = "#{boot_disk},#{m[0].to_i})"
+      module_path = "#{os_part}/usr/lib/grub/#{node['kernel']['machine']}-efi"
+      node.default['fb_grub']['_grub2_module_path'] = module_path
     end
   end
 end

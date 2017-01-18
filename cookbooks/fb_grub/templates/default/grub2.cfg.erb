@@ -9,7 +9,7 @@
   if node['fb_grub']['_root_label']
     root_line = "search --set=root --label #{node['fb_grub']['_root_label']}"
   else
-    root_line = "set root='#{node['fb_grub']['root_device_grub2']}'"
+    root_line = "set root='(#{node['fb_grub']['root_device']})'"
   end
 
   terminal = node['fb_grub']['terminal'].join(' ')
