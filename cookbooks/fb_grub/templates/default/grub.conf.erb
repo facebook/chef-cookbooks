@@ -19,7 +19,7 @@ timeout=<%= node['fb_grub']['timeout'] %>
 terminal --timeout=<%= node['fb_grub']['timeout'] %> <%= terminal %>
 <% node['fb_grub']['kernels'].to_hash.each do |kernel, data| -%>
 title <%= kernel %>
-  root <%= root_device %>
+  root (<%= root_device %>)
   kernel <%= path_prefix %><%= data['path'] %> <%= kargs %>
 <%   if data['initrd_path'] -%>
   initrd <%= path_prefix %><%= data['initrd_path'] %>
