@@ -72,7 +72,7 @@ attributes `node['fb_systemd']['system']` and `node['fb_systemd']['user']`.
 This is useful e.g. to set system-level limits for services (as systemd doesn't
 enforce PAM limits set via `fb_limits` for system services), such as:
 
-  node.default['fb_systemd']['system']['DefaultLimitNOFILE'] = 65535 
+    node.default['fb_systemd']['system']['DefaultLimitNOFILE'] = 65535 
 
 Refer to the 
 [systemd documentation](https://www.freedesktop.org/software/systemd/man/systemd-system.conf.html) 
@@ -89,19 +89,19 @@ Additional entries to the hardware database can be entered using the
 [hwdb documentation](https://www.freedesktop.org/software/systemd/man/hwdb.html).
 Example:
 
-  node.default['fb_systemd']['udevd']['hwdb']['evdev:input:b0003v05AFp8277*'] = {
-    'KEYBOARD_KEY_70039' => 'leftalt',
-    'KEYBOARD_KEY_700e2' => 'leftctrl',
-  }
+    node.default['fb_systemd']['udevd']['hwdb']['evdev:input:b0003v05AFp8277*'] = {
+      'KEYBOARD_KEY_70039' => 'leftalt',
+      'KEYBOARD_KEY_700e2' => 'leftctrl',
+    }
 
 Additional udev rules can be defined using the 
 `node['fb_systemd']['udevd']['rules']` attribute, as described in the
 [udev documentation](https://www.freedesktop.org/software/systemd/man/udev.html).
 Example:
 
-  node.default['fb_systemd']['udevd']['rules'] += [
-    'KERNEL=="fd[0-9]*", OWNER="john"',
-  ]
+    node.default['fb_systemd']['udevd']['rules'] += [
+      'KERNEL=="fd[0-9]*", OWNER="john"',
+    ]
 
 ### journald configuration
 Journald is a critical system daemon and cannot be disabled. By default we 
@@ -187,14 +187,14 @@ transparently on non-systemd hosts as well.
 Use `node['fb_systemd']['tmpfiles']` to control the creation, deletion
 and cleaning of volatile and temporary files. For example:
 
-  node.default['fb_systemd']['tmpfiles']['/run/user'] = {
-    'type' => 'd',
-    'mode' => '0755',
-    'uid' => 'root',
-    'gid' => 'root',
-    'age' => '10d',
-    'argument' => '-',
-  }
+    node.default['fb_systemd']['tmpfiles']['/run/user'] = {
+      'type' => 'd',
+      'mode' => '0755',
+      'uid' => 'root',
+      'gid' => 'root',
+      'age' => '10d',
+      'argument' => '-',
+    }
 
 If `type` is omitted, it defaults to `f` (create a regular file); if `path` is
 omitted, it defaults to the configuration key (i.e. `/run/user` in the example).

@@ -47,13 +47,14 @@ to that array, ex.
 
     node.default['fb_grub']['kernel_cmdline_args'] << 'crashkernel=128M'
 
-Previous versions of the cookbook assumed the device containing grub is
-enumerated as hd0. Grub2 can use labels or uuid. The option
-node['fb_grub']['use_labels'] allows users to opt into `search` behaviour
+Previous versions of this cookbook assumed the device containing grub is
+enumerated as `hd0`. GRUB 2 can use labels or UUIDs. The option
+`node['fb_grub']['use_labels']` allows users to opt into `search` behaviour
 instead of hard coding the device.
 
-If the device absolutely needs to be hardcoded, it can be overriden, as in
-    node.default['fb_grub']['boot_disk'] = "hd1"
+If the device absolutely needs to be hardcoded, it can be overriden, as in:
+
+    node.default['fb_grub']['boot_disk'] = 'hd1'
 
 ### tboot
 This cookbook optionally supports enabling tboot. This is only supported for
