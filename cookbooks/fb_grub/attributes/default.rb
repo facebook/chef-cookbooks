@@ -86,9 +86,11 @@ if File.exist?(original_grub_config)
   #
   # Extracted string will be: hd0,2 regardless
   content = File.read(original_grub_config)
-  # This will extract the first root directive from the file
+  # This will extract the first root directive from the file that is
+  # not a comment.
   # This isn't a very generalizable solution.
-  original_root_device = content[/root[=\s]+['"]?\(?([\w,]+)\)?['"]?/, 1]
+  filter_regexp = /^\s*[^#]\s*root[=\s]+['"]?\(?([\w,]+)\)?['"]?/
+  original_root_device = content[filter_regexp, 1]
   if original_root_device && !original_root_device.empty?
     # Setting this will make sure we don't
     fb_grub['root_device'] = original_root_device
