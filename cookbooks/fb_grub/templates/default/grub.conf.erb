@@ -7,6 +7,7 @@
 
   kargs = "ro root=#{root_arg} #{cmdline_args.uniq.join(' ')}"
   root_device = node['fb_grub']['root_device']
+  device_hints = node['fb_grub']['_device_hints']
 
   terminal = node['fb_grub']['terminal'].join(' ')
 
@@ -17,6 +18,9 @@
 default=0
 timeout=<%= node['fb_grub']['timeout'] %>
 terminal --timeout=<%= node['fb_grub']['timeout'] %> <%= terminal %>
+<% device_hints.each do |hint| %>
+<%=  hint %>
+<% end %>
 <% node['fb_grub']['kernels'].to_hash.each do |kernel, data| -%>
 title <%= kernel %>
   root (<%= root_device %>)
