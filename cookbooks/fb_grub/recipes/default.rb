@@ -84,7 +84,7 @@ whyrun_safe_ruby_block 'initialize_grub_locations' do
         # logic to figure out the boot disk
         boot_disk = bootdisk_guess
       end
-      os_part = "#{boot_disk},#{m[0].to_i})"
+      os_part = "(#{boot_disk},#{m[0].to_i})"
       module_path = "#{os_part}/usr/lib/grub/#{node['kernel']['machine']}-efi"
       node.default['fb_grub']['_grub2_module_path'] = module_path
     end
