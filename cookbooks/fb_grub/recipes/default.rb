@@ -12,9 +12,7 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
-fb_grub_packages 'manage GRUB packages' do
-  only_if { node['fb_grub']['manage_packages'] }
-end
+fb_grub_packages 'install packages'
 
 grub_base_dir = '/boot/grub'
 grub2_base_dir = '/boot/grub2'
