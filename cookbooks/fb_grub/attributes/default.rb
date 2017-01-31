@@ -47,6 +47,7 @@ fb_grub = {
   },
   'version' => version,
   'use_labels' => false,
+  'manage_packages' => true,
 }
 
 if node.efi? && version == 2 && !node.centos6?
