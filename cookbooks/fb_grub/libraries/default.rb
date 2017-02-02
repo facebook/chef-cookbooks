@@ -26,7 +26,7 @@ module FB
     #
     # Extracted string will be in the form of 'hd0,2' regardless
     def self.extract_root_device(full_fstab)
-      root_device_regexp = /^\s*[^#].*root[=\s]+['"]?\(?([\w,]+)\)?['"]?/
+      root_device_regexp = /^\s*[^#].*root[=\s]+['"]?\(?(\w+,\w+)\)?['"]?/
       full_fstab[root_device_regexp, 1]
     end
 
