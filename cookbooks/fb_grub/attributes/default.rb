@@ -85,7 +85,8 @@ if File.exist?(original_grub_config)
     fb_grub['_device_hints'] = original_device_hints
     Chef::Log.debug("Found #{original_device_hints.size} grub device hints.")
   else
-    fail "fb_grub::default Can't parse grub config: #{original_grub_config}"
+    Chef::Log.warn("fb_grub::default Can't parse grub config: " +
+                   original_grub_config.to_s)
   end
 end
 
