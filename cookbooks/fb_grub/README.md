@@ -22,6 +22,7 @@ Attributes
 * node['fb_grub']['version']
 * node['fb_grub']['use_labels']
 * node['fb_grub']['boot_disk']
+* node['fb_grub']['manage_packages']
 
 Usage
 -----
@@ -32,7 +33,9 @@ in `node['fb_grub']['kernels']`. In most cases you'll probably want to write a
 statically populating it. If you need to parse or compare kernel versions as
 part of this, you may find the `FB::Version` class in `fb_helpers` useful.
 Note that this cookbook will not install a kernel for you, it will just
-control the GRUB config.
+control the GRUB config. The cookbook will install and keep updated the 
+appropriate GRUB packages; if you'd rather handle this somewhere else, set
+`node['fb_grub']['manage_packages']` to `false`.
 
 This cookbook sets the GRUB timeout to 5 unless otherwise specified using
 `node['fb_grub']['timeout']`. It defaults GRUB output to the system
@@ -43,7 +46,7 @@ appropriate (defaults to first serial port, 57600, 8-N-1).
 Adding kernel command line args is accomplished by adding the argument as
 an element to the `node['fb_grub']['kernel_cmdline_args']` array.
 Simply append the full text of the kernel command line arg as an element
-to that array, ex.
+to that array, e.g.:
 
     node.default['fb_grub']['kernel_cmdline_args'] << 'crashkernel=128M'
 
