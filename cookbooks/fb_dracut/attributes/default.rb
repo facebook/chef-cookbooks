@@ -22,6 +22,7 @@ end
 
 default['fb_dracut'] = {
   'conf' => {
+    'add_dracutmodules' => [],
     'drivers' => [],
     'add_drivers' => add_drivers,
     'omit_drivers' => [],
