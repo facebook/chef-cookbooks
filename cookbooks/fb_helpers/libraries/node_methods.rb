@@ -199,15 +199,12 @@ class Chef
     end
 
     def efi?
-      # NOTE: THIS FOLLOWING COMMENT DOESN'T SEEM TO BE TRUE.
-      # check drivers/firmware/efi/efi.c and drivers/firmware/efi/efivars.c
-      # In the kernel source tree.
-      #
-      # We cannot rely on the existence of /sys/firmware/efi, as it only
-      # appears when the kernel module efivars is inserted, and that doesn't
-      # always happen. On the contrary, for booting into EFI you need /boot/efi
-      # mounted as a VFAT partition, and that's what we will use.
-      return File.exist?('/boot/efi') && node.device_of_mount('/boot/efi')
+      if FB::Version.new(node['os_version']) >= FB::Version.new('3.10')
+        return File.directory?('/sys/firmware/efi')
+      else
+        Chef::Log.warn('EFI detection on kernels < 3.10 is less reliable!')
+        return File.exist?('/boot/efi') && node.device_of_mount('/boot/efi')
+      end
     end
 
     def aarch64?
