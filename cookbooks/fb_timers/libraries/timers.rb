@@ -10,13 +10,6 @@
 
 module FB
   module Systemd
-    # Path to use for timer-related unit files.
-    # We keep them in a directory separate from normal unit files so we can
-    # delete them when they are removed from fb_timers attributes. If they
-    # were mixed into the normal system unit files, we wouldn't be able to
-    # tell which were owned by fb_timers when they are deleted, leaving stale
-    # services/timers around.
-    TIMER_PATH = '/etc/systemd/timers'.freeze
 
     # Path on the system where systemd units live.
     # This should be the path that `systemctl link` places the unit files at.

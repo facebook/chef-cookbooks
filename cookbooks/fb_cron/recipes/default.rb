@@ -89,7 +89,10 @@ whyrun_safe_ruby_block 'validate_data' do
   end
 end
 
-template '/etc/cron.d/fb_crontab' do
+template 'fb_cron crontab' do
+  path lazy {
+    node['fb_cron']['_crontab_path']
+  }
   source 'fb_crontab.erb'
   owner 'root'
   group 'root'

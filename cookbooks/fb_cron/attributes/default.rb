@@ -10,4 +10,9 @@
 default['fb_cron'] = {
   'jobs' => {},
   'environment' => {},
+
+  # Path for the crontab that contains all the fb_cron job entries.
+  # This is a hidden attribute because people shouldn't change this unless
+  # they know what they're doing.
+  '_crontab_path' => '/etc/cron.d/fb_crontab',
 }

@@ -19,14 +19,20 @@ end
 # of this cookbook, since they don't run fb_systemd in any other way.
 include_recipe 'fb_systemd::default'
 
-directory FB::Systemd::TIMER_PATH do
+directory 'timer path' do
+  path lazy {
+    node['fb_timers']['_timer_path']
+  }
   owner 'root'
   group 'root'
   mode '0755'
   action :create
 end
 
-file "#{FB::Systemd::TIMER_PATH}/README" do
+file 'fb_timers readme' do
+  path lazy {
+    "#{node['fb_timers']['_timer_path']}/README"
+  }
   content "This directory is managed by the chef cookbook fb_timers.\n" +
           'DO NOT put unit files here; they will be deleted.'
   mode '0644'

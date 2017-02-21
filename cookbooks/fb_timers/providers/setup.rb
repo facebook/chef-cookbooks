@@ -16,14 +16,17 @@ use_inline_resources
 
 action :run do
   # Delete old jobs
-  Dir.glob("#{FB::Systemd::TIMER_PATH}/*").each do |path|
+  Dir.glob("#{node['fb_timers']['_timer_path']}/*").each do |path|
     # this doubles as the unit name.
     fname = ::File.basename(path)
 
     # This is managed by the cookbook, skip it.
     next if fname == 'README'
 
-    exp = /^(\w+)\.(service|timer)$/
+    # Don't delete any directories
+    next if ::File.directory?(path)
+
+    exp = /^([\w:-]+)\.(service|timer)$/
     m = exp.match(fname)
     if m
       name = m[1]
@@ -67,7 +70,7 @@ action :run do
     end
 
     %w{service timer}.each do |type|
-      filename = "#{FB::Systemd::TIMER_PATH}/#{conf['name']}.#{type}"
+      filename = "#{node['fb_timers']['_timer_path']}/#{conf['name']}.#{type}"
       template filename do
         source "#{type}.erb"
         mode '0644'
@@ -99,7 +102,7 @@ action :run do
     # only delete symlinks
     ::File.symlink?(unit) &&
       # whose targets are timer files
-      ::File.readlink(unit).start_with?(FB::Systemd::TIMER_PATH) &&
+      ::File.readlink(unit).start_with?(node['fb_timers']['_timer_path']) &&
       # whose targets don't exist
       !::File.exist?(::File.readlink(unit))
   end
