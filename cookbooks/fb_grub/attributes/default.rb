@@ -69,24 +69,32 @@ else
   fb_grub['_grub2_config'] = "#{fb_grub['_grub2_base_dir']}/grub.cfg"
 end
 
-# If something did put a .before_chef file in place, we will extract
-# the root_device from it. If the file does not exist (e.g. on older existing
-# systems), we will use our old heuristics and hardcoding in default.rb in
-# the recipes folder.
-original_grub_config = '/root/grub.before_chef'
-if File.exist?(original_grub_config)
-  content = File.read(original_grub_config)
-  original_root_device = FB::Grub.extract_root_device(content)
-  original_device_hints = FB::Grub.extract_device_hints(content)
-  if original_root_device
-    # Setting this will make sure we don't
-    fb_grub['root_device'] = original_root_device
-    Chef::Log.debug("Re-using existing root device: #{original_root_device}")
-    fb_grub['_device_hints'] = original_device_hints
-    Chef::Log.debug("Found #{original_device_hints.size} grub device hints.")
-  else
-    Chef::Log.warn("fb_grub::default Can't parse grub config: " +
-                   original_grub_config.to_s)
+# This file is a temporary measure until we are in a glorious 'all grub 2'
+# environment. The fb_grub.use_labels file helps us with NOT rolling
+# the new default out to existing machines
+if version == 2 && File.exist?('/root/grub.use_labels')
+  fb_grub['use_labels'] = true
+else
+  # We are apparently not using labels, so we have to do some detective work.
+  # If something did put a .before_chef file in place, we will extract
+  # the root_device from it. If the file does not exist (e.g. on older existing
+  # systems), we will use our old heuristics and hardcoding in default.rb in
+  # the recipes folder.
+  original_grub_config = '/root/grub.before_chef'
+  if File.exist?(original_grub_config)
+    content = File.read(original_grub_config)
+    original_root_device = FB::Grub.extract_root_device(content)
+    original_device_hints = FB::Grub.extract_device_hints(content)
+    if original_root_device
+      # Setting this will make sure we don't
+      fb_grub['root_device'] = original_root_device
+      Chef::Log.debug("Re-using existing root device: #{original_root_device}")
+      fb_grub['_device_hints'] = original_device_hints
+      Chef::Log.debug("Found #{original_device_hints.size} grub device hints.")
+    else
+      Chef::Log.warn("fb_grub::default Can't parse grub config: " +
+                     original_grub_config.to_s)
+    end
   end
 end
 
