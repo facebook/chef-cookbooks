@@ -33,10 +33,6 @@ whyrun_safe_ruby_block 'initialize_grub_locations' do
       node.default['fb_grub']['path_prefix'] = '/boot'
     end
 
-    if node.centos7? && node['fb']['fbwhoami']['model_name'] == 'LEOPARD_BDW_T4'
-      node.default['fb_grub']['use_labels'] = true
-    end
-
     if node['fb_grub']['use_labels']
       if node['fb_grub']['version'] < 2
         fail 'fb_grub: Booting by label requires grub2.'
