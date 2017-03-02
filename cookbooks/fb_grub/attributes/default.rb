@@ -70,7 +70,7 @@ else
 end
 
 # This file is a temporary measure until we are in a glorious 'all grub 2'
-# environment. The fb_grub.use_labels file helps us with NOT rolling
+# environment. The grub.use_labels file helps us with NOT rolling
 # the new default out to existing machines
 if version == 2 && File.exist?('/root/grub.use_labels')
   fb_grub['use_labels'] = true
