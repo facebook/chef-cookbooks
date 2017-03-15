@@ -144,31 +144,23 @@ directory grub2_base_dir do
   mode '0755'
 end
 
-# For grub 2, we write both efi and bios config files
-[
-  { :type => 'bios', :mode => '0644' },
-  { :type => 'efi', :mode => '0700' },
-].each do |tpl|
-  template "grub2_config_#{tpl[:type]}" do
-    only_if do
-      node['platform_family'] == 'rhel' && node['fb_grub']['kernels'] &&
-        node['fb_grub']['version'] == 2
-    end
-    path lazy { node['fb_grub']["_grub2_config_#{tpl[:type]}"] }
-    source 'grub2.cfg.erb'
-    owner 'root'
-    group 'root'
-    mode tpl[:mode]
+template 'grub2_config' do
+  only_if do
+    node['platform_family'] == 'rhel' && node['fb_grub']['kernels'] &&
+      node['fb_grub']['version'] == 2
   end
+  path lazy { node['fb_grub']['_grub2_config'] }
+  source 'grub2.cfg.erb'
+  owner 'root'
+  group 'root'
+  mode node.efi? ? '0700' : '0644'
 end
 
-# cleanup configs for the grub major version that we're not using
-['_grub_config_bios', '_grub_config_efi'].each do |tpl_name|
-  file "cleanup #{tpl_name}" do
-    not_if { node['fb_grub']['version'] == 1 }
-    path lazy { node['fb_grub'][tpl_name] }
-    action :delete
-  end
+# cleanup configs for the grub that we're not using
+file 'cleanup grub_config' do
+  not_if { node['fb_grub']['version'] == 1 }
+  path lazy { node['fb_grub']['_grub_config'] }
+  action :delete
 end
 
 directory "cleanup #{grub_base_dir}" do
@@ -178,12 +170,10 @@ directory "cleanup #{grub_base_dir}" do
   recursive true
 end
 
-['_grub2_config_bios', '_grub2_config_efi'].each do |tpl_name|
-  file 'cleanup grub2_config' do
-    not_if { node['fb_grub']['version'] == 2 }
-    path lazy { node['fb_grub'][tpl_name] }
-    action :delete
-  end
+file 'cleanup grub2_config' do
+  not_if { node['fb_grub']['version'] == 2 }
+  path lazy { node['fb_grub']['_grub2_config'] }
+  action :delete
 end
 
 directory "cleanup #{grub2_base_dir}" do
