@@ -59,14 +59,19 @@ else
 end
 
 # Set the path to the grub config files
+vendor_dir = "/boot/efi/EFI/#{vendor}"
+fb_grub['_efi_vendor_dir'] = vendor_dir
+fb_grub['_grub_config_efi'] = "#{vendor_dir}/grub.conf"
+fb_grub['_grub2_config_efi'] = "#{vendor_dir}/grub.cfg"
+fb_grub['_grub_config_bios'] = "#{fb_grub['_grub_base_dir']}/grub.conf"
+fb_grub['_grub2_config_bios'] = "#{fb_grub['_grub2_base_dir']}/grub.cfg"
+# Have a 'current' variable that will point to the one that should be in use
 if node.efi?
-  vendor_dir = "/boot/efi/EFI/#{vendor}"
-  fb_grub['_efi_vendor_dir'] = vendor_dir
-  fb_grub['_grub_config'] = "#{vendor_dir}/grub.conf"
-  fb_grub['_grub2_config'] = "#{vendor_dir}/grub.cfg"
+  fb_grub['_grub_config'] = fb_grub['_grub_config_efi']
+  fb_grub['_grub2_config'] = fb_grub['_grub2_config_efi']
 else
-  fb_grub['_grub_config'] = "#{fb_grub['_grub_base_dir']}/grub.conf"
-  fb_grub['_grub2_config'] = "#{fb_grub['_grub2_base_dir']}/grub.cfg"
+  fb_grub['_grub_config'] = fb_grub['_grub_config_bios']
+  fb_grub['_grub2_config'] = fb_grub['_grub2_config_bios']
 end
 
 # This file is a temporary measure until we are in a glorious 'all grub 2'
