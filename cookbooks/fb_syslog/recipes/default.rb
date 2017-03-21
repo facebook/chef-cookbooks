@@ -29,11 +29,13 @@ if node.centos?
     action :upgrade
   end
   # only rotate rsyslog stats logs if we have them
-  if node['fb_syslog']['rsyslog_stats_logging']
-    node.default['fb_logrotate']['configs']['rsyslog-stats'] = {
-      'files' => ['/var/log/rsyslog-stats.log'],
-    }
-  end
+  node.default['fb_logrotate']['configs']['rsyslog-stats'] = {
+    'files' => ['/var/log/rsyslog-stats.log'],
+    'overrides' => {
+      'missingok' => true,
+      'notifempty' => true,
+    },
+  }
   directory '/var/spool/rsyslog' do
     owner 'root'
     group 'root'
