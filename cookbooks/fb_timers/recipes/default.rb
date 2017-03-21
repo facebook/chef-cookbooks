@@ -19,6 +19,17 @@ end
 # of this cookbook, since they don't run fb_systemd in any other way.
 include_recipe 'fb_systemd::default'
 
+# The default timer location
+directory '/etc/systemd/timers' do
+  owner 'root'
+  group 'root'
+  mode '0755'
+  action :create
+end
+
+# The custom timer location (if different from the default)
+# We create the default in addition to the custom path so the custom path
+# can be inside the default path (e.g. /etc/systemd/timers/foo_bar)
 directory 'timer path' do
   path lazy {
     node['fb_timers']['_timer_path']
@@ -27,6 +38,9 @@ directory 'timer path' do
   group 'root'
   mode '0755'
   action :create
+  only_if do
+    node['fb_timers']['_timer_path'] != '/etc/systemd/timers'
+  end
 end
 
 file 'fb_timers readme' do
