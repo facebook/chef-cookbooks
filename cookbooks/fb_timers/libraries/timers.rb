@@ -10,7 +10,6 @@
 
 module FB
   module Systemd
-
     # Path on the system where systemd units live.
     # This should be the path that `systemctl link` places the unit files at.
     UNIT_PATH = '/etc/systemd/system'.freeze
