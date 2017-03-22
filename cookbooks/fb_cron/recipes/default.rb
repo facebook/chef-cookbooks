@@ -113,6 +113,13 @@ if envfile # ~FC023
   end
 end
 
+# Cleanup rpmnew and rpmsave files
+Dir.glob('/etc/cron*/*.rpm{save,new}').each do |todel|
+  file todel do
+    action :delete
+  end
+end
+
 # Make sure we nuke all crons from the cron resource.
 file '/var/spool/cron/root' do
   action :delete
