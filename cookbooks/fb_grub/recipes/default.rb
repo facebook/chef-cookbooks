@@ -159,6 +159,12 @@ end
     owner 'root'
     group 'root'
     mode tpl[:mode]
+    variables(
+      {
+        'linux_statement' => tpl[:type] == 'efi' ? 'linuxefi' : 'linux',
+        'initrd_statement' => tpl[:type] == 'efi' ? 'initrdefi' : 'initrd',
+      },
+    )
   end
 end
 

@@ -50,14 +50,6 @@ fb_grub = {
   'manage_packages' => true,
 }
 
-if node.efi? && version == 2 && !node.centos6?
-  fb_grub['_grub2_linux_statement'] = 'linuxefi'
-  fb_grub['_grub2_initrd_statement'] = 'initrdefi'
-else
-  fb_grub['_grub2_linux_statement'] = 'linux'
-  fb_grub['_grub2_initrd_statement'] = 'initrd'
-end
-
 # Set the path to the grub config files
 vendor_dir = "/boot/efi/EFI/#{vendor}"
 fb_grub['_efi_vendor_dir'] = vendor_dir

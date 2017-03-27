@@ -59,9 +59,9 @@ menuentry 'tboot <%= kernel %>' {
 
 menuentry '<%= kernel %>' {
   <%= root_line %>
-  <%= node['fb_grub']['_grub2_linux_statement'] %> <%= path_prefix %><%= data['path'] %> <%= kargs %>
+  <%= @linux_statement %> <%= path_prefix %><%= data['path'] %> <%= kargs %>
 <%   if data['initrd_path'] -%>
-  <%= node['fb_grub']['_grub2_initrd_statement'] %> <%= path_prefix %><%= data['initrd_path'] %>
+  <%= @initrd_statement %> <%= path_prefix %><%= data['initrd_path'] %>
 <%   end -%>
 }
 <% end -%>
