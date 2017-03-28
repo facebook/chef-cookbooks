@@ -276,7 +276,7 @@ module FB
         # Is this device in our list of desired mounts?
         next if should_keep(mounted_data, desired_mounts, base_mounts)
 
-        if node['fb_fstab']['allow_umount']
+        if node['fb_fstab']['enable_unmount']
           converge_by "unmount #{mounted_data['mount']}" do
             umount(mounted_data['mount'])
           end
@@ -284,7 +284,7 @@ module FB
           Chef::Log.warn(
             "fb_fstab: Would umount #{mounted_data['device']} from " +
             "#{mounted_data['mount']}, but " +
-            'node["fb"]["fb_fstab"]["allow_umount"] is false',
+            'node["fb"]["fb_fstab"]["enable_unmount"] is false',
           )
           Chef::Log.debug("fb_fstab: #{mounted_data}")
         end
