@@ -1,6 +1,7 @@
 fb_cron Cookbook
 ====================
-This cookbook provides a simple data-based API for setting crons.
+This cookbook provides a simple data-based API for setting crons and configuring
+the anacrontab environment.
 
 YOU SHOULD NOT BE SETTING YOUR TIER'S CRON JOBS IN THIS COOKBOOK!
 
@@ -16,17 +17,20 @@ Attributes
 * node['fb_cron']['jobs'][$NAME]['only_if']
 * node['fb_cron']['jobs'][$NAME]['splaysecs']
 * node['fb_cron']['jobs'][$NAME]['exclusive']
+* node['fb_cron']['anacrontab']['environment']['$SETTING']
 
 Usage
 -----
 ### Adding Jobs
 `node['fb_cron']['jobs']` is a hash of crons. To add a job, simply do:
 
-    node.default['fb_cron']['jobs']['do_this_thing'] = {
-      'time' => '4 5 * * *',
-      'user' => 'apache',
-      'command' => '/var/www/scripts/foo.php',
-    }
+```
+node.default['fb_cron']['jobs']['do_this_thing'] = {
+  'time' => '4 5 * * *',
+  'user' => 'apache',
+  'command' => '/var/www/scripts/foo.php',
+}
+```
 
 PLEASE NAME YOUR CRONJOB AS FOLLOWS:
 * simple string
@@ -45,12 +49,14 @@ Any cron entry can include an `only_if` that *must* be a `proc`. It will
 be evaluated at runtime and the job will not be included if the only_if does
 not evaluate to true. For example:
 
-    node.default['fb_cron']['jobs']['do_this_thing'] = {
-      'only_if' => proc { node['fb_bla']['enabled'] }
-      'time' => '4 5 * * *',
-      'user' => 'apache',
-      'command' => '/var/www/scripts/foo.php',
-    }
+```
+node.default['fb_cron']['jobs']['do_this_thing'] = {
+  'only_if' => proc { node['fb_bla']['enabled'] }
+  'time' => '4 5 * * *',
+  'user' => 'apache',
+  'command' => '/var/www/scripts/foo.php',
+}
+```
 
 ### splaysecs
 Defaults to false/none.  Please set a splay time for your cronjob, or  
@@ -70,7 +76,9 @@ job, it'll be removed from any systems it was on.
 A bunch of default crons we want everywhere are set in the attributes file, if
 you need to exempt yourself from one, you can simply remove it from the hash:
 
-    node.default['fb_cron']['jobs'].delete('do_this_thing')
+```
+node.default['fb_cron']['jobs'].delete('do_this_thing')
+```
 
 For this reason, cron jobs should be given simple names as described above
 to make exempting systems easy.
@@ -84,7 +92,23 @@ affect the environment of the init script. On Redhat-like systems these
 variables go into `/etc/sysconfig/crond`, on Debian-like systems these go to
 `/etc/default/cron`. For example:
 
-    # For RH
-    node.default['fb_cron']['environment']['CRONDARGS'] = "-s"
-    # For Debian
-    node.default['fb_cron']['environment']['EXTRA_ARGS'] = "-s"
+```
+# For RH
+node.default['fb_cron']['environment']['CRONDARGS'] = "-s"
+# For Debian
+node.default['fb_cron']['environment']['EXTRA_ARGS'] = "-s"
+```
+
+### anacrontab configuration
+Anacron provides a mechanism for configuring the environment used in anacron job
+execution. This can be configured using the
+`node['fb_cron']['anacrontab']['environment']` attribute, as described in the
+[anacrontab](https://linux.die.net/man/5/anacrontab) documentation. For example,
+to modify the start time of anacron jobs from the default 3-22 o'clock to 6-8
+o'clock (server time):
+
+```
+node.default['fb_cron']['anacrontab']['environment']['start_hours_range'] = '6-8'
+```
+
+NOTE: This is currently only implemented on Redhat-like OSes.

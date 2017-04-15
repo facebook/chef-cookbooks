@@ -1,0 +1,14 @@
+#
+# THIS FILE IS CONTROLLED BY CHEF, DO NOT EDIT!
+#
+# You may add cronjobs following the instructions in
+#   fb_cron/README.md
+#
+<% node['fb_cron']['anacrontab']['environment'].to_hash.each do |setting, data| %>
+<%=  setting.upcase %>=<%= data %>
+<% end -%>
+
+#period in days   delay in minutes   job-identifier   command
+1       5       cron.daily              nice run-parts /etc/cron.daily
+7       25      cron.weekly             nice run-parts /etc/cron.weekly
+@monthly 45     cron.monthly            nice run-parts /etc/cron.monthly

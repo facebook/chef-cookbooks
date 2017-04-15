@@ -10,6 +10,15 @@
 default['fb_cron'] = {
   'jobs' => {},
   'environment' => {},
+  'anacrontab' => {
+    'environment' => {
+      'shell' => '/bin/sh',
+      'path' => '/sbin:/bin:/usr/sbin:/usr/bin',
+      'mailto' => 'root',
+      'random_delay' => '45',
+      'start_hours_range' => '3-22',
+    },
+  },
 
   # Path for the crontab that contains all the fb_cron job entries.
   # This is a hidden attribute because people shouldn't change this unless
