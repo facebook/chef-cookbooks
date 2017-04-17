@@ -50,6 +50,9 @@ include_recipe 'fb_logrotate'
 include_recipe 'fb_tmpclean'
 # HERE: sudo
 # HERE: ntp
+if node.centos? && !node.container?
+  include_recipe 'fb_iptables'
+end
 include_recipe 'fb_motd'
 
 # we recommend you put this as late in the list as possible - it's one of the
