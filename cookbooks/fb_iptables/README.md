@@ -16,6 +16,8 @@ RHEL like system, with iptables support in kernel/modules
 
 Attributes
 ----------
+* node['fb_iptables']['enable']
+* node['fb_iptables']['manage_packages']
 * node['fb_iptables']['sysconfig'][$KEY]
 * node['fb_iptables'][$TABLE][$CHAIN]['policy']
 * node['fb_iptables'][$TABLE][$CHAIN]['rules'][$RULE_NAME]['ip']
@@ -25,6 +27,11 @@ Attributes
 
 Usage
 -----
+Include `fb_iptables` to manage iptables on a machine. By default, the cookbook
+will manage the iptables packages; this can be opted out of by setting
+`node['fb_iptables']['manage_packages']`. The iptables service itself is
+disabled by default; to enable it set `node['fb_iptables']['enable']` to true.
+
 ### Nomenclature
 The nomenclature for iptables is often confused, and we use the definitions used
 by the IPTables code, base which are as follows:

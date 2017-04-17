@@ -11,6 +11,8 @@
 DEFAULT_POLICY = 'ACCEPT'.freeze
 
 iptables = {
+  'enable' => false,
+  'manage_packages' => true,
   'sysconfig' => {
     'modules' => '',
     'modules_unload' => 'yes',

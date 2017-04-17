@@ -26,6 +26,7 @@ iptables_rules = '/etc/sysconfig/iptables'
 ip6tables_rules = '/etc/sysconfig/ip6tables'
 
 package packages do
+  only_if { node['fb_iptables']['manage_packages'] }
   action :upgrade
   notifies :run, 'execute[reload iptables]'
   notifies :run, 'execute[reload ip6tables]'
@@ -33,7 +34,14 @@ end
 
 services.each do |svc|
   service svc do
+    only_if { node['fb_iptables']['enable'] }
     action :enable
+  end
+
+  service "disable #{svc}" do
+    not_if { node['fb_iptables']['enable'] }
+    service_name svc
+    action :disable
   end
 end
 
@@ -52,6 +60,7 @@ cookbook_file '/usr/sbin/fb_iptables_reload' do
 end
 
 execute 'reload iptables' do
+  only_if { node['fb_iptables']['enable'] }
   command '/usr/sbin/fb_iptables_reload 4 reload'
   action :nothing
 end
@@ -74,6 +83,7 @@ end
 
 ## ip6tables ##
 execute 'reload ip6tables' do
+  only_if { node['fb_iptables']['enable'] }
   command '/usr/sbin/fb_iptables_reload 6 reload'
   action :nothing
 end
