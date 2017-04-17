@@ -99,15 +99,12 @@ template 'fb_cron crontab' do
   mode '0644'
 end
 
-# testing rolling out with sharding
-if node.in_shard?(50)
-  template '/etc/anacrontab' do
-    only_if { node['platform_family'] == 'rhel' }
-    source 'anacrontab.erb'
-    owner 'root'
-    group 'root'
-    mode '0644'
-  end
+template '/etc/anacrontab' do
+  only_if { node['platform_family'] == 'rhel' }
+  source 'anacrontab.erb'
+  owner 'root'
+  group 'root'
+  mode '0644'
 end
 
 envfile = value_for_platform_family(
