@@ -100,7 +100,7 @@ template 'fb_cron crontab' do
 end
 
 # testing rolling out with sharding
-if node.in_shard?(5)
+if node.in_shard?(50)
   template '/etc/anacrontab' do
     only_if { node['platform_family'] == 'rhel' }
     source 'anacrontab.erb'
