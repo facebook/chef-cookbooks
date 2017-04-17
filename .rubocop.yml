@@ -20,6 +20,14 @@ MethodLength:
 ClassLength:
   Enabled: false
 
+# It would forbid action [:enable, :start]
+SymbolArray:
+  Enabled: false
+
+# This recommends using external gems to parse heredocs
+Style/IndentHeredoc:
+  Enabled: false
+
 CyclomaticComplexity:
   Enabled: false
 
@@ -143,5 +151,24 @@ Style/NumericLiteralPrefix:
 Style/VariableNumber:
   Enabled: false
 
+Style/RegexpLiteral:
+  EnforcedStyle: mixed
+
 Metrics/BlockLength:
   Enabled: false
+
+Style/PercentLiteralDelimiters:
+  PreferredDelimiters:
+    default: {}
+    '%i': {}
+    '%w': {}
+
+# no, we're not putting parens around `lazy`
+Lint/AmbiguousBlockAssociation:
+  Enabled: false
+
+AllCops:
+  TargetRubyVersion: 2.1
+  Exclude:
+    # template files named `rb` instead of `erb` are a sin against ruby-nature.
+    - '**/templates/**/*.rb'
