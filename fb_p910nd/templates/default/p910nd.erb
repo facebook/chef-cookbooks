@@ -1,0 +1,10 @@
+# This file is maintained by Chef. Do not edit, all changes will be
+# overwritten. See fb_p910nd/README.md
+
+<% conf = node['fb_p910nd'].to_hash
+   options = ["-f #{conf['device']}"]
+   options << '-b' if conf['bidirectional']
+   options << "-i #{conf['listen']}" if conf['listen'] -%>
+P910ND_NUM="<%= conf['number'] %>"
+P910ND_OPTS="<%= options.join(' ') %>"
+P910ND_START=1
