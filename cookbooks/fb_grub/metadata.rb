@@ -2,7 +2,7 @@
 name 'fb_grub'
 maintainer 'Facebook'
 maintainer_email 'noreply@facebook.com'
-license 'BSD'
+license 'BSD-3-Clause'
 description 'Installs/Configures fb_grub'
 source_url 'https://github.com/facebook/chef-cookbooks/'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))

@@ -2,7 +2,7 @@
 name 'fb_hdparm'
 maintainer 'Facebook'
 maintainer_email 'noreply@facebook.com'
-license 'BSD'
+license 'BSD-3-Clause'
 source_url 'https://github.com/facebook/chef-cookbooks/'
 description 'Installs/Configures hdparm'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
