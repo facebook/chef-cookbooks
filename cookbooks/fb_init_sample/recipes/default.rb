@@ -61,3 +61,5 @@ include_recipe 'fb_motd'
 # do that in a ruby_block or provider if this is at the end of the 'base
 # runlist'
 include_recipe 'fb_cron'
+
+# stuff
