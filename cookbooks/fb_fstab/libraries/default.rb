@@ -56,25 +56,25 @@ module FB
 
     # Returns the content of the file
     def self.load_base_fstab
-      File.read(FB::Fstab::BASE_FILENAME)
+      File.read(BASE_FILENAME)
     end
 
     # Returns an array of disks
     def self.get_in_maint_disks
-      return [] unless File.exist?(FB::Fstab::IN_MAINT_DISKS_FILENAME)
+      return [] unless File.exist?(IN_MAINT_DISKS_FILENAME)
       age = (
-        Time.now - File.stat(FB::Fstab::IN_MAINT_DISKS_FILENAME).mtime
+        Time.now - File.stat(IN_MAINT_DISKS_FILENAME).mtime
       ).to_i
       if age > 60 * 60 * 24 * 7
         Chef::Log.warn(
-          "fb_fstab: Removing stale #{FB::Fstab::IN_MAINT_DISKS_FILENAME} " +
+          "fb_fstab: Removing stale #{IN_MAINT_DISKS_FILENAME} " +
           '- it is more than 1 week old.',
         )
-        File.unlink(FB::Fstab::IN_MAINT_DISKS_FILENAME)
+        File.unlink(IN_MAINT_DISKS_FILENAME)
         return []
       end
       disks = []
-      File.read(FB::Fstab::IN_MAINT_DISKS_FILENAME).each_line do |line|
+      File.read(IN_MAINT_DISKS_FILENAME).each_line do |line|
         next if line.start_with?('#')
         disks << line.strip
       end
