@@ -28,6 +28,10 @@
                      "#{serial['word']}#{tboot_parity}#{serial['stop']}," +
                      tboot_port
   end
+  unless node['fb_grub']['tboot']['tboot_extra_args'].empty?
+    tboot_cmdnline +=
+      " #{node['fb_grub']['tboot']['tboot_extra_args'].join(' ')}"
+  end
 
   path_prefix = node['fb_grub']['path_prefix']
 
