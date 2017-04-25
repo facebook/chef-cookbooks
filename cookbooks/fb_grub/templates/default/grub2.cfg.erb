@@ -29,7 +29,7 @@
                      tboot_port
   end
   unless node['fb_grub']['tboot']['tboot_extra_args'].empty?
-    tboot_cmdnline +=
+    tboot_cmdline +=
       " #{node['fb_grub']['tboot']['tboot_extra_args'].join(' ')}"
   end
 
