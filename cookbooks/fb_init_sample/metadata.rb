@@ -8,6 +8,13 @@ source_url 'https://github.com/facebook/chef-cookbooks/'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
 version '0.0.1'
 %w{
+  centos
+  debian
+  ubuntu
+}.each do |p|
+  supports p
+end
+%w{
   fb_apt
   fb_cron
   fb_dracut
@@ -18,6 +25,7 @@ version '0.0.1'
   fb_helpers
   fb_hostconf
   fb_hosts
+  fb_iptables
   fb_limits
   fb_logrotate
   fb_modprobe

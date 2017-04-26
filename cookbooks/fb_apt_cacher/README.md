@@ -5,7 +5,6 @@ software repositories.
 
 Requirements
 ------------
-Debian
 
 Attributes
 ----------

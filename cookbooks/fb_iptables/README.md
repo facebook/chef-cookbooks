@@ -12,7 +12,6 @@ Chains` section.
 
 Requirements
 ------------
-RHEL like system, with iptables support in kernel/modules
 
 Attributes
 ----------

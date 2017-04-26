@@ -5,7 +5,6 @@ collection and monitoring daemon.
 
 Requirements
 ------------
-This cookbook requires CentOS, Debian or Ubuntu.
 
 Attributes
 ----------

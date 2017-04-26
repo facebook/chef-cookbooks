@@ -4,7 +4,6 @@ This cookbook installs and configures Dracut, the initramfs generator.
 
 Requirements
 ------------
-CentOS
 
 Attributes
 ----------

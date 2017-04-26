@@ -5,7 +5,6 @@ packages.
 
 Requirements
 ------------
-Currently only tested on Debian and Ubuntu.
 
 Attributes
 ----------

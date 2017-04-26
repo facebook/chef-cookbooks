@@ -5,7 +5,6 @@ temperature monitoring utility.
 
 Requirements
 ------------
-This cookbook requires CentOS, Debian or Ubuntu.
 
 Attributes
 ----------
