@@ -85,7 +85,8 @@ action :run do
 
       execute "link unit file #{filename}" do
         not_if do
-          ::File.exist?("/etc/systemd/system/#{conf['name']}.#{type}")
+          ::File.exist?("/etc/systemd/system/#{conf['name']}.#{type}") ||
+            !conf['autostart']
         end
         command "systemctl link #{filename}"
         notifies :run, 'fb_systemd_reload[system instance]', :immediately
@@ -93,6 +94,7 @@ action :run do
     end
 
     service "#{conf['name']}.timer" do
+      only_if { conf['autostart'] }
       action [:enable, :start]
     end
   end

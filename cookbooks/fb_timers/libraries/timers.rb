@@ -27,6 +27,7 @@ module FB
       'syslog' => false,
       'service_options' => {},
       'timer_options' => {},
+      'autostart' => true,
     }.freeze
 
     module Calendar

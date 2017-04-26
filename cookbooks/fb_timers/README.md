@@ -59,6 +59,7 @@ Advanced fields:
 
 * `service_options`: Additional options to include in the service unit file.
 * `timer_options`: Additional options to include in the timer unit file.
+* `autostart`: Setting this to false will prevent units from being enabled and started in the chef run.  This can be used for creating user units which are managed by other means. (defaults to `True`)
 
 ### Common Calendar Patterns
 A helper library is provided to allow easy generation of [systemd calendar specs](https://www.freedesktop.org/software/systemd/man/systemd.time.html) with chef. It can be used by invoking `FB::Systemd::Calendar.every` in a variety of different ways:
