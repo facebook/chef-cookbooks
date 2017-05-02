@@ -63,15 +63,7 @@ whyrun_safe_ruby_block 'validate data' do
           'enough to tell the kernel it is tmpfs. Offending mount: ' +
           "#{data['mount_point']}."
       end
-      is_bind_mount = false
-      if node.in_shard?(5)
-        opt_list = data['opts'].split(',')
-        is_bind_mount = opt_list.include?('bind')
-      else
-        is_bind_mount = data['opts'] == 'bind'
-      end
-      unless data['type'] == 'nfs' || data['type'] == 'glusterfs' ||
-             is_bind_mount
+      unless data['type'] == 'nfs' || data['type'] == 'glusterfs'
         if uniq_devs[data['device']]
           fail 'Device names must be unique and you have repeated ' +
             "#{data['device']} for #{uniq_devs[data['device']]} and " +
