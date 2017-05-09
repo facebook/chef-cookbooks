@@ -65,7 +65,7 @@ whyrun_safe_ruby_block 'validate data' do
       end
       is_bind_mount = false
       if data['opts']
-        if node.in_shard?(50)
+        if node.in_shard?(75)
           opt_list = data['opts'].split(',')
           is_bind_mount = opt_list.include?('bind')
         else
