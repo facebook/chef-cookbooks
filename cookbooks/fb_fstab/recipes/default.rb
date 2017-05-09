@@ -65,12 +65,8 @@ whyrun_safe_ruby_block 'validate data' do
       end
       is_bind_mount = false
       if data['opts']
-        if node.in_shard?(75)
-          opt_list = data['opts'].split(',')
-          is_bind_mount = opt_list.include?('bind')
-        else
-          is_bind_mount = data['opts'] == 'bind'
-        end
+        opt_list = data['opts'].split(',')
+        is_bind_mount = opt_list.include?('bind')
       end
       unless data['type'] == 'nfs' || data['type'] == 'glusterfs' ||
              is_bind_mount
