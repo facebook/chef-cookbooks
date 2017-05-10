@@ -39,6 +39,13 @@ whyrun_safe_ruby_block 'initialize_grub_locations' do
       end
       # TODO: make this work with both uuid + label, like the rootfs_arg section
       node.default['fb_grub']['_root_label'] = boot_label
+
+      # For tboot, we have to specify the full path to the modules.
+      # They are in /usr/lib/grub , so we need the label for the root disk
+      slash_label = node['filesystem2']['by_mountpoint']['/']['label']
+      if slash_label
+        node.default['fb_grub']['_module_label'] = slash_label
+      end
     else
       # If nothing has set the root_device so far, fall back to the old logic
       # and set it by using the hardcoded boot_disk parameter
@@ -70,24 +77,28 @@ whyrun_safe_ruby_block 'initialize_grub_locations' do
     elsif uuid && !uuid.empty?
       node.default['fb_grub']['rootfs_arg'] = "UUID=#{uuid}"
     end
-    # Calculate the grub2 partition for the OS
+    # Set the correct grub module path for e.g. the tboot modules
     if node.efi? && node['fb_grub']['version'] == 2
-      os_device = node.device_of_mount('/')
-      m = os_device.match(/[0-9]+$/)
-      fail 'fb_grub::default Cannot parse OS device!' unless m
-      # People can override the boot_disk if they have a good reason.
-      if node['fb_grub']['boot_disk']
-        boot_disk = node['fb_grub']['boot_disk']
-      elsif node['fb_grub']['root_device']
-        boot_disk = node['fb_grub']['root_device'].split(',')[0]
+      if node['fb_grub']['_module_label']
+        module_path = "/usr/lib/grub/#{node['kernel']['machine']}-efi"
       else
-        # This basically just happens if someone enables labels
-        # but doesn't override the boot_disk param and we don't use our new
-        # logic to figure out the boot disk
-        boot_disk = bootdisk_guess
+        os_device = node.device_of_mount('/')
+        m = os_device.match(/[0-9]+$/)
+        fail 'fb_grub::default Cannot parse OS device!' unless m
+        # People can override the boot_disk if they have a good reason.
+        if node['fb_grub']['boot_disk']
+          boot_disk = node['fb_grub']['boot_disk']
+        elsif node['fb_grub']['root_device']
+          boot_disk = node['fb_grub']['root_device'].split(',')[0]
+        else
+          # This basically just happens if someone enables labels
+          # but doesn't override the boot_disk param and we don't use our new
+          # logic to figure out the boot disk
+          boot_disk = bootdisk_guess
+        end
+        os_part = "(#{boot_disk},#{m[0].to_i})"
+        module_path = "#{os_part}/usr/lib/grub/#{node['kernel']['machine']}-efi"
       end
-      os_part = "(#{boot_disk},#{m[0].to_i})"
-      module_path = "#{os_part}/usr/lib/grub/#{node['kernel']['machine']}-efi"
       node.default['fb_grub']['_grub2_module_path'] = module_path
     end
   end
