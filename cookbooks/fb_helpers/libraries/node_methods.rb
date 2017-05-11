@@ -215,6 +215,20 @@ class Chef
       return node['kernel']['machine'] == 'x86_64'
     end
 
+    def cgroup_mounted?
+      return node['filesystem2']['by_mountpoint'].include?('/sys/fs/cgroup')
+    end
+
+    def cgroup1?
+      return cgroup_mounted? && node['filesystem2']['by_mountpoint'][
+        '/sys/fs/cgroup']['fs_type'] != 'cgroup2'
+    end
+
+    def cgroup2?
+      return cgroup_mounted? && node['filesystem2']['by_mountpoint'][
+        '/sys/fs/cgroup']['fs_type'] == 'cgroup2'
+    end
+
     def get_flexible_shard(shard_size)
       if node['shard_seed']
         node['shard_seed'] % shard_size

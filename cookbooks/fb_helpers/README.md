@@ -56,6 +56,21 @@ your node.
 * `node.efi?`
     Is an EFI machine
 
+* `node.aarch64?`
+    Is an ARM64 machine
+
+* `node.x64?`
+    Is an x86_64 machine
+
+* `node.cgroup_mounted?`
+    Returns true if the cgroup hierarchy is mounted at `/sys/fs/cgroup`
+
+* `node.cgroup1?`
+    Returns true if the legacy cgroup hierarchy (cgroup v1) is in use
+
+* `node.cgroup2?`
+    Returns true if the unified cgroup hierarchy (cgroup v2) is in use
+
 * `node.device_of_mount(m)`
     Take a string representing a mount point, and return the device it resides 
     on.
