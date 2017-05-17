@@ -78,7 +78,7 @@ template iptables_rules do
   group 'root'
   mode '0640'
   variables(:ip => 4)
-  notifies :run, 'execute[reload iptables]'
+  notifies :run, 'execute[reload iptables]', :immediately
 end
 
 ## ip6tables ##
@@ -102,5 +102,5 @@ template ip6tables_rules do
   group 'root'
   mode '0640'
   variables(:ip => 6)
-  notifies :run, 'execute[reload ip6tables]'
+  notifies :run, 'execute[reload ip6tables]', :immediately
 end
