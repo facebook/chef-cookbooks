@@ -1,5 +1,5 @@
 <% @conf.each do |keyword, data| %>
-<%   if data.is_a?(String) %>
+<%   if data.is_a?(String) || data.is_a?(Fixnum) %>
   <%=  keyword %> <%= data %>
 <%   elsif data.is_a?(Array) %>
 <%     data.each do |entry| %>
@@ -7,6 +7,8 @@
 <%     end %>
 <%   elsif data.is_a?(Hash) %>
 <%     FB::Apache.template_hash_handler(_buf, 1, keyword, data) %>
+<%   else %>
+<%     fail "fb_apache: bad type for value of #{keyword}: #{data.class}" %>
 <%   end %>
 <% end %>
 
