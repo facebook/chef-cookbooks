@@ -111,7 +111,7 @@ action :run do
   dead_links.each do |unit|
     Chef::Log.warn("fb_timers: Removing dead link #{unit}")
     # we can't use systemctl disable here because it's already deleted
-    file unit do
+    link unit do
       action :delete
     end
   end
