@@ -68,7 +68,7 @@ whyrun_safe_ruby_block 'validate data' do
         opt_list = data['opts'].split(',')
         is_bind_mount = opt_list.include?('bind')
       end
-      unless data['type'] == 'nfs' || data['type'] == 'glusterfs' ||
+      unless ['nfs', 'glusterfs', 'nfusr'].include?(data['type']) ||
              is_bind_mount
         if uniq_devs[data['device']]
           fail 'Device names must be unique and you have repeated ' +
