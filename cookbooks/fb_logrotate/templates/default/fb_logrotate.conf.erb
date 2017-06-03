@@ -20,8 +20,8 @@ size  <%= node['fb_logrotate']['globals']['size'] %>
 <%   if block['overrides'] -%>
 <%     block['overrides'].keys.sort.each do |k| -%>
 <%       case k -%>
-<%       when 'rotate', 'maxage', 'minsize', 'create', 'olddir', 'su', 
-              'compressoptions', 'dateformat' -%>
+<%       when 'rotate', 'maxage', 'minsize', 'create', 'olddir', 'su',
+              'compressoptions', 'dateformat', 'maxsize' -%>
   <%=      k %> <%= block['overrides'][k] %>
 <%       when 'copytruncate', 'ifempty', 'nocompress', 'missingok',
               'delaycompress', 'sharedscripts', 'nomail', 'dateext',
