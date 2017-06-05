@@ -42,17 +42,24 @@ default['fb_fstab'] = {
     'types' => [
       # Core OS stuff to never umount...
       'autofs',
-      'swap',
-      'usbfs',
       'binfmt_misc',
-      'sysfs',
+      'cgroup', # sub-cgroup mounts will have this type. See comment above.
+      'configfs',
+      'efivarfs',
+      'hugetlbfs', # hugepages
+      'mqueue', # POSIX queues
       'proc',
-      # sub-cgroup mounts will have this type. See comment above.
-      'cgroup',
+      'swap',
+      'sysfs',
+      'tracefs', # kernel debugging
+      'usbfs',
     ],
     'mount_points' => [
       # Core OS stuff to never umount...
+      '/dev/shm',
       '/run',
+      '/sys/fs/cgroup',
+      '/sys/fs/selinux',
       # Debian-isms
       '/run/shm',
       '/run/lock',
