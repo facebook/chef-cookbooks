@@ -361,7 +361,10 @@ module FB
             Chef::Log.debug('fb_fstab: ... with identical options.')
             return :same
           else
-            Chef::Log.debug('fb_fstab: ... with different options.')
+            Chef::Log.debug(
+              "fb_fstab: ... with different options #{desired['opts']} vs " +
+              mounted['mount_options'].join(','),
+            )
             return :remount
           end
         end
