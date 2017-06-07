@@ -239,6 +239,10 @@ class Chef
       end
     end
 
+    def get_shard
+      self.get_flexible_shard(100)
+    end
+
     def in_flexible_shard?(shard_threshold, shard_size)
       self.get_flexible_shard(shard_size) <= shard_threshold
     end

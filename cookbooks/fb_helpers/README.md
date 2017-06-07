@@ -72,7 +72,7 @@ your node.
     Returns true if the unified cgroup hierarchy (cgroup v2) is in use
 
 * `node.device_of_mount(m)`
-    Take a string representing a mount point, and return the device it resides 
+    Take a string representing a mount point, and return the device it resides
     on.
 
 * `node.device_formatted_as?(device, fstype)`
@@ -107,6 +107,34 @@ your node.
     IPv6-capable, a `SocketError` is raised.
     `force_v4` is set to false by default, if set to true then the IPv4 address
     will be returned.
+
+*  `node.get_flexible_shard(shard_size)`
+    Returns the node's shard in a flexible shard setup.  These shards allow you
+    to specify an arbitrary size (limited to 2^28) for the number of possible
+    buckets.  Let's say that you want a consistent shard that correlates a
+    minute in the whole day (1,400 min/day).  You would use this in your code:
+    ```
+      node.get_flexible_shard(1440)
+    ```
+    This helps also to release code to shards smaller than 1% of the fleet,
+    e.g. `node.get_flexible_shard(10000)` for getting your shard in steps
+    of one ten-thousandth.
+
+*  `node.in_flexible_shard?(shard, shard_size)`
+    True if the flexible shard we are in is less-than-or-equal to `shard`.  In
+    other words, `node.in_flexible_shard?(24, 1000)` is true if you are in
+    shards 0-24 per-thousandth (the equivalent to 0%-2.4%).  This sharding is
+    *not* compatible with the `node.in_shard?()` implementation, so please choose
+    one or the other when starting your experiment.
+
+*  `node.get_shard()`
+    Wrapper around `node.get_flexible_shard` that sets `shard_size` to 100. This
+    is the "basic" shard that roughly maps to a percentage.
+
+*  `node.in_shard?(shard)`
+    Wrapper around `node.in_flexible_shard?` that sets `shard_size` to 100.
+    Shards are 0-indexed, so the valid shards are 0-99. As such, shard `N` is
+    approximately `(N+1)%`, so shard 0 is approximately 1%.
 
 ### FB::Helpers
 The following methods are available:
