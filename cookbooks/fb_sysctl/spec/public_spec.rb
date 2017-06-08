@@ -1,5 +1,7 @@
-require './spec/spec_helper'
+require 'chef/node'
 require_relative '../libraries/sync.rb'
+
+include FB::Sysctl
 
 describe FB::Sysctl do
   context '#incorrect_settings' do
