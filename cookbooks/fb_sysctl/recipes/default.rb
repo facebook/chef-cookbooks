@@ -12,22 +12,33 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
+smarter_sysctl = node.in_shard?(5)
+
 template '/etc/sysctl.conf' do
   mode '0644'
   owner 'root'
   group 'root'
   source 'sysctl.conf.erb'
-  notifies :run, 'execute[read-sysctl]', :immediately
+  unless smarter_sysctl
+    notifies :run, 'execute[read-sysctl]', :immediately
+  end
 end
 
-execute 'read-sysctl' do
-  not_if { node.container? }
-  command '/sbin/sysctl -p'
-  action :nothing
-end
+if smarter_sysctl
+  fb_sysctl 'doit' do
+    not_if { node.container? }
+    action :apply
+  end
+else
+  execute 'read-sysctl' do
+    not_if { node.container? }
+    command '/sbin/sysctl -p'
+    action :nothing
+  end
 
-# Safety check in case we missed a notification above
-execute 'reread-sysctl' do
-  not_if { node.container? || FB::Sysctl.sysctl_in_sync?(node) }
-  command '/sbin/sysctl -p'
+  # Safety check in case we missed a notification above
+  execute 'reread-sysctl' do
+    not_if { node.container? || FB::Sysctl.sysctl_in_sync?(node) }
+    command '/sbin/sysctl -p'
+  end
 end
