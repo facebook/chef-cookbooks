@@ -12,7 +12,7 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
-smarter_sysctl = node.in_shard?(5)
+smarter_sysctl = node.in_shard?(35)
 
 template '/etc/sysctl.conf' do
   mode '0644'
