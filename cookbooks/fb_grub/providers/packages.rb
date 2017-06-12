@@ -25,9 +25,15 @@ action :install do
     end
   when 2
     if node.debian?
-      packages += %w{grub-efi grub-pc}
+      packages += %w{grub-efi}
+      unless node.aarch64?
+        packages << 'grub-pc'
+      end
     else
-      packages += %w{grub2 grub2-efi grub2-efi-modules grub2-tools}
+      packages += %w{grub2-efi grub2-efi-modules grub2-tools}
+      unless node.aarch64?
+        packages << 'grub2'
+      end
     end
   else
     fail "Unsupported grub version: #{node['fb_grub']['version']}"
