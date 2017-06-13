@@ -2,8 +2,8 @@ actions [:apply]
 default_action :apply
 
 def set_sysctl(name, val)
-  s = Mixlib::ShellOut.new("/usr/sbin/sysctl -w #{name}=\"#{val}\"").run_command
-  return !s.error?
+  s = Mixlib::ShellOut.new("/sbin/sysctl -w #{name}=\"#{val}\"").run_command
+  s.error!
 end
 
 action :apply do
@@ -19,14 +19,8 @@ action :apply do
       Chef::Log.info(
         "fb_sysctl: Setting sysctls: #{messages.join(', ')}",
       )
-      failed_settings = []
       bad_settings.keys.each do |k|
-        unless set_sysctl(k, node['fb_sysctl'][k])
-          failed_settings << k
-        end
-      end
-      unless failed_settings.empty?
-        fail "fb_sysctl: Failed setting sysctls: #{failed_settings.join(', ')}"
+        set_sysctl(k, node['fb_sysctl'][k])
       end
     end
   end
