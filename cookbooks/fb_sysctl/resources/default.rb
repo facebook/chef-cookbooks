@@ -1,4 +1,3 @@
-actions [:apply]
 default_action :apply
 
 def set_sysctl(name, val)
