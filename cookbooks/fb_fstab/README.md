@@ -9,6 +9,7 @@ Attributes
 ----------
 * node['fb_fstab']['enable_remount']
 * node['fb_fstab']['enable_unmount']
+* node['fb_fstab']['allow_lazy_umount']
 * node['fb_fstab']['umount_ignores']['devices']
 * node['fb_fstab']['umount_ignores']['device_prefixes']
 * node['fb_fstab']['umount_ignores']['types']
@@ -52,6 +53,19 @@ attempt to remount filesystems as necessary unless a given `mounts` entry sets
 `node['fb_fstab']['enable_unmount']` controls whether `fb_fstab` will
 ever attempt to unmount filesystems that are no longer represented in
 the `node['fb_fstab']['mounts']` structure. The default is `false`.
+
+`node['fb_fstab']['allow_lazy_umount']` controls whether `fb_fstab` will try
+lazy unmount with `umount -l` after failing to unmount normally. This is
+intended to be used on systems that may have long-running jobs holding
+filesystems busy. The default is `false`.
+
+Lazy unmounts are inherently unsafe and should be used with caution. The
+recommendation is to use this attribute only temporarily, to facilitate a mount
+change and then turn in off. You should also refrain from using lazy unmounts
+if you intend to mount a different filesystem under the same mountpoint. You
+may end up in a situation when different processes see different devices
+under the same filesystem path which becomes a troubleshooting nightmare at
+best, and can easily blossom into a corruption / dataloss scenario.
 
 `node['fb_fstab']['umount_ignores']` is a hash of things to ignore
 on unmounting, even if unmounting is enabled. A list of defaults is in

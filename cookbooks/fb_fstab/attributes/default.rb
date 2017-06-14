@@ -12,6 +12,7 @@ default['fb_fstab'] = {
   'mounts' => {},
   'enable_remount' => false,
   'enable_unmount' => false,
+  'allow_lazy_umount' => false,
   'umount_ignores' => {
     'devices' => [
       # Various virtualFSes
@@ -63,12 +64,13 @@ default['fb_fstab'] = {
       # Debian-isms
       '/run/shm',
       '/run/lock',
-      '/run/user',
       '/sys/fs/pstore',
       '/sys/kernel/debug',
       '/sys/kernel/security',
       '/sys/fs/fuse/connections',
     ],
-    'mount_point_prefixes' => [],
+    'mount_point_prefixes' => [
+      '/run/user',
+    ],
   },
 }

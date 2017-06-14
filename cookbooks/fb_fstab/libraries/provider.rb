@@ -86,7 +86,18 @@ module FB
       Chef::Log.info("fb_fstab: Unmounting #{mount_point}")
       s = Mixlib::ShellOut.new("/bin/umount #{mount_point}")
       s.run_command
-      s.error!
+      if s.error? && node['fb_fstab']['allow_lazy_umount']
+        Chef::Log.warn("fb_fstab: #{s.stderr.chomp}")
+        Chef::Log.warn(
+          "fb_fstab: Unmounting #{mount_point} failed, " +
+          'trying lazy unmount.',
+        )
+        sl = Mixlib::ShellOut.new("/bin/umount -l #{mount_point}")
+        sl.run_command.error!
+      else
+        s.error!
+      end
+      true
     end
 
     def remount(mount_point, with_umount)

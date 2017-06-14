@@ -16,9 +16,18 @@ def whyrun_supported?
   true
 end
 
+def reload_filesystems
+  ohai 'filesystem2' do
+    plugin 'filesystem2'
+    action :nothing
+  end.run_action(:reload)
+end
+
 action :doeverything do
   # Unmount filesystems we don't want
   check_unwanted_filesystems
+  # Reload in case something has been unmounted
+  reload_filesystems
   # Mount or update filesystems we want
   check_wanted_filesystems
 end
