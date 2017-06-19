@@ -41,6 +41,15 @@ This cookbooks manages systemd. It is only supported on systemd-enabled
 distributions (e.g. CentOS 7 or Debian 8). Just include `fb_systemd` in your 
 runlist to use it.
 
+### FB::Systemd
+The following methods are available:
+
+* `FB::Systemd.path_to_unit(path, unit_type)`
+  Convert a given `path` to a unit name of `unit_type` type.
+
+     FB::Systemd.path_to_unit('/dev/mapper/dm-0', 'swap')
+     => dev-mapper-dm\x2d0.swap
+
 ### Providers
 
 * a `fb_systemd_reload` LWRP to safetly trigger a daemon reload for a systemd
