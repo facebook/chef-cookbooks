@@ -68,5 +68,6 @@ end
 
 service 'disable vsftpd' do
   not_if { node['fb_vsftpd']['enable'] }
+  service_name 'vsftpd'
   action [:stop, :disable]
 end
