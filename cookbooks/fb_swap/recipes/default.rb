@@ -28,7 +28,7 @@ else
 end
 
 if node.systemd?
-  swap_unit = "dev-#{swap_device.split('/')[2]}.swap"
+  swap_unit = FB::Systemd.path_to_unit(swap_device, 'swap')
 
   service 'mask swap unit' do # ~FC038
     not_if { node['fb_swap']['enabled'] }
