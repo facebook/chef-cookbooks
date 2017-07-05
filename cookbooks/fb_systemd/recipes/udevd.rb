@@ -12,9 +12,16 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
+execute 'trigger udev' do
+  only_if { node.in_shard?(1) || node.in_tier?('ant') }
+  command '/sbin/udevadm trigger'
+  action :nothing
+end
+
 execute 'reload udev' do
   command '/sbin/udevadm control --reload'
   action :nothing
+  notifies :run, 'execute[trigger udev]', :immediately
 end
 
 execute 'update hwdb' do
