@@ -13,7 +13,7 @@
 #
 
 execute 'trigger udev' do
-  only_if { node.in_shard?(1) || node.in_tier?('ant') }
+  only_if { node.in_shard?(5) || node.in_tier?('ant') }
   command '/sbin/udevadm trigger'
   action :nothing
 end
