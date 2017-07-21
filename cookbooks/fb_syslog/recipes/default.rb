@@ -18,9 +18,6 @@ config_file = '/etc/rsyslog.conf'
 if node.macosx?
   service_name = 'com.apple.syslogd'
   config_file = '/etc/syslog.conf'
-elsif node.yocto?
-  service_name = 'rsyslogd'
-  config_file = '/etc/syslog.conf'
 end
 
 if node.centos?
@@ -52,7 +49,7 @@ if node.centos?
 end
 
 package package_name do
-  not_if { node.yocto? || node.macosx? }
+  not_if { node.macosx? }
   action :upgrade
 end
 
@@ -63,17 +60,16 @@ template config_file do
   notifies :restart, "service[#{service_name}]"
 end
 
-actions = [:start]
+actions = []
 actions << :enable unless node.macosx?
-support = { :status => true }
-# rsyslog, unlike sysklogd, needs a full restart to pick up configs, because
-# it uses HUP (i.e. reload) only to close descriptors (i.e. logrotate).  Given
-# that sysklogd is going to be out of the equation and it would be the only
-# one using a reload action for picking up configs, I'm defaulting to
-# :restart.
-support.merge({ :restart => true, :reload => true }) unless node.macosx?
-support.merge({ :status => false, :reload => false }) if node.yocto?
+actions << :start
+
+# workaround for https://github.com/systemd/systemd/issues/6338
+link '/etc/systemd/system/multi-user.target.wants/rsyslog.service' do
+  only_if { node.systemd? }
+  to '/lib/systemd/system/rsyslog.service'
+end
+
 service service_name do
-  supports support
   action actions
 end
