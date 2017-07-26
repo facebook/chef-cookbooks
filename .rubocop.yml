@@ -139,6 +139,9 @@ TrailingCommaInLiteral:
 TrailingCommaInArguments:
   EnforcedStyleForMultiline: comma
 
+Style/FormatStringToken:
+  Enabled: false
+
 Style/IndentArray:
   EnforcedStyle: consistent
 
