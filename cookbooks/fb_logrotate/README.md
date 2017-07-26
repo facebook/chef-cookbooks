@@ -87,6 +87,7 @@ additional overrides are accepted and require values:
   create
   postrotate
   prerotate
+  preremove
   olddir
   su
   compressoptions

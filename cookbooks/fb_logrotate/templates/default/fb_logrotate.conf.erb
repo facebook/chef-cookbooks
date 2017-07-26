@@ -30,7 +30,7 @@ size  <%= node['fb_logrotate']['globals']['size'] %>
 <%         if block['overrides'][k] -%>
   <%=        k %>
 <%         end -%>
-<%       when 'postrotate', 'prerotate' -%>
+<%       when 'postrotate', 'prerotate', 'preremove' -%>
   <%=      k %>
     <%=    block['overrides'][k] %>
   endscript
