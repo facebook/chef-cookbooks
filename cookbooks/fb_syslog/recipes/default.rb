@@ -12,12 +12,35 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
+if (node.systemd? || node.macosx?) && !node['fb_syslog']['sysconfig'].empty?
+  fail 'fb_syslog: sysconfig settings are not supported on systemd or OSX hosts'
+end
+
 package_name = service_name = 'rsyslog'
 config_file = '/etc/rsyslog.conf'
 
 if node.macosx?
   service_name = 'com.apple.syslogd'
   config_file = '/etc/syslog.conf'
+else
+  sysconfig_path = value_for_platform_family(
+    ['rhel', 'fedora'] => '/etc/sysconfig/rsyslog',
+    'debian' => '/etc/default/sysconfig',
+  )
+
+  template sysconfig_path do
+    not_if { node.systemd? }
+    source 'rsyslog-sysconf.erb'
+    owner 'root'
+    group 'root'
+    mode '0644'
+    notifies :restart, 'service[rsyslog]'
+  end
+
+  file sysconfig_path do
+    only_if { node.systemd? }
+    action :delete
+  end
 end
 
 if node.centos?
@@ -37,14 +60,6 @@ if node.centos?
     owner 'root'
     group 'root'
     mode '0700'
-  end
-
-  template '/etc/sysconfig/rsyslog' do
-    source 'rsyslog-sysconf.erb'
-    owner 'root'
-    group 'root'
-    mode '0644'
-    notifies :restart, 'service[rsyslog]'
   end
 end
 

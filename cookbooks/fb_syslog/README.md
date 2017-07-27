@@ -186,8 +186,10 @@ output of rsyslog internal counters. These will be logged using the `impstats`
 module to `/var/log/rsyslog-stats.log`.
 
 ### sysconfig settings
-On Redhat-like systems, `node['fb_syslog']['sysconfig']` can be used
-to setup `/etc/sysconfig/rsyslog`. In general you should use it like this:
+On non-systemd systems, `node['fb_syslog']['sysconfig']` can be used
+to setup `/etc/sysconfig/rsyslog` (for RedHat machines) or 
+`/etc/default/rsyslog` (for Debian or Ubuntu). In general you should use it 
+like this:
 
     node.default['fb_syslog']['sysconfig']['vars']['SYSLOGD_OPTIONS'] =
       '-c'

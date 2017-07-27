@@ -7,6 +7,21 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
+if node.systemd? || node.macosx?
+  sysconfig = {}
+else
+  syslogd_options_var = value_for_platform_family(
+    ['rhel', 'fedora'] => 'SYSLOGD_OPTIONS',
+    'debian' => 'RSYSLOGD_OPTIONS',
+  )
+  sysconfig = {
+    'vars' => {
+      syslogd_options_var => '',
+    },
+    'extra_lines' => [],
+  }
+end
+
 # Add in some reasonable defaults for all syslog.confs
 default['fb_syslog'] = {
   'syslog-entries' => {
@@ -57,10 +72,5 @@ default['fb_syslog'] = {
   'rsyslog_relp_tls' => false,
   'rsyslog_report_suspension' => false,
   'rsyslog_stats_logging' => false,
-  'sysconfig' => {
-    'vars' => {
-      'SYSLOGD_OPTIONS' => '',
-    },
-    'extra_lines' => [],
-  },
+  'sysconfig' => sysconfig,
 }
