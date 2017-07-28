@@ -75,7 +75,7 @@ default['fb_syslog'] = {
   'sysconfig' => sysconfig,
 }
 
-if node.in_shard?(5)
+if node.in_shard?(50)
   default['fb_syslog']['rsyslog_nonruleset_ports'] = {
     'tcp' => [],
     'udp' => [],
