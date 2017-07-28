@@ -62,7 +62,10 @@ default['fb_syslog'] = {
   },
   'rsyslog_server' => false,
   'rsyslog_rulesets' => {},
-  'rsyslog_nonruleset_ports' => {},
+  'rsyslog_nonruleset_ports' => {
+    'tcp' => [],
+    'udp' => [],
+  },
   'rsyslog_early_lines' => [],
   'rsyslog_late_lines' => [],
   'rsyslog_additional_sockets' => [],
@@ -74,10 +77,3 @@ default['fb_syslog'] = {
   'rsyslog_stats_logging' => false,
   'sysconfig' => sysconfig,
 }
-
-if node.in_shard?(50)
-  default['fb_syslog']['rsyslog_nonruleset_ports'] = {
-    'tcp' => [],
-    'udp' => [],
-  }
-end
