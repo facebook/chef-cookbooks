@@ -20,6 +20,7 @@ Attributes
 * node['fb_syslog']['rsyslog_facilities_sent_to_remote']
 * node['fb_syslog']['rsyslog_omprog_binary']
 * node['fb_syslog']['rsyslog_use_omprog']
+* node['fb_syslog']['rsyslog_use_omprog_force']
 * node['fb_syslog']['rsyslog_stats_logging']
 * node['fb_syslog']['rsyslog_report_suspension']
 * node['fb_syslog']['sysconfig']['vars'][$KEY][$VAL]
@@ -173,6 +174,13 @@ that binary. For example:
     node.default['fb_syslog']['rsyslog_facilities_sent_to_remote'] << 'auth.*'
     node.default['fb_syslog']['rsyslog_use_omprog'] = true
     node.default['fb_syslog']['rsyslog_omprog_binary'] = '/usr/bin/myprogram'
+
+By default, program forwarding (omprog) will only be enabled if
+`node['fb_syslog']['rsyslog_server']` is not set to `true`. You can set
+`node['fb_syslog']['rsyslog_use_omprog_force']` to enable program forwarding
+and a rsyslog server simultaneously. For example:
+
+    node.default['fb_syslog']['rsyslog_use_omprog_force'] = true
 
 ### Suspension reporting
 Setting `node['fb_syslog']['rsyslog_report_suspension']` controls suspension 

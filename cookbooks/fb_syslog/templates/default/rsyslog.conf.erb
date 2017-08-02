@@ -137,7 +137,8 @@ $InputTCPServerRun <%= specs['port'] %>
      report_suspension = 
        node['fb_syslog']['rsyslog_report_suspension'] ? 'on' : 'off'
    end
-   if !node['fb_syslog']['rsyslog_server'] &&
+   if (!node['fb_syslog']['rsyslog_server'] ||
+       node['fb_syslog']['rsyslog_use_omprog_force']) &&
       !node['fb_syslog']['rsyslog_facilities_sent_to_remote'].empty?
      if node['fb_syslog']['rsyslog_use_omprog']
        rsyslog_omprog_binary = node['fb_syslog']['rsyslog_omprog_binary']

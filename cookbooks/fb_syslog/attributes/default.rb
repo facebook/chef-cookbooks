@@ -75,5 +75,6 @@ default['fb_syslog'] = {
   'rsyslog_relp_tls' => false,
   'rsyslog_report_suspension' => false,
   'rsyslog_stats_logging' => false,
+  'rsyslog_use_omprog_force' => false,
   'sysconfig' => sysconfig,
 }
