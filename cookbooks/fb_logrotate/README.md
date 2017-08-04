@@ -76,6 +76,7 @@ Overrides accepts the following booleans:
   nocopytruncate
   dateext
   nodateext
+  nocreate
 
 Simply set them to true in your override hash to enable them. The following
 additional overrides are accepted and require values:

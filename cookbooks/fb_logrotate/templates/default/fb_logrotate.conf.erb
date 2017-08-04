@@ -25,7 +25,7 @@ size  <%= node['fb_logrotate']['globals']['size'] %>
   <%=      k %> <%= block['overrides'][k] %>
 <%       when 'copytruncate', 'ifempty', 'nocompress', 'missingok',
               'delaycompress', 'sharedscripts', 'nomail', 'dateext',
-              'nodateext', 'noolddir', 'nocopytruncate' -%>
+              'nodateext', 'noolddir', 'nocopytruncate', 'nocreate' -%>
 <%#        check that the value is true -%>
 <%         if block['overrides'][k] -%>
   <%=        k %>
