@@ -78,7 +78,8 @@ whyrun_safe_ruby_block 'initialize_grub_locations' do
       node.default['fb_grub']['rootfs_arg'] = "UUID=#{uuid}"
     end
     # Set the correct grub module path for e.g. the tboot modules
-    if node.efi? && node['fb_grub']['version'] == 2
+    if node.efi? && node['fb_grub']['version'] == 2 &&
+       node['fb_grub']['tboot']['enable']
       if node['fb_grub']['_module_label']
         module_path = "/usr/lib/grub/#{node['kernel']['machine']}-efi"
       else
