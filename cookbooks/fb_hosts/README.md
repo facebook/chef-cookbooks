@@ -12,6 +12,7 @@ Attributes
 * node['fb_hosts']['primary_ip6address']
 * node['fb_hosts']['host_aliases']
 * node['fb_hosts']['extra_entries']
+* node['fb_hosts']['enable_hostname_entries']
 
 Usage
 -----
@@ -31,3 +32,11 @@ You can add new entries into the hosts like this:
     node.default['fb_hosts']['extra_entries']['10.1.1.1'] = [
       'somehostname.mydomain.com',
     ]
+
+## Hostname entries
+By default, `fb_hosts` will make entries in /etc/hosts pointing your real
+hostname to your primary IPv4/IPv6 addresses. You almost certainly want that.
+However, some enterprise applications can't handle these, so you can disable
+them by setting `enable_hostname_entries` to false:
+
+    node.default['fb_hosts']['enable_hostname_entries'] = false

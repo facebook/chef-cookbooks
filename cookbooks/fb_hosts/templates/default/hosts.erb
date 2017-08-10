@@ -36,10 +36,10 @@ fe80::1%lo0 localhost
     ip6 = node['ip6address']
   end
 %>
-<% if ip %>
+<% if ip && node['fb_hosts']['enable_hostname_entries'] %>
 <%=  ip %> <%= hosts_names %>
 <% end %>
-<% if ip6 %>
+<% if ip6 && node['fb_hosts']['enable_hostname_entries'] %>
 <%=  ip6 %> <%= hosts_names %>
 <% end %>
 <% unless node['fb_hosts']['extra_entries'].empty? %>

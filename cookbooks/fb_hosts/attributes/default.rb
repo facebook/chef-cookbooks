@@ -12,4 +12,5 @@ default['fb_hosts'] = {
   'primary_ipaddress' => nil,
   'primary_ip6address' => nil,
   'extra_entries' => {},
+  'enable_hostname_entries' => true,
 }
