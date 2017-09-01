@@ -14,6 +14,7 @@
 
 fb_grub_packages 'manage GRUB packages' do
   only_if { node['fb_grub']['manage_packages'] }
+  notifies :run, 'execute[grub-install]'
 end
 
 grub_base_dir = '/boot/grub'
@@ -102,7 +103,20 @@ whyrun_safe_ruby_block 'initialize_grub_locations' do
       end
       node.default['fb_grub']['_grub2_module_path'] = module_path
     end
+    node.default['fb_grub']['_decided_boot_disk'] = boot_disk
   end
+end
+
+execute 'grub-install' do
+  command lazy {
+    cmd = value_for_platform_family(
+      'debian' => 'grub-install',
+      'rhel' => 'grub2-install',
+    )
+    d = node['fb_grub']['_decided_boot_disk'] || '/dev/sda'
+    "/usr/sbin/#{cmd} #{d}"
+  }
+  action :nothing
 end
 
 directory 'efi_vendor_dir' do
