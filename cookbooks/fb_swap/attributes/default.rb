@@ -11,5 +11,4 @@
 default['fb_swap'] = {
   'enabled' => true,
   'size' => nil,
-  'enable_encryption' => false,
 }
