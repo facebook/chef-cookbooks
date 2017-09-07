@@ -17,7 +17,7 @@ def whyrun_supported?
 end
 
 def reload_filesystems
-  ohai 'filesystem2' do
+  ohai 'reload filesystems for fb_fstab' do
     plugin 'filesystem2'
     action :nothing
   end.run_action(:reload)
