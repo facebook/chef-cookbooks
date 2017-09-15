@@ -108,6 +108,9 @@ whyrun_safe_ruby_block 'initialize_grub_locations' do
 end
 
 execute 'grub-install' do
+  # https://fedoraproject.org/wiki/GRUB_2 specifically says :
+  # 'grub2-install shouldn't be used on EFI systems'.  See T21894396
+  not_if { node.efi? }
   command lazy {
     cmd = value_for_platform_family(
       'debian' => 'grub-install',
