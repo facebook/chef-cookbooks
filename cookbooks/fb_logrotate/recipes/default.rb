@@ -73,9 +73,9 @@ cookbook_file '/etc/cron.daily/logrotate' do
   group 'root'
 end
 
-cookbook_file '/etc/logrotate.d/syslog' do
+template '/etc/logrotate.d/syslog' do
   only_if { node['packages'].include?('rsyslog') }
-  source 'logrotate_rpm_rsyslog_override'
+  source 'logrotate_rpm_rsyslog_override.erb'
   mode '0644'
   owner 'root'
   group 'root'
