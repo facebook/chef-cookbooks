@@ -26,6 +26,7 @@ module FB
       'only_if' => nil,
       'syslog' => false,
       'service_options' => {},
+      'service_unit_options' => {},
       'timer_options' => {},
       'autostart' => true,
     }.freeze

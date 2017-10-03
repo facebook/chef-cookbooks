@@ -57,7 +57,8 @@ Advanced fields:
 
 **WARNING**: These fields shouldn't be used unless you know what you're doing and have a very good reason. Come talk to the OS team if you have a legit use-case and we can figure out if we want to make a more standard option for whatever you're doing.
 
-* `service_options`: Additional options to include in the service unit file.
+* `service_options`: Additional options to include in the `[Service]` section of the service unit file.
+* `service_unit_options`: Additional options to include in the `[Unit]` section of the service unit file.
 * `timer_options`: Additional options to include in the timer unit file.
 * `autostart`: Setting this to false will prevent units from being enabled and started in the chef run.  This can be used for creating user units which are managed by other means. (defaults to `True`)
 
