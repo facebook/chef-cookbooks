@@ -178,6 +178,10 @@ end
   { :type => 'bios', :mode => '0644' },
   { :type => 'efi', :mode => '0700' },
 ].each do |tpl|
+  # efi command suffixing is a special case in grub2 that only applies
+  # to x86_64.
+  efi_command = tpl[:type] == 'efi' && node.x64?
+
   template "grub2_config_#{tpl[:type]}" do
     only_if do
       node['platform_family'] == 'rhel' && node['fb_grub']['kernels'] &&
@@ -190,8 +194,8 @@ end
     mode tpl[:mode]
     variables(
       {
-        'linux_statement' => tpl[:type] == 'efi' ? 'linuxefi' : 'linux',
-        'initrd_statement' => tpl[:type] == 'efi' ? 'initrdefi' : 'initrd',
+        'linux_statement' => efi_command ? 'linuxefi' : 'linux',
+        'initrd_statement' => efi_command ? 'initrdefi' : 'initrd',
       },
     )
   end
