@@ -30,7 +30,7 @@
           raise
         end
       end
-      # OK, if we're here, we can print the line... 
+      # OK, if we're here, we can print the line...
       _buf << line
     end
 %>
@@ -41,7 +41,8 @@
       data['type'] = 'auto' unless data['type']
       unless data['pass']
         # it doesn't make sense to fsck tmpfs filesystems
-        data['pass'] = (data['type'] == 'tmpfs') ? 0 : 2
+        data['pass'] = (data['type'] == 'tmpfs' ||
+                        data['type'] == 'ramfs') ? 0 : 2
       end
       data['dump'] = 0 unless data['dump']
       data['opts'] = 'defaults' unless data['opts']
