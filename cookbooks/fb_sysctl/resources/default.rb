@@ -26,7 +26,7 @@ action :apply do
       Chef::Log.info(
         "fb_sysctl: Setting sysctls: #{messages.join(', ')}",
       )
-      bad_settings.keys.each do |k|
+      bad_settings.each_key do |k|
         set_sysctl(k, node['fb_sysctl'][k])
       end
     end

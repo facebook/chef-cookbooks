@@ -159,7 +159,7 @@ class Chef
           return fs[key].to_f
         end
       else
-        self['filesystem'].to_hash.values.each do |fsm|
+        self['filesystem'].to_hash.each_value do |fsm|
           # Some things like /dev/root and rootfs have same mount point...
           # centos7 reports label instead of mount point
           if (fsm['mount'] == p || fsm['label'] == p) && fsm[key]

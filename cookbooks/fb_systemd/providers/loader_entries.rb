@@ -27,7 +27,7 @@ action :run do
     end
   end
 
-  entries.each do |entry, _conf|
+  entries.each_key do |entry|
     template "#{esp_path}/loader/entries/fb_systemd_#{entry}.conf" do
       source 'loader-entry.conf.erb'
       owner 'root'

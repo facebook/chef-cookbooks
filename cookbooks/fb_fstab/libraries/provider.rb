@@ -155,7 +155,7 @@ module FB
         "fb_fstab: Should we keep #{mounted_data}?",
       )
       # Does it look like something in desired mounts?
-      desired_mounts.each do |_, desired_data|
+      desired_mounts.each_value do |desired_data|
         begin
           desired_device = canonicalize_device(desired_data['device'])
         rescue RuntimeError
@@ -228,7 +228,7 @@ module FB
       # we're going to iterate over specified mounts a lot, lets dump it
       desired_mounts = node['fb_fstab']['mounts'].to_hash
 
-      node['filesystem2']['by_pair'].to_hash.each do |_pair, mounted_data|
+      node['filesystem2']['by_pair'].to_hash.each_value do |mounted_data|
         # ohai uses many things to populate this structure, one of which
         # is 'blkid' which gives info on devices that are not currently
         # mounted. This skips those, plus swap, of course.
@@ -518,7 +518,7 @@ module FB
 
       # walk desired mounts, see if it's mounted, and mount/update
       # as appropriate.
-      node['fb_fstab']['mounts'].to_hash.each do |_, desired_data|
+      node['fb_fstab']['mounts'].to_hash.each_value do |desired_data|
         # Using "none" as a device is deprecated. You can use descriptive
         # strings now. Doing so is not only the new hotness, but it also
         # prevents dupes in node['filesystem2'] - so we require it.

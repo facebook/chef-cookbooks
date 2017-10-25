@@ -28,7 +28,7 @@ module FB
     end
 
     def self.each_table(for_ip, node)
-      FB::Iptables::TABLES_AND_CHAINS.each do |table, _chains|
+      FB::Iptables::TABLES_AND_CHAINS.each_key do |table|
         chains = node['fb_iptables'][table].to_hash
         # 'only' is a purposefully not publicly documented attribute
         # thou can to a table, to have this table only used for a

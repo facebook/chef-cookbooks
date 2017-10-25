@@ -89,7 +89,7 @@ module FB
 
       def self.get_autofs_points(node)
         autofs_points = []
-        node['filesystem2']['by_pair'].to_hash.each do |_, data|
+        node['filesystem2']['by_pair'].to_hash.each_value do |data|
           autofs_points << data['mount'] if data['fs_type'] == 'autofs'
         end
         autofs_points
