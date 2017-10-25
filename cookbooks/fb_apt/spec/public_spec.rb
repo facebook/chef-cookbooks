@@ -13,7 +13,7 @@
 require_relative '../libraries/default'
 
 describe 'FB::Apt' do
-  control = <<-eos
+  control = <<-EOS
 // This file is maintained by Chef. Do not edit, all changes will be
 // overwritten. See fb_apt/README.md
 
@@ -24,15 +24,15 @@ APT {
   Default-Release "stable";
   Cache-Limit "10000000";
 };
-  eos
+  EOS
   # remove trailing newline added by the heredoc
   control.chomp!
 
   it 'should generate apt.conf' do
-    generated = <<-eos
+    generated = <<-EOS
 // This file is maintained by Chef. Do not edit, all changes will be
 // overwritten. See fb_apt/README.md
-    eos
+    EOS
     {
       'Acquire::http' => {
         'Proxy' => 'http://myproxy:3412',
