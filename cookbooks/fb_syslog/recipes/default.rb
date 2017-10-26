@@ -44,10 +44,6 @@ else
 end
 
 if node.centos?
-  package 'rsyslog-relp' do
-    only_if { node['fb_syslog']['rsyslog_relp_tls'] }
-    action :upgrade
-  end
   # only rotate rsyslog stats logs if we have them
   node.default['fb_logrotate']['configs']['rsyslog-stats'] = {
     'files' => ['/var/log/rsyslog-stats.log'],

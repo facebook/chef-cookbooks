@@ -72,7 +72,6 @@ default['fb_syslog'] = {
   'rsyslog_facilities_sent_to_remote' => [],
   'rsyslog_port' => '514',
   'rsyslog_upstream' => '',
-  'rsyslog_relp_tls' => false,
   'rsyslog_report_suspension' => false,
   'rsyslog_stats_logging' => false,
   'rsyslog_use_omprog_force' => false,
