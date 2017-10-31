@@ -160,27 +160,27 @@ If the has is specified, it takes one or more of the following keys:
     end
 
     def <=(other)
-      other = [] unless other
+      other ||= []
       return (@arr <=> other.to_a) <= 0
     end
 
     def >=(other)
-      other = [] unless other
+      other ||= []
       return (@arr <=> other.to_a) >= 0
     end
 
     def <(other)
-      other = [] unless other
+      other ||= []
       return (@arr <=> other.to_a) < 0
     end
 
     def >(other)
-      other = [] unless other
+      other ||= []
       return (@arr <=> other.to_a) > 0
     end
 
     def ==(other)
-      other = [] unless other
+      other ||= []
       return (@arr <=> other.to_a).zero?
     end
 
