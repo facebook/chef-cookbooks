@@ -16,11 +16,13 @@
   systemd-networkd.service
 }.each do |svc|
   service svc do
+    not_if { node['fb_systemd']['networkd']['ignore'] }
     only_if { node['fb_systemd']['networkd']['enable'] }
     action [:enable, :start]
   end
 
   service "disable #{svc}" do
+    not_if { node['fb_systemd']['networkd']['ignore'] }
     not_if { node['fb_systemd']['networkd']['enable'] }
     service_name svc
     action [:stop, :disable]

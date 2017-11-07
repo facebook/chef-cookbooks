@@ -22,8 +22,10 @@ Attributes
 * node['fb_systemd']['logind']['enable']
 * node['fb_systemd']['logind']['config']
 * node['fb_systemd']['networkd']['enable']
+* node['fb_systemd']['networkd']['ignore']
 * node['fb_systemd']['resolved']['enable']
 * node['fb_systemd']['resolved']['config']
+* node['fb_systemd']['resolved']['ignore']
 * node['fb_systemd']['timesyncd']['enable']
 * node['fb_systemd']['timesyncd']['config']
 * node['fb_systemd']['coredump']
@@ -154,6 +156,10 @@ using the `node['fb_systemd']['logind']['config']` attribute, according to the
 You can choose whether or not to enable `systemd-networkd` with the
 `node['fb_systemd']['networkd']['enable']` attribute, which defaults to `false`.
 
+If you want to want to totally disable any networkd management by this cookbook
+(e.g. so you can manage it yourself), you can set the
+`node['fb_systemd']['networkd']['ignore']` attribute, which defaults to `false`.
+
 Note that this cookbook does not manage network configuration profiles. If you 
 drop `netdev`, `link`, `network` definitions under `/etc/systemd/network` from
 another cookbook you'll want to request a restart of the `systemd-networkd`
@@ -162,6 +168,11 @@ service.
 ### resolved configuration
 You can choose whether or not to enable `systemd-resolved` with the
 `node['fb_systemd']['resolved']['enable']` attribute, which defaults to `false`.
+
+If you want to want to totally disable any resolved management by this cookbook
+(e.g. so you can manage it yourself), you can set the
+`node['fb_systemd']['resolved']['ignore']` attribute, which defaults to `false`.
+
 Note that this will also enable the `nss-resolve` resolver in 
 `/etc/nsswitch.conf` in place of the glibc `dns` one (using the API provided by
 `fb_nsswitch`). Resolved can be configured using the

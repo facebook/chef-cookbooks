@@ -79,9 +79,11 @@ default['fb_systemd'] = {
   },
   'networkd' => {
     'enable' => false,
+    'ignore' => false,
   },
   'resolved' => {
     'enable' => false,
+    'ignore' => false,
     'config' => {},
   },
   'timesyncd' => {

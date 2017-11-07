@@ -13,6 +13,7 @@
 #
 
 template '/etc/systemd/resolved.conf' do
+  not_if { node['fb_systemd']['resolved']['ignore'] }
   source 'systemd.conf.erb'
   owner 'root'
   group 'root'
@@ -30,6 +31,7 @@ end
 # to place the resolver between mymachines and myhostname as recommended by
 # upstream.
 ruby_block 'enable nss-resolve' do
+  not_if { node['fb_systemd']['resolved']['ignore'] }
   only_if { node['fb_systemd']['resolved']['enable'] }
   block do
     node.default['fb_nsswitch']['databases']['hosts'].delete('dns')
@@ -50,11 +52,13 @@ ruby_block 'enable nss-resolve' do
 end
 
 service 'systemd-resolved' do
+  not_if { node['fb_systemd']['resolved']['ignore'] }
   only_if { node['fb_systemd']['resolved']['enable'] }
   action [:enable, :start]
 end
 
 service 'disable systemd-resolved' do
+  not_if { node['fb_systemd']['resolved']['ignore'] }
   not_if { node['fb_systemd']['resolved']['enable'] }
   service_name 'systemd-resolved'
   action [:stop, :disable]
