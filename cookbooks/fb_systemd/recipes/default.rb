@@ -46,6 +46,11 @@ when 'debian'
   end
 
   systemd_prefix = ''
+when 'arch'
+  systemd_packages += [
+    'libsystemd',
+    'systemd-sysvcompat',
+  ]
 else
   fail 'fb_systemd is not supported on this platform.'
 end
