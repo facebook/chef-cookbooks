@@ -34,11 +34,11 @@ describe FB::Systemd::Calendar::Every do
   end
 
   it "doesn't generate some things with a value" do
-    expect { FB::Systemd::Calendar.every(5).month }.to \
-      raise_error(RuntimeError)
-    expect { FB::Systemd::Calendar.every(5).weekday }.to \
-      raise_error(RuntimeError)
-    expect { FB::Systemd::Calendar.every(5).week }.to \
-      raise_error(RuntimeError)
+    expect { FB::Systemd::Calendar.every(5).month }.
+      to raise_error(RuntimeError)
+    expect { FB::Systemd::Calendar.every(5).weekday }.
+      to raise_error(RuntimeError)
+    expect { FB::Systemd::Calendar.every(5).week }.
+      to raise_error(RuntimeError)
   end
 end
