@@ -27,6 +27,19 @@ else
   fail 'More than one swap mount found, this is not right.'
 end
 
+if node.aarch64?
+  # T23664899 - this is a workaround until we can either
+  # fix systemd or util-linux to pass fixpgsz as an option
+  # from fstab. See T23663206 for the followup.
+  execute 'reinitialize swap on aarch64' do
+    only_if do
+      node['memory']['swap']['total'] == '0kB' &&
+      node['fb_swap']['enabled']
+    end
+    command '/sbin/swapon -a --fixpgsz'
+  end
+end
+
 if node.systemd?
   swap_unit = FB::Systemd.path_to_unit(swap_device, 'swap')
 
