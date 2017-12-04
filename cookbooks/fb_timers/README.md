@@ -52,6 +52,7 @@ Optional fields:
 * `persistent`: Whether or not the job should run immediately if a run is missed (e.g. due to the system being powered off) rather than waiting until the next time the `calendar` field specifies. Corresponds to the `Persistent` field of the systemd timer. (defaults to false) Note that this is different from running on startup.
 * `splay`: Maximum random time to wait before executing the task. A value of 0 disables this behavior. Corresponds to the field `RandomizedDelaySec` in (defaults to `0s`)
 * `syslog`: Whether or not to enable syslog for this service. A value of true sets `StandardOutput` to `syslog` and `SyslogIdentifier` to the name of your job.
+* `only_if`: Specify a Proc which will be evaluated at runtime and used to gate whether the timer is setup.  Especially useful if you need to gate on a chef API value.  E.g.: 'only_if' => proc { conditional }
 
 Advanced fields:
 
