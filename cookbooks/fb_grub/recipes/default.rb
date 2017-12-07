@@ -116,7 +116,11 @@ execute 'grub-install' do
       'debian' => 'grub-install',
       'rhel' => 'grub2-install',
     )
-    d = node['fb_grub']['_decided_boot_disk'] || '/dev/sda'
+    # device of root-mount, strip off partition
+    d = node.device_of_mount('/').gsub(/p?\d+$/, '')
+    unless d && !d.empty?
+      d = '/dev/sda'
+    end
     "/usr/sbin/#{cmd} #{d}"
   }
   action :nothing
