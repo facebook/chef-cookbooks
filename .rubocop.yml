@@ -1,4 +1,9 @@
-#
+AllCops:  
+  TargetRubyVersion: 2.1  
+  Exclude:
+    # template files named `rb` instead of `erb` are a sin against ruby-nature.
+    - '**/templates/**/*.rb'#
+
 # Disabled rules
 #
 
@@ -25,7 +30,7 @@ SymbolArray:
   Enabled: false
 
 # This recommends using external gems to parse heredocs
-Style/IndentHeredoc:
+Layout/IndentHeredoc:
   Enabled: false
 
 CyclomaticComplexity:
@@ -118,6 +123,14 @@ Performance/RedundantMerge:
 Style/ConditionalAssignment:
   Enabled: false
 
+# Heredocs are fine with "EOF"
+Naming/HeredocDelimiterNaming:
+  Enabled: false
+
+# This double-reports what happens in EmtpyLines
+Layout/EmptyLineBetweenDefs:
+  Enabled: false      
+
 #
 # Modified rules
 #
@@ -142,7 +155,7 @@ TrailingCommaInArguments:
 Style/FormatStringToken:
   Enabled: false
 
-Style/IndentArray:
+Layout/IndentArray:
   EnforcedStyle: consistent
 
 Style/SignalException:
@@ -151,7 +164,7 @@ Style/SignalException:
 Style/NumericLiteralPrefix:
   Enabled: false
 
-Style/VariableNumber:
+Naming/VariableNumber:
   Enabled: false
 
 Style/RegexpLiteral:
@@ -169,9 +182,3 @@ Style/PercentLiteralDelimiters:
 # no, we're not putting parens around `lazy`
 Lint/AmbiguousBlockAssociation:
   Enabled: false
-
-AllCops:
-  TargetRubyVersion: 2.1
-  Exclude:
-    # template files named `rb` instead of `erb` are a sin against ruby-nature.
-    - '**/templates/**/*.rb'
