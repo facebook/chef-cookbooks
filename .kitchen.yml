@@ -6,15 +6,11 @@ platforms:
   - name: centos-6
     driver_config:
       provision_command:
-        # remove bogus entry to make fb_fstab happy
-        - sed -i '/UUID=/d' /etc/fstab
         # enable EPEL (for stuff like hddtemp)
         - rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
   - name: centos-7
     driver_config:
       provision_command:
-        # remove bogus entry to make fb_fstab happy
-        - sed -i '/UUID=/d' /etc/fstab
         # enable EPEL (for stuff like hddtemp)
         - rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
       run_command: /usr/sbin/init

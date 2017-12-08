@@ -9,6 +9,7 @@
 # FC066 - ensure chef_version is set in metadata
 # FC071 - missing LICENSE file
 # FC085 - using new_resource.updated_by_last_action to converge
-excluded_rules='FC014 FC017 FC024 FC059 FC064 FC066 FC071 FC085'
+# FC094 - this is wrong advice before 13
+excluded_rules='FC014 FC017 FC024 FC059 FC064 FC066 FC071 FC085 FC094'
 exclude_flags=$(for r in $excluded_rules; do echo -t ~$r; done)
 exec bundle exec foodcritic -f any $exclude_flags cookbooks
