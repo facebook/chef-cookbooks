@@ -24,7 +24,7 @@ Attributes
 * node['fb_fstab']['mounts'][$NAME]['only_if']
 * node['fb_fstab']['mounts'][$NAME]['mp_owner']
 * node['fb_fstab']['mounts'][$NAME]['mp_group']
-* node['fb_fstab']['mounts'][$NAME]['mp_mode']
+* node['fb_fstab']['mounts'][$NAME]['mp_perms']
 * node['fb_fstab']['mounts'][$NAME]['remount_with_umount']
 * node['fb_fstab']['mounts'][$NAME]['enable_remount']
 * node['fb_fstab']['mounts'][$NAME]['allow_mount_failure']
@@ -90,8 +90,8 @@ The following are additional flags to `fb_fstab`:
   * `enable_remount` - defaults to `true`, set to `false` if this FS should
                        never be remounted
   * `mp_owner` - mountpoint owner
-  * `mp_group` - mountpoint owner
-  * `mp_mode` - mountpoint owner
+  * `mp_group` - mountpoint group owner
+  * `mp_perms` - mountpoint permission mode
   * `only_if` - this takes a Proc to test at runtime much like typical
                 Chef resources, except it only takes a Proc.
   * `allow_mount_failure` - Allow failure to mount this disk. It will still
@@ -113,7 +113,7 @@ it in your `node['fb_fstab']['mounts']` structure with the same device
 and mount point.
 
 Since we must make the mountpoint for you, due to ordering, you may specify
-`mp_owner`, `mp_group`, and `mp_mode` in the hash as well. We will not enforce
+`mp_owner`, `mp_group`, and `mp_perms` in the hash as well. We will not enforce
 these on an ongoing basis (partly becuase you can't change things under mounts,
 and partly because you can do this on your own), but we will ensure if we
 need to create the directory for you, we make it the way you want.
