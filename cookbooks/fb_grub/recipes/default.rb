@@ -117,8 +117,9 @@ execute 'grub-install' do
       'rhel' => 'grub2-install',
     )
     # device of root-mount, strip off partition
+    # note that this is a hack and it doesn't support properly dm devices
     d = node.device_of_mount('/').gsub(/p?\d+$/, '')
-    unless d && !d.empty?
+    unless d && !d.empty? && !d.start_with?('/dev/mapper')
       d = '/dev/sda'
     end
     "/usr/sbin/#{cmd} #{d}"
