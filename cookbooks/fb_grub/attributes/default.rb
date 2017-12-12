@@ -44,8 +44,7 @@ fb_grub = {
     'logging' => [
       'memory',
     ],
-    'tboot_extra_args' => [
-    ],
+    'tboot_extra_args' => [],
   },
   'version' => version,
   'use_labels' => false,

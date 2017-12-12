@@ -127,7 +127,7 @@ Style/ConditionalAssignment:
 Naming/HeredocDelimiterNaming:
   Enabled: false
 
-# This double-reports what happens in EmtpyLines
+# This double-reports what happens in EmptyLines
 Layout/EmptyLineBetweenDefs:
   Enabled: false      
 
@@ -181,4 +181,12 @@ Style/PercentLiteralDelimiters:
 
 # no, we're not putting parens around `lazy`
 Lint/AmbiguousBlockAssociation:
+  Enabled: false
+
+# we do this all over the place
+Style/MixinUsage:
+  Enabled: false
+
+# this is misfiring in multiple cookbooks
+Layout/EmptyLinesAroundArguments:
   Enabled: false
