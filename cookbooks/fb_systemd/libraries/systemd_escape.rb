@@ -14,7 +14,16 @@ module FB
         "--suffix=#{unit_type}",
         path,
       ]
-      return Mixlib::ShellOut.new(cmd).run_command.stdout.chomp
+      s = Mixlib::ShellOut.new(cmd).run_command.stdout.chomp
+
+      # Chef clients older than v13.3.10 have a bug in the service resource
+      # https://github.com/chef/chef/pull/6230
+      # so we workaround it here by calling shellescape
+      if FB::Version.new(Chef::VERSION) < FB::Version.new('13.3.10')
+        return s.shellescape
+      else
+        return s
+      end
     end
   end
 end
