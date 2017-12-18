@@ -131,6 +131,11 @@ Naming/HeredocDelimiterNaming:
 Layout/EmptyLineBetweenDefs:
   Enabled: false      
 
+# this is supposedly the default, but turns not not really
+# https://github.com/bbatsov/rubocop/issues/5277
+Layout/SpaceBeforeBlockBraces:
+  EnforcedStyleForEmptyBraces: space
+
 #
 # Modified rules
 #
