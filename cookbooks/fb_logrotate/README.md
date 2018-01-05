@@ -18,6 +18,7 @@ Attributes
 * node['fb_logrotate']['globals'][$CONFIG]
 * node['fb_logrotate']['configs'][$NAME]
 * node['fb_logrotate']['add_locking_to_logrotate']
+* node['fb_logrotate']['debug_log']
 
 Usage
 -----
@@ -166,3 +167,9 @@ the cronjob for logrotate (/etc/cron.daily/logrotate) with one that wraps the
 call to logrotate in a `flock` call to prevent logrotate runs from stepping on
 each other. This can be very useful, but be aware you are overwriting a file from
 the system package.
+
+### debug_log
+The `node['fb_logrotate']['debug_log']` feature is disabled by default. Setting
+this to true will cause verbose logrotate output to be captured in
+`/tmp/logrotate.debug.log`. This option is only available if
+the `add_locking_to_logrotate` feature is also enabled.

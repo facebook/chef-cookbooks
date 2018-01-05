@@ -65,9 +65,9 @@ template '/etc/logrotate.d/fb_logrotate.conf' do
   mode '0644'
 end
 
-cookbook_file '/etc/cron.daily/logrotate' do
+template '/etc/cron.daily/logrotate' do
   only_if { node['fb_logrotate']['add_locking_to_logrotate'] }
-  source 'logrotate_rpm_cron_override'
+  source 'logrotate_rpm_cron_override.erb'
   mode '0755'
   owner 'root'
   group 'root'

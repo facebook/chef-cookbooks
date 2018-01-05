@@ -1,4 +1,3 @@
-# vim: syntax=ruby:expandtab:shiftwidth=2:softtabstop=2:tabstop=2
 #
 # Copyright (c) 2016-present, Facebook, Inc.
 # All rights reserved.
@@ -21,4 +20,5 @@ default['fb_logrotate'] = {
   'globals' => globals,
   'configs' => {},
   'add_locking_to_logrotate' => false,
+  'debug_log' => false,
 }
