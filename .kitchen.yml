@@ -6,11 +6,15 @@ platforms:
   - name: centos-6
     driver_config:
       provision_command:
+        # stub out /etc/fstab for fb_fstab
+        - touch /etc/fstab
         # enable EPEL (for stuff like hddtemp)
         - rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
   - name: centos-7
     driver_config:
       provision_command:
+        # stub out /etc/fstab for fb_fstab
+        - touch /etc/fstab
         # enable EPEL (for stuff like hddtemp)
         - rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
       run_command: /usr/sbin/init
