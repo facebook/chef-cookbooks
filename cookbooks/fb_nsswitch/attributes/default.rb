@@ -30,8 +30,18 @@ databases = {}
   databases[db] = ['files']
 end
 
+# enable the glibc resolver
 databases['hosts'] << 'dns'
 if node.systemd?
+  # mymachines: map UID/GIDs ranges used by containers to useful names
+  # systemd: enables resolution of all dynamically allocated service users
+  databases['passwd'] += %w{mymachines systemd}
+  databases['group'] += %w{mymachines systemd}
+
+  # mymachines: enable resolution of all local containers registered
+  #             with machined to their respective IP addresses
+  # myhostname: resolve the local hostname to locally configured IP addresses,
+  #             as well as "localhost" to 127.0.0.1/::1.
   databases['hosts'] += %w{mymachines myhostname}
 end
 
