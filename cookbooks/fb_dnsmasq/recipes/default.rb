@@ -10,6 +10,10 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
+if node.centos6?
+  fail 'fb_dnsmasq is not supported on CentOS 6.'
+end
+
 package 'dnsmasq' do
   action :upgrade
 end
