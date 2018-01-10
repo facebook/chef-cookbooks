@@ -1,8 +1,6 @@
 require 'chef/node'
 require_relative '../libraries/sync.rb'
 
-include FB::Sysctl
-
 describe FB::Sysctl do
   context '#incorrect_settings' do
     it 'treats identical settings as the same' do

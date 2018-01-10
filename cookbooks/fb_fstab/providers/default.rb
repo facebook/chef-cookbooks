@@ -10,8 +10,6 @@
 
 require 'fileutils'
 
-include FB::FstabProvider
-
 def whyrun_supported?
   true
 end
@@ -24,6 +22,8 @@ def reload_filesystems
 end
 
 action :doeverything do
+  extend FB::FstabProvider
+
   # Unmount filesystems we don't want
   check_unwanted_filesystems
   # Reload in case something has been unmounted

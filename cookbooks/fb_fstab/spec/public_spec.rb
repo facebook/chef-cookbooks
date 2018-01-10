@@ -14,8 +14,6 @@ require 'chef/node'
 require_relative '../libraries/default'
 require_relative '../libraries/provider'
 
-include FB::FstabProvider
-
 describe 'FB::Fstab' do
   let(:node) { Chef::Node.new }
   # rubocop:disable LineLength
@@ -193,6 +191,8 @@ EOF
 end
 
 describe 'FB::FstabProvider', :include_provider do
+  include FB::FstabProvider
+
   # rubocop:disable LineLength
   base_contents = <<EOF
 UUID=28137926-9c39-44c0-90d3-3b158fc97ff9 /                       ext4    defaults,discard 1 1
@@ -215,25 +215,46 @@ EOF
 
   context 'compare_opts' do
     it 'should find identical things identical' do
-      compare_opts('rw,size=1G', 'rw,size=1G').should eq(true)
+      compare_opts(
+        'rw,size=1G',
+        'rw,size=1G',
+      ).should eq(true)
     end
     it 'should find different-order strings identical' do
-      compare_opts('size=1G,rw', 'rw,size=1G').should eq(true)
+      compare_opts(
+        'size=1G,rw',
+        'rw,size=1G',
+      ).should eq(true)
     end
     it 'should find arrays and strings identical' do
-      compare_opts('rw,size=1G', ['size=1G', 'rw']).should eq(true)
+      compare_opts(
+        'rw,size=1G',
+        ['size=1G', 'rw'],
+      ).should eq(true)
     end
     it 'should treat missing-rw opts as identical' do
-      compare_opts('size=1G', ['size=1G', 'rw']).should eq(true)
+      compare_opts(
+        'size=1G',
+        ['size=1G', 'rw'],
+      ).should eq(true)
     end
     it 'should not treat ro and rw as the same' do
-      compare_opts('size=1G,ro', ['size=1G', 'rw']).should eq(false)
+      compare_opts(
+        'size=1G,ro',
+        ['size=1G', 'rw'],
+      ).should eq(false)
     end
     it 'should handle arrays the same' do
-      compare_opts(['size=1G'], ['size=1G', 'rw']).should eq(true)
+      compare_opts(
+        ['size=1G'],
+        ['size=1G', 'rw'],
+      ).should eq(true)
     end
     it 'should catch different sizes as different opts' do
-      compare_opts(['rw', 'size=2G'], ['size=1G', 'rw']).should eq(false)
+      compare_opts(
+        ['rw', 'size=2G'],
+        ['size=1G', 'rw'],
+      ).should eq(false)
     end
   end
 
@@ -475,7 +496,9 @@ EOF
         'fb_fstab: Treating ["tmpfs"] on /mnt/waka the same as awesomesauce ' +
         'on /mnt/waka because they are both tmpfs.',
       )
-      tmpfs_mount_status(desired_mounts['awesomemount']).should eq(:same)
+      tmpfs_mount_status(
+        desired_mounts['awesomemount'],
+      ).should eq(:same)
     end
     it 'should detect identical filesystems as such' do
       node.default['filesystem2']['by_pair']['awesomesauce,/mnt/waka'] = {
@@ -492,7 +515,9 @@ EOF
           'opts' => 'size=100M,rw',
         },
       }
-      tmpfs_mount_status(desired_mounts['awesomemount']).should eq(:same)
+      tmpfs_mount_status(
+        desired_mounts['awesomemount'],
+      ).should eq(:same)
     end
     it 'should detect remounts' do
       node.default['filesystem2']['by_pair']['awesomesauce,/mnt/waka'] = {
@@ -509,7 +534,9 @@ EOF
           'opts' => 'size=200M,rw',
         },
       }
-      tmpfs_mount_status(desired_mounts['awesomemount']).should eq(:remount)
+      tmpfs_mount_status(
+        desired_mounts['awesomemount'],
+      ).should eq(:remount)
     end
     it 'should detect conflict' do
       node.default['filesystem2']['by_pair']['/dev/sdc1,/mnt/waka'] = {
@@ -532,7 +559,9 @@ EOF
           'opts' => 'size=200M,rw',
         },
       }
-      tmpfs_mount_status(desired_mounts['awesomemount']).should eq(:conflict)
+      tmpfs_mount_status(
+        desired_mounts['awesomemount'],
+      ).should eq(:conflict)
     end
     it 'should detect missing fs' do
       node.default['filesystem2'] = {
@@ -548,7 +577,9 @@ EOF
           'opts' => 'size=200M,rw',
         },
       }
-      tmpfs_mount_status(desired_mounts['awesomemount']).should eq(:missing)
+      tmpfs_mount_status(
+        desired_mounts['awesomemount'],
+      ).should eq(:missing)
     end
   end
   context 'mount_status' do
@@ -567,7 +598,9 @@ EOF
           'opts' => 'rw,noatime',
         },
       }
-      mount_status(desired_mounts['awesomemount']).should eq(:same)
+      mount_status(
+        desired_mounts['awesomemount'],
+      ).should eq(:same)
     end
     it 'should detect remount needed' do
       node.default['filesystem2']['by_pair']['/dev/sdd1,/mnt/d0'] = {
@@ -584,7 +617,9 @@ EOF
           'opts' => 'rw,noatime',
         },
       }
-      mount_status(desired_mounts['awesomemount']).should eq(:remount)
+      mount_status(
+        desired_mounts['awesomemount'],
+      ).should eq(:remount)
     end
     it 'should detect moved filesystems - with different opts' do
       node.default['filesystem2']['by_pair']['/dev/sdd1,/mnt/d0'] = {
@@ -606,7 +641,9 @@ EOF
           'opts' => 'rw,noatime',
         },
       }
-      mount_status(desired_mounts['awesomemount']).should eq(:moved)
+      mount_status(
+        desired_mounts['awesomemount'],
+      ).should eq(:moved)
     end
     it 'should detect fstype conflict - with different opts' do
       node.default['filesystem2']['by_pair']['/dev/sdd1,/mnt/d0'] = {
@@ -623,7 +660,9 @@ EOF
           'opts' => 'rw,noatime',
         },
       }
-      mount_status(desired_mounts['awesomemount']).should eq(:conflict)
+      mount_status(
+        desired_mounts['awesomemount'],
+      ).should eq(:conflict)
     end
     it 'should detect something-already-there conflict' do
       node.default['filesystem2']['by_pair']['/dev/sdd1,/mnt/d0'] = {
@@ -650,7 +689,9 @@ EOF
           'opts' => 'rw,noatime',
         },
       }
-      mount_status(desired_mounts['awesomemount']).should eq(:conflict)
+      mount_status(
+        desired_mounts['awesomemount'],
+      ).should eq(:conflict)
     end
     it 'should detect missing filesystems' do
       node.default['filesystem2']['by_pair']['/dev/sda1,/mnt/waka'] = {
@@ -667,7 +708,9 @@ EOF
           'opts' => 'rw,noatime',
         },
       }
-      mount_status(desired_mounts['awesomemount']).should eq(:missing)
+      mount_status(
+        desired_mounts['awesomemount'],
+      ).should eq(:missing)
     end
     it 'should detect missing filesystems even if device is in ohai' do
       node.default['filesystem2']['by_pair'] = {
@@ -707,7 +750,9 @@ EOF
           'opts' => 'rw,noatime',
         },
       }
-      mount_status(desired_mounts['awesomemount']).should eq(:missing)
+      mount_status(
+        desired_mounts['awesomemount'],
+      ).should eq(:missing)
     end
   end
   context 'mount' do

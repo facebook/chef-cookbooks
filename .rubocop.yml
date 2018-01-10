@@ -188,10 +188,6 @@ Style/PercentLiteralDelimiters:
 Lint/AmbiguousBlockAssociation:
   Enabled: false
 
-# we do this all over the place
-Style/MixinUsage:
-  Enabled: false
-
 # this is misfiring in multiple cookbooks
 Layout/EmptyLinesAroundArguments:
   Enabled: false

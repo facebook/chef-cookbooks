@@ -8,7 +8,6 @@
 #
 #
 require 'chef/mixin/shell_out'
-include Chef::Mixin::ShellOut
 
 module FB
   module FbSwap
@@ -73,7 +72,7 @@ module FB
 
     def self.get_current_swap_device_uuid(node)
       device = get_current_swap_device(node)
-      so = shell_out(
+      so = Chef::Mixin::ShellOut.shell_out(
         "/sbin/blkid --match-token TYPE=swap --output export #{device}",
       )
       so.stdout.each_line do |line|
