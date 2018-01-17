@@ -70,7 +70,9 @@ module FB
       s = Mixlib::ShellOut.new(
         "cd /dev/shm && /bin/mount #{mount_data['mount_point']}",
       )
-      s.run_command
+      _run_command_flocked(s,
+                           mount_data['lock_file'],
+                           mount_data['mount_point'])
       if s.error? && mount_data['allow_mount_failure']
         Chef::Log.warn(
           "fb_fstab: Mounting #{mount_data['mount_point']} failed, but " +
@@ -82,10 +84,10 @@ module FB
       true
     end
 
-    def umount(mount_point)
+    def umount(mount_point, lock_file)
       Chef::Log.info("fb_fstab: Unmounting #{mount_point}")
       s = Mixlib::ShellOut.new("/bin/umount #{mount_point}")
-      s.run_command
+      _run_command_flocked(s, lock_file, mount_point)
       if s.error? && node['fb_fstab']['allow_lazy_umount']
         Chef::Log.warn("fb_fstab: #{s.stderr.chomp}")
         Chef::Log.warn(
@@ -93,14 +95,14 @@ module FB
           'trying lazy unmount.',
         )
         sl = Mixlib::ShellOut.new("/bin/umount -l #{mount_point}")
-        sl.run_command.error!
+        _run_command_flocked(sl, lock_file, mount_point)
       else
         s.error!
       end
       true
     end
 
-    def remount(mount_point, with_umount)
+    def remount(mount_point, with_umount, lock_file)
       Chef::Log.info("fb_fstab: Remounting #{mount_point}")
       if with_umount
         cmd = "/bin/umount #{mount_point}; /bin/mount #{mount_point}"
@@ -108,7 +110,7 @@ module FB
         cmd = "/bin/mount -o remount #{mount_point}"
       end
       s = Mixlib::ShellOut.new(cmd)
-      s.run_command
+      _run_command_flocked(s, lock_file, mount_point)
       s.error!
     end
 
@@ -289,7 +291,7 @@ module FB
 
         if node['fb_fstab']['enable_unmount']
           converge_by "unmount #{mounted_data['mount']}" do
-            umount(mounted_data['mount'])
+            umount(mounted_data['mount'], mounted_data['lock_file'])
           end
         else
           Chef::Log.warn(
@@ -574,7 +576,8 @@ module FB
             Chef::Log.debug("fb_fstab: #{base_msg} - remounting")
             converge_by "remount #{desired_data['mount_point']}" do
               remount(desired_data['mount_point'],
-                      desired_data['remount_with_umount'])
+                      desired_data['remount_with_umount'],
+                      desired_data['lock_file'])
             end
             # There's nothing after us in the loop at this point, but I'm being
             # explicit with the 'next' here so that we never accidentally
@@ -583,6 +586,23 @@ module FB
           else
             Chef::Log.warn("#{base_msg}, but remounts are not enabled")
           end
+        end
+      end
+    end
+
+    def _run_command_flocked(shellout, lock_file, mount_point)
+      if lock_file.nil?
+        return shellout.run_command
+      else
+        lock_fd = File.open(lock_file, 'a+')
+        unless lock_fd.flock(File::LOCK_EX | File::LOCK_NB)
+          fail IOError, "Couldn't grab lock at #{lock_file} for #{mount_point}"
+        end
+
+        begin
+          return shellout.run_command
+        ensure
+          lock_fd.flock(File::LOCK_UN)
         end
       end
     end

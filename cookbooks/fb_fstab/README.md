@@ -28,6 +28,7 @@ Attributes
 * node['fb_fstab']['mounts'][$NAME]['remount_with_umount']
 * node['fb_fstab']['mounts'][$NAME]['enable_remount']
 * node['fb_fstab']['mounts'][$NAME]['allow_mount_failure']
+* node['fb_fstab']['mounts'][$NAME]['lock_file']
 
 Usage
 -----
@@ -87,6 +88,9 @@ the man page for further information on them:
 The following are additional flags to `fb_fstab`:
   * `remount_with_umount` - by default, we remount with `mount -o remount`, but
                             if this is set, we will `umount` and `mount`
+  * `lock_file` - a lock file to take when performing operations on this mount.
+                  Useful for mounts that are also managed dynamically by others
+                  on the system.
   * `enable_remount` - defaults to `true`, set to `false` if this FS should
                        never be remounted
   * `mp_owner` - mountpoint owner
