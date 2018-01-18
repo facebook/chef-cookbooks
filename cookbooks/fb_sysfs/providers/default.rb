@@ -34,7 +34,10 @@ action :set do
     )
   else
     converge_by("Setting #{new_resource.path}") do
-      file new_resource.path do
+      # We are using file to write content, not to manage the file itself,
+      # so we exempt the internal foodcritic rule that requires
+      # owner/group/mode.
+      file new_resource.path do # ~FB023
         content new_resource.value.to_s
       end
     end
