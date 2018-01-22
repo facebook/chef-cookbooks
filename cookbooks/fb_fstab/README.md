@@ -85,14 +85,14 @@ the man page for further information on them:
   * `dump` (defaults to `0` if you don't specify)
   * `pass` (defaults to `2` if you don't specify)
 
-The following are additional flags to `fb_fstab`:
+The following are additional per-mount flags to `fb_fstab`:
   * `remount_with_umount` - by default, we remount with `mount -o remount`, but
                             if this is set, we will `umount` and `mount`
   * `lock_file` - a lock file to take when performing operations on this mount.
                   Useful for mounts that are also managed dynamically by others
                   on the system.
-  * `enable_remount` - defaults to `true`, set to `false` if this FS should
-                       never be remounted
+  * `enable_remount` - defaults to `false`, set to `true` if this FS should
+                       be remounted
   * `mp_owner` - mountpoint owner
   * `mp_group` - mountpoint group owner
   * `mp_perms` - mountpoint permission mode
