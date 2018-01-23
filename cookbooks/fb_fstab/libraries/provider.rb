@@ -341,6 +341,10 @@ module FB
       opts1l.delete_if { |x| x.start_with?('addr=') }
       opts2l.delete_if { |x| x.start_with?('addr=') }
 
+      # seclabel is added by the kernel, not users
+      opts1l.delete_if { |x| x == 'seclabel' }
+      opts2l.delete_if { |x| x == 'seclabel' }
+
       # Sort them both
       opts1l.sort!
       opts2l.sort!
