@@ -8,7 +8,7 @@
 #
 
 module FB
-  # Fstab utilitiy functions
+  # Fstab utility functions
   unless defined?(FB::Fstab)
     class Fstab
       BASE_FILENAME = '/etc/.fstab.chef'.freeze
