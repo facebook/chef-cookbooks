@@ -105,8 +105,10 @@ module FB
     def remount(mount_point, with_umount, lock_file)
       Chef::Log.info("fb_fstab: Remounting #{mount_point}")
       if with_umount
+        Chef::Log.debug("fb_fstab: umount and mounting #{mount_point}")
         cmd = "/bin/umount #{mount_point}; /bin/mount #{mount_point}"
       else
+        Chef::Log.debug("fb_fstab: 'mount -o remount' on #{mount_point}")
         cmd = "/bin/mount -o remount #{mount_point}"
       end
       s = Mixlib::ShellOut.new(cmd)
