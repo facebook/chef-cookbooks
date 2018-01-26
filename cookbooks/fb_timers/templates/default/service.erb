@@ -14,6 +14,7 @@ ExecStart=<%= @conf['command'] %>
 TimeoutSec=<%= @conf['timeout'] %>
 <% if @conf['syslog'] %>
 StandardOutput=syslog
+StandardError=syslog
 SyslogIdentifier=<%= @conf['name'] %>
 <% end %>
 <% @conf['service_options'].each do |name, value| %>
