@@ -7,7 +7,7 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 #
-require 'chef/mixin/shell_out'
+include Chef::Mixin::ShellOut
 
 module FB
   module FbSwap
