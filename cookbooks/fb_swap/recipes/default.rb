@@ -12,7 +12,7 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
-if node.in_shard?(0)
+if node.in_shard?(1)
   include_recipe 'fb_swap::new'
 else
   include_recipe 'fb_swap::old'
