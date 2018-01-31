@@ -32,13 +32,19 @@ Attributes
 
 Usage
 -----
-`fb_fstab` will look at the state of the system and attempt to populate the
-basic system mounts into `node['fb_fstab']['mounts']` for you. You may then
-add whatever filesystems you would like mounted and `fb_fstab` will, for each
-entry in the hash:
+`fb_fstab` will manage all mounts on a system. The primary mechanism for
+interacting with it is through the `node['fb_fstab']['mounts']` hash which
+allows you to specify mounts you want. For each entry in the hash, fb_fstab
+will:
 * populate `/etc/fstab` for you
 * create the `mount_point` (but not parents) if it doesn't exist
 * mount the filesystem
+
+For "base mounts", i.e. the mounts that the machine came with from installation,
+`fb_fstab`, will include them if a hint file is provided, or attempt to do an
+educated guess - see "Base-OS Filesystems" below. Note that any entry in
+`node['fb_fstab']['mounts']` with a matching `device` will override anything
+found in "base mounts."
 
 ### Global Options
 
@@ -150,8 +156,10 @@ Once this file exists it is considered a source of truth and will not be
 modified.
 
 This means if you need to do crazy things like modify the UUID or LABEL of your
-root filesystem, you must update `/etc/.fstab.chef` to reflect these changes and
-re-run Chef.
+root filesystem, you must either:
+* Update `/etc/.fstab.chef` to reflect these changes and re-run Chef
+* Populate `node['fb_fstab']['mounts']` with an entry that overrides that
+  entry
 
 # Handling online disk repair
 Chef will read a file `/var/chef/in_maintenance_disks` to determine any disks
