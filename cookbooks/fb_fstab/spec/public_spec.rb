@@ -214,6 +214,9 @@ EOF
   end
 
   context 'compare_opts' do
+    before(:each) do
+      node.default['fb_fstab']['ignorable_opts'] = []
+    end
     it 'should find identical things identical' do
       compare_opts(
         'rw,size=1G',
@@ -256,9 +259,27 @@ EOF
         ['size=1G', 'rw'],
       ).should eq(false)
     end
+    it 'should honor ignored string opts' do
+      node.default['fb_fstab']['ignorable_opts'] << 'nofail'
+      compare_opts(
+        ['rw', 'nofail', 'noatime'],
+        ['rw', 'noatime'],
+      ).should eq(true)
+    end
+    it 'should honor ignored regex opts' do
+      node.default['fb_fstab']['ignorable_opts'] << /^addr=.*/
+      compare_opts(
+        ['rw', 'addr=10.0.0.1', 'noatime'],
+        ['rw', 'noatime'],
+      ).should eq(true)
+    end
   end
 
   context 'compare_fstype' do
+    before(:each) do
+      node.default['fb_fstab']['type_normalization_map'] = {}
+    end
+
     it 'should see identical types as identical' do
       compare_fstype('xfs', 'xfs').should eq(true)
     end
@@ -268,9 +289,17 @@ EOF
     it 'should not see different filesystems as the same' do
       compare_fstype('ext4', 'ext3').should eq(false)
     end
+    it 'should normalize types according to the map' do
+      node.default['fb_fstab']['type_normalization_map']['fuse.gluster'] =
+        'gluster'
+      compare_fstype('fuse.gluster', 'gluster')
+    end
   end
 
   context 'fstype_sameish' do
+    before(:each) do
+      node.default['fb_fstab']['type_normalization_map'] = {}
+    end
     it 'should see identical types as identical' do
       fstype_sameish('xfs', 'xfs').should eq(true)
     end
@@ -472,6 +501,10 @@ EOF
     end
   end
   context 'tmpfs_mount_status' do
+    before(:each) do
+      node.default['fb_fstab']['ignorable_opts'] = []
+      node.default['fb_fstab']['type_normalization_map'] = {}
+    end
     it 'should detect oldschool tmpfs as the same' do
       node.default['filesystem2']['by_pair']['tmpfs,/mnt/waka'] = {
         'device' => 'tmpfs',
@@ -583,6 +616,10 @@ EOF
     end
   end
   context 'mount_status' do
+    before(:each) do
+      node.default['fb_fstab']['ignorable_opts'] = []
+      node.default['fb_fstab']['type_normalization_map'] = {}
+    end
     it 'should detect identical mounts as such' do
       node.default['filesystem2']['by_pair']['/dev/sdd1,/mnt/d0'] = {
         'device' => '/dev/sdd1',

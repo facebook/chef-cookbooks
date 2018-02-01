@@ -10,6 +10,8 @@ Attributes
 * node['fb_fstab']['enable_remount']
 * node['fb_fstab']['enable_unmount']
 * node['fb_fstab']['allow_lazy_umount']
+* node['fb_fstab']['type_normalization_map']
+* node['fb_fstab']['ignorable_opts']
 * node['fb_fstab']['umount_ignores']['devices']
 * node['fb_fstab']['umount_ignores']['device_prefixes']
 * node['fb_fstab']['umount_ignores']['types']
@@ -140,6 +142,29 @@ Using `only_if` is slightly different than with resources, and looks like this:
 
 Things that fail the `only_if` will not show up in `/etc/fstab` or be mounted.
 
+### type_normalization_map
+In order to allow filesystems that report differently from the kernel than what
+we request there is a user-modifiable mapping fb_fstab uses to normalize the
+types it compares. The default includes `'fuse.gluster' => 'gluster'`. You may
+add other normalizations into this map. They are exact-string matches. Do not
+overwrite the hash or you will lose the pre-populated entries, instead
+add/modify:
+
+```
+node.default['fb_fstab']['fs_type_normalization_map']['fuse.gluster'] = 'gluster'
+```
+
+### ignorable_opts
+Options that should be dropped from the mount-options when comparing for
+equality. For example we drop 'nofail' because while we may want to set that in
+`/etc/fstab`, it's never passed to the kernel and thus never in the visible
+options for a mounted filesystem. The entries can either be strings or regexes.
+Add to this list like so:
+
+```
+node.default['fb_fstab']['ignorable_opts'] << 'ignore_me'
+```
+
 ### Base-OS filesystems
 `fb_fstab` determines the base filesystems (root, boot, swap, etc.) that would
 come from the original installation from `/etc/.fstab.chef`. It is recommended
@@ -161,7 +186,7 @@ root filesystem, you must either:
 * Populate `node['fb_fstab']['mounts']` with an entry that overrides that
   entry
 
-# Handling online disk repair
+### Handling online disk repair
 Chef will read a file `/var/chef/in_maintenance_disks` to determine any disks
 currently being repaired online and skip mounting them. The format of the file
 is one device, ala:
@@ -172,3 +197,4 @@ is one device, ala:
 If this file has not been touched in 7 days it will be assumed to be stale and
 will be removed. This is designed for online _repair_ not ignoring disks
 permanently.
+

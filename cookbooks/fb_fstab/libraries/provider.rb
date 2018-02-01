@@ -306,25 +306,37 @@ module FB
       end
     end
 
+    def _normalize_type(type)
+      if node['fb_fstab']['type_normalization_map'][type]
+        return node['fb_fstab']['type_normalization_map'][type]
+      end
+      type
+    end
+
     # Compare fstype's for identicalness
     def compare_fstype(type1, type2)
-      if type1 == type2 ||
-         # Gluster is mounted as '-t gluster', but shows up as 'fuse.gluster'
-         # ... is this true for all FUSE FSes? Dunno...
-         type1.sub('fuse.gluster', 'gluster') ==
-         type2.sub('fuse.gluster', 'gluster')
-        return true
-      end
-      false
+      type1 == type2 || _normalize_type(type1) == _normalize_type(type2)
     end
 
     # We consider a filesystem type the "same" if they are identical or if
     # one is auto.
     def fstype_sameish(type1, type2)
-      if compare_fstype(type1, type2) || [type1, type2].include?('auto')
-        return true
+      compare_fstype(type1, type2) || [type1, type2].include?('auto')
+    end
+
+    def delete_ignored_opts!(tlist)
+      ignorable_opts_s = node['fb_fstab']['ignorable_opts'].select do |x|
+        x.is_a?(::String)
       end
-      false
+      ignorable_opts_r = node['fb_fstab']['ignorable_opts'].select do |x|
+        x.is_a?(::Regexp)
+      end
+      tlist.delete_if do |x|
+        ignorable_opts_s.include?(x) ||
+          ignorable_opts_r.any? do |regex|
+            x =~ regex
+          end
+      end
     end
 
     # Take opts in a variety of forms, and compare them intelligently
@@ -338,14 +350,8 @@ module FB
       opts1l << 'rw' unless opts1l.include?('ro') || opts1l.include?('rw')
       opts2l << 'rw' unless opts2l.include?('ro') || opts2l.include?('rw')
 
-      # NFS sometimes automatically adds addr=<server_ip> here automagically,
-      # which doesn't affect the mount, so don't compare it.
-      opts1l.delete_if { |x| x.start_with?('addr=') }
-      opts2l.delete_if { |x| x.start_with?('addr=') }
-
-      # seclabel is added by the kernel, not users
-      opts1l.delete_if { |x| x == 'seclabel' }
-      opts2l.delete_if { |x| x == 'seclabel' }
+      delete_ignored_opts!(opts1l)
+      delete_ignored_opts!(opts2l)
 
       # Sort them both
       opts1l.sort!

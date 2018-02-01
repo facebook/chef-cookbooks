@@ -73,4 +73,21 @@ default['fb_fstab'] = {
       '/run/user',
     ],
   },
+  'type_normalization_map' => {
+    # Gluster is mounted as '-t gluster', but shows up as 'fuse.gluster'
+    # ... is this true for all FUSE FSes? Dunno...
+    'fuse.gluster' => 'gluster',
+  },
+  'ignorable_opts' => [
+    # seclabel is something the kernel hands you to signify if it's on,
+    # not an option you pass in, and thus shouldn't be part of the comparison
+    'seclabel',
+    # nofail is an option you pass in to fstab, but not an option
+    # that gets passed to the kernel, therefore you won't see it in the mount
+    # options and can't use it in the comparison
+    'nofail',
+    # NFS sometimes automatically adds addr=<server_ip> here automagically,
+    # which doesn't affect the mount, so don't compare it.
+    /^addr=.*/,
+  ],
 }
