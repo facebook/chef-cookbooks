@@ -339,26 +339,45 @@ module FB
       end
     end
 
-    # Take opts in a variety of forms, and compare them intelligently
-    def compare_opts(opts1, opts2)
-      # ensure both are arrays
-      opts1l = opts1.is_a?(Array) ? opts1.dup : opts1.split(',')
-      opts2l = opts2.is_a?(Array) ? opts2.dup : opts2.split(',')
+    # This translates human-readable size mount options into their
+    # canonical bytes form. I.e. "size=4G" into "size=4194304"
+    #
+    # Assumes it's really a size opt - validate before calling!
+    def translate_size_opt(opt)
+      val = opt.split('=').last
+      mag = val[-1].downcase
+      mags = ['k', 'm', 'g', 't']
+      return opt unless mags.include?(mag)
+      num = val[0..-2].to_i
+      mags.each do |d|
+        num *= 1024
+        return "size=#{num}" if mag == d
+      end
+      fail RangeError "fb_fstab: Failed to translate #{opt}"
+    end
 
+    def canonicalize_opts(opts)
+      # ensure both are arrays
+      optsl = opts.is_a?(Array) ? opts.dup : opts.split(',')
       # 'rw' is implied, so if no readability is specified, add it to both,
       # so missing on one if them doesn't cause a false-negative
-      opts1l << 'rw' unless opts1l.include?('ro') || opts1l.include?('rw')
-      opts2l << 'rw' unless opts2l.include?('ro') || opts2l.include?('rw')
+      optsl << 'rw' unless optsl.include?('ro') || optsl.include?('rw')
+      delete_ignored_opts!(optsl)
+      optsl.map! do |x|
+        x.start_with?('size=') ? translate_size_opt(x) : x
+      end
 
-      delete_ignored_opts!(opts1l)
-      delete_ignored_opts!(opts2l)
+      # sort
+      optsl.sort
+    end
 
-      # Sort them both
-      opts1l.sort!
-      opts2l.sort!
+    # Take opts in a variety of forms, and compare them intelligently
+    def compare_opts(opts1, opts2)
+      c1 = canonicalize_opts(opts1)
+      c2 = canonicalize_opts(opts2)
 
       # Check that they're the same
-      opts1l == opts2l
+      c1 == c2
     end
 
     # Given a tmpfs desired mount `desired` check to see what it's status is;
@@ -390,6 +409,11 @@ module FB
               "fb_fstab: ... with different options #{desired['opts']} vs " +
               mounted['mount_options'].join(','),
             )
+            Chef::Log.info(
+              "fb_fstab: #{desired['mount_point']} is mounted with options " +
+              "#{canonicalize_opts(mounted['mount_options'])} instead of " +
+              canonicalize_opts(desired['opts']).to_s,
+            )
             return :remount
           end
         end
@@ -420,6 +444,11 @@ module FB
             Chef::Log.debug(
               "fb_fstab: ... with different options #{desired['opts']} vs " +
               mounted['mount_options'].join(','),
+            )
+            Chef::Log.info(
+              "fb_fstab: #{desired['mount_point']} is mounted with options " +
+              "#{canonicalize_opts(mounted['mount_options'])} instead of " +
+              canonicalize_opts(desired['opts']).to_s,
             )
             return :remount
           end
@@ -481,6 +510,11 @@ module FB
             Chef::Log.debug(
               "fb_fstab: ... with different options #{desired['opts']} vs " +
               mounted['mount_options'].join(','),
+            )
+            Chef::Log.info(
+              "fb_fstab: #{desired['mount_point']} is mounted with options " +
+              "#{canonicalize_opts(mounted['mount_options'])} instead of " +
+              canonicalize_opts(desired['opts']).to_s,
             )
             return :remount
           end

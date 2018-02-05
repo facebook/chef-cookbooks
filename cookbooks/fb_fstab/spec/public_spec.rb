@@ -273,6 +273,44 @@ EOF
         ['rw', 'noatime'],
       ).should eq(true)
     end
+    it 'should normalize size opts' do
+      compare_opts(
+        'size=4K',
+        'size=4096',
+      ).should eq(true)
+      compare_opts(
+        'size=4M',
+        'size=4194304',
+      ).should eq(true)
+      compare_opts(
+        'size=4g',
+        'size=4294967296',
+      ).should eq(true)
+      compare_opts(
+        'size=4t',
+        'size=4398046511104',
+      ).should eq(true)
+    end
+    it 'should treat sizes it does not understand as opaque' do
+      compare_opts(
+        'size=4L',
+        'size=4L',
+      ).should eq(true)
+      compare_opts(
+        'size=4L',
+        'size=4',
+      ).should eq(false)
+      compare_opts(
+        'size=4L',
+        'size=4T',
+      ).should eq(false)
+    end
+    it 'should not normalize different values to be the same' do
+      compare_opts(
+        'size=4K',
+        'size=4000',
+      ).should eq(false)
+    end
   end
 
   context 'compare_fstype' do
