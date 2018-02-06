@@ -10,6 +10,9 @@ missingok
 <% if node['fb_logrotate']['globals']['size'] -%>
 size  <%= node['fb_logrotate']['globals']['size'] %>
 <% end -%>
+<% if node['fb_logrotate']['globals']['compressext'] -%>
+compressext <%= node['fb_logrotate']['globals']['compressext'] %>
+<% end -%>
 
 <% node['fb_logrotate']['configs'].to_hash.each do |name, block| -%>
 ## fb.fb_logrotate.configs.<%= name %>
