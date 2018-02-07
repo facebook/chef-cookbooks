@@ -317,38 +317,22 @@ EOF
     before(:each) do
       node.default['fb_fstab']['type_normalization_map'] = {}
     end
-
     it 'should see identical types as identical' do
       compare_fstype('xfs', 'xfs').should eq(true)
     end
-    it 'should not see auto as identical to anything except itself' do
-      compare_fstype('autofs', 'xfs').should eq(false)
+    it 'should not see auto as the same as anything else' do
+      compare_fstype('xfs', 'auto').should eq(false)
     end
-    it 'should not see different filesystems as the same' do
-      compare_fstype('ext4', 'ext3').should eq(false)
+    it 'should not see auto as the same as anything else - left' do
+      compare_fstype('auto', 'ext4').should eq(false)
+    end
+    it 'should see different things as different' do
+      compare_fstype('xfs', 'ext4').should eq(false)
     end
     it 'should normalize types according to the map' do
       node.default['fb_fstab']['type_normalization_map']['fuse.gluster'] =
         'gluster'
       compare_fstype('fuse.gluster', 'gluster')
-    end
-  end
-
-  context 'fstype_sameish' do
-    before(:each) do
-      node.default['fb_fstab']['type_normalization_map'] = {}
-    end
-    it 'should see identical types as identical' do
-      fstype_sameish('xfs', 'xfs').should eq(true)
-    end
-    it 'should see auto as the same as anything' do
-      fstype_sameish('xfs', 'auto').should eq(true)
-    end
-    it 'should see auto as the same as anything - left' do
-      fstype_sameish('auto', 'ext4').should eq(true)
-    end
-    it 'should see different things as different' do
-      fstype_sameish('xfs', 'ext4').should eq(false)
     end
   end
 
@@ -719,6 +703,25 @@ EOF
       mount_status(
         desired_mounts['awesomemount'],
       ).should eq(:moved)
+    end
+    it 'should detect handle auto as not an fstype conflict' do
+      node.default['filesystem2']['by_pair']['/dev/sdd1,/mnt/d0'] = {
+        'device' => '/dev/sdd1',
+        'mount' => '/mnt/d0',
+        'fs_type' => 'auto',
+        'mount_options' => ['rw', 'noatime'],
+      }
+      desired_mounts = {
+        'awesomemount' => {
+          'device' => '/dev/sdd1',
+          'mount_point' => '/mnt/d0',
+          'type' => 'ext4',
+          'opts' => 'rw,noatime',
+        },
+      }
+      mount_status(
+        desired_mounts['awesomemount'],
+      ).should eq(:same)
     end
     it 'should detect fstype conflict - with different opts' do
       node.default['filesystem2']['by_pair']['/dev/sdd1,/mnt/d0'] = {

@@ -313,15 +313,10 @@ module FB
       type
     end
 
-    # Compare fstype's for identicalness
-    def compare_fstype(type1, type2)
-      type1 == type2 || _normalize_type(type1) == _normalize_type(type2)
-    end
-
     # We consider a filesystem type the "same" if they are identical or if
     # one is auto.
-    def fstype_sameish(type1, type2)
-      compare_fstype(type1, type2) || [type1, type2].include?('auto')
+    def compare_fstype(type1, type2)
+      type1 == type2 || _normalize_type(type1) == _normalize_type(type2)
     end
 
     def delete_ignored_opts!(tlist)
@@ -496,9 +491,9 @@ module FB
         # otherwise, we require them to be similar. This is because 'auto'
         # is meaningless without a physical device, so we don't want to allow
         # it to be the same.
-        if desired['type'] == mounted['fs_type'] ||
+        if compare_fstype(desired['type'], mounted['fs_type']) ||
            (desired['device'].start_with?('/') &&
-            fstype_sameish(desired['type'], mounted['fs_type']))
+            [desired['type'], mounted['fs_type']].include?('auto'))
           Chef::Log.debug(
             "fb_fstab: FS #{desired['device']} on #{desired['mount_point']}" +
             ' is currently mounted...',
