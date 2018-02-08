@@ -12,7 +12,9 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
-if node.in_shard?(49)
+# TODO(yangxia): Remove fb_swap::old and just copy fb_swap::new into this
+#                file once we're sure the new recipe doesn't cause issues.
+if node.in_shard?(99)
   include_recipe 'fb_swap::new'
 else
   include_recipe 'fb_swap::old'
