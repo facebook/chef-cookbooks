@@ -59,17 +59,38 @@ module FB
                           mount_data['mount_point'])
         end
       end
-      # We cd into /dev/shm because otherwise mount will be dumb and
-      # change the device of 'foo' to be '/foo' if /foo happens to exist.
-      #
-      # I COULD call --no-canonicalize except that when /bin/mount calls
-      # /sbin/mount.tmpfs, it won't preserve that option, and then calls
-      # /bin/mount -i without it and it's canonicalized anyway. Further on
-      # other FS's --no-canonicalize may not be safe. THUS, we cd to a place
-      # that should be emptyish.
-      s = Mixlib::ShellOut.new(
-        "cd /dev/shm && /bin/mount #{mount_data['mount_point']}",
-      )
+      if node.systemd?
+        # If you use FUSE mounts, and you're running Chef from a systemd timer,
+        # the FUSE helpers will be killed after a chef run, which unmounts your
+        # filesystem, which is clearly not what you want. So we instead want to
+        # ask systemd to do the mount for us. The cleanest way to do that is to
+        # ask systemd what it's generated unit for that mount is and then
+        # "start" that unit.
+        #
+        # HOWEVER!!!! NOTE WELL!!!!
+        # If you don't do a `systemctl daemon-reload` after updating /etc/fstab,
+        # then this won't be gauranteed to mount the right thing, so we have
+        # that notify in the recipe
+        s = Mixlib::ShellOut.new(
+          "/bin/systemd-escape -p --suffix=mount #{mount_data['mount_point']}",
+        ).run_command
+        s.error!
+        mountunit = s.stdout.chomp.shellescape
+        s = Mixlib::ShellOut.new("/bin/systemctl start #{mountunit}")
+      else
+        # We cd into /dev/shm because otherwise mount will be dumb and
+        # change the device of 'foo' to be '/foo' if /foo happens to exist.
+        #
+        # I COULD call --no-canonicalize except that when /bin/mount calls
+        # /sbin/mount.tmpfs, it won't preserve that option, and then calls
+        # /bin/mount -i without it and it's canonicalized anyway. Further on
+        # other FS's --no-canonicalize may not be safe. THUS, we cd to a place
+        # that should be emptyish.
+        s = Mixlib::ShellOut.new(
+          "cd /dev/shm && /bin/mount #{mount_data['mount_point']}",
+        )
+      end
+
       _run_command_flocked(s,
                            mount_data['lock_file'],
                            mount_data['mount_point'])

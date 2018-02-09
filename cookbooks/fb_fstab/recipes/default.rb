@@ -97,11 +97,21 @@ whyrun_safe_ruby_block 'get base mounts' do
   end
 end
 
+execute 'fb_fstab-daemon-reload' do
+  command '/bin/systemctl daemon-reload'
+  action :nothing
+end
+
 template '/etc/fstab' do
   source 'fstab.erb'
   owner 'root'
   group 'root'
   mode '0644'
+  # On systemd hosts we use the generated mount units to mount filesystems
+  # so it's important we ask it to regenerate them when we edit fstab
+  if node.systemd?
+    notifies :run, 'execute[fb_fstab-daemon-reload]', :immediately
+  end
 end
 
 fb_fstab 'handle_mounts'

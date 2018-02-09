@@ -841,6 +841,7 @@ EOF
         'type' => 'xfs',
         'opts' => 'rw,noatime',
       }
+      expect(node).to receive(:systemd?).and_return(false)
       File.should_receive(:exist?).with(desired_mount['mount_point']).
         and_return(true)
       so = double('FSshell_out1')
@@ -852,6 +853,33 @@ EOF
       ).and_return(so)
       mount(desired_mount, []).should eq(true)
     end
+    it 'should attempt to mount by systemd mount unit on systemd hosts' do
+      desired_mount = {
+        'device' => '/dev/sdd1',
+        'mount_point' => '/mnt/d0',
+        'type' => 'xfs',
+        'opts' => 'rw,noatime',
+      }
+      expect(node).to receive(:systemd?).and_return(true)
+      File.should_receive(:exist?).with(desired_mount['mount_point']).
+        and_return(true)
+      so = double('FSshell_out2')
+      so.should_receive(:run_command).and_return(so)
+      so.should_receive(:error!).and_return(nil)
+      so.should_receive(:stdout).and_return('thisisaunit')
+      so2 = double('FSshell_out1')
+      so2.should_receive(:run_command).and_return(so2)
+      so2.should_receive(:error?).and_return(false)
+      so2.should_receive(:error!).and_return(nil)
+      Mixlib::ShellOut.should_receive(:new).with(
+        "/bin/systemd-escape -p --suffix=mount #{desired_mount['mount_point']}",
+      ).and_return(so)
+
+      Mixlib::ShellOut.should_receive(:new).with(
+        '/bin/systemctl start thisisaunit',
+      ).and_return(so2)
+      mount(desired_mount, []).should eq(true)
+    end
     it 'should raise failures on mount failure' do
       desired_mount = {
         'device' => '/dev/sdd1',
@@ -859,6 +887,7 @@ EOF
         'type' => 'xfs',
         'opts' => 'rw,noatime',
       }
+      expect(node).to receive(:systemd?).and_return(false)
       File.should_receive(:exist?).with(desired_mount['mount_point']).
         and_return(true)
       so = double('FSshell_out2')
@@ -880,6 +909,7 @@ EOF
         'opts' => 'rw,noatime',
         'allow_mount_failure' => true,
       }
+      expect(node).to receive(:systemd?).and_return(false)
       File.should_receive(:exist?).with(desired_mount['mount_point']).
         and_return(true)
       so = double('FSshell_out3')
@@ -912,6 +942,7 @@ EOF
         'mp_owner' => 'nobody',
         'mp_group' => 'nobody',
       }
+      expect(node).to receive(:systemd?).and_return(false)
       File.should_receive(:exist?).with(desired_mount['mount_point']).
         and_return(false)
       FileUtils.should_receive(:mkdir_p).with(desired_mount['mount_point'],
