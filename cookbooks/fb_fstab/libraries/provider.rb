@@ -320,7 +320,7 @@ module FB
           Chef::Log.warn(
             "fb_fstab: Would umount #{mounted_data['device']} from " +
             "#{mounted_data['mount']}, but " +
-            'node["fb"]["fb_fstab"]["enable_unmount"] is false',
+            'node["fb_fstab"]["enable_unmount"] is false',
           )
           Chef::Log.debug("fb_fstab: #{mounted_data}")
         end
