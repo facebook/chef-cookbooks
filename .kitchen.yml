@@ -35,6 +35,7 @@ platforms:
 
 provisioner:
   name: chef_zero
+  product_version: 12.21.26
 
 suites:
   - name: default
