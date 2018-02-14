@@ -11,6 +11,8 @@ platforms:
         - sed -i '/UUID=/d' /etc/fstab
         # enable EPEL (for stuff like hddtemp)
         - rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
+        # we need dmidecode for the Ohai shard plugin
+        - yum install -y dmidecode
   - name: centos-7
     driver_config:
       provision_command:
@@ -18,24 +20,39 @@ platforms:
         - touch /etc/fstab
         # enable EPEL (for stuff like hddtemp)
         - rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+        # we need dmidecode for the Ohai shard plugin
+        - yum install -y dmidecode
       run_command: /usr/sbin/init
   - name: ubuntu-14.04
+    driver_config:
+      provision_command:
+        # we need dmidecode for the Ohai shard plugin
+        - apt-get install -y dmidecode
   - name: ubuntu-16.04
     driver_config:
+      provision_command:
+        # we need dmidecode for the Ohai shard plugin
+        - apt-get install -y dmidecode
       run_command: /sbin/init
   - name: debian-8
     driver_config:
       provision_command:
+        # dmidecode for the Ohai shard plugin
+        # wget for...
         # https://github.com/test-kitchen/test-kitchen/issues/1018
         # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=814070
-        - apt-get install -y wget
+        - apt-get install -y wget dmidecode
       run_command: /sbin/init
   - name: debian-sid
     driver_config:
+      provision_command:
+        # we need dmidecode for the Ohai shard plugin
+        - apt-get install -y dmidecode
       run_command: /bin/systemd
 
 provisioner:
   name: chef_zero
+#  log_level: "debug"
 
 suites:
   - name: default
