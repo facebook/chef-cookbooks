@@ -129,7 +129,11 @@ Dir.glob('/etc/cron*/*.rpm{save,new}').each do |todel|
 end
 
 # Make sure we nuke all crons from the cron resource.
-file '/var/spool/cron/root' do
+file 'clean out root crontab' do
+  path value_for_platform_family(
+    ['rhel', 'fedora', 'suse'] => '/var/spool/cron/root',
+    ['debian', 'ubuntu'] => '/var/spool/cron/crontabs/root',
+  )
   action :delete
 end
 
