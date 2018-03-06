@@ -78,7 +78,6 @@ template iptables_rules do
   group 'root'
   mode '0640'
   variables(:ip => 4)
-  verify 'cat %{path} | iptables-restore --test'
   notifies :run, 'execute[reload iptables]', :immediately
 end
 
@@ -103,6 +102,5 @@ template ip6tables_rules do
   group 'root'
   mode '0640'
   variables(:ip => 6)
-  verify 'cat %{path} | ip6tables-restore --test'
   notifies :run, 'execute[reload ip6tables]', :immediately
 end
