@@ -44,6 +44,14 @@ your node.
 * `node.yocto?`
     Is a Yocto platform
 
+* `node.aristaeos?`
+    Is network switch running Arista EOS
+
+* `node.embedded?`
+    Is embedded Linux, implies 'node.aristaeos? or node.yocto?'. These
+    devices likely have minimal packages installed, little space, and/or some
+    non-persistent filesystems.
+
 * `node.systemd?`
     True if the node uses systemd as their init system.
 

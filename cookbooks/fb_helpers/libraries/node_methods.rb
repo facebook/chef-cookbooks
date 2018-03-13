@@ -51,6 +51,14 @@ class Chef
       return self['platform_family'] == 'yocto'
     end
 
+    def aristaeos?
+      return self['platform'] == 'arista_eos'
+    end
+
+    def embedded?
+      return self.yocto? || self.aristaeos?
+    end
+
     def systemd?
       return ::File.directory?('/run/systemd/system')
     end
