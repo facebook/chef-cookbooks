@@ -63,6 +63,10 @@ class Chef
       return ::File.directory?('/run/systemd/system')
     end
 
+    def freebsd?
+      return self['platform_family'] == 'freebsd'
+    end
+
     def virtual?
       vm_systems = %w{
         bhyve
