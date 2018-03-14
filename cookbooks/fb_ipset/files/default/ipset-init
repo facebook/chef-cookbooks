@@ -1,0 +1,88 @@
+#!/bin/sh
+#
+# ipset	Load and save set configurations
+#
+# chkconfig: 2345 07 93
+# description:	Loads and saves ipset configurations
+#
+# config: /etc/sysconfig/ipset
+#
+### BEGIN INIT INFO
+# Provides: ipset
+# Required-Start:
+# Required-Stop:
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description:  Saves and loads ipsets
+# Description: Will save ipsets and load them at a boot time
+### END INIT INFO
+
+# Source function library.
+. /etc/init.d/functions
+
+IPSET=ipset
+IPSET_BIN=/usr/sbin/$IPSET
+IPSET_DATA=/etc/sysconfig/$IPSET
+
+if [ ! -x ${IPSET_BIN} ]; then
+    echo -n $"${IPSET}: ${IPSET_BIN} does not exist."; warning; echo
+    exit 5
+fi
+
+start() {
+    # Do not start if there is no config file.
+    [ ! -f "${IPSET_DATA}" ] && return 6
+
+    ${IPSET_BIN} restore < ${IPSET_DATA}
+
+    if [ $? -eq 0 ]; then
+        success; echo
+    else
+        failure; echo; return 1
+    fi
+}
+
+stop() {
+    TMP=$(/bin/mktemp -q /tmp/$IPSET.XXXXXXXXX)
+    ${IPSET_BIN} list -o save > ${TMP} && mv -f ${TMP} ${IPSET_DATA}
+
+    if [ $? -eq 0 ]; then
+        success; echo
+    else
+        failure; echo; return 1
+    fi
+}
+
+save() {
+  stop
+}
+
+status() {
+    ${IPSET_BIN} list
+    return $?
+}
+
+case "$1" in
+    start)
+      start
+      RETVAL=$?
+    ;;
+    stop)
+      stop
+      RETVAL=$?
+    ;;
+    status)
+      status
+      RETVAL=$?
+    ;;
+    save)
+      save
+      RETVAL=$?
+    ;;
+    *)
+      echo $"Usage: ${IPSET} {start|stop|status|save}"
+      RETVAL=2
+    ;;
+esac
+
+exit $RETVAL
