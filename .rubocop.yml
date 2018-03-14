@@ -151,7 +151,10 @@ HashSyntax:
 Style/Documentation:
   Enabled: false
 
-TrailingCommaInLiteral:
+TrailingCommaInArrayLiteral:
+  EnforcedStyleForMultiline: comma
+
+TrailingCommaInHashLiteral:
   EnforcedStyleForMultiline: comma
 
 TrailingCommaInArguments:
