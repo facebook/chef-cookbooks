@@ -1,0 +1,85 @@
+#!/bin/sh
+#
+# chkconfig: 2345 70 40
+# description: rsyncd startup script
+#
+### BEGIN INIT INFO
+# Provides:          rsyncd
+# Required-Start:    $remote_fs $syslog $network $time
+# Required-Stop:     $remote_fs $syslog $network
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: rsyncd file transfer daemon
+# Description:       provides files over rsync protocol
+### END INIT INFO
+
+PATH=/usr/local/bin:/usr/bin:/bin
+PIDFILE=/var/run/rsyncd.pid
+RSYNC=/usr/bin/rsync
+PROG=rsyncd
+KILL_TIMEOUT=10
+
+. /etc/rc.d/init.d/functions
+
+RETVAL=0
+
+case "$1" in
+  start)
+      echo -n "Starting rsyncd: "
+      [ -f ${RSYNC} ] || exit 1
+
+      # rsync returns 0 if the pidfile exists, but fails to start
+      # this causes initscript and chef to think rsync started
+      # even though it actually hasn't. Let's prevent that.
+      if [ -s ${PIDFILE} ]; then
+        PID=$(<${PIDFILE})
+        [ "$(readlink /proc/${PID}/exe)" = "${RSYNC}" ] && exit 1
+      fi
+      rm -f ${PIDFILE}
+
+      RSYNC="${RSYNC} --daemon --config=/etc/rsyncd.conf"
+
+      daemon ${RSYNC}
+      RETVAL=$?
+      echo
+      [ ${RETVAL} -eq 0 ] && touch /var/lock/subsys/rsyncd
+        ;;
+
+  stop)
+      echo -n "Shutting down rsyncd: "
+      COUNT=0
+      test ! -s ${PIDFILE}  && exit 1
+      PID=$(<${PIDFILE})
+      kill ${PID}
+      RETVAL=$?
+      while [ "$(readlink /proc/${PID}/exe)" = "${RSYNC}" ]; do 
+        sleep 1 ; COUNT=$[COUNT+1]  
+        if [ ${COUNT} -ge ${KILL_TIMEOUT} ]; then
+          kill -9 ${PID}
+          RETVAL=$?
+          break
+        fi
+      done &>/dev/null
+      echo
+      if [ ${RETVAL} -eq 0 ]; then
+         rm -f /var/lock/subsys/rsyncd
+         test -f ${PIDFILE} && rm -f ${PIDFILE}
+      fi
+        ;;
+
+  status)
+      status -p ${PIDFILE} ${PROG}
+      RETVAL=$?
+        ;;
+
+  restart|reload)
+      $0 stop
+      $0 start
+      RETVAL=$?
+        ;;
+  *)
+      echo "Usage: $0 {start|stop|restart}"
+      exit 1
+esac
+
+exit ${RETVAL}

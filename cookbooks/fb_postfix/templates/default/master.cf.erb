@@ -1,0 +1,23 @@
+# This file is maintained by Chef. Do not edit, all changes will be
+# overwritten. See fb_postfix/README.md
+#
+# Postfix master process configuration file.  For details on the format
+# of the file, see the master(5) manual page (command: "man 5 master").
+#
+# ==========================================================================
+# service type  private unpriv  chroot  wakeup  maxproc command + args
+#               (yes)   (yes)   (yes)   (never) (100)
+# ==========================================================================
+
+<% master = node['fb_postfix']['master.cf'].to_hash %>
+<% master.keys.sort.each do |svc| %>
+<%   types = master[svc] %>
+<%   types.keys.sort.each do |type| %>
+<%     config = types[type] %>
+<%     v = [] %>
+<%     %w{private unpriv chroot wakeup maxproc command}.each do |field| %>
+<%       v << config[field] %>
+<%     end %>
+<%=    sprintf("%-13s %5s %s", svc, type, v.join("\t")) %>
+<%   end %>
+<% end %>

@@ -1,0 +1,8 @@
+# This file is maintained by Chef. Do not edit, all changes will be
+# overwritten. See fb_postfix/README.md
+
+<% unless node['fb_postfix'][@db_file].nil? %>
+<%   node['fb_postfix'][@db_file].to_hash.each do |k, v| %>
+<%=    k %> <%= v %>
+<%   end %>
+<% end %>

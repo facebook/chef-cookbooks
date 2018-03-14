@@ -1,0 +1,6 @@
+# This file is maintained by Chef. Do not edit, all changes will be
+# overwritten. See fb_ebtables/README.md
+
+<% node['fb_ebtables']['sysconfig'].to_hash.each do |key, val| %>
+EBTABLES_<%= key.tr('a-z', 'A-Z') %>="<%= val %>"
+<% end %>

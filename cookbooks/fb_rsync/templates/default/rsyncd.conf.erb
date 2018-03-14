@@ -1,0 +1,18 @@
+# see also rsyncd.conf(5)
+<%
+   # convenience variables
+   enabled_modules = node['fb_rsync']['rsyncd.conf']['enabled_modules']
+   global = node['fb_rsync']['rsyncd.conf']['global']
+   modules = node['fb_rsync']['rsyncd.conf']['modules']
+%>
+<% global.keys.sort.each do |key| -%>
+<%=   key %> = <%= global[key] %>
+<% end -%>
+
+<% enabled_modules.flatten.sort.each do |mod| -%>
+[<%= mod %>]
+<%   modules[mod].keys.sort.each do |key| -%>
+  <%=   key %> = <%= modules[mod][key] %>
+<%   end -%>
+<% end -%>
+

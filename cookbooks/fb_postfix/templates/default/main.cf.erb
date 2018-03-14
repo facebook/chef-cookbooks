@@ -1,0 +1,7 @@
+# This file is maintained by Chef. Do not edit, all changes will be
+# overwritten. See fb_postfix/README.md
+
+<% node['fb_postfix']['main.cf'].to_hash.sort.each do |k, v| %>
+<%   next if v.nil? %>
+<%=  k %> = <%= v %>
+<% end %>

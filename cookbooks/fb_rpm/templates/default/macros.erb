@@ -1,0 +1,6 @@
+# This file is maintained by Chef. Do not edit, all changes will be
+# overwritten. See fb_rpm/README.md
+
+<% node['fb_rpm']['macros'].to_hash.each do |key, val| %>
+<%=  key %><% if val %> <%= val %><% end %>
+<% end %>

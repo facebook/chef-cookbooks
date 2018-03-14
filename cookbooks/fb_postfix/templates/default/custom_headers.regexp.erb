@@ -1,0 +1,9 @@
+# This file is maintained by Chef. Do not edit, all changes will be
+# overwritten. See fb_postfix/README.md
+
+<% custom_headers = node['fb_postfix']['custom_headers'].to_hash %>
+<% custom_headers.keys.sort.each do |name| %>
+<%   hdr = node['fb_postfix']['custom_headers'][name] %>
+# Name: <%= name %>
+<%=  hdr['regexp'] %> <%= hdr['action'] %> <%= hdr['header'] %>: <%= hdr['value'] %>
+<% end %>
