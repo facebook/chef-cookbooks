@@ -4,11 +4,13 @@
 # BEGIN OS-INCLUDED STUFF
 <%
     mounts = node['fb_fstab']['mounts'].to_hash
+    # replace this with common logic. See t27070868
     node['fb_fstab']['_basefilecontents'].each_line do |line|
       next if line.strip.empty?
       # do not add swap if swap is disabled on the box
       next if line.include?('swap') && !node['fb_swap']['enabled']
-      line_dev_spec = line.split[0]
+      line_parts = line.split
+      line_dev_spec = line_parts[0]
       # First we do a naive pass at letting people override base mounts - this
       # is important so people can override by LABEL if they want to set
       # allow_mount_failure on a disk that doesn't exist, which will raise
@@ -18,7 +20,19 @@
       end
       # If that failed, we canonicalize (if possible) and try again against
       # canonicalized versions of what's in the user's config
-      fs_spec = FB::Fstab.canonicalize_device(line_dev_spec, node)
+      begin
+        fs_spec = FB::Fstab.canonicalize_device(line_dev_spec, node)
+      rescue StandardError => e
+        # Special handing for UUIDs. I hate UUIDs. Really, did I mention I hate
+        # UUIDs? Who thought those were a good idea. Anyway in the event we got
+        # UUIDs from provisioning and the user wants to use labels, let that
+        # happen.
+        raise e unless line_dev_spec.start_with?('UUID=')
+        next if mounts.any? do |name, data|
+          data['mount_point'] == line_parts[1] &&
+            data['device'].start_with?('LABEL=')
+        end
+      end
       # If someone has a more specific mount, don't use the original
       next if mounts.any? do |name, data|
         begin

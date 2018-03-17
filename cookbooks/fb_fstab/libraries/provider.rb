@@ -137,8 +137,12 @@ module FB
       s.error!
     end
 
+    # TODO: Replace this with get_umasked_base_mounts and use it from both
+    # check_unwanted_filesystems and the template. Currently the two have a
+    # slightly different implementation for no good reason. t27070868
     def get_base_mounts
       mounts = {}
+      desired_mounts = node['fb_fstab']['mounts'].to_hash
       FB::Fstab.load_base_fstab.each_line do |line|
         next if line.strip.empty?
         bits = line.split
@@ -149,9 +153,15 @@ module FB
           # we'll want to let users set allow_mount_failure, if they want,
           # so don't crash... and if they haven't overridden it, we'll fail
           # later
-          if node['fb_fstab']['mounts'].to_hash.any? do |_key, val|
+          if desired_mounts.any? do |_key, val|
                val['device'] == bits[0]
              end
+            real_dev = bits[0]
+          elsif bits[0].start_with?('UUID=') &&
+                desired_mounts.any? do |_key, val|
+                  val['device'].start_with?('LABEL=') &&
+                    val['mount_point'] == bits[1]
+                end
             real_dev = bits[0]
           else
             raise e

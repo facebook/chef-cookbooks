@@ -478,6 +478,7 @@ EOF
           'uuid' => '2ace4f5f-c8c5-4d3a-a027-d12076bdab0c',
         },
       }
+      node.default['fb_fstab']['mounts'] = {}
       File.should_receive(:read).with(FB::Fstab::BASE_FILENAME).
         and_return(base_contents)
       m = get_base_mounts
