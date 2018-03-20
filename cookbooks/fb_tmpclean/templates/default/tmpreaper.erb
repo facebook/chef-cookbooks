@@ -3,7 +3,9 @@
    if node.macosx?
      path << ':/opt/local/sbin:/opt/homebrew/sbin'
    end
-   tmpclean = node['fb_tmpclean'].to_hash -%>
+   tmpclean = node['fb_tmpclean'].to_hash
+   topt = tmpclean['timestamptype'] == 'atime' ? '--mtime-dir' : '--mtime' -%>
+
 PATH=<%= path %>
 TMPREAPER="$(which tmpreaper)"
 
@@ -26,7 +28,8 @@ fi
        excludes << "--protect '#{dir}/#{exclude}'"
      end %>
 if [ -d "<%= dir %>" ]; then
-  nice -n10 "$TMPREAPER" <%= excludes.join(' ') %> <%= time %> "<%= dir %>"
+  nice -n10 "$TMPREAPER" <%= topt %> <%= excludes.join(' ') %> \
+    <%= time %> "<%= dir %>"
 fi
 <% end %>
 
