@@ -35,5 +35,6 @@ execute 'rebuild all initramfs' do
   if node.systemd?
     subscribes :run, 'package[systemd packages]'
     subscribes :run, 'template[/etc/systemd/system.conf]'
+    subscribes :run, 'template[/etc/sysctl.conf]'
   end
 end
