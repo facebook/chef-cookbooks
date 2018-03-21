@@ -47,16 +47,12 @@ class Chef
       return self['os'] == 'windows'
     end
 
-    def yocto?
-      return self['platform_family'] == 'yocto'
-    end
-
     def aristaeos?
       return self['platform'] == 'arista_eos'
     end
 
     def embedded?
-      return self.yocto? || self.aristaeos?
+      return self.aristaeos?
     end
 
     def systemd?

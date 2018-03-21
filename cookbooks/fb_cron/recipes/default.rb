@@ -23,11 +23,6 @@ when 'rhel', 'fedora', 'suse'
     package_name = 'cronie'
   end
   svc_name = 'crond'
-when 'yocto'
-  # We may need to customize this in the future if we have some yocto images
-  # that use cronie and others that use crond.
-  package_name = 'cronie'
-  svc_name = 'crond'
 end
 
 if package_name # ~FC023

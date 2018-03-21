@@ -30,7 +30,6 @@ unless node.centos6?
 end
 
 package pkgs do
-  not_if { node.yocto? }
   action :upgrade
 end
 
