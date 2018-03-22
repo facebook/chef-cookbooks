@@ -11,7 +11,7 @@ COMMON_OPTS="-m https://supermarket.chef.io -k $SKEY -u $SUSER"
 cd cookbooks
 for i in *; do
   echo "Unpublishing $i"
-  knife cookbook site unshare $i $COMMON_OPTS -y
+  bundle exec knife cookbook site unshare $i $COMMON_OPTS -y
   echo "Publishing $i"
-  knife cookbook site share $i Other -o . $COMMON_OPTS
+  bundle exec knife cookbook site share $i Other -o . $COMMON_OPTS
 done
