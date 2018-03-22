@@ -1,0 +1,17 @@
+#!/bin/bash
+
+if [ -z "$SKEY" ]; then
+  SKEY='../supermarket.pem'
+fi
+if [ -z "$SUSER" ]; then
+  SUSER='phild'
+fi
+
+COMMON_OPTS="-m https://supermarket.chef.io -k $SKEY -u $SUSER"
+cd cookbooks
+for i in *; do
+  echo "Unpublishing $i"
+  knife cookbook site unshare $i $COMMON_OPTS -y
+  echo "Publishing $i"
+  knife cookbook site share $i Other -o . $COMMON_OPTS
+done
