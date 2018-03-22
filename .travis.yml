@@ -38,4 +38,4 @@ before_deploy:
 
 deploy:
   - provider: script
-  - script: ./scripts/supermarket_push
+    script: ./scripts/supermarket_push
