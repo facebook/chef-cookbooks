@@ -188,6 +188,177 @@ EOF
       FB::Fstab.get_in_maint_disks.should eq([])
     end
   end
+  context 'get_unmasked_base_mounts' do
+    let(:default_ret) do
+      {
+        '/dev/sda1' => {
+          'mount_point' => '/',
+          'type' => 'ext4',
+          'opts' => 'defaults,discard',
+          'dump' => '1',
+          'pass' => '1',
+        },
+        '/dev/sda2' => {
+          'mount_point' => '/boot',
+          'type' => 'ext3',
+          'opts' => 'defaults',
+          'dump' => '1',
+          'pass' => '2',
+        },
+        '/dev/sda3' => {
+          'mount_point' => 'swap',
+          'type' => 'swap',
+          'opts' => 'defaults',
+          'dump' => '0',
+          'pass' => '0',
+        },
+        'devpts' => {
+          'mount_point' => '/dev/pts',
+          'type' => 'devpts',
+          'opts' => 'gid=5,mode=620',
+          'dump' => '0',
+          'pass' => '0',
+        },
+        'sysfs' => {
+          'mount_point' => '/sys',
+          'type' => 'sysfs',
+          'opts' => 'defaults',
+          'dump' => '0',
+          'pass' => '0',
+        },
+        'proc' => {
+          'mount_point' => '/proc',
+          'type' => 'proc',
+          'opts' => 'defaults',
+          'dump' => '0',
+          'pass' => '0',
+        },
+        'tmpfs' => {
+          'mount_point' => '/dev/shm',
+          'type' => 'tmpfs',
+          'opts' => 'defaults,size=4G',
+          'dump' => '0',
+          'pass' => '0',
+        },
+      }
+    end
+    before do
+      node.default['filesystem2']['by_device'] = {
+        '/dev/sda1' => {
+          'mounts' => ['/'],
+          'fs_type' => 'ext4',
+          'uuid' => '28137926-9c39-44c0-90d3-3b158fc97ff9',
+          'label' => '/',
+        },
+        '/dev/sda2' => {
+          'mounts' => ['/boot'],
+          'fs_type' => 'ext3',
+          'uuid' => '9ebfe8b9-c188-4cda-8383-393deb0ac59c',
+          'label' => '/boot',
+        },
+        '/dev/sda3' => {
+          'fs_type' => 'swap',
+          'uuid' => '2ace4f5f-c8c5-4d3a-a027-d12076bdab0c',
+        },
+      }
+      node.default['fb_fstab']['mounts'] = {}
+      node.default['fb_swap']['enabled'] = true
+    end
+    it 'should parse base mounts correctly' do
+      expect(File).to receive(:read).with(FB::Fstab::BASE_FILENAME).
+        and_return(base_contents)
+      m = FB::Fstab.get_unmasked_base_mounts(:hash, node)
+      m.should eq(default_ret)
+      m = FB::Fstab.get_unmasked_base_mounts(:lines, node).join("\n") + "\n"
+      m.should eq(base_contents)
+    end
+    it 'should drop swap if not enabled' do
+      expect(File).to receive(:read).with(FB::Fstab::BASE_FILENAME).
+        and_return(base_contents)
+      node.default['fb_swap']['enabled'] = false
+      m = FB::Fstab.get_unmasked_base_mounts(:hash, node)
+      default_ret.delete('/dev/sda3')
+      m.should eq(default_ret)
+    end
+    it 'should not return overridden mounts' do
+      expect(File).to receive(:read).with(FB::Fstab::BASE_FILENAME).
+        and_return(base_contents)
+      node.default['fb_fstab']['mounts'] = {
+        'phild override' => {
+          'device' => '/dev/sda1',
+          'mount_point' => '/',
+          'type' => 'ext4',
+          'opts' => 'defaults,discard,noatume',
+          'dump' => '1',
+          'pass' => '1',
+        },
+      }
+      m = FB::Fstab.get_unmasked_base_mounts(:hash, node)
+      default_ret.delete('/dev/sda1')
+      m.should eq(default_ret)
+    end
+    it 'should raise an exception if base has bad label' do
+      contents = base_contents +
+        "LABEL=nonexistent / ext4 opts 0 0\n"
+      expect(File).to receive(:read).with(FB::Fstab::BASE_FILENAME).
+        and_return(contents)
+      expect { FB::Fstab.get_unmasked_base_mounts(:hash, node) }.
+        to raise_error(RuntimeError)
+    end
+    it 'should not raise an exception if base has bad UUID overwridden' do
+      contents = base_contents +
+        "UUID=nonexistent / ext4 opts 0 0\n"
+      expect(File).to receive(:read).with(FB::Fstab::BASE_FILENAME).
+        and_return(contents)
+      node.default['fb_fstab']['mounts'] = {
+        'phild override' => {
+          'device' => 'LABEL=/',
+          'mount_point' => '/',
+          'type' => 'ext4',
+          'opts' => 'defaults,discard,noatume',
+          'dump' => '1',
+          'pass' => '1',
+        },
+      }
+      m = FB::Fstab.get_unmasked_base_mounts(:hash, node)
+      default_ret.delete('/dev/sda1')
+      m.should eq(default_ret)
+    end
+    it 'should raise an exception if user specifies bad label' do
+      expect(File).to receive(:read).with(FB::Fstab::BASE_FILENAME).
+        and_return(base_contents)
+      node.default['fb_fstab']['mounts'] = {
+        'phild mount' => {
+          'device' => 'LABEL=nonexistent',
+          'mount_point' => '/stuff',
+          'type' => 'ext4',
+          'opts' => 'defaults,discard,noatume',
+          'dump' => '1',
+          'pass' => '1',
+        },
+      }
+      expect { FB::Fstab.get_unmasked_base_mounts(:hash, node) }.
+        to raise_error(RuntimeError)
+    end
+    it 'should not raise an exception if user specifies bad label and' +
+       'allow_failure' do
+      expect(File).to receive(:read).with(FB::Fstab::BASE_FILENAME).
+        and_return(base_contents)
+      node.default['fb_fstab']['mounts'] = {
+        'phild mount' => {
+          'device' => 'LABEL=nonexistent',
+          'mount_point' => '/stuff',
+          'type' => 'ext4',
+          'opts' => 'defaults,discard,noatume',
+          'dump' => '1',
+          'pass' => '1',
+          'allow_mount_failure' => true,
+        },
+      }
+      m = FB::Fstab.get_unmasked_base_mounts(:hash, node)
+      m.should eq(default_ret)
+    end
+  end
 end
 
 describe 'FB::FstabProvider', :include_provider do

@@ -90,13 +90,6 @@ whyrun_safe_ruby_block 'validate data' do
   end
 end
 
-whyrun_safe_ruby_block 'get base mounts' do
-  block do
-    node.default['fb_fstab']['_basefilecontents'] =
-      FB::Fstab.load_base_fstab
-  end
-end
-
 execute 'fb_fstab-daemon-reload' do
   command '/bin/systemctl daemon-reload'
   action :nothing

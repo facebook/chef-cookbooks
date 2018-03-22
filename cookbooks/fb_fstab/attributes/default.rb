@@ -90,4 +90,13 @@ default['fb_fstab'] = {
     # which doesn't affect the mount, so don't compare it.
     /^(mount)?(addr|port|proto)=.*/,
   ],
+  '_t27070868' => node.in_shard?(1) ||
+    [
+      'mactest317.05.prn3.facebook.com',
+      'hadoopmstr534.prn2.facebook.com',
+      'dev11761.prn2.facebook.com',
+      'twi10425.05.cln1.facebook.com',
+      'rsw1zq.25.lla1.facebook.com',
+      'hadoop3676.frc3.facebook.com',
+    ].include?(node['fqdn']),
 }

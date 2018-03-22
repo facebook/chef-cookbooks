@@ -46,9 +46,9 @@ module FB
       end
     end
 
-    def self.get_swap_uuid_from_fstab
+    def self.get_swap_uuid_from_fstab(node)
       fstab_swap_line =
-        FB::Fstab.load_base_fstab.each_line.select do |line|
+        FB::Fstab.base_fstab_contents(node).each_line.select do |line|
           line.split[1] == 'swap'
         end
 
@@ -62,7 +62,8 @@ module FB
     end
 
     def self.get_current_swap_device(node)
-      if node['fb_swap']['enable_encryption'] && !get_swap_uuid_from_fstab.nil?
+      if node['fb_swap']['enable_encryption'] &&
+         !get_swap_uuid_from_fstab(node).nil?
         return FB::FbSwap::ENCRYPTED_DEVICE_NAME
       else
         return get_base_swap_device(node)

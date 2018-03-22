@@ -21,7 +21,7 @@ end
 
 Chef::Log.debug("fb_swap: Found swap device: #{base_swap_device}")
 
-fstab_swap_uuid = FB::FbSwap.get_swap_uuid_from_fstab
+fstab_swap_uuid = FB::FbSwap.get_swap_uuid_from_fstab(node)
 
 if fstab_swap_uuid.nil? && node['fb_swap']['enable_encryption']
   # TODO(yangxia): Fix this (t20145202).

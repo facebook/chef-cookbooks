@@ -137,13 +137,17 @@ module FB
       s.error!
     end
 
+    def get_unmasked_base_mounts(format)
+      FB::Fstab.get_unmasked_base_mounts(format, node)
+    end
+
     # TODO: Replace this with get_umasked_base_mounts and use it from both
     # check_unwanted_filesystems and the template. Currently the two have a
     # slightly different implementation for no good reason. t27070868
     def get_base_mounts
       mounts = {}
       desired_mounts = node['fb_fstab']['mounts'].to_hash
-      FB::Fstab.load_base_fstab.each_line do |line|
+      FB::Fstab.base_fstab_contents(node).each_line do |line|
         next if line.strip.empty?
         bits = line.split
         begin
@@ -259,7 +263,12 @@ module FB
         node['fb_fstab']['umount_ignores']['mount_point_prefixes'].dup
       fstypes_to_skip = node['fb_fstab']['umount_ignores']['types'].dup
 
-      base_mounts = get_base_mounts
+      if node['fb_fstab']['_t27070868']
+        base_mounts = get_base_mounts
+      else
+        base_mounts = get_unmasked_base_mounts(:hash)
+      end
+
       # we're going to iterate over specified mounts a lot, lets dump it
       desired_mounts = node['fb_fstab']['mounts'].to_hash
 

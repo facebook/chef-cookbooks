@@ -56,8 +56,12 @@ module FB
       end
 
       # Returns the content of the file
-      def self.load_base_fstab
-        File.read(BASE_FILENAME)
+      def self.base_fstab_contents(node)
+        unless node['fb_fstab']['_basefilecontents']
+          node.default['fb_fstab']['_basefilecontents'] =
+            File.read(BASE_FILENAME)
+        end
+        node['fb_fstab']['_basefilecontents']
       end
 
       # Returns an array of disks
@@ -136,6 +140,80 @@ module FB
           device = uuid_to_device(uuid, node)
         end
         device
+      end
+
+      def self.get_unmasked_base_mounts(format, node)
+        res = case format
+              when :hash
+                {}
+              when :lines
+                []
+              end
+        desired_mounts = node['fb_fstab']['mounts'].to_hash
+        FB::Fstab.base_fstab_contents(node).each_line do |line|
+          next if line.strip.empty?
+          # do not add swap if swap is disabled on the box
+          next if line.include?('swap') && !node['fb_swap']['enabled']
+          line_parts = line.strip.split
+          line_dev_spec = line_parts[0]
+
+          # if someone specifies the same device in a mount that is in the
+          # mounts we got from provisioning, then they are trying to override
+          # that. We only look at the `device` part here because we shouldn't
+          # have things like NFS or other such things specified in provisioning
+          # anyway.
+          next if desired_mounts.any? do |_name, data|
+            line_dev_spec == data['device']
+          end
+          # If that failed, we canonicalize (if possible) and try again against
+          # canonicalized versions of what's in the user's config
+          begin
+            fs_spec = canonicalize_device(line_dev_spec, node)
+          rescue StandardError => e
+            # Special handing for UUIDs. I hate UUIDs. Really, did I mention I
+            # hate UUIDs? Who thought those were a good idea. Anyway in the
+            # event we got UUIDs from provisioning and the user wants to use
+            # labels, let that happen.
+            raise e unless line_dev_spec.start_with?('UUID=')
+            next if desired_mounts.any? do |_name, data|
+              data['mount_point'] == line_parts[1] &&
+                data['device'].start_with?('LABEL=')
+            end
+            raise e
+          end
+          # If someone has a more specific mount, don't use the original
+          next if desired_mounts.any? do |_name, data|
+            begin
+              fs_spec == data['device'] ||
+                fs_spec == canonicalize_device(data['device'], node)
+            rescue RuntimeError => e
+              # If the entry in node['fstab']['mounts] failed to resolve,
+              # that's an error, orthogonal to what we're doing here, unless
+              # they set `allow_mount_failure`. So if it failed, raise an error,
+              # otherwise don't.
+              #
+              # HOWEVER, this `next` is not `next true`, because we're not
+              # skipping the mount - there was no valid comparison done. We're
+              # just moving to the next iteration of any?`
+              next if data['allow_mount_failure']
+              raise e
+            end
+          end
+          case format
+          when :hash
+            res[fs_spec] = {
+              'mount_point' => line_parts[1],
+              'type' => line_parts[2],
+              'opts' => line_parts[3],
+              'dump' => line_parts[4],
+              'pass' => line_parts[5],
+            }
+          when :lines
+            res << line.strip
+          end
+        end
+        Chef::Log.debug("fb_fstab: base mounts: #{res}")
+        res
       end
     end
   end
