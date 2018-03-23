@@ -264,9 +264,9 @@ module FB
       fstypes_to_skip = node['fb_fstab']['umount_ignores']['types'].dup
 
       if node['fb_fstab']['_t27070868']
-        base_mounts = get_base_mounts
-      else
         base_mounts = get_unmasked_base_mounts(:hash)
+      else
+        base_mounts = get_base_mounts
       end
 
       # we're going to iterate over specified mounts a lot, lets dump it
