@@ -62,6 +62,8 @@ suites:
       - recipe[fb_collectd]
       - recipe[fb_dnsmasq]
       - recipe[fb_hddtemp]
+      - recipe[fb_rsync::client]
+      - recipe[fb_rsync::server]
       - recipe[fb_vsftpd]
     excludes: centos-6
   - name: default-centos-6
@@ -69,5 +71,7 @@ suites:
       - recipe[fb_init_sample]
       - recipe[fb_collectd]
       - recipe[fb_hddtemp]
+      - recipe[fb_rsync::client]
+      - recipe[fb_rsync::server]
       - recipe[fb_vsftpd]
     includes: centos-6

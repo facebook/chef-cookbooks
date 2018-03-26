@@ -8,7 +8,10 @@
 # this should be first.
 include_recipe 'fb_init_sample::site_settings'
 
-# HERE: yum
+if node.centos?
+  # HERE: yum
+  include_recipe 'fb_rpm'
+end
 if node.debian? || node.ubuntu?
   include_recipe 'fb_apt'
 end
@@ -38,7 +41,7 @@ include_recipe 'fb_syslog'
 if node.linux? && !node.container?
   include_recipe 'fb_hdparm'
 end
-# HERE: postfix
+include_recipe 'fb_postfix'
 # HERE: nfs
 include_recipe 'fb_swap'
 # WARNING!
@@ -51,7 +54,12 @@ include_recipe 'fb_tmpclean'
 # HERE: sudo
 # HERE: ntp
 if node.centos? && !node.container?
+  node.default['fb_ipset']['auto_cleanup'] = false
+  include_recipe 'fb_ebtables'
+  include_recipe 'fb_ipset'
   include_recipe 'fb_iptables'
+  include_recipe 'fb_iproute'
+  include_recipe 'fb_ipset::cleanup'
 end
 include_recipe 'fb_motd'
 

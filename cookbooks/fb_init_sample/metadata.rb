@@ -18,6 +18,7 @@ end
   fb_apt
   fb_cron
   fb_dracut
+  fb_ebtables
   fb_ethers
   fb_fstab
   fb_grub
@@ -25,12 +26,16 @@ end
   fb_helpers
   fb_hostconf
   fb_hosts
+  fb_ipset
   fb_iptables
+  fb_iproute
   fb_limits
   fb_logrotate
   fb_modprobe
   fb_motd
   fb_nsswitch
+  fb_postfix
+  fb_rpm
   fb_swap
   fb_securetty
   fb_sysctl
