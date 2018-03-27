@@ -141,46 +141,6 @@ module FB
       FB::Fstab.get_unmasked_base_mounts(format, node)
     end
 
-    # TODO: Replace this with get_umasked_base_mounts and use it from both
-    # check_unwanted_filesystems and the template. Currently the two have a
-    # slightly different implementation for no good reason. t27070868
-    def get_base_mounts
-      mounts = {}
-      desired_mounts = node['fb_fstab']['mounts'].to_hash
-      FB::Fstab.base_fstab_contents(node).each_line do |line|
-        next if line.strip.empty?
-        bits = line.split
-        begin
-          real_dev = canonicalize_device(bits[0])
-        rescue RuntimeError => e
-          # In the event that a label or UUID doesn't exist anymore,
-          # we'll want to let users set allow_mount_failure, if they want,
-          # so don't crash... and if they haven't overridden it, we'll fail
-          # later
-          if desired_mounts.any? do |_key, val|
-               val['device'] == bits[0]
-             end
-            real_dev = bits[0]
-          elsif bits[0].start_with?('UUID=') &&
-                desired_mounts.any? do |_key, val|
-                  val['device'].start_with?('LABEL=') &&
-                    val['mount_point'] == bits[1]
-                end
-            real_dev = bits[0]
-          else
-            raise e
-          end
-        end
-        mounts[real_dev] = {
-          'mount_point' => bits[1],
-          'type' => bits[2],
-          'opts' => bits[3],
-        }
-      end
-      Chef::Log.debug("fb_fstab: base mounts: #{mounts}")
-      mounts
-    end
-
     def canonicalize_device(device)
       FB::Fstab.canonicalize_device(device, node)
     end
@@ -263,11 +223,7 @@ module FB
         node['fb_fstab']['umount_ignores']['mount_point_prefixes'].dup
       fstypes_to_skip = node['fb_fstab']['umount_ignores']['types'].dup
 
-      if node['fb_fstab']['_t27070868']
-        base_mounts = get_unmasked_base_mounts(:hash)
-      else
-        base_mounts = get_base_mounts
-      end
+      base_mounts = get_unmasked_base_mounts(:hash)
 
       # we're going to iterate over specified mounts a lot, lets dump it
       desired_mounts = node['fb_fstab']['mounts'].to_hash

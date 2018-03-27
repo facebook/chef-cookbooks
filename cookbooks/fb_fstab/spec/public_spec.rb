@@ -364,16 +364,6 @@ end
 describe 'FB::FstabProvider', :include_provider do
   include FB::FstabProvider
 
-  # rubocop:disable LineLength
-  base_contents = <<EOF
-UUID=28137926-9c39-44c0-90d3-3b158fc97ff9 /                       ext4    defaults,discard 1 1
-LABEL=/boot /boot                   ext3    defaults        1 2
-UUID=2ace4f5f-c8c5-4d3a-a027-d12076bdab0c swap                    swap    defaults        0 0
-devpts                  /dev/pts                devpts  gid=5,mode=620  0 0
-sysfs                   /sys                    sysfs   defaults        0 0
-proc                    /proc                   proc    defaults        0 0
-tmpfs /dev/shm tmpfs defaults,size=4G 0 0
-EOF
   # rubocop:enable LineLength
   let(:node) { Chef::Node.new }
   before do
@@ -627,71 +617,6 @@ EOF
         {},
         {},
       ).should eq(false)
-    end
-  end
-  context 'get_base_mounts' do
-    it 'should parse base mounts correctly' do
-      node.default['filesystem2']['by_device'] = {
-        '/dev/sda1' => {
-          'mounts' => ['/'],
-          'fs_type' => 'ext4',
-          'uuid' => '28137926-9c39-44c0-90d3-3b158fc97ff9',
-          'label' => '/',
-        },
-        '/dev/sda2' => {
-          'mounts' => ['/boot'],
-          'fs_type' => 'ext3',
-          'uuid' => '9ebfe8b9-c188-4cda-8383-393deb0ac59c',
-          'label' => '/boot',
-        },
-        '/dev/sda3' => {
-          'fs_type' => 'swap',
-          'uuid' => '2ace4f5f-c8c5-4d3a-a027-d12076bdab0c',
-        },
-      }
-      node.default['fb_fstab']['mounts'] = {}
-      File.should_receive(:read).with(FB::Fstab::BASE_FILENAME).
-        and_return(base_contents)
-      m = get_base_mounts
-      m.should eq(
-        {
-          '/dev/sda1' => {
-            'mount_point' => '/',
-            'type' => 'ext4',
-            'opts' => 'defaults,discard',
-          },
-          '/dev/sda2' => {
-            'mount_point' => '/boot',
-            'type' => 'ext3',
-            'opts' => 'defaults',
-          },
-          '/dev/sda3' => {
-            'mount_point' => 'swap',
-            'type' => 'swap',
-            'opts' => 'defaults',
-          },
-          'devpts' => {
-            'mount_point' => '/dev/pts',
-            'type' => 'devpts',
-            'opts' => 'gid=5,mode=620',
-          },
-          'sysfs' => {
-            'mount_point' => '/sys',
-            'type' => 'sysfs',
-            'opts' => 'defaults',
-          },
-          'proc' => {
-            'mount_point' => '/proc',
-            'type' => 'proc',
-            'opts' => 'defaults',
-          },
-          'tmpfs' => {
-            'mount_point' => '/dev/shm',
-            'type' => 'tmpfs',
-            'opts' => 'defaults,size=4G',
-          },
-        },
-      )
     end
   end
   context 'tmpfs_mount_status' do
