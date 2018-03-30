@@ -16,13 +16,17 @@ version '0.0.1'
 end
 %w{
   fb_apt
+  fb_apcupsd
+  fb_collectd
   fb_cron
+  fb_dnsmasq
   fb_dracut
   fb_ebtables
   fb_ethers
   fb_fstab
   fb_grub
   fb_hdparm
+  fb_hddtemp
   fb_helpers
   fb_hostconf
   fb_hosts
@@ -36,6 +40,7 @@ end
   fb_nsswitch
   fb_postfix
   fb_rpm
+  fb_rsync
   fb_swap
   fb_securetty
   fb_sysctl
@@ -43,6 +48,7 @@ end
   fb_systemd
   fb_timers
   fb_tmpclean
+  fb_vsftpd
 }.each do |cb|
   depends cb
 end
