@@ -40,30 +40,36 @@ node.default['fb_logrotate']['configs']['rsyncd'] = {
   },
 }
 
+svc = value_for_platform_family(
+  'rhel' => 'rsyncd',
+  'debian' => 'rsync',
+  'default' => 'rsyncd',
+)
+
 # This resource order is more pleasing in the logs
 service 'rsyncd enable' do
-  service_name 'rsyncd'
+  service_name svc
   only_if { node['fb_rsync']['server']['start_at_boot'] }
   action [:enable]
   supports :status => true
 end
 
 service 'rsyncd start' do
-  service_name 'rsyncd'
+  service_name svc
   only_if { node['fb_rsync']['server']['enabled'] }
   action [:start]
   supports :restart => true, :status => true
 end
 
 service 'rsyncd disable' do
-  service_name 'rsyncd'
+  service_name svc
   not_if { node['fb_rsync']['server']['start_at_boot'] }
   action [:disable]
   supports :status => true
 end
 
 service 'rsyncd stop' do
-  service_name 'rsyncd'
+  service_name svc
   not_if { node['fb_rsync']['server']['enabled'] }
   action [:stop]
   supports :status => true
