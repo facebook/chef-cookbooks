@@ -37,5 +37,6 @@ before_deploy:
   - openssl aes-256-cbc -K $encrypted_9d2e88e318b2_key -iv $encrypted_9d2e88e318b2_iv -in supermarket.pem.enc -out supermarket.pem -d
 
 deploy:
+  - skip_cleanup: true
   - provider: script
     script: ./scripts/supermarket_push
