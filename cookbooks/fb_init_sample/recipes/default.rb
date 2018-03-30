@@ -40,6 +40,7 @@ include_recipe 'fb_sysctl'
 include_recipe 'fb_syslog'
 if node.linux? && !node.container?
   include_recipe 'fb_hdparm'
+  include_recipe 'fb_hddtemp'
 end
 include_recipe 'fb_postfix'
 # HERE: nfs
@@ -62,6 +63,13 @@ if node.centos? && !node.container?
   include_recipe 'fb_ipset::cleanup'
 end
 include_recipe 'fb_motd'
+unless node.centos6?
+  include_recipe 'fb_apcupsd'
+  include_recipe 'fb_dnsmasq'
+end
+include_recipe 'fb_collectd'
+include_recipe 'fb_rsync::server'
+include_recipe 'fb_vsftpd'
 
 # we recommend you put this as late in the list as possible - it's one of the
 # few places where APIs need to use another API directly... other cookbooks

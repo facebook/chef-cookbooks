@@ -30,9 +30,15 @@ rpm_packages = %w{
   rpm-build-libs
   rpm-libs
   rpm-python
-  rpm-plugin-selinux
   rpm-plugin-systemd-inhibit
 }
+
+# If you use our backports of rawhide RPM, you also need this,
+# but it's not available in C7 stock.
+yc = Chef::Provider::Package::Yum::YumCache.instance
+if yc.package_available?('rpm-plugin-selinux')
+  rpm_packages << 'rpm-plugin-selinux'
+end
 
 package rpm_packages do
   only_if { node['fb_rpm']['manage_packages'] }
