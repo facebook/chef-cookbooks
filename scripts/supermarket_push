@@ -9,12 +9,13 @@ fi
 
 COMMON_OPTS="-m https://supermarket.chef.io -k $SKEY -u $SUSER"
 
-gem update --system
-bundle install
+rvm "$TRAVIS_RUBY_VERSION" do bundle install
 cd cookbooks
 for i in *; do
   echo "Unpublishing $i"
-  bundle exec knife cookbook site unshare $i $COMMON_OPTS -y
+  rvm "$TRAVIS_RUBY_VERSION" do bundle exec \
+    knife cookbook site unshare $i $COMMON_OPTS -y
   echo "Publishing $i"
-  bundle exec knife cookbook site share $i Other -o . $COMMON_OPTS
+  rvm "$TRAVIS_RUBY_VERSION" do bundle exec \
+    knife cookbook site share $i Other -o . $COMMON_OPTS
 done

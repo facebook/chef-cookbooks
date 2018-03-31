@@ -39,4 +39,4 @@ before_deploy:
 deploy:
   - provider: script
     skip_cleanup: true
-    script: ./scripts/supermarket_push
+    script: PATH="${TRAVIS_BUILD_DIR}/bin:$PATH" ./scripts/supermarket_push
