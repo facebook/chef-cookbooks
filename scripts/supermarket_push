@@ -9,6 +9,7 @@ fi
 
 COMMON_OPTS="-m https://supermarket.chef.io -k $SKEY -u $SUSER"
 
+rvm use default
 bundle install
 cd cookbooks
 for i in *; do
