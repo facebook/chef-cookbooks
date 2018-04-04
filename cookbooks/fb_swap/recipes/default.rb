@@ -99,7 +99,7 @@ if node.systemd?
 
   # Make sure the current swap's UUID is the same as the one specified in
   # /etc/fstab.
-  service 'mask swap unit' do # ~FC038
+  service 'pre-mask swap unit' do
     only_if do
       node['fb_swap']['enabled'] &&
       !fstab_swap_uuid.nil? &&
@@ -123,13 +123,13 @@ if node.systemd?
 
   # start / stop swap the right thing to enabled - either the encrypted
   # one or non-encrypted one
-  service 'mask swap unit' do # ~FC038
+  service 'mask swap unit' do
     not_if { node['fb_swap']['enabled'] }
     service_name lazy { FB::FbSwap.get_current_swap_unit(node) }
     action [:stop, :mask]
   end
 
-  service 'unmask swap unit' do # ~FC038
+  service 'unmask swap unit' do
     only_if { node['fb_swap']['enabled'] }
     service_name lazy { FB::FbSwap.get_current_swap_unit(node) }
     action [:unmask, :start]

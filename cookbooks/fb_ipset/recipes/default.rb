@@ -57,7 +57,7 @@ fb_ipset 'fb_ipset' do
   only_if { node['fb_ipset']['enable'] }
 end
 
-fb_ipset 'fb_ipset_auto_cleanup' do
+fb_ipset 'fb_ipset_auto_cleanup_if_enabled' do
   action :cleanup
   only_if { node['fb_ipset']['enable'] && node['fb_ipset']['auto_cleanup'] }
 end

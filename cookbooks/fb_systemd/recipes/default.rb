@@ -145,6 +145,12 @@ template '/etc/systemd/system-preset/00-fb_systemd.preset' do
   mode '0644'
 end
 
+directory '/etc/systemd/user/default.target.wants' do
+  owner 'root'
+  group 'root'
+  mode '0755'
+end
+
 link '/etc/systemd/system/default.target' do
   to lazy { node['fb_systemd']['default_target'] }
 end
