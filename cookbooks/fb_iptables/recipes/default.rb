@@ -78,7 +78,21 @@ template iptables_rules do
   group 'root'
   mode '0640'
   variables(:ip => 4)
-  verify 'cat %{path} | iptables-restore --test'
+  verify do |path|
+    # iptables-restore and ip6tables-restore load the kernel modules
+    # for iptables, even in test mode.  To avoid this, skip
+    # verification if the modules aren't loaded.  This moves a
+    # verification time failure to a runtime failure (but only when
+    # moving from "no rules" to any rules; otherwise we still verify
+    # every time).
+    if FB::Iptables.iptables_active?(4)
+      Mixlib::ShellOut.new(
+        "iptables-restore --test #{path}",
+      ).run_command.exitstatus.zero?
+    else
+      true
+    end
+  end
   notifies :run, 'execute[reload iptables]', :immediately
 end
 
@@ -103,6 +117,15 @@ template ip6tables_rules do
   group 'root'
   mode '0640'
   variables(:ip => 6)
-  verify 'cat %{path} | ip6tables-restore --test'
+  verify do |path|
+    # See comment ip iptables_rules
+    if FB::Iptables.iptables_active?(6)
+      Mixlib::ShellOut.new(
+        "ip6tables-restore --test #{path}",
+      ).run_command.exitstatus.zero?
+    else
+      true
+    end
+  end
   notifies :run, 'execute[reload ip6tables]', :immediately
 end

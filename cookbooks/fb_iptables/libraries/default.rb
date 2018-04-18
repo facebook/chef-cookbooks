@@ -60,5 +60,18 @@ module FB
         dynamic_chain if enabled_for.include?(chain)
       end.compact
     end
+
+    # Return true if the iptables modules are loaded for the specified
+    # IP version. This check is based on examining
+    # /proc/net/ip#_tables_names; if the file has contents then the
+    # iptables modules are loaded.
+    def self.iptables_active?(ip_version)
+      if ip_version == 4
+        procfile = '/proc/net/ip_tables_names'
+      else
+        procfile = '/proc/net/ip6_tables_names'
+      end
+      !File.read(procfile).empty?
+    end
   end
 end
