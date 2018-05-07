@@ -145,7 +145,7 @@ module FB
       FB::Fstab.canonicalize_device(device, node)
     end
 
-    # Given a *mounted* device from node['filesystem'] in `mounted_data`, check
+    # Given a *mounted* device from node['filesystem2'] in `mounted_data`, check
     # to see if we want to keep it. It looks in `desired_mounts` (an export of
     # node['fb_fstab']['mounts'] as well as `base_mounts` (a hash
     # representation of the saved OS mounts file).
@@ -411,7 +411,7 @@ module FB
       end
       # OK, if that's not the case, we don't have the same device, which
       # is OK. Find out if we have something mounted at the same spot, and
-      # get its device name so we can find it's entry in node['filesystem']
+      # get its device name so we can find it's entry in node['filesystem2']
       if node['filesystem2']['by_mountpoint'][desired['mount_point']]
         # If we are here the mountpoints are the same...
         mounted =
