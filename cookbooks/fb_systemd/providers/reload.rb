@@ -36,9 +36,14 @@ action :run do
     else
       users = node['sessions']['by_user'].to_hash.keys.sort
     end
+    failed = false
     users.each do |user|
       unless node['etc']['passwd'][user]
-        fail "fb_systemd_reload: user '#{user}' is not defined, aborting."
+        Chef::Log.error(
+          "fb_systemd_reload: user '#{user}' is not defined, will abort later.",
+        )
+        failed = true
+        next
       end
       bus_path =
         "/run/user/#{node['etc']['passwd'][user]['uid']}/bus"
@@ -52,6 +57,9 @@ action :run do
         # a reload).
         ignore_failure true
       end
+    end
+    if failed
+      fail 'fb_systemd_reload: aborting due to previous failures'
     end
   else
     fail "fb_systemd_reload: instance type '#{new_resource.instance}' is not" +
