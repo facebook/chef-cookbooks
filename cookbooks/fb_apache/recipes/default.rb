@@ -102,14 +102,14 @@ template "#{sitesdir}/fb_sites.conf" do
   owner 'root'
   group 'root'
   mode '0644'
-  notifies :restart, 'service[apache]'
+  notifies :reload, 'service[apache]'
 end
 
 template "#{confdir}/fb_apache.conf" do
   owner 'root'
   group 'root'
   mode '0644'
-  notifies :restart, 'service[apache]'
+  notifies :reload, 'service[apache]'
 end
 
 service 'apache' do
