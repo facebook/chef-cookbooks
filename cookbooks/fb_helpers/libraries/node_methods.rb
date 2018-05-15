@@ -31,6 +31,10 @@ class Chef
       return self['platform_version'].split('.')[0]
     end
 
+    def fedora?
+      return self['platform'] == 'fedora'
+    end
+
     def debian?
       return self['platform'] == 'debian'
     end
