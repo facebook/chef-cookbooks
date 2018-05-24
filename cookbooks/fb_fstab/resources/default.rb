@@ -8,5 +8,30 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
-actions :doeverything
+require 'fileutils'
+
 default_action :doeverything
+
+def whyrun_supported?
+  true
+end
+
+action_class do
+  def reload_filesystems
+    ohai 'reload filesystems for fb_fstab' do
+      plugin 'filesystem2'
+      action :nothing
+    end.run_action(:reload)
+  end
+end
+
+action :doeverything do
+  extend FB::FstabProvider
+
+  # Unmount filesystems we don't want
+  check_unwanted_filesystems
+  # Reload in case something has been unmounted
+  reload_filesystems
+  # Mount or update filesystems we want
+  check_wanted_filesystems
+end
