@@ -10,8 +10,8 @@
 #
 
 module FB
-  class Sysfs
-    def self.check(current, new, type)
+  module Sysfs
+    def check(current, new, type)
       case type
       when :list
         current.include?("[#{new}]")

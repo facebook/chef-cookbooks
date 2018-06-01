@@ -10,6 +10,7 @@
 #
 
 require_relative '../libraries/default'
+include FB::Sysfs
 
 describe FB::Sysfs do
   context '#check' do
