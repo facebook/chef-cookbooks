@@ -10,15 +10,17 @@
 #
 
 module FB
-  module Sysfs
-    def check(current, new, type)
-      case type
-      when :list
-        current.include?("[#{new}]")
-      when :int
-        current.to_i == new.to_i
-      else
-        current.chomp == new.chomp
+  class Sysfs
+    module Provider
+      def check(current, new, type)
+        case type
+        when :list
+          current.include?("[#{new}]")
+        when :int
+          current.to_i == new.to_i
+        else
+          current.chomp == new.chomp
+        end
       end
     end
   end

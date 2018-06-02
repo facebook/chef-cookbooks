@@ -20,7 +20,7 @@ def whyrun_supported?
 end
 
 action_class do
-  include FB::Sysfs
+  include FB::Sysfs::Provider
 end
 
 load_current_value do
@@ -36,9 +36,10 @@ action :set do
       "Current value: #{current_resource.value.inspect}",
     )
   else
-    converge_by("set #{new_resource.path} to #{new_resource.value.inspect} " +
-                "(was #{current_resource.value.inspect})") do
-      IO.write(new_resource.path, new_resource.value)
+    # We are using file to write content, not to manage the file itself,
+    # so we exempt the internal foodcritic rule that requires owner/group/mode.
+    file new_resource.path do # ~FB023
+      content new_resource.value.to_s
     end
   end
 end

@@ -10,39 +10,40 @@
 #
 
 require_relative '../libraries/default'
-include FB::Sysfs
 
-describe FB::Sysfs do
+describe FB::Sysfs::Provider do
+  include FB::Sysfs::Provider
+
   context '#check' do
     it 'should handle lists' do
-      FB::Sysfs.check("[one] two three\n", 'one', :list).should eq(true)
-      FB::Sysfs.check("one [two] three\n", 'one', :list).should eq(false)
-      FB::Sysfs.check("one [two] three\n", 'two', :list).should eq(true)
-      FB::Sysfs.check("one [two] three\n", 'three', :list).should eq(false)
-      FB::Sysfs.check("one [two] three\n", 'oogabooga', :list).should eq(false)
+      expect(check("[one] two three\n", 'one', :list)).to eq(true)
+      expect(check("one [two] three\n", 'one', :list)).to eq(false)
+      expect(check("one [two] three\n", 'two', :list)).to eq(true)
+      expect(check("one [two] three\n", 'three', :list)).to eq(false)
+      expect(check("one [two] three\n", 'oogabooga', :list)).to eq(false)
     end
 
     it 'should handle strings' do
-      FB::Sysfs.check('one', 'one', :string).should eq(true)
-      FB::Sysfs.check("one\n", 'one', :string).should eq(true)
-      FB::Sysfs.check("onee\n", 'one', :string).should eq(false)
-      FB::Sysfs.check("two\n", 'one', :string).should eq(false)
+      expect(check('one', 'one', :string)).to eq(true)
+      expect(check("one\n", 'one', :string)).to eq(true)
+      expect(check("onee\n", 'one', :string)).to eq(false)
+      expect(check("two\n", 'one', :string)).to eq(false)
     end
 
     it 'should handle integers' do
-      FB::Sysfs.check(1, '1', :int).should eq(true)
-      FB::Sysfs.check('1', '1', :int).should eq(true)
-      FB::Sysfs.check(1, 1, :int).should eq(true)
-      FB::Sysfs.check('1', 1, :int).should eq(true)
-      FB::Sysfs.check("1\n", 1, :int).should eq(true)
-      FB::Sysfs.check("1\n", '1', :int).should eq(true)
+      expect(check(1, '1', :int)).to eq(true)
+      expect(check('1', '1', :int)).to eq(true)
+      expect(check(1, 1, :int)).to eq(true)
+      expect(check('1', 1, :int)).to eq(true)
+      expect(check("1\n", 1, :int)).to eq(true)
+      expect(check("1\n", '1', :int)).to eq(true)
 
-      FB::Sysfs.check(1, '2', :int).should eq(false)
-      FB::Sysfs.check('1', '2', :int).should eq(false)
-      FB::Sysfs.check(1, 2, :int).should eq(false)
-      FB::Sysfs.check('1', 2, :int).should eq(false)
-      FB::Sysfs.check("1\n", 2, :int).should eq(false)
-      FB::Sysfs.check("1\n", '2', :int).should eq(false)
+      expect(check(1, '2', :int)).to eq(false)
+      expect(check('1', '2', :int)).to eq(false)
+      expect(check(1, 2, :int)).to eq(false)
+      expect(check('1', 2, :int)).to eq(false)
+      expect(check("1\n", 2, :int)).to eq(false)
+      expect(check("1\n", '2', :int)).to eq(false)
     end
   end
 end
