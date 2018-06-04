@@ -3,10 +3,12 @@
 
 LOGROTATE="/usr/sbin/logrotate"
 IONICE="/usr/bin/ionice"
+NICE="/usr/bin/nice"
 FLOCK_FILE="/var/run/logrotate.flock"
 PATH="/usr/bin:/usr/sbin"
 
 [ -x ${IONICE} ] && LOGROTATE="${IONICE} -c3 ${LOGROTATE}"
+[ -x ${NICE} ] && LOGROTATE="${NICE} -n 19 ${LOGROTATE}"
 
 # Implement a flock to make sure our logrotate processes are not running
 # on top of each other! t3385026

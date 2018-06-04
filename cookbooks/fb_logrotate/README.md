@@ -84,7 +84,7 @@ The following attributes are optional and not populated by default.
 These can be then later specified by setting the appropriate attribute
 and would get picked up by this logrotate recipe:
 
-* `size` *limit* -- Log files are rotated if they grow bigger than *limit* bytes. 
+* `size` *limit* -- Log files are rotated if they grow bigger than *limit* bytes.
   If the limit is followed by `k`, it is assumed to be in kilobytes.
   If the `M` is used, it is in megabytes, and if `G` is used,
   it is in gigabytes. So `size 100`, `size 100k`, `size 100M`
@@ -201,8 +201,9 @@ are auto-populated into the `newsyslog.d` conf file.
 The `node['fb_logrotate']['add_locking_to_logrotate']` feature will *overwrite*
 the cronjob for logrotate (`/etc/cron.daily/logrotate`) with one that wraps the
 call to logrotate in a `flock` call to prevent logrotate runs from stepping on
-each other. This can be very useful, but be aware you are overwriting a file from
-the system package.
+each other. It also adds low priority `nice` and `ionice` to the
+`logrotate` process. This can be very useful, but be aware you are
+overwriting a file from the system package.
 
 ### debug_log
 The `node['fb_logrotate']['debug_log']` feature is disabled by default. Setting
