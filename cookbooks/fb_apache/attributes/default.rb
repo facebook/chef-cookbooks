@@ -33,8 +33,8 @@ default['fb_apache'] = {
     "authz_#{auth_core_suffix}",
     'authz_groupfile',
     'authz_host',
-    'authz_user',
     'authz_owner',
+    'authz_user',
     'autoindex',
     'deflate',
     'dir',
@@ -73,6 +73,7 @@ default['fb_apache'] = {
     'cgi' => 'mod_cgi.so',
     'dav_fs' => 'mod_dav_fs.so',
     'dav' => 'mod_dav.so',
+    'dav_svn' => 'mod_dav_svn.so',
     'dbd' => 'mod_dbd.so',
     'deflate' => 'mod_deflate.so',
     'dir' => 'mod_dir.so',
@@ -117,14 +118,20 @@ default['fb_apache'] = {
     'wsgi' => 'mod_wsgi.so',
   },
   'module_packages' => {
-    'wsgi' => value_for_platform_family(
-      'rhel' => 'mod_wsgi',
+    'dav_svn' => value_for_platform_family(
+      'rhel' => 'mod_dav_svn',
+    ),
+    'ldap' => value_for_platform_family(
+      'rhel' => 'mod_ldap',
     ),
     'php5' => value_for_platform_family(
       'rhel' => 'mod_php',
     ),
     'ssl' => value_for_platform_family(
       'rhel' => 'mod_ssl',
+    ),
+    'wsgi' => value_for_platform_family(
+      'rhel' => 'mod_wsgi',
     ),
   },
 }

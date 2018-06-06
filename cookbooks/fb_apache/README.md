@@ -15,13 +15,14 @@ Attributes
 * node['fb_apache']['modules_directory']
 * node['fb_apache']['modules_mapping']
 * node['fb_apache']['module_packages']
+* node['fb_apache']['extra_configs']
 
 Usage
 -----
 ### Packages
-My default `fb_apache` will install and keep up to date the `apache` and 
-`mod_ssl` packages as relevant for your distribution. If you'd prefer to do 
-this on your own then you can set `node['fb_apache']['manage_packages']` to 
+My default `fb_apache` will install and keep up to date the `apache` and
+`mod_ssl` packages as relevant for your distribution. If you'd prefer to do
+this on your own then you can set `node['fb_apache']['manage_packages']` to
 `false`.
 
 For modules, we keep a mapping of the package required for modules in
@@ -31,9 +32,9 @@ install the relevant packages for any modules you enable in
 attempt to start apache.
 
 ### Sites / VirtualHosts
-The `node['fb_apache']['sites']` hash configures virtual hosts. All virtual 
-hosts are kept in a single file called `fb_apache_sites.cfg` in a directory 
-relevant to your distribution. In general, it's a 1:1 mapping of the apache 
+The `node['fb_apache']['sites']` hash configures virtual hosts. All virtual
+hosts are kept in a single file called `fb_apache_sites.cfg` in a directory
+relevant to your distribution. In general, it's a 1:1 mapping of the apache
 syntax to a hash. So for example:
 
 ```ruby
@@ -54,7 +55,7 @@ Will produce:
 </VirtualHost>
 ```
 
-If the value of the hash is an `Array`, then it's assumed it's a key that can 
+If the value of the hash is an `Array`, then it's assumed it's a key that can
 be repeated. So for example:
 
 ```ruby
@@ -75,10 +76,10 @@ Would produce:
 </VirtualHost>
 ```
 
-This can be used for anything which repeats such as `Alias`, `ServerAlias`, or 
+This can be used for anything which repeats such as `Alias`, `ServerAlias`, or
 `ScriptAlias`.
 
-If the value is a hash, then the key is treated like another markup tag in the 
+If the value is a hash, then the key is treated like another markup tag in the
 config and the hash is values inside that tag. For example:
 
 
@@ -104,21 +105,21 @@ Would produce:
 </VirtualHost>
 ```
 
-Note that you have to include the entire tag here (`Directory /var/www`, 
+Note that you have to include the entire tag here (`Directory /var/www`,
 instead of just `Directory`).
 
 Hashes like this work for all nested tags such as `Directory` and `Location`.
 
 #### Rewrite rules
 
-One exception to this generic 1:1 mapping is rewrite rules. Because of the 
-complicated nature of rewrite rules and because they are not structured like 
-most of Apache VirtualHost configuration, these are special-cased in this 
-cookbook. These can be stored in the special `_rewrites` key in the hash. Each 
-conditional/rewrite set is an entry in the hash. The key is a human-readable 
-name (will be used as a comment) and the value is another hash with a 
-"conditions" array and a "rule" array. Note that you just like conditionals in 
-apache, multiple conditionals in the same block will be ANDed together. To get 
+One exception to this generic 1:1 mapping is rewrite rules. Because of the
+complicated nature of rewrite rules and because they are not structured like
+most of Apache VirtualHost configuration, these are special-cased in this
+cookbook. These can be stored in the special `_rewrites` key in the hash. Each
+conditional/rewrite set is an entry in the hash. The key is a human-readable
+name (will be used as a comment) and the value is another hash with a
+"conditions" array and a "rule" array. Note that you just like conditionals in
+apache, multiple conditionals in the same block will be ANDed together. To get
 OR, make an additional entry in the hash. So for example:
 
 ```
