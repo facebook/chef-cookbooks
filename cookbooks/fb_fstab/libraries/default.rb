@@ -81,6 +81,7 @@ module FB
         disks = []
         File.read(IN_MAINT_DISKS_FILENAME).each_line do |line|
           next if line.start_with?('#')
+          next if line.strip.empty?
           disks << line.strip
         end
         unless disks.empty?
