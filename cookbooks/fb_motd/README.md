@@ -13,4 +13,6 @@ Usage
 -----
 To add anything to the /etc/motd file, simply add lines to this array:
 
-    node['fb_motd']['extra_lines']
+```
+node['fb_motd']['extra_lines']
+```

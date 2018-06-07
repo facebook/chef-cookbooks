@@ -23,14 +23,16 @@ means any machine can be an rsync client.
 ### Being an rsync client
 The `fb_rsync` LWRP can be used to run an rsync with configurable options.
 
-    fb_rsync '/usr/facebook/ops/scripts/' do
-      source '::ops_scripts/'
-      extraopts '--prune-empty-dirs'
-      sharddelete true
-      sharddeleteexcluded false
-      timeout 60
-      maxdelete 100
-    end
+```
+fb_rsync '/usr/facebook/ops/scripts/' do
+  source '::ops_scripts/'
+  extraopts '--prune-empty-dirs'
+  sharddelete true
+  sharddeleteexcluded false
+  timeout 60
+  maxdelete 100
+end
+```
 
 The resulting rsync is configurable but you do not have full control of all
 eventual command line options. The default rsync command will run with the
@@ -83,20 +85,24 @@ If you want to mostly use the default rsync options, there is an
 starts with "::", the `rsync_server` attribute will be added to the front for
 you:
 
-    execute 'get_dhcp_configs' do
-      command FB::Rsync.cmd("::#{rsync_path}", dhcp_dir)
-      action :run
-    end
+```
+execute 'get_dhcp_configs' do
+  command FB::Rsync.cmd("::#{rsync_path}", dhcp_dir)
+  action :run
+end
+```
 
 Similar to the LWRP, the macro will fail in this case if `rsync_server` is not
 set. If that is not sufficient, you can construct the commandline from scratch
 like this:
 
-    execute 'get_dhcp_configs' do
-      command "rsync -az #{node['fb_rsync']['rsync_server']}::#{rsync_path}" +
-        " #{dhcpd_dir}"
-      action :run
-    end
+```
+execute 'get_dhcp_configs' do
+  command "rsync -az #{node['fb_rsync']['rsync_server']}::#{rsync_path}"
+    " #{dhcpd_dir}"
+  action :run
+end
+```
 
 ### Being an rsync server
 The `fb_rsync::server` recipe will install `/etc/init.d/rsyncd`, manage running rsync
@@ -114,23 +120,27 @@ modules. Modules are defined within
 `node['fb_rsync']['rsyncd.conf']['modules']`. All of the module's options will
 then be enumerated as part of the module's hash, for example:
 
-    default['fb_rsync']['rsyncd.conf'] = {
-      'modules' => {
-        'scripts' => {
-           'comment' => 'Master file repository for slave hosts',
-           'exclude' => '.svn',
-           'hosts allow' => 'cc[0-9][0-9].* routablecc[0-9][0-9][0-9].*',
-           'list' => 'no',
-           'path' => '/usr/local/masterfiles/PROD'
-        }
-      }
+```
+default['fb_rsync']['rsyncd.conf'] = {
+  'modules' => {
+    'scripts' => {
+       'comment' => 'Master file repository for slave hosts',
+       'exclude' => '.svn',
+       'hosts allow' => 'cc[0-9][0-9].* routablecc[0-9][0-9][0-9].*',
+       'list' => 'no',
+       'path' => '/usr/local/masterfiles/PROD'
     }
+  }
+}
+```
 
-Once you have defined your module you'll need to
-add the module name to the `node['fb_rsync']['rsyncd.conf']['enabled_modules']` array. You
-can do so by defining the following attribute in your role:
+Once you have defined your module you'll need to add the module name to the
+`node['fb_rsync']['rsyncd.conf']['enabled_modules']` array. You can do so by
+defining the following attribute in your role:
 
-    node.default['fb_rsync']['rsyncd.conf']['enabled_modules'] << 'scripts'
+```
+node.default['fb_rsync']['rsyncd.conf']['enabled_modules'] << 'scripts'
+```
 
 At this point when chef executes the `fb_rsync` recipe `/etc/rsyncd.conf`
 will be generated, and the recipe will manage running the rsync service in

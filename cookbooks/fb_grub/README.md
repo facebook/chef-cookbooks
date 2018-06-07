@@ -33,7 +33,7 @@ in `node['fb_grub']['kernels']`. In most cases you'll probably want to write a
 statically populating it. If you need to parse or compare kernel versions as
 part of this, you may find the `FB::Version` class in `fb_helpers` useful.
 Note that this cookbook will not install a kernel for you, it will just
-control the GRUB config. The cookbook will install and keep updated the 
+control the GRUB config. The cookbook will install and keep updated the
 appropriate GRUB packages; if you'd rather handle this somewhere else, set
 `node['fb_grub']['manage_packages']` to `false`.
 
@@ -48,7 +48,9 @@ an element to the `node['fb_grub']['kernel_cmdline_args']` array.
 Simply append the full text of the kernel command line arg as an element
 to that array, e.g.:
 
-    node.default['fb_grub']['kernel_cmdline_args'] << 'crashkernel=128M'
+```
+node.default['fb_grub']['kernel_cmdline_args'] << 'crashkernel=128M'
+```
 
 Previous versions of this cookbook assumed the device containing grub is
 enumerated as `hd0`. GRUB 2 can use labels or UUIDs. The option
@@ -57,7 +59,9 @@ instead of hard coding the device.
 
 If the device absolutely needs to be hardcoded, it can be overriden, as in:
 
-    node.default['fb_grub']['boot_disk'] = 'hd1'
+```
+node.default['fb_grub']['boot_disk'] = 'hd1'
+```
 
 ### tboot
 This cookbook optionally supports enabling tboot. This is only supported for

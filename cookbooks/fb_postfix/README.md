@@ -38,9 +38,9 @@ attributes listed above. They are grouped by different formatting and handling
 requirements listed below.
 
 ### main.cf
-Key/value pairs in this hash will generate lines in the `main.cf` config file. 
-You can add or change items by adding to or changing an item in the hash. To 
-remove a default item, set the value to `nil` and the template will leave it 
+Key/value pairs in this hash will generate lines in the `main.cf` config file.
+You can add or change items by adding to or changing an item in the hash. To
+remove a default item, set the value to `nil` and the template will leave it
 out. Restart of postfix on changes happens automatically.
 
 For example you might do:
@@ -50,9 +50,9 @@ node.default['fb_postfix']['main.cf']['command_time_limit'] = '300s'
 ```
 
 ### Aliases
-Like `main.cf`, the aliases hash will render key/value pairs into the 
-appropriate format in the config file. There are no defaults. On any changes, 
-Chef will automatically rerun `postalias` to regenerate the `aliases.db` file 
+Like `main.cf`, the aliases hash will render key/value pairs into the
+appropriate format in the config file. There are no defaults. On any changes,
+Chef will automatically rerun `postalias` to regenerate the `aliases.db` file
 and restart postfix.
 
 ### localdomains, mynetworks, relaydomains
@@ -61,20 +61,20 @@ of the array are rendered one element per line in the file and postfix will be
 automatically restarted if there are changes.
 
 ### Maps
-This covers `access`, `canonical`, `etrn_access`, `local_access`, `sasl_auth`, 
+This covers `access`, `canonical`, `etrn_access`, `local_access`, `sasl_auth`,
 `sasl_passwd`, `transport` and `virtual`. Each of these attributes takes a hash
-similar to `aliases`. Chef will automatically run `postmap` to regenerate the 
+similar to `aliases`. Chef will automatically run `postmap` to regenerate the
 appropriate `.db` file and restart postfix if there are changes.
 
 ### Master.cf
-It's not common to need to change `master.cf`, but if you need to the 
+It's not common to need to change `master.cf`, but if you need to the
 `master.cf` key in the hash will give you full access to do so.
 
 The keys are services (like `smtp`), the next key is type (like `unix` or
-`inet`), and then the hash below that is the settings in 
+`inet`), and then the hash below that is the settings in
 [master(5)](http://www.postfix.org/master.5.html) available for each entry.
 
-For example, to configure postfix to not send bounce notifications, you might 
+For example, to configure postfix to not send bounce notifications, you might
 do:
 
 ```
@@ -83,9 +83,11 @@ node.default['fb_postfix']['master.cf']['bounce']['unix']['command'] = 'discard'
 
 ### Tweaking headers
 
-Use this to update headers. See [header_checks](http://www.postfix.org/header_checks.5.html) for details.
+Use this to update headers. See
+[header_checks](http://www.postfix.org/header_checks.5.html) for details.
 
 For example, to add a new header:
+
 ```
 node.default['fb_postfix']['custom_headers']['some description'] = {
   'regexp' => '/^To:/',  # match this existing header
@@ -94,5 +96,6 @@ node.default['fb_postfix']['custom_headers']['some description'] = {
   'value' => Some_Value',  # with this value
 }
 ```
-*Note*: In `main.cf`, `header_checks` is by default pointed to  
+
+*Note*: In `main.cf`, `header_checks` is by default pointed to
 `/etc/postfix/custom_headers.regexp`.

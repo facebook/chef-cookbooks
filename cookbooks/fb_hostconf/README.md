@@ -1,6 +1,6 @@
 fb_hostconf Cookbook
 ====================
-This cookbook configures host.conf and provides an API for modifying all 
+This cookbook configures host.conf and provides an API for modifying all
 aspects of host.conf
 
 Requirements
@@ -19,20 +19,18 @@ Attributes
 Usage
 -----
 Will take arbirtrary values under `node['fb_hostconf']` and write them out
-to /etc/host.conf in different ways depending on the name of key or datatype 
+to /etc/host.conf in different ways depending on the name of key or datatype
 of the value.
 
-If key name is 'spoof' or 'trim', the value is written out as is without 
+If key name is 'spoof' or 'trim', the value is written out as is without
 validation
 
-If datatype of the value is an Array the values will be written out as 
+If datatype of the value is an Array the values will be written out as
 comma seperated strings
 
-All other values are interpeted as boolean and if evaluated to true, the 
+All other values are interpeted as boolean and if evaluated to true, the
 string 'on' is written out else 'off' is written out.
 
 See man host.conf for all settable attributes
 
-The default is
-
-    default['fb_hostconf']['multi'] = True
+The default sets `multi` to `true`.

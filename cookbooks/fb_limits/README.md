@@ -16,7 +16,9 @@ Usage
 -----
 In limits.conf, each line describes a limit for a user in the form:
 
-    <domain>        <type>  <item>  <value>
+```
+<domain>        <type>  <item>  <value>
+```
 
 Where:
 `domain` can be:
@@ -51,14 +53,18 @@ Where:
 
 Example:
 
-    node.default['fb_limits']['DOMAIN'] = {
-        'ITEM' => {
-          'TYPE' => VALUE,
-          'TYPE' => VALUE,
-        }
+```
+node.default['fb_limits']['DOMAIN'] = {
+    'ITEM' => {
+      'TYPE' => VALUE,
+      'TYPE' => VALUE,
     }
+}
+```
 
 By default we will assign:
 
-    root nofile soft 65535
-    root nofile hard 65535
+```
+root nofile soft 65535
+root nofile hard 65535
+```

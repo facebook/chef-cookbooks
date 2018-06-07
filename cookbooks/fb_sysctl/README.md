@@ -7,14 +7,18 @@ Requirements
 
 Attributes
 ----------
-* node['fb_sysctl'][$SYSCTL] = $VALUE
+* node['fb_sysctl'][$SYSCTL]
 
 Usage
 -----
 Anywhere, in any cookbook, you can set a sysctl in a RECIPE as follows:
 
-    node.default['fb_sysctl'][$SYSCTL] = $VALUE
+```
+node.default['fb_sysctl'][$SYSCTL] = $VALUE
+```
 
 For example:
 
-    node.default['fb_sysctl']['vm.swappiness'] = 70
+```
+node.default['fb_sysctl']['vm.swappiness'] = 70
+```

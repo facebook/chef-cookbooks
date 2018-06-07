@@ -29,6 +29,7 @@ NOTE: hdparm in general is capable of dangerous and destructive
       These are hard-coded in the default hdparm recipe.
 
 Example:
+
 ```
 node.default['fb_hdparm']['enforce'] = true
 node.default['fb_hdparm']['settings']['-W'] = 1

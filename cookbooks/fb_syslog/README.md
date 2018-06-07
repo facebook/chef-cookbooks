@@ -26,7 +26,6 @@ Attributes
 * node['fb_syslog']['sysconfig']['vars'][$KEY][$VAL]
 * node['fb_syslog']['sysconfig']['extra_lines']
 
-
 Usage
 -----
 ### syslog-compatible entries
@@ -35,11 +34,13 @@ in a `syslog.conf`, and all syslog-style entries in `rsyslog.conf`.
 
 Each generated rule is composed of a hash entry:
 
-    'name' => {
-      comment => 'Associated comment',
-      selector => '<facility>.<priority>',
-      action => '<action>'
-    }
+```
+'name' => {
+  comment => 'Associated comment',
+  selector => '<facility>.<priority>',
+  action => '<action>'
+}
+```
 
 The selector and action values get dumped into the config file as-is,
 so you can make use of any valid syntax you wish according to
@@ -67,46 +68,50 @@ define them in `node['fb_syslog']['rsyslog_rulesets']`.  This will also
 open up the required network ports for listening and bind them to the RuleSet.
 Here is an example for usage, also see fb_rlog recipe for a larger example:
 
-    node.default['fb_syslog']['rsyslog_rulesets'] = {
-      'incoming_music' => {
-        'proto' => 'udp',
-        'port' => '514',
-        'rules' => {
-          'Metallica' => [
-              ':programname, isequal, "RideTheLightning" /var/log/metallica.log', '& ~',
-          ],
-          'Tool' => [
-              ':hostname, contains, "Lateralus" /var/log/lateralus.log', '& ~',
-              ':hostname, contains, "Aenima" /var/log/aenima.log', '& ~',
-              ':hostname, contains, "10000_Days" /var/log/10000_days.log', '& ~',
-              ':hostname, contains, "Undertow" /var/log/undertow.log', '& ~',
-              ':hostname, contains, "Opiate" /var/log/opiate.log', '& ~',
-          ],
-        },
-      },
-    }
+```
+node.default['fb_syslog']['rsyslog_rulesets'] = {
+  'incoming_music' => {
+    'proto' => 'udp',
+    'port' => '514',
+    'rules' => {
+      'Metallica' => [
+          ':programname, isequal, "RideTheLightning" /var/log/metallica.log', '& ~',
+      ],
+      'Tool' => [
+          ':hostname, contains, "Lateralus" /var/log/lateralus.log', '& ~',
+          ':hostname, contains, "Aenima" /var/log/aenima.log', '& ~',
+          ':hostname, contains, "10000_Days" /var/log/10000_days.log', '& ~',
+          ':hostname, contains, "Undertow" /var/log/undertow.log', '& ~',
+          ':hostname, contains, "Opiate" /var/log/opiate.log', '& ~',
+      ],
+    },
+  },
+}
+```
 
 The output of the above example would yield:
 
-    $RuleSet incoming_music
-    # Metallica
-    :programname, isequal, "RideTheLightning" /var/log/metallica.log
-    & ~
+```
+$RuleSet incoming_music
+# Metallica
+:programname, isequal, "RideTheLightning" /var/log/metallica.log
+& ~
 
-    # Tool
-    :hostname, contains, "Lateralus" /var/log/lateralus.log
-    & ~
-    :hostname, contains, "Aenima" /var/log/aenima.log
-    & ~
-    :hostname, contains, "10000_Days" /var/log/10000_days.log
-    & ~
-    :hostname, contains, "Undertow" /var/log/undertow.log
-    & ~
-    :hostname, contains, "Opiate" /var/log/opiate.log
-    & ~
+# Tool
+:hostname, contains, "Lateralus" /var/log/lateralus.log
+& ~
+:hostname, contains, "Aenima" /var/log/aenima.log
+& ~
+:hostname, contains, "10000_Days" /var/log/10000_days.log
+& ~
+:hostname, contains, "Undertow" /var/log/undertow.log
+& ~
+:hostname, contains, "Opiate" /var/log/opiate.log
+& ~
 
-    $InputUDPServerBindRuleset incoming_music
-    $UDPServerRun 514
+$InputUDPServerBindRuleset incoming_music
+$UDPServerRun 514
+```
 
 ### Opening network ports for listening
 If you want to open network ports without binding them to a specific ruleset
@@ -115,21 +120,25 @@ The most common use for this will be if you need to open ports to pass health
 checks that are not already opened from your ruleset.
 Here is an example:
 
-    node.default['fb_syslog']['rsyslog_nonruleset_ports'] = {
-      'tcp' => [
-        '514',
-        '5140',
-      ],
-      'udp' => [
-        '514',
-      ],
-    }
+```
+node.default['fb_syslog']['rsyslog_nonruleset_ports'] = {
+  'tcp' => [
+    '514',
+    '5140',
+  ],
+  'udp' => [
+    '514',
+  ],
+}
+```
 
 The output of the above example would yield:
 
-    $InputTCPServerRun 514
-    $InputTCPServerRun 5140
-    $InputUDPServerRun 514
+```
+$InputTCPServerRun 514
+$InputTCPServerRun 5140
+$InputUDPServerRun 514
+```
 
 These don't take effect unless `rsyslog_server` is set.
 
@@ -138,19 +147,25 @@ If messages entering the syslog system contain control characters and it's
 causing you problems, you can enable escaping of non-printable characters by
 enabling the `node['fb_syslog']['rsyslog_escape_cchars']` attribute:
 
-    node.default['fb_syslog']['rsyslog_escape_cchars'] = true
+```
+node.default['fb_syslog']['rsyslog_escape_cchars'] = true
+```
 
 ### Enabling additional sockets
 If you need to have /dev/log inside chroots, you'll need to have rsyslog
 listening to additional sockets in a directory that can be bind mounted inside
 the chroot. Rsyslog will create any missing directory for you.
 
-    node.default['fb_syslog']['rsyslog_additional_sockets'] << '/dev/rsyslog/log'
+```
+node.default['fb_syslog']['rsyslog_additional_sockets'] << '/dev/rsyslog/log'
+```
 
 The output of the above example would yield:
 
-    $InputUnixListenSocketCreatePath on
-    $AddUnixListenSocket /dev/rsyslog/log
+```
+$InputUnixListenSocketCreatePath on
+$AddUnixListenSocket /dev/rsyslog/log
+```
 
 With that, you can bind mount /dev/rsyslog to your chroot and symlink
 /dev/rsyslog/log to /dev/log there.
@@ -160,8 +175,10 @@ If you set `node['fb_syslog']['rsyslog_upstream']`, then any facilities you add
 to `node['fb_syslog']['rsyslog_facilities_sent_to_remote']` will be sent to that
 upstream. For example:
 
-    node.default['fb_syslog']['rsyslog_facilities_sent_to_remote'] << 'auth.*'
-    node.default['fb_syslog']['rsyslog_upstream'] << 'syslog.mydomain.com'
+```
+node.default['fb_syslog']['rsyslog_facilities_sent_to_remote'] << 'auth.*'
+node.default['fb_syslog']['rsyslog_upstream'] << 'syslog.mydomain.com'
+```
 
 ### Program forwarding
 If you set `node['fb_syslog']['rsyslog_use_omprog']` to true, rsyslog will
@@ -171,19 +188,23 @@ You will need to specify the binary to forward syslog messages to in
 in `node['fb_syslog']['rsyslog_facilities_sent_to_remote']` will be forwarded to
 that binary. For example:
 
-    node.default['fb_syslog']['rsyslog_facilities_sent_to_remote'] << 'auth.*'
-    node.default['fb_syslog']['rsyslog_use_omprog'] = true
-    node.default['fb_syslog']['rsyslog_omprog_binary'] = '/usr/bin/myprogram'
+```
+node.default['fb_syslog']['rsyslog_facilities_sent_to_remote'] << 'auth.*'
+node.default['fb_syslog']['rsyslog_use_omprog'] = true
+node.default['fb_syslog']['rsyslog_omprog_binary'] = '/usr/bin/myprogram'
+```
 
 By default, program forwarding (omprog) will only be enabled if
 `node['fb_syslog']['rsyslog_server']` is not set to `true`. You can set
 `node['fb_syslog']['rsyslog_use_omprog_force']` to enable program forwarding
 and a rsyslog server simultaneously. For example:
 
-    node.default['fb_syslog']['rsyslog_use_omprog_force'] = true
+```
+node.default['fb_syslog']['rsyslog_use_omprog_force'] = true
+```
 
 ### Suspension reporting
-Setting `node['fb_syslog']['rsyslog_report_suspension']` controls suspension 
+Setting `node['fb_syslog']['rsyslog_report_suspension']` controls suspension
 reporting, which defaults to `off`. If the attriubte is set to `nil` suspension
 reporting will not be managed (useful e.g. if your version of rsyslog does not
 support it).
@@ -195,12 +216,14 @@ module to `/var/log/rsyslog-stats.log`.
 
 ### sysconfig settings
 On non-systemd systems, `node['fb_syslog']['sysconfig']` can be used
-to setup `/etc/sysconfig/rsyslog` (for RedHat machines) or 
-`/etc/default/rsyslog` (for Debian or Ubuntu). In general you should use it 
+to setup `/etc/sysconfig/rsyslog` (for RedHat machines) or
+`/etc/default/rsyslog` (for Debian or Ubuntu). In general you should use it
 like this:
 
-    node.default['fb_syslog']['sysconfig']['vars']['SYSLOGD_OPTIONS'] =
-      '-c'
+```
+node.default['fb_syslog']['sysconfig']['vars']['SYSLOGD_OPTIONS'] =
+  '-c'
+```
 
 But the `extra_lines` array is also available for forcing arbitrary stuff like
 `ulimit` calls.

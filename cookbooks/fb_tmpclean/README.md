@@ -55,9 +55,11 @@ directories with a slash appended to the directory name. An exclusion of
 `/tmp//tmp/file`. The way the options are constructed, each exclusion is
 appended to each directory to create absolute paths.
 
-    for dir in directories:
-        for exclusion in exclusions:
-            print '-X ' + dir + '/' + exclusions
+```
+for dir in directories:
+    for exclusion in exclusions:
+        print '-X ' + dir + '/' + exclusions
+```
 
 ### timestamptype
 
@@ -75,8 +77,10 @@ An array of extra lines that will be put, verbatim, into the config file.
 
 Examples:
 
-    node.default['fb_tmpclean']['directories']['/home/zuck'] = 1
-    node.default['fb_tmpclean']['extra_lines'] << "LINE"
+```
+node.default['fb_tmpclean']['directories']['/home/zuck'] = 1
+node.default['fb_tmpclean']['extra_lines'] << "LINE"
+```
 
 ### remove_special_files
 

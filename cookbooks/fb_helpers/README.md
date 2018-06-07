@@ -103,64 +103,68 @@ your node.
       `used` - used space in KB
       `percent` - used space as a percent (returned as a whole number, i.e. 15)
 
-*  `node.resolve_dns_name(hostname, brackets, force_v4)`
-    Resolves hostname and returns back one IP address.
-    If the host is IPv6-capable, IPv6 address is returned. The default is to
-    return IP address only, but if the second parameter (brackets) is set to
-    true, the IPv6 address gets wrapped in square brackets. If DNS name does
-    not exist or only resolves to an ipv6 address while your host is not
-    IPv6-capable, a `SocketError` is raised.
-    `force_v4` is set to false by default, if set to true then the IPv4 address
-    will be returned.
+* `node.resolve_dns_name(hostname, brackets, force_v4)`
+   Resolves hostname and returns back one IP address.
+   If the host is IPv6-capable, IPv6 address is returned. The default is to
+   return IP address only, but if the second parameter (brackets) is set to
+   true, the IPv6 address gets wrapped in square brackets. If DNS name does
+   not exist or only resolves to an ipv6 address while your host is not
+   IPv6-capable, a `SocketError` is raised.
+   `force_v4` is set to false by default, if set to true then the IPv4 address
+   will be returned.
 
-*  `node.get_flexible_shard(shard_size)`
-    Returns the node's shard in a flexible shard setup.  These shards allow you
-    to specify an arbitrary size (limited to 2^28) for the number of possible
-    buckets.  Let's say that you want a consistent shard that correlates a
-    minute in the whole day (1,400 min/day).  You would use this in your code:
-    ```
-      node.get_flexible_shard(1440)
-    ```
-    This helps also to release code to shards smaller than 1% of the fleet,
-    e.g. `node.get_flexible_shard(10000)` for getting your shard in steps
-    of one ten-thousandth.
+* `node.get_flexible_shard(shard_size)`
+   Returns the node's shard in a flexible shard setup.  These shards allow you
+   to specify an arbitrary size (limited to 2^28) for the number of possible
+   buckets.  Let's say that you want a consistent shard that correlates a
+   minute in the whole day (1,400 min/day).  You would use this in your code:
 
-*  `node.in_flexible_shard?(shard, shard_size)`
-    True if the flexible shard we are in is less-than-or-equal to `shard`.  In
-    other words, `node.in_flexible_shard?(24, 1000)` is true if you are in
-    shards 0-24 per-thousandth (the equivalent to 0%-2.4%).  This sharding is
-    *not* compatible with the `node.in_shard?()` implementation, so please choose
-    one or the other when starting your experiment.
+   ```
+     node.get_flexible_shard(1440)
+   ```
 
-*  `node.get_shard()`
-    Wrapper around `node.get_flexible_shard` that sets `shard_size` to 100. This
-    is the "basic" shard that roughly maps to a percentage.
+   This helps also to release code to shards smaller than 1% of the fleet,
+   e.g. `node.get_flexible_shard(10000)` for getting your shard in steps
+   of one ten-thousandth.
 
-*  `node.in_shard?(shard)`
-    Wrapper around `node.in_flexible_shard?` that sets `shard_size` to 100.
-    Shards are 0-indexed, so the valid shards are 0-99. As such, shard `N` is
-    approximately `(N+1)%`, so shard 0 is approximately 1%.
+* `node.in_flexible_shard?(shard, shard_size)`
+   True if the flexible shard we are in is less-than-or-equal to `shard`.  In
+   other words, `node.in_flexible_shard?(24, 1000)` is true if you are in
+   shards 0-24 per-thousandth (the equivalent to 0%-2.4%).  This sharding is
+   *not* compatible with the `node.in_shard?()` implementation, so please choose
+   one or the other when starting your experiment.
+
+* `node.get_shard()`
+   Wrapper around `node.get_flexible_shard` that sets `shard_size` to 100. This
+   is the "basic" shard that roughly maps to a percentage.
+
+* `node.in_shard?(shard)`
+   Wrapper around `node.in_flexible_shard?` that sets `shard_size` to 100.
+   Shards are 0-indexed, so the valid shards are 0-99. As such, shard `N` is
+   approximately `(N+1)%`, so shard 0 is approximately 1%.
 
 ### FB::Helpers
 The following methods are available:
 
-*  `FB::Helpers.commentify(comment, arg)`
-    Commentify takes the string in `comment` and wraps it appropriately
-    for being a comment. By default it'll comment it ruby-style (leading "# ")
-    with a width of 80 chars, but the arg hash can specify `start`, `finish`,
-    and `width` to adjust it's behavior.
-*  `FB::Version.new(version)`
+* `FB::Helpers.commentify(comment, arg)`
+   Commentify takes the string in `comment` and wraps it appropriately
+   for being a comment. By default it'll comment it ruby-style (leading "# ")
+   with a width of 80 chars, but the arg hash can specify `start`, `finish`,
+   and `width` to adjust it's behavior.
+* `FB::Version.new(version)`
    Helper class to compare software versions. Sample usage:
 
-      FB::Version.new('1.3') < FB::Version.new('1.21')
-      => true
-      FB::Version.new('4.5') < FB::Version.new('4.5')
-      => false
-      FB::Version.new('3.3.10') > FB::Version.new('3.4')
-      => false
-      FB::Version.new('10.2') >= FB::Version.new('10.2')
-      => true
-      FB::Version.new('1.2.36') == FB::Version.new('1.2.36')
-      => true
-      FB::Version.new('3.3.4') <= FB::Version.new('3.3.02')
-      => false
+   ```
+   FB::Version.new('1.3') < FB::Version.new('1.21')
+   => true
+   FB::Version.new('4.5') < FB::Version.new('4.5')
+   => false
+   FB::Version.new('3.3.10') > FB::Version.new('3.4')
+   => false
+   FB::Version.new('10.2') >= FB::Version.new('10.2')
+   => true
+   FB::Version.new('1.2.36') == FB::Version.new('1.2.36')
+   => true
+   FB::Version.new('3.3.4') <= FB::Version.new('3.3.02')
+   => false
+   ```

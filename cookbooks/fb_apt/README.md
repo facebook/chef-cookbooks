@@ -1,6 +1,6 @@
 fb_apt Cookbook
 ====================
-The `fb_apt` cookbook installs and configures APT, the Debian package 
+The `fb_apt` cookbook installs and configures APT, the Debian package
 management tool.
 
 Requirements
@@ -32,11 +32,11 @@ which other cookbooks can suscribe to or notify as well.
 
 ### Repository sources
 By default the cookbook will setup the base distribution repos based on the
-codename (as defined in `node['lsb']['codename']`) using a sensible default 
-mirror for the package sources. The mirror can be customized with 
-`node['fb_apt']['mirror']`; if set to `nil`, base repos will not be included 
-at all in `/etc/apt/sources.list`. If base repos are enabled, the additional 
-`backports` and `non-free` sources can be enabled with the 
+codename (as defined in `node['lsb']['codename']`) using a sensible default
+mirror for the package sources. The mirror can be customized with
+`node['fb_apt']['mirror']`; if set to `nil`, base repos will not be included
+at all in `/etc/apt/sources.list`. If base repos are enabled, the additional
+`backports` and `non-free` sources can be enabled with the
 `node['fb_apt']['want_backports']` and `node['fb_apt']['want_non_free']`
 attributes, and source code repos can be enabled with
 `node['fb_apt']['want_source']`; these all default to `false`.
@@ -52,14 +52,16 @@ Repository keys can be added to `node['fb_apt']['keys']` which is a hash in the
 from the `node['fb_apt']['keyserver']` keyserver (`keys.gnupg.net` by default).
 Example:
 
-    node.default['fb_apt']['keys']['94558F59'] = nil
-    node.default['fb_apt']['keys']['F3EFDBD9'] = <<-eos
-    -----BEGIN PGP PUBLIC KEY BLOCK-----
-    ...
-    eos
+```
+node.default['fb_apt']['keys']['94558F59'] = nil
+node.default['fb_apt']['keys']['F3EFDBD9'] = <<-eos
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+...
+eos
+```
 
-Automatic key fetching can be disabled by setting the keyserver to `nil`; this 
-will produce an exception for any unspecified key. By default `fb_apt` will 
+Automatic key fetching can be disabled by setting the keyserver to `nil`; this
+will produce an exception for any unspecified key. By default `fb_apt` will
 manage the keyring at `/etc/apt/trusted.gpg`; this can be customized with
 `node['fb_apt']['keyring']`.
 
@@ -68,11 +70,13 @@ APT behaviour can be customized using `node['fb_apt']['config']`, which will be
 used to populate `/etc/apt/apt.conf`. Note that this will take precedence over
 anything in `/etc/apt/apt.conf.d`. Example:
 
-    node.default['fb_apt']['config'].merge!({
-      'Acquire::http' => {
-        'Proxy' => 'http://myproxy:3412',
-      },
-    })
+```
+node.default['fb_apt']['config'].merge!({
+  'Acquire::http' => {
+    'Proxy' => 'http://myproxy:3412',
+  },
+})
+```
 
 ### Preferences
 You can fine tune which versions of packages will be selected for installation
@@ -80,10 +84,12 @@ by tweaking APT preferences via `node['fb_apt']['preferences']`. Note that we
 clobber the contents of `/etc/apt/preferences.d` to ensure this always takes
 precedence. Example:
 
-    node.default['fb_apt']['preferences'].merge!({
-      'Pin dpatch package from experimental' => {
-        'Package' => 'dpatch',
-        'Pin' => 'release o=Debian,a=experimental',
-        'Pin-Priority' => 450,
-      }
-    })
+```
+node.default['fb_apt']['preferences'].merge!({
+  'Pin dpatch package from experimental' => {
+    'Package' => 'dpatch',
+    'Pin' => 'release o=Debian,a=experimental',
+    'Pin-Priority' => 450,
+  }
+})
+```

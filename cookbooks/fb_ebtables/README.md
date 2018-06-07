@@ -19,9 +19,9 @@ will manage the ebtables packages; this can be opted out of by setting
 disabled by default; to enable it set `node['fb_ebtables']['enable']` to true.
 
 ### Sysconfig
-The `/etc/sysconfig/ebtables-config` config file can be configured using 
-`node['fb_ebtables']['sysconfig']`. This hash will be translated to key-value 
-pairs in the config file. The keys will automatically be upper-cased and 
+The `/etc/sysconfig/ebtables-config` config file can be configured using
+`node['fb_ebtables']['sysconfig']`. This hash will be translated to key-value
+pairs in the config file. The keys will automatically be upper-cased and
 prefixed with `EBTABLES_` as necessary. For example:
 
 ```

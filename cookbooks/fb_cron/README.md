@@ -21,6 +21,7 @@ Attributes
 
 Usage
 -----
+
 ### Adding Jobs
 `node['fb_cron']['jobs']` is a hash of crons. To add a job, simply do:
 
@@ -59,7 +60,7 @@ node.default['fb_cron']['jobs']['do_this_thing'] = {
 ```
 
 ### splaysecs
-Defaults to false/none.  Please set a splay time for your cronjob, or  
+Defaults to false/none.  Please set a splay time for your cronjob, or
 explicitly set this to false to indicate that your job can't tolerate a splay.
 A bunch of cronjobs kicking off at exactly the same time can impact CPU, power,
 and network resources even if each of them are very small.

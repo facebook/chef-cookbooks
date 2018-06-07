@@ -14,9 +14,9 @@ Attributes
 
 Usage
 -----
-Include `fb_vsftpd::default` to install vsftpd. The daemon is enabled and 
+Include `fb_vsftpd::default` to install vsftpd. The daemon is enabled and
 started by default; this can be controlled with `node['fb_vsftpd']['enable']`.
-The daemon is configured via the `node['fb_vsftpd']['config']` attribute, 
+The daemon is configured via the `node['fb_vsftpd']['config']` attribute,
 which will be used to render the main configuration file `vsftpd.conf`. Please
 refer to the
 [upstream documentation](http://vsftpd.beasts.org/vsftpd_conf.html)

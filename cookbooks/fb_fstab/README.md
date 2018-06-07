@@ -81,44 +81,48 @@ on unmounting, even if unmounting is enabled. A list of defaults is in
 attributes, you may add or remove from this as you see fit. For example, you
 may want:
 
-    node.default['fb_fstab']['umount_ignores']['devices'] << '/dev/sdb'
+```
+node.default['fb_fstab']['umount_ignores']['devices'] << '/dev/sdb'
+```
 
 ### Filesystem Options
 The following options map directly to their `/etc/fstab` counterparts, so see
 the man page for further information on them:
-  * `mount_point`
-  * `device`
-  * `type` (defaults to `auto` if you do not specify)
-  * `opts` (defaults to `default` if you don't specify)
-  * `dump` (defaults to `0` if you don't specify)
-  * `pass` (defaults to `2` if you don't specify)
+* `mount_point`
+* `device`
+* `type` (defaults to `auto` if you do not specify)
+* `opts` (defaults to `default` if you don't specify)
+* `dump` (defaults to `0` if you don't specify)
+* `pass` (defaults to `2` if you don't specify)
 
 The following are additional per-mount flags to `fb_fstab`:
-  * `remount_with_umount` - by default, we remount with `mount -o remount`, but
-                            if this is set, we will `umount` and `mount`
-  * `lock_file` - a lock file to take when performing operations on this mount.
-                  Useful for mounts that are also managed dynamically by others
-                  on the system.
-  * `enable_remount` - defaults to `false`, set to `true` if this FS should
-                       be remounted
-  * `mp_owner` - mountpoint owner
-  * `mp_group` - mountpoint group owner
-  * `mp_perms` - mountpoint permission mode
-  * `only_if` - this takes a Proc to test at runtime much like typical
-                Chef resources, except it only takes a Proc.
-  * `allow_mount_failure` - Allow failure to mount this disk. It will still
-    show up in `/etc/fstab`, but Chef will not crash if mounting fails. This
-    option is designed for teams who can handle data-disk failures gracefully
-    and don't want it to bother Chef.
+* `remount_with_umount` - by default, we remount with `mount -o remount`, but
+                          if this is set, we will `umount` and `mount`
+* `lock_file` - a lock file to take when performing operations on this mount.
+                Useful for mounts that are also managed dynamically by others
+                on the system.
+* `enable_remount` - defaults to `false`, set to `true` if this FS should
+                     be remounted
+* `mp_owner` - mountpoint owner
+* `mp_group` - mountpoint group owner
+* `mp_perms` - mountpoint permission mode
+* `only_if` - this takes a Proc to test at runtime much like typical
+              Chef resources, except it only takes a Proc.
+* `allow_mount_failure` - Allow failure to mount this disk. It will still
+  show up in `/etc/fstab`, but Chef will not crash if mounting fails. This
+  option is designed for teams who can handle data-disk failures gracefully
+  and don't want it to bother Chef.
 
 Example:
 
-    node.default['fb_fstab']['mounts']['foobar'] = {
-      'device' => 'foobar-tmpfs',
-      'type' => 'tmpfs',
-      'opts' => 'size=36G',
-      'mount_point' => '/mnt/foobar-tmpfs',
-    }
+```
+node.default['fb_fstab']['mounts']['foobar'] = {
+  'device' => 'foobar-tmpfs',
+  'type' => 'tmpfs',
+  'opts' => 'size=36G',
+  'mount_point' => '/mnt/foobar-tmpfs',
+}
+```
 
 Note that you may override an existing 'core' mount by simply specifying
 it in your `node['fb_fstab']['mounts']` structure with the same device
@@ -132,13 +136,15 @@ need to create the directory for you, we make it the way you want.
 
 Using `only_if` is slightly different than with resources, and looks like this:
 
-    node.default['fb_fstab']['mounts']['foobar'] = {
-      'only_if' => proc { foo == bar },
-      'device' => 'foobar-tmpfs',
-      'type' => 'tmpfs',
-      'opts' => 'size=36G',
-      'mount_point' => '/mnt/foobar-tmpfs',
-    }
+```
+node.default['fb_fstab']['mounts']['foobar'] = {
+  'only_if' => proc { foo == bar },
+  'device' => 'foobar-tmpfs',
+  'type' => 'tmpfs',
+  'opts' => 'size=36G',
+  'mount_point' => '/mnt/foobar-tmpfs',
+}
+```
 
 Things that fail the `only_if` will not show up in `/etc/fstab` or be mounted.
 
@@ -171,8 +177,10 @@ come from the original installation from `/etc/.fstab.chef`. It is recommended
 you have your instalation system create this file (e.g in an Anaconda
 post-script) with something like:
 
-    grep -v '^#' /etc/fstab > /etc/.fstab.chef
-    chmod 444 /etc/.fstab.chef
+```
+grep -v '^#' /etc/fstab > /etc/.fstab.chef
+chmod 444 /etc/.fstab.chef
+```
 
 If such a file does not exist, `fb_fstab` will do it's best to generate one by
 pulling things it believes are "system filesystems" from `/etc/fstab`.
@@ -191,10 +199,9 @@ Chef will read a file `/var/chef/in_maintenance_disks` to determine any disks
 currently being repaired online and skip mounting them. The format of the file
 is one device, ala:
 
-  /dev/sdd1
-  /dev/sdq2
+* /dev/sdd1
+* /dev/sdq2
 
 If this file has not been touched in 7 days it will be assumed to be stale and
 will be removed. This is designed for online _repair_ not ignoring disks
 permanently.
-

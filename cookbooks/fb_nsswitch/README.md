@@ -16,7 +16,9 @@ By default we set every database to use `files` as their source, except `hosts`
 which will default to `files dns`. Database mappings can be set with the
 `node['fb_nsswitch']['databases']`. attribute. Example:
 
-    node.default['fb_nsswitch']['databases']['passwd'] = [
-      'files',
-      'ldap',
-    ]
+```
+node.default['fb_nsswitch']['databases']['passwd'] = [
+  'files',
+  'ldap',
+]
+```

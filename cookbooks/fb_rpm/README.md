@@ -13,11 +13,11 @@ Attributes
 
 Usage
 -----
-Include the cookbook to keep RPM up to date. If you want to manage the RPM 
+Include the cookbook to keep RPM up to date. If you want to manage the RPM
 packages on your own, set `node['fb_rpm']['manage_packages']` to `false`.
 
 ### rpm-build and rpm-sign
-Set `node['fb_rpm']['rpmbuild']` to `true` to also install RPM build tools 
+Set `node['fb_rpm']['rpmbuild']` to `true` to also install RPM build tools
 (including the the `rpmbuild` and `rpmsign` commands).
 
 ### Macros

@@ -82,7 +82,6 @@ This can be used for anything which repeats such as `Alias`, `ServerAlias`, or
 If the value is a hash, then the key is treated like another markup tag in the
 config and the hash is values inside that tag. For example:
 
-
 ```
 node.default['fb_apache']['sites']['*:80'] = {
   'Directory /var/www' => {

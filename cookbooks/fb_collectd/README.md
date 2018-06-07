@@ -29,7 +29,7 @@ node.default['fb_collectd']['plugins']['syslog'] = {
 }
 ```
 
-On Debian systems, environment settings can be configured in 
+On Debian systems, environment settings can be configured in
 `node['fb_collectd']['sysconfig']`; note that this attribute is ignored on
 CentOS.
 
