@@ -17,8 +17,6 @@ property :timeout, Integer, :default => 60
 property :maxdelete, Integer, :default => 100
 
 action_class do
-  include FB::Rsync::Helpers
-
   def runcmd(cmd, dest)
     Chef::Log.debug("fb_rsync[#{dest}]: Running command: #{cmd}")
     # Throw normal errors except on 25 which is a max-delete limit error
@@ -32,7 +30,7 @@ end
 
 action :sync do
   # convenience vars
-  src = determine_src(new_resource.source)
+  src = FB::Rsync.determine_src(new_resource.source, node)
   dest = new_resource.destination
   exopts = new_resource.extraopts
   maxdel = new_resource.maxdelete
