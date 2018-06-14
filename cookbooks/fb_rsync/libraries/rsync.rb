@@ -31,7 +31,15 @@ module FB
     # If 'src' starts with '::', the default
     # rsync server is prepended to it.
     def self.cmd(node, src_i, rest)
-      src = determine_src(src_i)
+      if src_i =~ /^::/
+        unless node['fb_rsync']['rsync_server']
+          fail 'fb_rsync: cannot build command as neither rsync_server ' +
+            'nor source are set.'
+        end
+        src = "#{node['fb_rsync']['rsync_server']}#{src_i}"
+      else
+        src = src_i
+      end
 
       return [node['fb_rsync']['rsync_command'], src, rest].join(' ')
     end
