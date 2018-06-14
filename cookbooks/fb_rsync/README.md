@@ -23,7 +23,7 @@ means any machine can be an rsync client.
 ### Being an rsync client
 The `fb_rsync` LWRP can be used to run an rsync with configurable options.
 
-```
+```ruby
 fb_rsync '/usr/facebook/ops/scripts/' do
   source '::ops_scripts/'
   extraopts '--prune-empty-dirs'
@@ -85,7 +85,7 @@ If you want to mostly use the default rsync options, there is an
 starts with "::", the `rsync_server` attribute will be added to the front for
 you:
 
-```
+```ruby
 execute 'get_dhcp_configs' do
   command FB::Rsync.cmd("::#{rsync_path}", dhcp_dir)
   action :run
@@ -96,7 +96,7 @@ Similar to the LWRP, the macro will fail in this case if `rsync_server` is not
 set. If that is not sufficient, you can construct the commandline from scratch
 like this:
 
-```
+```ruby
 execute 'get_dhcp_configs' do
   command "rsync -az #{node['fb_rsync']['rsync_server']}::#{rsync_path}"
     " #{dhcpd_dir}"
@@ -120,7 +120,7 @@ modules. Modules are defined within
 `node['fb_rsync']['rsyncd.conf']['modules']`. All of the module's options will
 then be enumerated as part of the module's hash, for example:
 
-```
+```ruby
 default['fb_rsync']['rsyncd.conf'] = {
   'modules' => {
     'scripts' => {
@@ -138,7 +138,7 @@ Once you have defined your module you'll need to add the module name to the
 `node['fb_rsync']['rsyncd.conf']['enabled_modules']` array. You can do so by
 defining the following attribute in your role:
 
-```
+```ruby
 node.default['fb_rsync']['rsyncd.conf']['enabled_modules'] << 'scripts'
 ```
 
