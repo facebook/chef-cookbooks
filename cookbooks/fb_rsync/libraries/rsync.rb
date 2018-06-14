@@ -10,24 +10,30 @@
 module FB
   # A place for rsync helper code to live
   class Rsync
+    module Helpers
+      def determine_src(src_i)
+        if src_i =~ /^::/
+          unless node['fb_rsync']['rsync_server']
+            fail 'fb_rsync: cannot build command as neither rsync_server ' +
+              'nor source are set.'
+          end
+          src = "#{node['fb_rsync']['rsync_server']}#{src_i}"
+        else
+          src = src_i
+        end
+        src
+      end
+
+      # Custom error class for easier monitoring of delete failures
+      class MaxDeleteLimit < RuntimeError; end
+    end
     # Returns an rsync commandline.
     # If 'src' starts with '::', the default
     # rsync server is prepended to it.
     def self.cmd(node, src_i, rest)
-      if src_i =~ /^::/
-        unless node['fb_rsync']['rsync_server']
-          fail 'FB::Rsync: cannot build command as neither rsync_server nor ' +
-               'source are set.'
-        end
-        src = "#{node['fb_rsync']['rsync_server']}#{src_i}"
-      else
-        src = src_i
-      end
+      src = determine_src(src_i)
 
       return [node['fb_rsync']['rsync_command'], src, rest].join(' ')
     end
-
-    # Custom error class for easier monitoring of delete failures
-    class MaxDeleteLimit < RuntimeError; end
   end
 end
