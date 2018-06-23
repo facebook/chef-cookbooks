@@ -205,3 +205,9 @@ The `node['fb_logrotate']['debug_log']` feature is disabled by default. Setting
 this to true will cause verbose logrotate output to be captured in
 `/tmp/logrotate.debug.log`. This option is only available if
 the `add_locking_to_logrotate` feature is also enabled.
+
+### size and logrotate run frequency
+Note that the use of the size property together with logrotate runs that are
+more frequent than daily will result in `duplicate log entry` errors in
+logrotate because the default dateformat is `-%Y%m%d`.  To handle this, specify
+a more granular dateformat, e.g. `-%Y%m%d%H`.
