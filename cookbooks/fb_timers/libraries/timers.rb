@@ -19,7 +19,7 @@ module FB
       # name is inferred from the name within node['fb_timers']['jobs']
       # command is required
       # calendar is required
-      'timeout' => '0s',
+      'timeout' => 'infinity',
       'accuracy' => '1s',
       'persistent' => false,
       'splay' => '0s',

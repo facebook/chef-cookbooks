@@ -54,9 +54,8 @@ Required fields:
 Optional fields:
 
 * `timeout`: How long to allow the command to run before it is stopped
-  forcefully. A value of 0 disables the timeout and allows the command to run
-  indefinitely. Corresponds to the `TimeoutSec` field of the systemd timer.
-  (defaults to `0s`)
+  forcefully. Corresponds to the `TimeoutSec` field of the systemd timer.
+  (defaults to `infinity`)
 * `accuracy`: systemd will attempt to group periodic tasks according to their
   calendar fields within their accuracy. Specifying a low accuracy forces
   systemd to run your task at the specified, giving systemd less control over
