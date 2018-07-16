@@ -38,15 +38,16 @@ action :run do
     end
     failed = false
     users.each do |user|
-      unless node['etc']['passwd'][user]
+      begin
+        uid = Etc.getpwnam(user).uid
+      rescue ArgumentError
         Chef::Log.error(
           "fb_systemd_reload: user '#{user}' is not defined, will abort later.",
         )
         failed = true
         next
       end
-      bus_path =
-        "/run/user/#{node['etc']['passwd'][user]['uid']}/bus"
+      bus_path = "/run/user/#{uid}/bus"
       execute "reload systemd --user for #{user}" do
         only_if { ::File.exist?(bus_path) }
         command '/bin/systemctl --user daemon-reload'
