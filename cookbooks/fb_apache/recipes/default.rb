@@ -90,7 +90,7 @@ template sysconfig do
   notifies :restart, 'service[apache]'
 end
 
-[moddir, sitesdir, confdir].each do |dir|
+[moddir, sitesdir, confdir].uniq.each do |dir|
   directory dir do
     owner 'root'
     group 'root'
