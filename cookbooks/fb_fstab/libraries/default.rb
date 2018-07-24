@@ -24,6 +24,7 @@ module FB
           '^tmpfs\s+\/dev\/shm.*',
           '^/dev/sda',
           '^/dev/fioa',
+          '^/dev/mapper',
         ]
 
         base = ''
