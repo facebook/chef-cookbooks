@@ -28,6 +28,10 @@ end
 
 service 'systemd-logind' do
   only_if { node['fb_systemd']['logind']['enable'] }
+  # We need to suppress restarts of the logind service on client machines, as
+  # a restart will cause the user to loose keyboard and mouse control of the
+  # graphical interface.
+  not_if { node['fb_systemd']['default_target'].include?('graphical.target') }
   action [:enable, :start]
 end
 
