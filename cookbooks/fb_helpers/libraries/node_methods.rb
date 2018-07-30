@@ -245,6 +245,11 @@ class Chef
       end
     end
 
+    def get_seeded_flexible_shard(shard_size, string_seed = '')
+      Digest::MD5.hexdigest(self['fqdn'] + string_seed)[0...7].to_i(16) %
+        shard_size
+    end
+
     def get_shard
       self.get_flexible_shard(100)
     end
