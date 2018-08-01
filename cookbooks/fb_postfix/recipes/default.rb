@@ -121,6 +121,6 @@ end
 
 log 'masking postfix' do
   not_if { node['fb_postfix']['enable'] }
-  only_if{ node['fb_postfix']['mask_service'] }
+  only_if { node['fb_postfix']['mask_service'] }
   notifies :mask, 'service[disable postfix]'
 end
