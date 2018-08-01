@@ -9,6 +9,7 @@
 
 default['fb_postfix'] = {
   'enable' => true,
+  'mask_service' => false,
   'aliases' => {},
   'access' => {},
   'canonical' => {},

@@ -10,6 +10,7 @@ Requirements
 Attributes
 ----------
 * node['fb_postfix']['enable']
+* node['fb_postfix']['mask_service']
 * node['fb_postfix']['main.cf']
 * node['fb_postfix']['master.cf'][\$SERVICE][\$TYPE]
 * node['fb_postfix']['aliases']
@@ -30,8 +31,13 @@ Usage
 -----
 This recipe is included in the base role, but certain nodes must not have
 postfix running (such as MTAs). To exclude a node from running postfix, set
-`node['fb_postfix']['enable']` to false. This will still install
-postfix, but will ensure postfix is stopped and disabled.
+`node['fb_postfix']['enable']` to false. This will still install postfix, but
+will ensure postfix is stopped and disabled.
+
+To additionally mask the service, you can set
+`node['fb_postfix']['mask_service'] = true` which will mask the service in
+addition to stopping it. This has no effect if `node['fb_postfix']['enable']`
+is true, however.
 
 This cookbook supports several config files in `/etc/postfix` driven by the
 attributes listed above. They are grouped by different formatting and handling
