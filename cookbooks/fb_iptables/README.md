@@ -31,6 +31,11 @@ will manage the iptables packages; this can be opted out of by setting
 `node['fb_iptables']['manage_packages']`. The iptables service itself is
 disabled by default; to enable it set `node['fb_iptables']['enable']` to true.
 
+On CentOS and Fedora, please be aware that `firewalld` interferes with directly
+managing IPTables rules; the `firewalld` service will be disabled and the
+`firewalld` package will be removed. On Ubuntu, `ufw` fulfills a similar role
+to `firewalld` and will also be removed.
+
 ### Nomenclature
 The nomenclature for iptables is often confused, and we use the definitions used
 by the IPTables code, base which are as follows:

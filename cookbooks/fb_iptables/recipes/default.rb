@@ -11,19 +11,52 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
-unless node.centos?
-  fail 'fb_iptables is only supported on CentOS'
+unless node.centos? || node.fedora? || node.ubuntu?
+  fail 'fb_iptables is only supported on CentOS, Fedora, and Ubuntu'
 end
 
 packages = ['iptables']
 if node.centos6?
   packages << 'iptables-ipv6'
+elsif node.ubuntu?
+  packages << 'iptables-persistent'
 else
   packages << 'iptables-services'
 end
-services = ['iptables', 'ip6tables']
-iptables_rules = '/etc/sysconfig/iptables'
-ip6tables_rules = '/etc/sysconfig/ip6tables'
+services = value_for_platform(
+  'ubuntu' => { :default => %w{netfilter-persistent} },
+  :default => %w{iptables ip6tables},
+)
+iptables_config_dir = value_for_platform(
+  'ubuntu' => { :default => '/etc/iptables' },
+  :default => '/etc/sysconfig',
+)
+iptables_rule_file = value_for_platform(
+  'ubuntu' => { :default => 'rules.v4' },
+  :default => 'iptables',
+)
+ip6tables_rule_file = value_for_platform(
+  'ubuntu' => { :default => 'rules.v6' },
+  :default => 'ip6tables',
+)
+iptables_rules = ::File.join(iptables_config_dir, iptables_rule_file)
+ip6tables_rules = ::File.join(iptables_config_dir, ip6tables_rule_file)
+
+# firewalld/ufw conflicts with direct iptables management
+conflicting_packages = value_for_platform(
+  'ubuntu' => { :default => %w{ufw} },
+  :default => %w{firewalld},
+)
+conflicting_packages.each do |pkg|
+  service pkg do
+    only_if { node['fb_iptables']['manage_packages'] }
+    action [:stop, :disable]
+  end
+  package pkg do
+    only_if { node['fb_iptables']['manage_packages'] }
+    action :remove
+  end
+end
 
 package packages do
   only_if { node['fb_iptables']['manage_packages'] }
@@ -52,11 +85,16 @@ template '/etc/fb_iptables.conf' do
   mode '0644'
 end
 
-cookbook_file '/usr/sbin/fb_iptables_reload' do
-  source 'fb_iptables_reload'
+template '/usr/sbin/fb_iptables_reload' do
+  source 'fb_iptables_reload.erb'
   owner 'root'
   group 'root'
   mode '0755'
+  variables(
+    :iptables_config_dir => iptables_config_dir,
+    :iptables_rules => iptables_rule_file,
+    :ip6tables_rules => ip6tables_rule_file,
+  )
 end
 
 execute 'reload iptables' do
@@ -65,7 +103,7 @@ execute 'reload iptables' do
   action :nothing
 end
 
-template '/etc/sysconfig/iptables-config' do
+template "#{iptables_config_dir}/iptables-config" do
   owner 'root'
   group 'root'
   mode '0640'
@@ -103,7 +141,7 @@ execute 'reload ip6tables' do
   action :nothing
 end
 
-template '/etc/sysconfig/ip6tables-config' do
+template "#{iptables_config_dir}/ip6tables-config" do
   source 'iptables-config.erb'
   owner 'root'
   group 'root'

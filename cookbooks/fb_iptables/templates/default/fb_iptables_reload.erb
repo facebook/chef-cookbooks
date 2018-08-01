@@ -13,7 +13,7 @@
 # Simple script for chef to call to
 # dump and reload custom chain rules
 
-set -u 
+set -u
 
 CONFIG='/etc/fb_iptables.conf'
 TMPDIR=$(mktemp -d /tmp/fb_iptables.XXXXXXXXXXXX)
@@ -38,14 +38,14 @@ dump_dynamic_chains() {
   local chain_regex
   for chain in $dynamic_chains; do
     echo -n "Stashing $chain on $table: "
-    "${IPTABLES}" -t "$table" -S | grep -q "\-N $chain"
+    "${IPTABLES_CMD}" -t "$table" -S | grep -q "\-N $chain"
     if [ $? -ne 0 ]; then
       echo 'no chain yet, nothing to stash.'
       return
     fi
     outfile=$TMPDIR/${table}_${chain}_rules
     chain_regex="\-A $chain"
-    out=$("${IPTABLES}" -t "$table" -S)
+    out=$("${IPTABLES_CMD}" -t "$table" -S)
     if [ $? -ne 0 ]; then
       exit_error "Failed to stash $chain on $table"
     fi
@@ -68,10 +68,10 @@ restore_dynamic_chains() {
       echo 'no chain to restore.'
       return
     fi
-  
+
     while read -r rule
     do
-      ${IPTABLES} -t $table $rule
+      ${IPTABLES_CMD} -t $table $rule
     done < "$rules_file"
     echo 'done.'
   done
@@ -84,7 +84,7 @@ reload_static_chains() {
   # NOTE: You cannot use '-t' here ... ip6tables-* choke on it... you must
   # specify --table=
   echo "Restoring the rest of $table"
-  cat /etc/sysconfig/$IPTABLES | ${IPTABLES}-restore --table=$table
+  cat "<%= @iptables_config_dir %>/${IPTABLES_RULES}" | ${IPTABLES_CMD}-restore --table=$table
 }
 
 reload() {
@@ -110,14 +110,16 @@ if [ "$1" == "help" ]; then
 fi
 
 # v4 or v6
-IPTABLES=ip6tables
+IPTABLES_CMD=ip6tables
+IPTABLES_RULES=<%= @ip6tables_rules %>
 if [ "$1" == "4" ]; then
-  IPTABLES=iptables
+  IPTABLES_CMD=iptables
+  IPTABLES_RULES=<%= @iptables_rules %>
 fi
 ACTION="$2"
 
-if [ ! -x $(which "${IPTABLES}") ]; then
-  echo "ERROR: No ${IPTABLES} in path bro ..."
+if [ ! -x $(which "${IPTABLES_CMD}") ]; then
+  echo "ERROR: No ${IPTABLES_CMD} in path bro ..."
   exit 1
 fi
 
