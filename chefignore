@@ -2,9 +2,11 @@
 # to a chef-server
 
 # sourced from hgignore #
+*.orig
 *.pyc
-.*.swo
-.*.swp
+*.rej
+*.swo
+*.swp
 .fbide
 .idea
 .mypy_cache

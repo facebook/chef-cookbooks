@@ -102,6 +102,14 @@ class Chef
       return File.directory?('/vagrant')
     end
 
+    def cloud?
+      return self['cloud'] && !self['cloud']['provider'].nil?
+    end
+
+    def aws?
+      return self.cloud? && self['cloud']['provider'] == 'ec2'
+    end
+
     # Take a string representing a mount point, and return the
     # device it resides on.
     def device_of_mount(m)
