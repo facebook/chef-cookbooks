@@ -57,6 +57,33 @@ whyrun_safe_ruby_block 'munge logrotate configs' do
   end
 end
 
+whyrun_safe_ruby_block 'validate logrotate configs' do
+  block do
+    files = []
+    node['fb_logrotate']['configs'].to_hash.each_value do |block|
+      files += block['files']
+    end
+    if files.uniq.length < files.length
+      fail 'fb_logrotate: there are duplicate logrotate configs!'
+    else
+      dfiles = []
+      tocheck = []
+      files.each do |f|
+        if f.end_with?('*')
+          dfiles << ::File.dirname(f)
+        else
+          tocheck << f
+        end
+      end
+      tocheck.each do |f|
+        if dfiles.include?(::File.dirname(f))
+          fail "fb_logrotate: there is an overlapping logrotate config for #{f}"
+        end
+      end
+    end
+  end
+end
+
 template '/etc/logrotate.d/fb_logrotate.conf' do
   source 'fb_logrotate.conf.erb'
   owner 'root'
