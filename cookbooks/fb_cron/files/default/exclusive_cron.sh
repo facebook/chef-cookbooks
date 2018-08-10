@@ -25,8 +25,8 @@ function on_exit() {
 
 # FD200 is completely arbitrary
 (
-  if ! flock -x -w 0 200; then 
-    echo "Comand '${COMMAND}' with lockfile '${LOCKFILE}' is already running"
+  if ! flock -x -w 0.001 200; then 
+    echo "Command '${COMMAND}' with lockfile '${LOCKFILE}' is already running"
     exit 1
   fi
   trap 'on_exit' EXIT
