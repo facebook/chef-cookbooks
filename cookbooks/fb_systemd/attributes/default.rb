@@ -45,6 +45,19 @@ if node['machine_id']
   loader['default'] = "#{node['machine_id']}-*"
 end
 
+# Starting from 18.04, Ubuntu uses networkd, resolved and timesyncd by default,
+# so default to enabling them there to prevent breakage
+if node.ubuntu? &&
+   FB::Version.new(node['platform_version']) >= FB::Version.new('18.04')
+  enable_networkd = true
+  enable_resolved = true
+  enable_timesyncd = true
+else
+  enable_networkd = false
+  enable_resolved = false
+  enable_timesyncd = false
+end
+
 default['fb_systemd'] = {
   'default_target' => '/lib/systemd/system/multi-user.target',
   'modules' => [],
@@ -78,14 +91,14 @@ default['fb_systemd'] = {
     'config' => {},
   },
   'networkd' => {
-    'enable' => false,
+    'enable' => enable_networkd,
   },
   'resolved' => {
-    'enable' => false,
+    'enable' => enable_resolved,
     'config' => {},
   },
   'timesyncd' => {
-    'enable' => false,
+    'enable' => enable_timesyncd,
     'config' => {},
   },
   'coredump' => {},
