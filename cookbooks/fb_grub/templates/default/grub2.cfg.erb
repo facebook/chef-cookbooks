@@ -53,11 +53,12 @@ menuentry 'tboot <%= kernel %>' {
   <%= root_line %>
   <%   if node['fb_grub']['_module_label'] %>
   search --set=module_root --label <%= node['fb_grub']['_module_label'] %>
-  insmod ($module_root)<%= node['fb_grub']['_grub2_module_path'] %>/relocator.mod
-  insmod ($module_root)<%= node['fb_grub']['_grub2_module_path'] %>/multiboot2.mod
-  <%   else %>
-  insmod <%= node['fb_grub']['_grub2_module_path'] %>/relocator.mod
-  insmod <%= node['fb_grub']['_grub2_module_path'] %>/multiboot2.mod
+  <%     module_root = "($module_root)"
+       else
+         module_root = ''
+       end -%>
+  <%   node['fb_grub']['tboot']['_grub_modules'].each do |mod| -%>
+  insmod <%= "#{module_root}#{node['fb_grub']['_grub2_module_path']}/#{mod}" %>
   <%   end %>
   multiboot2 /tboot.gz <%= tboot_cmdline %>
   module2 <%= path_prefix %><%= data['path'] %> <%= kargs %> <%= kernel_extra_args %>

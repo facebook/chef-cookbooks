@@ -15,15 +15,16 @@ vendor =  if node.centos6? then 'redhat'
           end
 
 fb_grub = {
+  '_device_hints' => [],
   '_efi_vendor_dir' => '/notdefined',
   '_grub_base_dir' => '/boot/grub',
   '_grub2_base_dir' => '/boot/grub2',
   '_grub2_module_path' => '/notdefined',
-  '_device_hints' => [],
   '_vendor' => vendor,
-  'terminal' => [
-    'console',
-  ],
+  'kernel_cmdline_args' => [],
+  'kernels' => {},
+  'manage_packages' => true,
+  'saved_opts' => '',
   'serial' => {
     'unit' => 0,
     'speed' => 57600,
@@ -31,11 +32,11 @@ fb_grub = {
     'parity' => 'no',
     'stop' => 1,
   },
-  'timeout' => 5,
-  'kernel_cmdline_args' => [],
-  'kernels' => {},
-  'saved_opts' => '',
   'tboot' => {
+    '_grub_modules' => [
+      'relocator.mod',
+      'multiboot2.mod',
+    ],
     'enable' => false,
     'kernel_extra_args' => [
       'intel_iommu=on',
@@ -46,9 +47,12 @@ fb_grub = {
     ],
     'tboot_extra_args' => [],
   },
-  'version' => version,
+  'terminal' => [
+    'console',
+  ],
+  'timeout' => 5,
   'use_labels' => false,
-  'manage_packages' => true,
+  'version' => version,
 }
 
 # Set the path to the grub config files
