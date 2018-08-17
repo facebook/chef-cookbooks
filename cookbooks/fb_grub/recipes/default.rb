@@ -107,7 +107,7 @@ whyrun_safe_ruby_block 'initialize_grub_locations' do
       unless (node['filesystem2']['by_mountpoint']['/']['mount_options'] & [
         'compress=zstd',
         'compress-force=zstd',
-      ]).empty? || !node.in_shard?(39)
+      ]).empty? || !node.in_shard?(59)
         node.default['fb_grub']['_grub2_copy_path'] = node['fb_grub'][
           '_grub2_module_path']
         node.default['fb_grub']['_module_label'] = node['fb_grub'][
