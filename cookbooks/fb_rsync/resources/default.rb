@@ -83,8 +83,10 @@ action :sync do
   end
 
   # Actually run the rsync
+  rsync_cmd = "rsync #{opts} #{src} #{dest}"
+  Chef::Log.debug("fb_rsync: Running rsync cmd: #{rsync_cmd}")
   execute "rsync #{dest}" do
-    command "rsync #{opts} #{src} #{dest}"
+    command rsync_cmd
     action :run
   end
 
