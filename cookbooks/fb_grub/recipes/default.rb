@@ -140,13 +140,11 @@ execute 'grub-install' do
   action :nothing
 end
 
-directory 'efi_vendor_dir' do
+directory 'efi_vendor_dir' do # ~FB024 mode is controlled by mount options
   only_if { node.efi? }
   path lazy { node['fb_grub']['_efi_vendor_dir'] }
   owner 'root'
   group 'root'
-  # this is on a FAT filesystem that doesn't support proper permissions
-  mode '0700'
 end
 
 # GRUB 1
