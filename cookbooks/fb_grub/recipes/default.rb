@@ -221,7 +221,7 @@ end
 node['fb_grub']['tboot']['_grub_modules'].each do |mod_file|
   remote_file "Copy #{mod_file} file for grub" do
     only_if do
-      node['fb_grub']['tboot']['enabled'] &&
+      node['fb_grub']['tboot']['enable'] &&
       node['fb_grub']['_grub2_copy_path']
     end
     path "/boot/#{mod_file}"
