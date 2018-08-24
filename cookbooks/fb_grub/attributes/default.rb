@@ -19,6 +19,7 @@ fb_grub = {
   '_efi_vendor_dir' => '/notdefined',
   '_grub_base_dir' => '/boot/grub',
   '_grub2_base_dir' => '/boot/grub2',
+  '_grub2_copy_path' => nil,
   '_grub2_module_path' => '/notdefined',
   '_vendor' => vendor,
   'kernel_cmdline_args' => [],
