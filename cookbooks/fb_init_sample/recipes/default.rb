@@ -20,8 +20,14 @@ if node.systemd?
   include_recipe 'fb_systemd'
   include_recipe 'fb_timers'
 end
+if node.macosx?
+  include_recipe 'fb_launchd'
+end
 include_recipe 'fb_nsswitch'
 # HERE: ssh
+if node.centos?
+  include_recipe 'fb_ldconfig'
+end
 if node.linux? && !node.container?
   include_recipe 'fb_grub'
 end
@@ -40,6 +46,7 @@ include_recipe 'fb_sysctl'
 include_recipe 'fb_syslog'
 if node.linux? && !node.container?
   include_recipe 'fb_hdparm'
+  include_recipe 'fb_sdparm'
   include_recipe 'fb_hddtemp'
 end
 include_recipe 'fb_postfix'
