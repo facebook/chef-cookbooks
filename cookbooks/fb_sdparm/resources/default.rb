@@ -93,7 +93,6 @@ action :set do
   end
   Chef::Log.debug("disks: #{disks}")
 
-
   rotational_settings = node['fb_sdparm']['settings']['rotational'] ?
     node['fb_sdparm']['settings']['rotational'].to_hash :
     {}
