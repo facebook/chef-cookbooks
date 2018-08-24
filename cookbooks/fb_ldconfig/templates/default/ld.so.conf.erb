@@ -1,0 +1,6 @@
+# This file is maintained by Chef. Do not edit, all changes will be
+# overwritten. See fb_ldconfig/README.md
+
+<% node['fb_ldconfig']['ld.so.conf'].sort.uniq.each do |path| %>
+<%=  path %>
+<% end %>
