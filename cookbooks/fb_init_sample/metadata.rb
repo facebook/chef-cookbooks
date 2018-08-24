@@ -33,6 +33,8 @@ end
   fb_ipset
   fb_iptables
   fb_iproute
+  fb_launchd
+  fb_ldconfig
   fb_limits
   fb_logrotate
   fb_modprobe
@@ -41,8 +43,9 @@ end
   fb_postfix
   fb_rpm
   fb_rsync
-  fb_swap
+  fb_sdparm
   fb_securetty
+  fb_swap
   fb_sysctl
   fb_syslog
   fb_systemd
