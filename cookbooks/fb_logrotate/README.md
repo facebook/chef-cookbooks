@@ -128,7 +128,8 @@ please specify only the minimum of overrides.
 
 IMPORTANT NOTE: No syntax checking is done for the logrotate configs.
 You are responsible for ensuring you are entering correct, typo-free
-data.
+data. Please make sure that you use a valid options from logrotate(8)
+otherwise warning message will be issued.
 
 Let's go ahead and now take a look at a full sample structure, and
 the resulting config file it would generate:
