@@ -31,11 +31,11 @@ per logrotate configuration block.
 To rotate a new set of logs, add a new entry to this hash, like so:
 
 ```
-node['fb_logrotate']['configs']['myapp'] = {
-  'files' => ['/var/log/myapp.log']
+node.default['fb_logrotate']['configs']['myapp'] = {
+  'files' => ['/var/log/myapp.log'],
   'overrides' => {
     'missingok' => true,
-  }
+  },
 }
 ```
 
