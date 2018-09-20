@@ -8,6 +8,28 @@
 module FB
   # add kmod related functions previously in fb_hardware
   class Modprobe
+    def self.module_version(loaded_mod)
+      loaded_mod.tr!('-', '_')
+      version_file = "/sys/module/#{loaded_mod}/version"
+
+      if File.exist?(version_file)
+        return IO.read(version_file).strip
+      end
+
+      return nil
+    end
+
+    def self.module_refcnt(loaded_mod)
+      loaded_mod.tr!('-', '_')
+      version_file = "/sys/module/#{loaded_mod}/refcnt"
+
+      if File.exist?(version_file)
+        return IO.read(version_file).strip
+      end
+
+      return nil
+    end
+
     def self.supports_ipv6_autoconf_param?
       cmd = '/sbin/modinfo ipv6 | /bin/grep -q autoconf:'
       return Mixlib::ShellOut.new(cmd).run_command.exitstatus.zero?
