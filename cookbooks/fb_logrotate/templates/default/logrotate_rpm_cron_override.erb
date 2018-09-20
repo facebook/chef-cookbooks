@@ -19,7 +19,13 @@ PATH="/usr/bin:/usr/sbin"
         exit
     fi
 
-<% output = node['fb_logrotate']['debug_log'] ? '-v >>/tmp/logrotate.debug.log' : '>/dev/null' -%>
+<% if node['fb_logrotate']['debug_log'] %>
+    date >> /tmp/logrotate.debug.log
+    echo "Starting logrotate run." >> /tmp/logrotate.debug.log
+<%   output = '-v >>/tmp/logrotate.debug.log' %>
+<% else %>
+<%   output = '>/dev/null' -%>
+<% end %>
     ${LOGROTATE} /etc/logrotate.conf <%= output %> 2>&1 200>/dev/null
     EXITVALUE=$?
     if [ $EXITVALUE != 0 ]; then
