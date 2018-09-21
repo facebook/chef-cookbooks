@@ -48,6 +48,10 @@ action :set do
   values_to_set = {}
   supported_opts = ['-W']
   root_device = node.device_of_mount('/')
+  if root_device.start_with?('/dev/fio', '/dev/vd', '/dev/nvme')
+    Chef::Log.warn("Device #{root_device} is not supported by fb_hdparm.")
+    return
+  end
   settings = node['fb_hdparm']['settings'].to_hash
   settings.each do |option, desired_value|
     unless supported_opts.include?(option)

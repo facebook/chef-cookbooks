@@ -14,6 +14,8 @@ Usage
 -----
 This recipe is automatically included on all platforms except
 macos. However, by default this cookbook is not enabled. (See below)
+Enabling this is ignored when the root filesystem is NVMe, Fusion-io or
+para-virtualized.
 
 `node['fb_hdparm']['enforce']` (Boolean)
 This determines if Chef will actually try to set any settings specified
