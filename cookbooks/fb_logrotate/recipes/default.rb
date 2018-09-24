@@ -24,14 +24,7 @@ end
 
 # assume linux from here onwards
 
-pkgs = ['logrotate']
-unless node.centos6?
-  pkgs << 'pigz'
-end
-
-package pkgs do
-  action :upgrade
-end
+include_recipe 'fb_logrotate::packages'
 
 whyrun_safe_ruby_block 'munge logrotate configs' do
   block do
