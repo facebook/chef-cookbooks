@@ -16,6 +16,8 @@ unless node.centos?
   fail 'fb_dracut is only supported on CentOS.'
 end
 
+include_recipe 'fb_dracut::packages'
+
 template '/etc/dracut.conf' do
   source 'dracut.conf.erb'
   owner 'root'
