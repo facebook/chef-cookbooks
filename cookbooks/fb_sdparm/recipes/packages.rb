@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: fb_sdparm
-# Recipe:: default
+# Recipe:: packages
 #
 # vim: syntax=ruby:expandtab:shiftwidth=2:softtabstop=2:tabstop=2
 #
@@ -12,8 +12,6 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
-include_recipe 'fb_sdparm::packages'
-
-fb_sdparm 'set sdparm options' do
-  only_if { node['fb_sdparm']['enforce'] }
+package 'sdparm' do
+  action :upgrade
 end
