@@ -16,15 +16,7 @@ unless node.centos?
   fail 'fb_ipset is only supported on CentOS hosts'
 end
 
-pkgs = ['ipset']
-unless node.centos6?
-  pkgs << 'ipset-service'
-end
-
-package pkgs do
-  only_if { node['fb_ipset']['manage_packages'] }
-  action :upgrade
-end
+include_recipe 'fb_ipset::default_packages'
 
 if node.centos6?
   cookbook_file '/etc/init.d/ipset' do
