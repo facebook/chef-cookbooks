@@ -16,7 +16,7 @@ if (node.systemd? || node.macosx?) && !node['fb_syslog']['sysconfig'].empty?
   fail 'fb_syslog: sysconfig settings are not supported on systemd or OSX hosts'
 end
 
-package_name = service_name = 'rsyslog'
+service_name = 'rsyslog'
 config_file = '/etc/rsyslog.conf'
 
 if node.macosx?
@@ -59,10 +59,7 @@ if node.centos?
   end
 end
 
-package package_name do
-  not_if { node.macosx? }
-  action :upgrade
-end
+include_recipe 'fb_syslog::packages'
 
 template config_file do
   owner 'root'
