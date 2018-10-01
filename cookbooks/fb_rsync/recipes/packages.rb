@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: fb_rsync
-# Recipe:: client
+# Recipe:: packages
 #
 # vim: syntax=ruby:expandtab:shiftwidth=2:softtabstop=2:tabstop=2
 #
@@ -12,4 +12,7 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
-include_recipe 'fb_rsync::packages'
+package 'rsync' do
+  not_if { node.macosx? || node.aristaeos? } # provided by Xcode
+  action :upgrade
+end

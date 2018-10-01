@@ -12,7 +12,7 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
-# package and stuff is in the client
+# client package
 include_recipe 'fb_rsync::client'
 
 # In lieu of running rsync via xinetd we use a simple init script
