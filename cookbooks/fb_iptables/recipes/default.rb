@@ -15,14 +15,6 @@ unless node.centos? || node.fedora? || node.ubuntu?
   fail 'fb_iptables is only supported on CentOS, Fedora, and Ubuntu'
 end
 
-packages = ['iptables']
-if node.centos6?
-  packages << 'iptables-ipv6'
-elsif node.ubuntu?
-  packages << 'iptables-persistent'
-else
-  packages << 'iptables-services'
-end
 services = value_for_platform(
   'ubuntu' => { :default => %w{netfilter-persistent} },
   :default => %w{iptables ip6tables},
@@ -58,12 +50,7 @@ conflicting_packages.each do |pkg|
   end
 end
 
-package packages do
-  only_if { node['fb_iptables']['manage_packages'] }
-  action :upgrade
-  notifies :run, 'execute[reload iptables]'
-  notifies :run, 'execute[reload ip6tables]'
-end
+include_recipe 'fb_iptables::packages'
 
 services.each do |svc|
   service svc do
@@ -101,6 +88,7 @@ execute 'reload iptables' do
   only_if { node['fb_iptables']['enable'] }
   command '/usr/sbin/fb_iptables_reload 4 reload'
   action :nothing
+  subscribes :run, 'package[osquery]'
 end
 
 template "#{iptables_config_dir}/iptables-config" do
