@@ -41,7 +41,7 @@ module FB
           out_of_spec[k] = cur_val
         end
       end
-      return out_of_spec
+      out_of_spec
     end
   end
 end

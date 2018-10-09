@@ -12,63 +12,63 @@ class Chef
   # Our extensions of the node object
   class Node
     def centos?
-      return self['platform'] == 'centos'
+      self['platform'] == 'centos'
     end
 
     def centos7?
-      return self.centos? && self['platform_version'].start_with?('7')
+      self.centos? && self['platform_version'].start_with?('7')
     end
 
     def centos6?
-      return self.centos? && self['platform_version'].start_with?('6')
+      self.centos? && self['platform_version'].start_with?('6')
     end
 
     def centos5?
-      return self.centos? && self['platform_version'].start_with?('5')
+      self.centos? && self['platform_version'].start_with?('5')
     end
 
     def major_platform_version
-      return self['platform_version'].split('.')[0]
+      self['platform_version'].split('.')[0]
     end
 
     def fedora?
-      return self['platform'] == 'fedora'
+      self['platform'] == 'fedora'
     end
 
     def debian?
-      return self['platform'] == 'debian'
+      self['platform'] == 'debian'
     end
 
     def ubuntu?
-      return self['platform'] == 'ubuntu'
+      self['platform'] == 'ubuntu'
     end
 
     def linux?
-      return self['os'] == 'linux'
+      self['os'] == 'linux'
     end
 
     def macosx?
-      return self['platform'] == 'mac_os_x'
+      self['platform'] == 'mac_os_x'
     end
 
     def windows?
-      return self['os'] == 'windows'
+      self['os'] == 'windows'
     end
 
     def aristaeos?
-      return self['platform'] == 'arista_eos'
+      self['platform'] == 'arista_eos'
     end
 
     def embedded?
-      return self.aristaeos?
+      self.aristaeos?
     end
 
     def systemd?
-      return ::File.directory?('/run/systemd/system')
+      ::File.directory?('/run/systemd/system')
     end
 
     def freebsd?
-      return self['platform_family'] == 'freebsd'
+      self['platform_family'] == 'freebsd'
     end
 
     def virtual?
@@ -81,7 +81,7 @@ class Chef
         vmware
         xen
       }
-      return self['virtualization'] &&
+      self['virtualization'] &&
         self['virtualization']['role'] == 'guest' &&
         vm_systems.include?(self['virtualization']['system'])
     end
@@ -93,21 +93,21 @@ class Chef
         lxc
         openvz
       }
-      return self['virtualization'] &&
+      self['virtualization'] &&
         self['virtualization']['role'] == 'guest' &&
         container_systems.include?(self['virtualization']['system'])
     end
 
     def vagrant?
-      return File.directory?('/vagrant')
+      File.directory?('/vagrant')
     end
 
     def cloud?
-      return self['cloud'] && !self['cloud']['provider'].nil?
+      self['cloud'] && !self['cloud']['provider'].nil?
     end
 
     def aws?
-      return self.cloud? && self['cloud']['provider'] == 'ec2'
+      self.cloud? && self['cloud']['provider'] == 'ec2'
     end
 
     # Take a string representing a mount point, and return the
@@ -131,7 +131,7 @@ class Chef
       Chef::Log.warn(
         "#{m} shows as valid mountpoint, but Ohai can't find it.",
       )
-      return nil
+      nil
     end
 
     def device_formatted_as?(device, fstype)
@@ -139,7 +139,7 @@ class Chef
          node['filesystem2']['by_device'][device]['fs_type']
         return node['filesystem2']['by_device'][device]['fs_type'] == fstype
       end
-      return false
+      false
     end
 
     def resolve_dns_name(hostname, brackets = false, force_v4 = false)
@@ -185,7 +185,7 @@ class Chef
         "Tried to get filesystem information for '#{p}', but it is not a " +
         'recognized filesystem, or does not have the requested info.',
       )
-      return nil
+      nil
     end
 
     def fs_available_kb(p)
@@ -214,32 +214,33 @@ class Chef
 
     def efi?
       if FB::Version.new(node['os_version']) >= FB::Version.new('3.10')
-        return File.directory?('/sys/firmware/efi')
+        f = File.directory?('/sys/firmware/efi')
       else
         Chef::Log.warn('EFI detection on kernels < 3.10 is less reliable!')
-        return File.exist?('/boot/efi') && node.device_of_mount('/boot/efi')
+        f = File.exist?('/boot/efi') && node.device_of_mount('/boot/efi')
       end
+      f
     end
 
     def aarch64?
-      return node['kernel']['machine'] == 'aarch64'
+      node['kernel']['machine'] == 'aarch64'
     end
 
     def x64?
-      return node['kernel']['machine'] == 'x86_64'
+      node['kernel']['machine'] == 'x86_64'
     end
 
     def cgroup_mounted?
-      return node['filesystem2']['by_mountpoint'].include?('/sys/fs/cgroup')
+      node['filesystem2']['by_mountpoint'].include?('/sys/fs/cgroup')
     end
 
     def cgroup1?
-      return cgroup_mounted? && node['filesystem2']['by_mountpoint'][
+      cgroup_mounted? && node['filesystem2']['by_mountpoint'][
         '/sys/fs/cgroup']['fs_type'] != 'cgroup2'
     end
 
     def cgroup2?
-      return cgroup_mounted? && node['filesystem2']['by_mountpoint'][
+      cgroup_mounted? && node['filesystem2']['by_mountpoint'][
         '/sys/fs/cgroup']['fs_type'] == 'cgroup2'
     end
 

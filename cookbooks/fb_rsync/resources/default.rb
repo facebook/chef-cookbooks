@@ -24,7 +24,7 @@ action_class do
     s.run_command.error!
     Chef::Log.debug("fb_rsync[#{dest}]: STDOUT:\n#{s.stdout}")
     Chef::Log.debug("fb_rsync[#{dest}]: STDERR:\n#{s.stderr}")
-    return s.exitstatus
+    s.exitstatus
   end
 end
 

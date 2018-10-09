@@ -28,7 +28,7 @@ module FB
     def self.cmd(node, src_i, rest)
       src = determine_src(src_i, node)
 
-      return [node['fb_rsync']['rsync_command'], src, rest].join(' ')
+      [node['fb_rsync']['rsync_command'], src, rest].join(' ')
     end
 
     # Custom error class for easier monitoring of delete failures

@@ -31,7 +31,7 @@ def get_sdparm_value(param, device)
   if match_data =~ /^\s*$/
     fail "fb_sdparm: could not get sdparm value for: #{param}"
   end
-  return match_data.to_s.strip
+  match_data.to_s.strip
 end
 
 def set_sdparm_value(param, value, device, device_type)
@@ -52,7 +52,7 @@ def set_sdparm_value(param, value, device, device_type)
 end
 
 def cache_type_path_for_device(device)
-  return ::Dir.glob(
+  ::Dir.glob(
     "/sys/block/#{device}/device/scsi_disk/*/cache_type",
   ).first
 end
@@ -70,7 +70,7 @@ def get_cache_type_desired_and_path(device)
 
   desired_cache_type = cache_type_expected_values[[wce, rcd]]
   cache_type_path = cache_type_path_for_device(device)
-  return desired_cache_type, cache_type_path
+  [desired_cache_type, cache_type_path]
 end
 
 action :set do

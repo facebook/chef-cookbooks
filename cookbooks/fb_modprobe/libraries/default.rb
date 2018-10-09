@@ -16,7 +16,7 @@ module FB
         return IO.read(version_file).strip
       end
 
-      return nil
+      nil
     end
 
     def self.module_refcnt(loaded_mod)
@@ -27,12 +27,12 @@ module FB
         return IO.read(version_file).strip
       end
 
-      return nil
+      nil
     end
 
     def self.supports_ipv6_autoconf_param?
       cmd = '/sbin/modinfo ipv6 | /bin/grep -q autoconf:'
-      return Mixlib::ShellOut.new(cmd).run_command.exitstatus.zero?
+      Mixlib::ShellOut.new(cmd).run_command.exitstatus.zero?
     end
 
     def self.module_loaded?(loaded_mod)
@@ -40,7 +40,7 @@ module FB
       loaded_mod.tr!('-', '_')
 
       # Handle built-in modules correctly
-      return File.exist?("/sys/module/#{loaded_mod}")
+      File.exist?("/sys/module/#{loaded_mod}")
     end
 
     # This is a significantly better test to see if a module is usable
@@ -56,7 +56,7 @@ module FB
         # must have completed, otherwise we would hang forever at boot.
         return true
       end
-      return false
+      false
     end
   end
 end

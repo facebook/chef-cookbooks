@@ -121,7 +121,7 @@ If the has is specified, it takes one or more of the following keys:
       if finish != ''
         final_comment += "\n#{finish}"
       end
-      return final_comment
+      final_comment
     end
   end
 
@@ -152,36 +152,36 @@ If the has is specified, it takes one or more of the following keys:
     end
 
     def to_s
-      return @string_form
+      @string_form
     end
 
     def to_a
-      return @arr
+      @arr
     end
 
     def <=(other)
       other ||= []
-      return (@arr <=> other.to_a) <= 0
+      (@arr <=> other.to_a) <= 0
     end
 
     def >=(other)
       other ||= []
-      return (@arr <=> other.to_a) >= 0
+      (@arr <=> other.to_a) >= 0
     end
 
     def <(other)
       other ||= []
-      return (@arr <=> other.to_a) < 0
+      (@arr <=> other.to_a) < 0
     end
 
     def >(other)
       other ||= []
-      return (@arr <=> other.to_a) > 0
+      (@arr <=> other.to_a) > 0
     end
 
     def ==(other)
       other ||= []
-      return (@arr <=> other.to_a).zero?
+      (@arr <=> other.to_a).zero?
     end
 
     def <=>(other)

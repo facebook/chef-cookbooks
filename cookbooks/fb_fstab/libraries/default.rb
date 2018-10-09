@@ -90,7 +90,7 @@ module FB
             "fb_fstab: Will skip in-maintenance disks: #{disks.join(' ')}",
           )
         end
-        return disks
+        disks
       end
 
       def self.get_autofs_points(node)

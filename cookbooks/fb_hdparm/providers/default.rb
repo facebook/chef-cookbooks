@@ -32,7 +32,7 @@ def get_hdparm_value(param, device)
   if match_data =~ /^\s*$/
     fail "Could not get hdparm value for: #{param}"
   end
-  return match_data.to_s.strip
+  match_data.to_s.strip
 end
 
 def set_hdparm_values(values, device)

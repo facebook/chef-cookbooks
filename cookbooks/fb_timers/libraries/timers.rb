@@ -33,7 +33,7 @@ module FB
 
     module Calendar
       def every(value = nil)
-        return Every.new(value)
+        Every.new(value)
       end
 
       class Every
@@ -45,34 +45,34 @@ module FB
 
         def hours
           fail "A value is required for #{__method__}" unless @value
-          return "0/#{@value}:0:0"
+          "0/#{@value}:0:0"
         end
 
         def minutes
           fail "A value is required for #{__method__}" unless @value
-          return "*:0/#{@value}:0"
+          "*:0/#{@value}:0"
         end
 
         # Singular generators (don't take a value):
 
         def weekday
           fail "A value cannot be provided for #{__method__}" if @value
-          return 'Mon..Fri'
+          'Mon..Fri'
         end
 
         def week
           fail "A value cannot be provided for #{__method__}" if @value
-          return 'weekly'
+          'weekly'
         end
 
         def day
           fail "A value cannot be provided for #{__method__}" if @value
-          return 'daily'
+          'daily'
         end
 
         def month
           fail "A value cannot be provided for #{__method__}" if @value
-          return 'monthly'
+          'monthly'
         end
       end
 

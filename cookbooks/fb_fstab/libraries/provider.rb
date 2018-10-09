@@ -451,7 +451,7 @@ module FB
         )
         return :conflict
       end
-      return :missing
+      :missing
     end
 
     # Given a desired mount `desired` check to see what it's status is;
@@ -627,6 +627,7 @@ module FB
       end
     end
 
+    # rubocop:disable Style/RedundantReturn
     def _run_command_flocked(shellout, lock_file, mount_point)
       if lock_file.nil?
         return shellout.run_command
@@ -643,5 +644,6 @@ module FB
         end
       end
     end
+    # rubocop:enable Style/RedundantReturn
   end
 end

@@ -42,7 +42,7 @@ module FB
         end
       end
 
-      return existing_sets
+      existing_sets
     end
 
     def self.ipset_to_cmds(name, h)
@@ -61,7 +61,7 @@ module FB
       members.each do |member|
         lines << "ipset add #{name} #{member}"
       end
-      return lines
+      lines
     end
   end
 end
