@@ -7,7 +7,7 @@
 #
 require 'shellwords'
 module FB
-  module Systemd
+  class Systemd
     def self.path_to_unit(path, unit_type)
       cmd = [
         '/bin/systemd-escape',
