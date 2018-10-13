@@ -1,5 +1,5 @@
 AllCops:
-  TargetRubyVersion: 2.1
+  TargetRubyVersion: 2.4
   Exclude:
     # template files named `rb` instead of `erb` are a sin against ruby-nature.
     - '**/templates/**/*.rb'#
@@ -88,6 +88,11 @@ Performance/RedundantMatch:
 Performance/RedundantMerge:
   Enabled: false
 
+# disable until we upgrade chef solo to chef 13. Otherwise people will be told
+# to use a method that doesn't exist in the verison of ruby in solo
+Performance/RegexpMatch:
+  Enabled: false
+
 # We'll .times.map all we want.
 Performance/TimesMap:
   Enabled: false
@@ -118,6 +123,10 @@ Style/FileName:
   Enabled: false
 
 Style/FormatStringToken:
+  Enabled: false
+
+# This comes with changing the ruby target to 2.3+
+Style/FrozenStringLiteralComment:
   Enabled: false
 
 # While this can be nice, it also can promote errors. Let people
@@ -156,10 +165,6 @@ Style/NumericLiterals:
 Style/NumericPredicate:
   Enabled: false
 
-# Really?
-Style/PerlBackrefs:
-  Enabled: false
-
 Style/PercentLiteralDelimiters:
   PreferredDelimiters:
     '%':  '{}'
@@ -172,6 +177,10 @@ Style/PercentLiteralDelimiters:
     '%w': '{}'
     '%W': '{}'
     '%x': '{}'
+
+# Really?
+Style/PerlBackrefs:
+  Enabled: false
 
 Style/RedundantReturn:
   Enabled: false
@@ -189,10 +198,10 @@ Style/SignalException:
 Style/SymbolArray:
   Enabled: false
 
-Style/TrailingCommaInLiteral:
+Style/TrailingCommaInArguments:
   EnforcedStyleForMultiline: comma
 
-Style/TrailingCommaInArguments:
+Style/TrailingCommaInLiteral:
   EnforcedStyleForMultiline: comma
 
 Style/VariableNumber:
