@@ -149,6 +149,13 @@ Style/NumericLiteralPrefix:
 Style/NumericLiterals:
   Enabled: false
 
+# The autocorrect of this one isn't safe, and since using
+# numeric predicts may be more or less readable than comparisons
+# depending on the code, bugging people about this when we can't
+# autocorrect it doesn't seem worth the hastle for our customers
+Style/NumericPredicate:
+  Enabled: false
+
 # Really?
 Style/PerlBackrefs:
   Enabled: false
