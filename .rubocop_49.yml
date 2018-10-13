@@ -155,13 +155,16 @@ Style/PerlBackrefs:
 
 Style/PercentLiteralDelimiters:
   PreferredDelimiters:
-    default: {}
-    '%i': {}
-    '%w': {}
-
-# this isn't testing for consistency it always wants %w() which is dumb
-Style/PercentLiteralDelimiters:
-  Enabled: false
+    '%':  '{}'
+    '%i': '{}'
+    '%I': '{}'
+    '%q': '{}'
+    '%Q': '{}'
+    '%r': '{}'
+    '%s': '{}'
+    '%w': '{}'
+    '%W': '{}'
+    '%x': '{}'
 
 Style/RedundantReturn:
   Enabled: false
