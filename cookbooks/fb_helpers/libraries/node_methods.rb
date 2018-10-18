@@ -270,5 +270,21 @@ class Chef
     def in_shard?(shard_threshold)
       self.in_flexible_shard?(shard_threshold, 100)
     end
+
+    def firstboot_os?
+      # this has to work even when we fail early on so we can call this from
+      # broken runs in handlers
+      node['fb_init'] && node['fb_init']['firstboot_os']
+    end
+
+    def firstboot_tier?
+      # this has to work even when we fail early on so we can call this from
+      # broken runs in handlers
+      node['fb_init'] && node['fb_init']['firstboot_tier']
+    end
+
+    def firstboot_any_phase?
+      self.firstboot_os? || self.firstboot_tier?
+    end
   end
 end

@@ -5,6 +5,14 @@
 # vim: syntax=ruby:expandtab:shiftwidth=2:softtabstop=2:tabstop=2
 #
 
+# SANITY-INDUCING HACK
+# If we have never run before, run in debug mode. This ensures that for
+# first run/bootstrapping issues we have lots of visibility.
+if node.firstboot_any_phase?
+  Chef::Log.info('Enabling debug log for first run')
+  Chef::Log.level = :debug
+end
+
 # this should be first.
 include_recipe 'fb_init_sample::site_settings'
 
@@ -70,6 +78,11 @@ if node.centos? && !node.container?
   include_recipe 'fb_ipset::cleanup'
 end
 include_recipe 'fb_motd'
+
+if node.firstboot_tier?
+  include_recipe 'fb_init_sample::firstboot'
+end
+
 unless node.centos6?
   include_recipe 'fb_apcupsd'
   include_recipe 'fb_dnsmasq'

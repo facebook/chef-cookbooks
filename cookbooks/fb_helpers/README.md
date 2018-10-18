@@ -143,6 +143,15 @@ your node.
    Shards are 0-indexed, so the valid shards are 0-99. As such, shard `N` is
    approximately `(N+1)%`, so shard 0 is approximately 1%.
 
+* `node.firstboot_any_phase?`
+   Returns `true` if we're in any of firstboot steps
+
+* `node.firstboot_os?`
+   Shortcut for `node['fb_init']['firstboot_os']`
+
+* `node.firstboot_tier?`
+   Shortcut for `node['fb_init']['firstboot_tier']`
+
 ### FB::Helpers
 The following methods are available:
 
