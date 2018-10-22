@@ -71,7 +71,7 @@ module FB
       else
         procfile = '/proc/net/ip6_tables_names'
       end
-      !File.read(procfile).empty?
+      File.exist?(procfile) && !File.read(procfile).empty?
     end
   end
 end
