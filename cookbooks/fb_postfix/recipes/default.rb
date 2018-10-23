@@ -12,9 +12,7 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
-package 'postfix' do
-  action :upgrade
-end
+include_recipe 'fb_postfix::packages'
 
 template '/etc/postfix/main.cf' do
   source 'main.cf.erb'
