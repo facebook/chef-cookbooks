@@ -21,4 +21,10 @@ default['fb_timers'] = {
   # but it's hidden because nobody should do this unless they know what
   # they're doing.
   '_timer_path' => '/etc/systemd/timers'.freeze,
+
+  # NB Remove this when everyone has migrated to the new timer definitions.
+  #
+  # This is temporary as part of the migration of the units to the definition
+  # that ensures they hang off of timers.target rather than multi-user.target.
+  '_fix_timer_wantedby' => node.in_shard?(1),
 }
