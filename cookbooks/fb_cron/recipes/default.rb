@@ -18,18 +18,10 @@ case node['platform_family']
 when 'mac_os_x'
   svc_name = 'com.vix.cron'
 when 'rhel', 'fedora', 'suse'
-  package_name = 'vixie-cron'
-  if node['platform'] == 'amazon' || node['platform_version'].to_i >= 6
-    package_name = 'cronie'
-  end
   svc_name = 'crond'
 end
 
-if package_name # ~FC023
-  package package_name do
-    action :upgrade
-  end
-end
+include_recipe 'fb_cron::packages'
 
 # keep the name 'cron' so we can notify it easily from other places
 service 'cron' do
