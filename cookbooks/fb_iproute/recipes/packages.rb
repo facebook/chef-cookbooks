@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: fb_iproute
-# Recipe:: default
+# Recipe:: packages
 #
 # vim: syntax=ruby:expandtab:shiftwidth=2:softtabstop=2:tabstop=2
 #
@@ -12,8 +12,14 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
-unless node.centos?
-  fail 'fb_iproute is only supported on CentOS'
+if node.centos6?
+  package 'iproute2' do
+    only_if { node['fb_iproute']['manage_packages'] }
+    action :upgrade
+  end
+else
+  package %w{iproute iproute-tc} do
+    only_if { node['fb_iproute']['manage_packages'] }
+    action :upgrade
+  end
 end
-
-include_recipe 'fb_iproute::packages'
