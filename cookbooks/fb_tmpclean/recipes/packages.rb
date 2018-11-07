@@ -2,7 +2,7 @@
 # vim: syntax=ruby:expandtab:shiftwidth=2:softtabstop=2:tabstop=2
 #
 # Cookbook Name:: fb_tmpwatch
-# Recipe:: default
+# Recipe:: packages
 #
 # Copyright (c) 2016-present, Facebook, Inc.
 # All rights reserved.
@@ -12,37 +12,18 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
-include_recipe 'fb_tmpclean::packages'
-
 case node['platform_family']
 when 'rhel'
-  config = '/etc/cron.daily/tmpwatch'
-  config_src = 'tmpwatch.erb'
+  pkg = 'tmpwatch'
 when 'debian'
-  config = '/etc/cron.daily/tmpreaper'
-  config_src = 'tmpreaper.erb'
+  pkg = 'tmpreaper'
 when 'mac_os_x'
-  config = '/usr/bin/fb_tmpreaper'
-  config_src = 'tmpreaper.erb'
+  pkg = 'tmpreaper'
 else
   fail "Unsupported platform_family #{node['platform_family']}, cannot" +
     'continue'
 end
 
-template config do
-  source config_src
-  mode '0755'
-  owner 'root'
-  group 'root'
-end
-
-if node.macosx?
-  launchd 'com.facebook.tmpreaper' do
-    action :enable
-    program config
-    start_calendar_interval(
-      'Hour' => 2,
-      'Minute' => 2,
-    )
-  end
+package pkg do
+  action :upgrade
 end
