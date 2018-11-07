@@ -16,45 +16,16 @@ unless node.systemd?
   fail 'fb_systemd is only available on systemd-enabled hosts'
 end
 
-systemd_packages = ['systemd']
-
 case node['platform_family']
 when 'rhel', 'fedora'
-  systemd_packages << 'systemd-libs'
   systemd_prefix = '/usr'
 when 'debian'
-  systemd_packages += %w{
-    libpam-systemd
-    libsystemd0
-    libudev1
-  }
-
-  unless node.container?
-    systemd_packages << 'udev'
-  end
-
-  # older versions of Debian and Ubuntu are missing some extra packages
-  unless ['trusty', 'jessie'].include?(node['lsb']['codename'])
-    systemd_packages += %w{
-      libnss-myhostname
-      libnss-mymachines
-      libnss-resolve
-      systemd-container
-      systemd-coredump
-      systemd-journal-remote
-    }
-  end
-
   systemd_prefix = ''
 else
   fail 'fb_systemd is not supported on this platform.'
 end
 
-package 'systemd packages' do
-  package_name systemd_packages
-  only_if { node['fb_systemd']['manage_systemd_packages'] }
-  action :upgrade
-end
+include_recipe 'fb_systemd::default_packages'
 
 fb_systemd_reload 'system instance' do
   instance 'system'
