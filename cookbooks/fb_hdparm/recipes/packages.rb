@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: fb_hdparm
-# Recipe:: default
+# Recipe:: packages
 #
 # vim: syntax=ruby:expandtab:shiftwidth=2:softtabstop=2:tabstop=2
 #
@@ -12,4 +12,10 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
-include_recipe 'fb_hdparm::packages'
+package 'hdparm' do
+  action :upgrade
+end
+
+fb_hdparm 'set hdparm options' do
+  only_if { node['fb_hdparm']['enforce'] }
+end
