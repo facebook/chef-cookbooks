@@ -16,46 +16,7 @@ unless node.centos?
   fail 'fb_rpm is only supported on CentOS!'
 end
 
-if node.centos6?
-  package "rpm.#{node['kernel']['machine']}" do
-    only_if { node['fb_rpm']['manage_packages'] }
-    action :upgrade
-  end
-
-  return
-end
-
-rpm_packages = %w{
-  rpm
-  rpm-build-libs
-  rpm-libs
-  rpm-python
-  rpm-plugin-systemd-inhibit
-}
-
-# If you use our backports of rawhide RPM, you also need this,
-# but it's not available in C7 stock.
-yc = Chef::Provider::Package::Yum::YumCache.instance
-if yc.package_available?('rpm-plugin-selinux')
-  rpm_packages << 'rpm-plugin-selinux'
-end
-
-package rpm_packages do
-  only_if { node['fb_rpm']['manage_packages'] }
-  action :upgrade
-end
-
-package 'rpmbuild dependencies' do
-  only_if { node['fb_rpm']['rpmbuild'] }
-  package_name %w{perl-srpm-macros redhat-rpm-config}
-  action :upgrade
-end
-
-package 'rpmbuild packages' do
-  only_if { node['fb_rpm']['rpmbuild'] && node['fb_rpm']['manage_packages'] }
-  package_name %w{rpm-build rpm-sign}
-  action :upgrade
-end
+include_recipe 'fb_rpm::packages'
 
 directory '/etc/rpm' do
   owner 'root'
