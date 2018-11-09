@@ -27,6 +27,7 @@ Attributes
 * node['fb_fstab']['mounts'][$NAME]['mp_owner']
 * node['fb_fstab']['mounts'][$NAME]['mp_group']
 * node['fb_fstab']['mounts'][$NAME]['mp_perms']
+* node['fb_fstab']['mounts'][$NAME]['mp_immutable']
 * node['fb_fstab']['mounts'][$NAME]['remount_with_umount']
 * node['fb_fstab']['mounts'][$NAME]['enable_remount']
 * node['fb_fstab']['mounts'][$NAME]['allow_mount_failure']
@@ -103,15 +104,19 @@ The following are additional per-mount flags to `fb_fstab`:
                 on the system.
 * `enable_remount` - defaults to `false`, set to `true` if this FS should
                      be remounted
-* `mp_owner` - mountpoint owner
-* `mp_group` - mountpoint group owner
-* `mp_perms` - mountpoint permission mode
 * `only_if` - this takes a Proc to test at runtime much like typical
               Chef resources, except it only takes a Proc.
 * `allow_mount_failure` - Allow failure to mount this disk. It will still
   show up in `/etc/fstab`, but Chef will not crash if mounting fails. This
   option is designed for teams who can handle data-disk failures gracefully
   and don't want it to bother Chef.
+
+The following are additional per-mount flags, which are only put into effect
+if the underlying mountpoint does not exist:
+* `mp_owner` - mountpoint owner
+* `mp_group` - mountpoint group owner
+* `mp_perms` - mountpoint permission mode
+* `mp_immutable` - set mountpoint to be immutable
 
 Example:
 

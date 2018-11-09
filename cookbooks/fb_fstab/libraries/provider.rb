@@ -58,6 +58,19 @@ module FB
           FileUtils.chown(mount_data['mp_owner'], mount_data['mp_group'],
                           mount_data['mount_point'])
         end
+        if mount_data['mp_immutable']
+          readme = File.join(mount_data['mount_point'], 'README.txt')
+          readme_body = 'This directory was created by chef to be an ' +
+            'immutable mountpoint.  If you can see this, ' +
+            "the mount is missing!\n"
+          File.open(readme, 'w') do |f| # ~FB030
+            f.write(readme_body)
+          end
+          s = Mixlib::ShellOut.new(
+            "/bin/chattr +i #{mount_data['mount_point']}",
+          ).run_command
+          s.error!
+        end
       end
       if node.systemd?
         # If you use FUSE mounts, and you're running Chef from a systemd timer,
