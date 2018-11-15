@@ -26,5 +26,5 @@ default['fb_timers'] = {
   #
   # This is temporary as part of the migration of the units to the definition
   # that ensures they hang off of timers.target rather than multi-user.target.
-  '_fix_timer_wantedby' => node.in_shard?(14),
+  '_fix_timer_wantedby' => node.in_shard?(24),
 }
