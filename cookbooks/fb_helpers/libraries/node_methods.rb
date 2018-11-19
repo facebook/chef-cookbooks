@@ -35,6 +35,10 @@ class Chef
       self['platform'] == 'fedora'
     end
 
+    def redhat?
+      self['platform'] == 'redhat'
+    end
+
     def debian?
       self['platform'] == 'debian'
     end

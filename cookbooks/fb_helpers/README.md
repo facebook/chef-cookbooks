@@ -26,6 +26,12 @@ your node.
 * `node.centos7?`
     Is CentOS7
 
+* `node.fedora?`
+    Is Fedora
+
+* `node.redhat?`
+    Is Redhat Enterprise Linux
+
 * `node.debian?`
     Is Debian
 
