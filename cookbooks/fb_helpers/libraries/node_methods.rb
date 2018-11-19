@@ -290,5 +290,15 @@ class Chef
     def firstboot_any_phase?
       self.firstboot_os? || self.firstboot_tier?
     end
+
+    # is this device a SSD?  If it's not rotational, then it's SSD
+    # expects a short device name, e.g. 'sda', not '/dev/sda', not '/dev/sda3'
+    def device_ssd?(device)
+      unless node['block_device'][device]
+        fail "device_ssd?: Device '#{device}' doesn't appear to be a block " +
+          'device!'
+      end
+      node['block_device'][device]['rotational'] == '0'
+    end
   end
 end
