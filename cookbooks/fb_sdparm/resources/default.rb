@@ -88,6 +88,7 @@ action :set do
       dev.start_with?('nvme') ||
       dev.start_with?('md') ||
       dev.start_with?('fio') ||
+      dev.start_with?('sr') ||
       attrs['model'] == 'XP6210-4B2048' || # nytro flash card
       in_maint_disks.include?("/dev/#{dev}")
   end
