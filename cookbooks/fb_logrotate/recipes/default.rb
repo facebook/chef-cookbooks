@@ -92,10 +92,7 @@ template '/etc/cron.daily/logrotate' do
   group 'root'
 end
 
-template '/etc/logrotate.d/syslog' do
-  only_if { node['packages'].include?('rsyslog') }
-  source 'logrotate_rpm_rsyslog_override.erb'
-  mode '0644'
-  owner 'root'
-  group 'root'
+# syslog has been moved into the main fb_logrotate.conf
+file '/etc/logrotate.d/syslog' do
+  action 'delete'
 end

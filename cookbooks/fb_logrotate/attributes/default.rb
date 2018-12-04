@@ -12,13 +12,37 @@ globals = {
   'maxage' => '14',
 }
 
+configs = {
+  'syslog' => {
+    'files' => [
+      '/var/log/cron',
+      '/var/log/maillog',
+      '/var/log/messages',
+      '/var/log/secure',
+      '/var/log/spooler',
+    ],
+    'overrides' => {
+      'nocreate' => true,
+      'nocopytruncate' => true,
+      'missingok' => true,
+      'sharedscripts' => true,
+      'postrotate' => (node.systemd? ?
+         '/bin/systemctl kill -s HUP rsyslog || true' :
+         '(/bin/kill -HUP `cat /var/run/syslogd.pid 2> /dev/null` 2> ' +
+         '/dev/null || true) && ' +
+         '(/bin/kill -HUP `cat /var/run/rsyslogd.pid 2> /dev/null` 2> ' +
+         '/dev/null || true)'),
+    },
+  },
+}
+
 unless node.centos6?
   globals['compresscmd'] = '/usr/bin/pigz'
 end
 
 default['fb_logrotate'] = {
   'globals' => globals,
-  'configs' => {},
+  'configs' => configs,
   'add_locking_to_logrotate' => false,
   'debug_log' => false,
 }
