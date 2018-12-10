@@ -53,3 +53,10 @@ node.default['fb_swap']['enable_encryption'] = false
 
 The default is `false`. We use dm-crypt/LUKS for the encryption. For details see
 cryptsetup(8).
+
+This cookbook defines a helper method to determine whether extending swap is a
+good idea: FB::FbSwap.swap_file_possible?(node)
+
+* btrfs root filesystem is not generally supported
+* If any device(s) belonging to the root filesystem are rotational, using a
+  swap file is not recommended.
