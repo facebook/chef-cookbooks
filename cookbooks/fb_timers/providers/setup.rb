@@ -115,35 +115,4 @@ action :run do
       action :delete
     end
   end
-
-  # NB Remove this when everyone has migrated to the new timer definitions.
-  #
-  # This is a shim that ensures that timers are moved under the correct target
-  # (timers.target) but is not intended to run after the migration.
-  if node['fb_timers']['_fix_timer_wantedby']
-    path = "#{FB::Systemd::UNIT_PATH}/multi-user.target.wants/*.timer"
-    Dir.glob(path).each do |wanted|
-      name = ::File.basename(wanted, '.timer')
-
-      link wanted do
-        action :delete
-        only_if { node['fb_timers']['jobs'][name] }
-        notifies :run, 'fb_systemd_reload[system instance]', :delayed
-      end
-
-      directory "#{FB::Systemd::UNIT_PATH}/timers.target.wants" do
-        group 'root'
-        mode '0755'
-        owner 'root'
-        action :create
-      end
-
-      link wanted.sub('multi-user', 'timers') do
-        action :create
-        to "#{node['fb_timers']['_timer_path']}/#{name}.timer"
-        only_if { node['fb_timers']['jobs'][name] }
-        notifies :run, 'fb_systemd_reload[system instance]', :delayed
-      end
-    end
-  end
 end

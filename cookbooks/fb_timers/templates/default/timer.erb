@@ -5,11 +5,7 @@
 Description=Run scheduled task <%= @conf['name'] %>
 
 [Install]
-<% if node['fb_timers']['_fix_timer_wantedby'] %>
 WantedBy=timers.target
-<% else %>
-WantedBy=multi-user.target
-<% end %>
 
 [Timer]
 OnCalendar=<%= @conf['calendar'] %>
