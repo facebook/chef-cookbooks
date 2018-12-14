@@ -176,10 +176,10 @@ execute 'resize swap' do
     (node['fb_swap']['size'].to_i - 4) < node['memory']['swap']['total'].to_i
   end
   command lazy {
-    uuid = node['filesystem2']['by_device'][swap_device]['uuid']
+    uuid = node['filesystem2']['by_device'][base_swap_device]['uuid']
     size = node['fb_swap']['size']
-    "swapoff #{swap_device} && mkswap -U #{uuid} #{swap_device} #{size} && " +
-    "swapon #{swap_device}"
+    "swapoff #{base_swap_device} && mkswap -U #{uuid} #{base_swap_device} " +
+     "#{size} && swapon #{base_swap_device}"
   }
 end
 
