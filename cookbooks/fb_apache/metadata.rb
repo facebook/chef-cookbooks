@@ -1,3 +1,4 @@
+# Copyright (c) 2016-present, Facebook, Inc.
 name 'fb_apache'
 maintainer 'Facebook'
 maintainer_email 'noreply@facebook.com'

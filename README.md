@@ -110,3 +110,7 @@ instructions in its
 [README.md](https://github.com/facebook/chef-cookbooks/blob/master/cookbooks/fb_init_sample/README.md)
 (coordinating guidance is in comments in the
 default recipe).
+
+## License
+
+See the LICENSE file in this directory.

@@ -1,3 +1,5 @@
+# Copyright (c) 2018-present, Facebook, Inc.
+
 default_action :apply
 
 def set_sysctl(name, val)

@@ -2,8 +2,6 @@
 # Cookbook Name:: fb_postfix
 # Recipe:: default
 #
-# vim: syntax=ruby:expandtab:shiftwidth=2:softtabstop=2:tabstop=2
-#
 # Copyright (c) 2011-present, Facebook, Inc.
 # All rights reserved.
 #

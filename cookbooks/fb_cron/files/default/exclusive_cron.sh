@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Copyright (c) 2018-present, Facebook, Inc.
+
 if [ $# -lt 1 ] || [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
   echo "Uses file locking to runs a single instance of a command "
   echo "on a host at a time. Intended to stop cron job stampedes"

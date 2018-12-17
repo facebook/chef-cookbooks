@@ -1,3 +1,5 @@
+# Copyright (c) 2018-present, Facebook, Inc.
+
 require 'chef/node'
 require_relative '../libraries/sync.rb'
 

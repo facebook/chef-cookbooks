@@ -3,6 +3,8 @@
 # chkconfig: 2345 70 40
 # description: rsyncd startup script
 #
+# Copyright (c) 2018-present, Facebook, Inc.
+#
 ### BEGIN INIT INFO
 # Provides:          rsyncd
 # Required-Start:    $remote_fs $syslog $network $time

@@ -1,4 +1,7 @@
 #!/bin/bash
+#
+# Copyright (c) 2018-present, Facebook, Inc.
+#
 # OS X doesn't support cron.d directories. It also doesn't have a stock
 # /etc/crontab -- so we fake it here.
 

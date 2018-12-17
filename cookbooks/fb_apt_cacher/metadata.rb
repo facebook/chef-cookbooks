@@ -1,3 +1,4 @@
+# Copyright (c) 2018-present, Facebook, Inc.
 name 'fb_apt_cacher'
 maintainer 'Facebook'
 maintainer_email 'noreply@facebook.com'

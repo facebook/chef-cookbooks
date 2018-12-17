@@ -2,8 +2,6 @@
 # Cookbook Name:: fb_systemd
 # Recipe:: journal-upload
 #
-# vim: syntax=ruby:expandtab:shiftwidth=2:softtabstop=2:tabstop=2
-#
 # Copyright (c) 2016-present, Facebook, Inc.
 # All rights reserved.
 #

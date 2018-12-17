@@ -1,3 +1,4 @@
+# Copyright (c) 2018-present, Facebook, Inc.
 name 'fb_hddtemp'
 maintainer 'Facebook'
 maintainer_email 'noreply@facebook.com'
