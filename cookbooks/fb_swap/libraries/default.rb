@@ -112,7 +112,7 @@ module FB
         # assert we can find a block device name in here
         return false unless match
         block_device = match['block']
-        if node['devices'][block_device]['rotational'] == '1'
+        if node['block_device'][block_device]['rotational'] == '1'
           Chef::Log.warn(
             'fb_swap: Swap file not possible due to rotational device ' +
             block_device,
