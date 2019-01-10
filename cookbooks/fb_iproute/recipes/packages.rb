@@ -10,14 +10,7 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
-if node.centos6?
-  package 'iproute2' do
-    only_if { node['fb_iproute']['manage_packages'] }
-    action :upgrade
-  end
-else
-  package %w{iproute iproute-tc} do
-    only_if { node['fb_iproute']['manage_packages'] }
-    action :upgrade
-  end
+package %w{iproute iproute-tc} do
+  only_if { node['fb_iproute']['manage_packages'] }
+  action :upgrade
 end
