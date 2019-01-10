@@ -12,7 +12,6 @@ Attributes
 ----------
 * node['fb_swap']['enabled']
 * node['fb_swap']['size']
-* node['fb_swap']['enable_encryption']
 
 Usage
 -----
@@ -38,21 +37,6 @@ size of the actual block device; to prevent accidental destruction of data we
 only allow reducing the size of a swap device, not making it larger. The resize
 operation triggers a swap disable / enable, which could potentially trigger the
 OOM killer if the machine is under memory pressure.
-
-You can enable encrypted swap with:
-
-```
-node.default['fb_swap']['enable_encryption'] = true
-```
-
-or you can turn it off like this:
-
-```
-node.default['fb_swap']['enable_encryption'] = false
-```
-
-The default is `false`. We use dm-crypt/LUKS for the encryption. For details see
-cryptsetup(8).
 
 This cookbook defines a helper method to determine whether extending swap is a
 good idea: FB::FbSwap.swap_file_possible?(node)

@@ -10,141 +10,14 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
-base_swap_device = FB::FbSwap.get_base_swap_device(node)
+swap_device = FB::FbSwap.get_current_swap_device(node)
 
-unless base_swap_device
+unless swap_device
   Chef::Log.debug('fb_swap: No swap mounts found, nothing to do here.')
   return
 end
 
-Chef::Log.debug("fb_swap: Found swap device: #{base_swap_device}")
-
-fstab_swap_uuid = FB::FbSwap.get_swap_uuid_from_fstab(node)
-
-if fstab_swap_uuid.nil? && node['fb_swap']['enable_encryption']
-  # TODO(yangxia): Fix this (t20145202).
-  Chef::Log.warn(
-    'fb_swap: Encryption cannot be enabled for machines where /etc/fstab ' +
-    'does not specify the UUID of the swap device. Proceeding without ' +
-    'encrypting swap.',
-  )
-end
-
-if node.systemd?
-  template '/etc/crypttab' do
-    only_if do
-      node['fb_swap']['enabled'] &&
-      node['fb_swap']['enable_encryption'] &&
-      !fstab_swap_uuid.nil?
-    end
-    source 'crypttab.erb'
-    owner 'root'
-    group 'root'
-    mode '600'
-    notifies :run, 'fb_systemd_reload[system instance]', :immediately
-    if node.centos?
-      notifies :run, 'execute[rebuild all initramfs]'
-    end
-  end
-
-  # setup / teardown encrypted swap device
-  encrypted_swap_device_unit =
-    FB::Systemd.path_to_unit(FB::FbSwap::ENCRYPTED_DEVICE_NAME, 'device')
-  encrypted_swap_unit =
-    FB::Systemd.path_to_unit(FB::FbSwap::ENCRYPTED_DEVICE_NAME, 'swap')
-
-  # If we don't want encrypted swap, then mask the encrypted swap and device
-  # units to disable them.
-  service 'mask encrypted swap' do
-    only_if do
-      node['fb_swap']['enabled'] && !node['fb_swap']['enable_encryption']
-    end
-    service_name encrypted_swap_unit
-    action [:stop, :mask]
-  end
-
-  service 'mask encrypted swap device' do
-    only_if do
-      node['fb_swap']['enabled'] && !node['fb_swap']['enable_encryption']
-    end
-    service_name encrypted_swap_device_unit
-    action [:stop, :mask]
-    notifies :reload, 'ohai[filesystem2]', :immediately
-  end
-
-  # If we want an encrypted swap, disable the non encrypted swap unit.
-  service 'mask base swap unit' do
-    only_if do
-      node['fb_swap']['enabled'] &&
-      node['fb_swap']['enable_encryption'] &&
-      !fstab_swap_uuid.nil?
-    end
-    service_name FB::Systemd.path_to_unit(base_swap_device, 'swap')
-    action [:stop, :mask]
-  end
-
-  # If we do want encrypted swap, enable the encrypted device
-  service 'start encrypted swap device' do
-    only_if do
-      node['fb_swap']['enabled'] &&
-      node['fb_swap']['enable_encryption'] &&
-      !fstab_swap_uuid.nil?
-    end
-    service_name encrypted_swap_device_unit
-    action [:unmask, :start]
-    notifies :reload, 'ohai[filesystem2]', :immediately
-  end
-
-  # Make sure the current swap's UUID is the same as the one specified in
-  # /etc/fstab.
-  service 'pre-mask swap unit' do
-    only_if do
-      node['fb_swap']['enabled'] &&
-      !fstab_swap_uuid.nil? &&
-      FB::FbSwap.get_current_swap_device_uuid(node) != fstab_swap_uuid
-    end
-    service_name lazy { FB::FbSwap.get_current_swap_unit(node) }
-    action [:stop, :mask]
-  end
-
-  execute 'set UUID for swap device' do
-    only_if do
-      node['fb_swap']['enabled'] &&
-      !fstab_swap_uuid.nil? &&
-      FB::FbSwap.get_current_swap_device_uuid(node) != fstab_swap_uuid
-    end
-    command lazy {
-      '/sbin/mkswap -U ' +
-      "#{fstab_swap_uuid} #{FB::FbSwap.get_current_swap_device(node)}"
-    }
-  end
-
-  # start / stop swap the right thing to enabled - either the encrypted
-  # one or non-encrypted one
-  service 'mask swap unit' do
-    not_if { node['fb_swap']['enabled'] }
-    service_name lazy { FB::FbSwap.get_current_swap_unit(node) }
-    action [:stop, :mask]
-  end
-
-  service 'unmask swap unit' do
-    only_if { node['fb_swap']['enabled'] }
-    service_name lazy { FB::FbSwap.get_current_swap_unit(node) }
-    action [:unmask, :start]
-  end
-
-  file '/etc/crypttab' do
-    only_if do
-      node['fb_swap']['enabled'] &&
-      (!node['fb_swap']['enable_encryption'] || fstab_swap_uuid.nil?)
-    end
-    action :delete
-    notifies :run, 'fb_systemd_reload[system instance]', :immediately
-    if node.centos?
-      notifies :run, 'execute[rebuild all initramfs]'
-    end
-  end
-end
+Chef::Log.debug("fb_swap: Found swap device: #{swap_device}")
 
 whyrun_safe_ruby_block 'validate swap size' do
   only_if do
@@ -174,10 +47,10 @@ execute 'resize swap' do
     (node['fb_swap']['size'].to_i - 4) < node['memory']['swap']['total'].to_i
   end
   command lazy {
-    uuid = node['filesystem2']['by_device'][base_swap_device]['uuid']
+    uuid = node['filesystem2']['by_device'][swap_device]['uuid']
     size = node['fb_swap']['size']
-    "swapoff #{base_swap_device} && mkswap -U #{uuid} #{base_swap_device} " +
-     "#{size} && swapon #{base_swap_device}"
+    "swapoff #{swap_device} && mkswap -U #{uuid} #{swap_device} " +
+     "#{size} && swapon #{swap_device}"
   }
 end
 
