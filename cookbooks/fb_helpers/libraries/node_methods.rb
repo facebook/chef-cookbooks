@@ -217,13 +217,7 @@ class Chef
     end
 
     def efi?
-      if FB::Version.new(node['os_version']) >= FB::Version.new('3.10')
-        f = File.directory?('/sys/firmware/efi')
-      else
-        Chef::Log.warn('EFI detection on kernels < 3.10 is less reliable!')
-        f = File.exist?('/boot/efi') && node.device_of_mount('/boot/efi')
-      end
-      f
+      File.directory?('/sys/firmware/efi')
     end
 
     def aarch64?
