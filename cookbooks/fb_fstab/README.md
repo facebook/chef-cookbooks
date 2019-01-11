@@ -179,7 +179,7 @@ node.default['fb_fstab']['ignorable_opts'] << 'ignore_me'
 ### Base-OS filesystems
 `fb_fstab` determines the base filesystems (root, boot, swap, etc.) that would
 come from the original installation from `/etc/.fstab.chef`. It is recommended
-you have your instalation system create this file (e.g in an Anaconda
+you have your installation system create this file (e.g in an Anaconda
 post-script) with something like:
 
 ```

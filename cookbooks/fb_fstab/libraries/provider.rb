@@ -82,7 +82,7 @@ module FB
         #
         # HOWEVER!!!! NOTE WELL!!!!
         # If you don't do a `systemctl daemon-reload` after updating /etc/fstab,
-        # then this won't be gauranteed to mount the right thing, so we have
+        # then this won't be guaranteed to mount the right thing, so we have
         # that notify in the recipe
         s = Mixlib::ShellOut.new(
           "/bin/systemd-escape -p --suffix=mount #{mount_data['mount_point']}",
