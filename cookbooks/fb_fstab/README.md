@@ -1,4 +1,4 @@
-fb_fstab coookbook
+fb_fstab cookbook
 ============
 Support for full mount/fstab control.
 
