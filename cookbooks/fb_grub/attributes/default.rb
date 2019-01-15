@@ -9,10 +9,13 @@
 #
 
 version = node.centos6? ? 1 : 2
-vendor =  if node.centos6? then 'redhat'
-          elsif node.debian? then 'debian'
-          else 'centos'
-          end
+if node.centos6? || node.redhat?
+  vendor = 'redhat'
+elsif node.debian?
+  vendor = 'debian'
+else
+  vendor = 'centos'
+end
 
 fb_grub = {
   '_device_hints' => [],
