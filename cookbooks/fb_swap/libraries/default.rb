@@ -29,13 +29,6 @@ module FB
       node['filesystem2']['by_mountpoint']['/']
     end
 
-    def self.get_current_swap_unit(node)
-      return FB::Systemd.path_to_unit(
-        get_current_swap_device(node),
-        'swap',
-      )
-    end
-
     def self.swap_file_possible?(node)
       if _root_filesystem(node)['fs_type'] == 'btrfs'
         # The historical take on btrfs is that swap files are not supported.
