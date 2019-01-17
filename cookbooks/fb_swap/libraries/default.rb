@@ -25,23 +25,23 @@ module FB
       end
     end
 
-    def self._root_filesystem(node)
-      node['filesystem2']['by_mountpoint']['/']
+    def self._filesystem_map_for_fs(node)
+      node['filesystem2']['by_mountpoint'][node['fb_swap']['filesystem']]
     end
 
     def self.swap_file_possible?(node)
-      if _root_filesystem(node)['fs_type'] == 'btrfs'
+      if _filesystem_map_for_fs(node)['fs_type'] == 'btrfs'
         # The historical take on btrfs is that swap files are not supported.
         # This is changing soon (4.16+?). There's no feature test for this
         # (yet?) so we'll be pessimistic and say no.
         Chef::Log.warn('fb_swap: Swap file not generally possible on btrfs')
         return false
       end
-      return self._root_on_rotational?(node)
+      return self._on_rotational?(node)
     end
 
-    def self._root_on_rotational?(node)
-      _root_filesystem(node)['devices'].each do |dev|
+    def self._on_rotational?(node)
+      _filesystem_map_for_fs(node)['devices'].each do |dev|
         match = %r/\/dev\/(?<block>[[:alpha:]]+)[[:digit:]]/.match(dev)
         # assert we can find a block device name in here
         return false unless match
@@ -55,7 +55,7 @@ module FB
         end
       end
       Chef::Log.debug(
-        'fb_swap: Swap file possible (no rotational device members on root ' +
+        'fb_swap: Swap file possible (no rotational device members on ' +
         'filesytem)',
       )
       return true

@@ -12,6 +12,7 @@ Attributes
 ----------
 * node['fb_swap']['enabled']
 * node['fb_swap']['size']
+* node['fb_swap']['filesystem']
 
 Usage
 -----
@@ -39,7 +40,9 @@ operation triggers a swap disable / enable, which could potentially trigger the
 OOM killer if the machine is under memory pressure.
 
 This cookbook defines a helper method to determine whether extending swap is a
-good idea: FB::FbSwap.swap_file_possible?(node)
+good idea: FB::FbSwap.swap_file_possible?(node). It uses
+node['fb_swap']['filesystem'] to base it's decisions on. This defaults to the
+root filesystem ('/').
 
 * btrfs root filesystem is not generally supported
 * If any device(s) belonging to the root filesystem are rotational, using a

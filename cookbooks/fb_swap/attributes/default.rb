@@ -11,4 +11,5 @@
 default['fb_swap'] = {
   'enabled' => true,
   'size' => nil,
+  'filesystem' => '/',
 }
