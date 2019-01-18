@@ -10,14 +10,14 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
-swap_device = FB::FbSwap.get_current_swap_device(node)
+device = FB::FbSwap._device(node)
 
-unless swap_device
+unless device
   Chef::Log.debug('fb_swap: No swap mounts found, nothing to do here.')
   return
 end
 
-Chef::Log.debug("fb_swap: Found swap device: #{swap_device}")
+Chef::Log.debug("fb_swap: Found swap device: #{device}")
 
 whyrun_safe_ruby_block 'validate swap size' do
   only_if do
@@ -47,10 +47,10 @@ execute 'resize swap' do
     (node['fb_swap']['size'].to_i - 4) < node['memory']['swap']['total'].to_i
   end
   command lazy {
-    uuid = node['filesystem2']['by_device'][swap_device]['uuid']
+    uuid = node['filesystem2']['by_device'][device]['uuid']
     size = node['fb_swap']['size']
-    "swapoff #{swap_device} && mkswap -U #{uuid} #{swap_device} " +
-     "#{size} && swapon #{swap_device}"
+    "swapoff #{device} && mkswap -U #{uuid} #{device} " +
+     "#{size} && swapon #{device}"
   }
 end
 

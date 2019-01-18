@@ -10,7 +10,7 @@
 
 module FB
   module FbSwap
-    def self.get_current_swap_device(node)
+    def self._device(node)
       swap_mounts = node['filesystem2']['by_device'].to_hash.select do |_k, v|
         v['fs_type'] == 'swap'
       end
