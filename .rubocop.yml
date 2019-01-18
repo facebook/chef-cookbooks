@@ -1,5 +1,5 @@
 AllCops:  
-  TargetRubyVersion: 2.1  
+  TargetRubyVersion: 2.4
   Exclude:
     # template files named `rb` instead of `erb` are a sin against ruby-nature.
     - '**/templates/**/*.rb'#
