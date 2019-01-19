@@ -42,7 +42,7 @@ module FB
 
     def self._on_rotational?(node)
       _filesystem_map_for_fs(node)['devices'].each do |dev|
-        match = %r/\/dev\/(?<block>[[:alpha:]]+)[[:digit:]]/.match(dev)
+        match = %r{/dev/(?<block>[[:alpha:]]+)[[:digit:]]}.match(dev)
         # assert we can find a block device name in here
         return false unless match
         block_device = match['block']

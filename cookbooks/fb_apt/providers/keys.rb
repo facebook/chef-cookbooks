@@ -28,7 +28,7 @@ action :run do
       output = cmd.stdout.split("\n")
       Chef::Log.debug("apt-key output: #{output.join("\n")}")
       installed_keys = output.select { |x| x.start_with?('pub') }.map do |x|
-        x[%r/pub.*\/(?<keyid>[A-Z0-9]*)/, 'keyid']
+        x[%r{pub.*/(?<keyid>[A-Z0-9]*)}, 'keyid']
       end
     end
     Chef::Log.debug("Installed keys: #{installed_keys.join(', ')}")
