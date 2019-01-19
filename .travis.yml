@@ -29,7 +29,7 @@ before_script:
 
 script:
   - bundle exec rspec --format=d --color */*/spec/*rb
-  - bundle exec rubocop --display-cop-names -c .rubocop.yml
+  - bundle exec rubocop --display-cop-names -c .rubocop_49.yml
   - ./scripts/run_foodcritic
   - bundle exec kitchen verify $INSTANCE
 
