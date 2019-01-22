@@ -90,9 +90,10 @@ timer_logrotate = "/etc/systemd/system/#{timer_name}"
 execute 'logrotate reload systemd' do
   command '/bin/systemctl daemon-reload'
   action :nothing
+  only_if { node.systemd? }
 end
 
-if node['fb_logrotate']['systemd_timer']
+if node['fb_logrotate']['systemd_timer'] && node.systemd?
   # Use systemd timer
   # Create systemd service
   template service_logrotate do

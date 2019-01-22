@@ -40,7 +40,7 @@ unless node.centos6?
   globals['compresscmd'] = '/usr/bin/pigz'
 end
 
-systemd_timer = !(node.centos6? || node.macosx?)
+systemd_timer = node.systemd? && !(node.centos6? || node.macosx?)
 
 default['fb_logrotate'] = {
   'globals' => globals,
