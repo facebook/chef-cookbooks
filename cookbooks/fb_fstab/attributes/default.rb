@@ -90,4 +90,5 @@ default['fb_fstab'] = {
     # which doesn't affect the mount, so don't compare it.
     /^(mount)?(addr|port|proto)=.*/,
   ],
+  'exclude_base_swap' => false,
 }

@@ -18,6 +18,13 @@ unless device
 end
 
 Chef::Log.debug("fb_swap: Found swap device: #{device}")
+# Newly provisioned hosts end up with a swap device in /etc/fstab which
+# is referenced by UUID (or label, or path). We use data from ohai's
+# filesystem2 plugin (which is backed by the state of the machine, not what
+# is in /etc/fstab). We want to create/manage our own units with predictable
+# names
+#
+node.default['fb_fstab']['exclude_base_swap'] = true
 
 whyrun_safe_ruby_block 'validate swap size' do
   only_if do
@@ -28,6 +35,13 @@ whyrun_safe_ruby_block 'validate swap size' do
          'not what you want. Please make it larger or disable swap altogether.'
   end
 end
+
+# ask fb_fstab to create the unit
+node.default['fb_fstab']['mounts']['swap_device'] = {
+  'mount_point' => 'swap',
+  'device' => device,
+  'type' => 'swap',
+}
 
 whyrun_safe_ruby_block 'validate resize' do
   only_if do

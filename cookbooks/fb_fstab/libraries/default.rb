@@ -154,8 +154,8 @@ module FB
         desired_mounts = node['fb_fstab']['mounts'].to_hash
         FB::Fstab.base_fstab_contents(node).each_line do |line|
           next if line.strip.empty?
-          # do not add swap if swap is disabled on the box
-          next if line.include?('swap') && !node['fb_swap']['enabled']
+          # do not add swap if swap is managed elsewhere, e.g. fb_swap
+          next if line.include?('swap') && node['fb_fstab']['exclude_base_swap']
           line_parts = line.strip.split
           line_dev_spec = line_parts[0]
 

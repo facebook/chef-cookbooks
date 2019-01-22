@@ -12,6 +12,7 @@ Attributes
 * node['fb_fstab']['allow_lazy_umount']
 * node['fb_fstab']['type_normalization_map']
 * node['fb_fstab']['ignorable_opts']
+* node['fb_fstab']['exclude_base_swap']
 * node['fb_fstab']['umount_ignores']['devices']
 * node['fb_fstab']['umount_ignores']['device_prefixes']
 * node['fb_fstab']['umount_ignores']['types']
@@ -198,6 +199,15 @@ root filesystem, you must either:
 * Update `/etc/.fstab.chef` to reflect these changes and re-run Chef
 * Populate `node['fb_fstab']['mounts']` with an entry that overrides that
   entry
+
+If you want to not include swap devices from base mounts, you can set
+`exclude_base_swap` to `true`. You might do this if you want to setup swap using
+`fb_swap`, or just want to remove swap altogether on a system which was
+provisioned with swap.
+
+```
+node.default['fb_fstab']['exclude_base_swap'] = true
+```
 
 ### Handling online disk repair
 Chef will read a file `/var/chef/in_maintenance_disks` to determine any disks

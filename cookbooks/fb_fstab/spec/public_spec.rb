@@ -272,10 +272,10 @@ EOF
       m = FB::Fstab.get_unmasked_base_mounts(:lines, node).join("\n") + "\n"
       m.should eq(base_contents)
     end
-    it 'should drop swap if not enabled' do
+    it 'should drop swap if masked' do
       expect(File).to receive(:read).with(FB::Fstab::BASE_FILENAME).
         and_return(base_contents)
-      node.default['fb_swap']['enabled'] = false
+      node.default['fb_fstab']['exclude_base_swap'] = true
       m = FB::Fstab.get_unmasked_base_mounts(:hash, node)
       default_ret.delete('/dev/sda3')
       m.should eq(default_ret)
