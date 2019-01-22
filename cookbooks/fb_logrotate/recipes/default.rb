@@ -82,12 +82,75 @@ template '/etc/logrotate.d/fb_logrotate.conf' do
   mode '0644'
 end
 
-template '/etc/cron.daily/logrotate' do
-  only_if { node['fb_logrotate']['add_locking_to_logrotate'] }
-  source 'logrotate_rpm_cron_override.erb'
-  mode '0755'
-  owner 'root'
-  group 'root'
+cron_logrotate = '/etc/cron.daily/logrotate'
+service_logrotate = '/etc/systemd/system/logrotate.service'
+timer_name = 'logrotate.timer'
+timer_logrotate = "/etc/systemd/system/#{timer_name}"
+
+execute 'logrotate reload systemd' do
+  command '/bin/systemctl daemon-reload'
+  action :nothing
+end
+
+if node['fb_logrotate']['systemd_timer']
+  # Use systemd timer
+  # Create systemd service
+  template service_logrotate do
+    source 'logrotate.service.erb'
+    mode '0644'
+    owner 'root'
+    group 'root'
+    notifies :run, 'execute[logrotate reload systemd]', :immediately
+  end
+
+  # Create systemd timer
+  template timer_logrotate do
+    source 'logrotate.timer.erb'
+    mode '0644'
+    owner 'root'
+    group 'root'
+    notifies :run, 'execute[logrotate reload systemd]', :immediately
+  end
+
+  # Enable logrotate timer
+  systemd_unit timer_name do
+    action [:enable, :start]
+  end
+
+  # Remove cron job
+  file cron_logrotate do
+    action :delete
+  end
+else
+  if node['fb_logrotate']['add_locking_to_logrotate']
+    # If cron should be used, and `add_locking_to_logrotate` opted in, generate
+    # Cron job with locking
+    template cron_logrotate do
+      source 'logrotate_rpm_cron_override.erb'
+      mode '0755'
+      owner 'root'
+      group 'root'
+    end
+  else
+    # Fall back to the job RPM comes with CentOS7 RPM
+    cookbook_file cron_logrotate do
+      source 'logrotate.cron.daily'
+      owner 'root'
+      group 'root'
+      mode '0755'
+      action :create
+    end
+  end
+
+  file service_logrotate do
+    action :delete
+    notifies :run, 'execute[logrotate reload systemd]', :immediately
+  end
+
+  systemd_unit timer_name do
+    action [:disable, :delete]
+    notifies :run, 'execute[logrotate reload systemd]', :immediately
+  end
 end
 
 # syslog has been moved into the main fb_logrotate.conf

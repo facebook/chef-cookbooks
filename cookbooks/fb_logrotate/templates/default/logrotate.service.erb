@@ -1,0 +1,9 @@
+[Unit]
+Description=Rotate log files
+Documentation=man:logrotate(8) man:logrotate.conf(5)
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/logrotate /etc/logrotate.conf
+Nice=<%= node['fb_logrotate']['systemd_settings']['Nice'] %>
+IOSchedulingClass=<%= node['fb_logrotate']['systemd_settings']['IOSchedulingClass'] %>

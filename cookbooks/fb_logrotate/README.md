@@ -19,6 +19,8 @@ Attributes
 * node['fb_logrotate']['configs'][$NAME]
 * node['fb_logrotate']['add_locking_to_logrotate']
 * node['fb_logrotate']['debug_log']
+* node['fb_logrotate']['systemd_timer']
+* node['fb_logrotate']['timer_settings']
 
 Usage
 -----
@@ -206,6 +208,23 @@ The `node['fb_logrotate']['debug_log']` feature is disabled by default. Setting
 this to true will cause verbose logrotate output to be captured in
 `/tmp/logrotate.debug.log`. This option is only available if
 the `add_locking_to_logrotate` feature is also enabled.
+
+### systemd_timer
+The `node['fb_logrotate']['systemd_timer']` feature is enabled by default except
+of CentOS6 and MAC OS X. It will remove the cronjob for logrotate
+(/etc/cron.daily/logrotate) and setup systemd service and timer units. It also
+adds low priority `nice` and `ionice` to the `logrotate` process. This can be
+very useful, but be aware you are removing a file from the system package.
+
+### timer_settings
+The node['fb_logrotate']['timer_settings'] contains configuration for the
+systemd timer and service units. It accepts the following:
+* OnCalendar - when and how often the logrotate should run. Default 'daily'
+* RandomizedDelaySec - Delay the timer by a randomly selected, evenly
+                       distributed amount of time between 0 and the specified
+                       time value. Default 0.
+* Nice - Nice level for the logrotate process. Default 19 (lowest priority).
+* IOSchedulingClass - I/O scheduling class for executed processes. Default 3 (idle).
 
 ### size and logrotate run frequency
 Note that the use of the size property together with logrotate runs that are

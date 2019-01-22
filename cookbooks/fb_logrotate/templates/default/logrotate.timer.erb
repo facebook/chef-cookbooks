@@ -1,0 +1,10 @@
+[Unit]
+Description=Rotate log files
+Documentation=man:logrotate(8) man:logrotate.conf(5)
+
+[Timer]
+OnCalendar=<%= node['fb_logrotate']['systemd_settings']['OnCalendar'] %>
+RandomizedDelaySec=<%= node['fb_logrotate']['systemd_settings']['RandomizedDelaySec'] %>
+
+[Install]
+WantedBy=timers.target

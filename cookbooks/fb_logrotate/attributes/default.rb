@@ -40,9 +40,18 @@ unless node.centos6?
   globals['compresscmd'] = '/usr/bin/pigz'
 end
 
+systemd_timer = !(node.centos6? || node.macosx?)
+
 default['fb_logrotate'] = {
   'globals' => globals,
   'configs' => configs,
   'add_locking_to_logrotate' => false,
   'debug_log' => false,
+  'systemd_timer' => systemd_timer,
+  'systemd_settings' => {
+    'OnCalendar' => 'daily',
+    'RandomizedDelaySec' => 0,
+    'Nice' => 19,
+    'IOSchedulingClass' => 3,
+  },
 }
