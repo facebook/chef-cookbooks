@@ -148,8 +148,8 @@ else
     notifies :run, 'execute[logrotate reload systemd]', :immediately
   end
 
-  systemd_unit timer_name do
-    action [:disable, :delete]
+  file timer_logrotate do
+    action :delete
     notifies :run, 'execute[logrotate reload systemd]', :immediately
   end
 end
