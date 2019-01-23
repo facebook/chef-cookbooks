@@ -85,6 +85,10 @@ end
 
 unless node.centos6?
   include_recipe 'fb_apcupsd'
+  # Turn off dnsmasq on sid as it doesn't play well with travis
+  if node.debian? && node['platform_version'].include?('sid')
+    node.default['fb_dnsmasq']['enable'] = false
+  end
   include_recipe 'fb_dnsmasq'
 end
 include_recipe 'fb_collectd'
