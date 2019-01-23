@@ -33,15 +33,16 @@ script:
   - ./scripts/run_foodcritic
   - bundle exec kitchen verify $INSTANCE
 
-jobs:
-  include:
-    - stage: supermarket deploy
-      rvm: 2.4
-      env: INSTANCE=default-centos-7
-      script:
-        - echo "Deploying cookbooks to supermarket"
-        - openssl aes-256-cbc -K $encrypted_9d2e88e318b2_key -iv $encrypted_9d2e88e318b2_iv -in supermarket.pem.enc -out supermarket.pem -d
-      deploy:
-        provider: script
-        skip_cleanup: true
-        script: PATH="${TRAVIS_BUILD_DIR}/bin:$PATH" ./scripts/supermarket_push
+# Disabling deploy until we sort out Supermarket issues t39456893
+# jobs:
+#   include:
+#     - stage: supermarket deploy
+#       rvm: 2.4
+#       env: INSTANCE=default-centos-7
+#       script:
+#         - echo "Deploying cookbooks to supermarket"
+#         - openssl aes-256-cbc -K $encrypted_9d2e88e318b2_key -iv $encrypted_9d2e88e318b2_iv -in supermarket.pem.enc -out supermarket.pem -d
+#       deploy:
+#         provider: script
+#         skip_cleanup: true
+#         script: PATH="${TRAVIS_BUILD_DIR}/bin:$PATH" ./scripts/supermarket_push
