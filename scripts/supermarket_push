@@ -14,8 +14,8 @@ cd cookbooks
 for i in *; do
   echo "Unpublishing $i"
   rvm "$TRAVIS_RUBY_VERSION" do bundle exec \
-    knife cookbook site unshare $i $COMMON_OPTS -y
+    knife supermarket unshare $i $COMMON_OPTS -y
   echo "Publishing $i"
   rvm "$TRAVIS_RUBY_VERSION" do bundle exec \
-    knife cookbook site share $i Other -o . $COMMON_OPTS
+    knife supermarket share $i Other -o . $COMMON_OPTS
 done
