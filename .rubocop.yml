@@ -25,6 +25,13 @@ MethodLength:
 ClassLength:
   Enabled: false
 
+Style/FormatStringToken:
+  Enabled: false
+
+# This comes with changing the ruby target to 2.3+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
 # It would forbid action [:enable, :start]
 SymbolArray:
   Enabled: false
