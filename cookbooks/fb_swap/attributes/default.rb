@@ -12,4 +12,5 @@ default['fb_swap'] = {
   'enabled' => true,
   'size' => nil,
   'filesystem' => '/',
+  'swapoff_allowed_because' => nil,
 }
