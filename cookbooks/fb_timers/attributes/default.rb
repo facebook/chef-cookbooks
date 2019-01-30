@@ -8,6 +8,8 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
+return unless node.centos? || node.debian? || node.ubuntu?
+
 default['fb_timers'] = {
   'jobs' => {},
 
