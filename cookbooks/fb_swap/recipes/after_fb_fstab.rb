@@ -18,8 +18,10 @@
   service "unmask, start #{type} swap" do
     service_name lazy { FB::FbSwap._swap_unit(node, type) }
     action [:unmask, :start]
-    only_if { node['fb_swap']['enabled'] }
-    only_if { node['fb_swap']['_calculated']["#{type}_size_bytes"].positive? }
+    only_if do
+      node['fb_swap']['enabled'] &&
+      node['fb_swap']['_calculated']["#{type}_size_bytes"].positive?
+    end
   end
 
   service "stop #{type} swap" do
@@ -34,7 +36,9 @@
     service_name lazy { FB::FbSwap._swap_unit(node, type) }
     action [:mask]
     # if it's zero size, then mask it so the generated unit is ignored.
-    only_if { node['fb_swap']['_calculated']["#{type}_size_bytes"].zero? }
-    not_if { node['fb_swap']['enabled'] }
+    not_if do
+      node['fb_swap']['enabled'] &&
+      node['fb_swap']['_calculated']["#{type}_size_bytes"].positive?
+    end
   end
 end
