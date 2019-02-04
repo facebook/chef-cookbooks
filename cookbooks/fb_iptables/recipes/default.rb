@@ -35,19 +35,20 @@ iptables_rules = ::File.join(iptables_config_dir, iptables_rule_file)
 ip6tables_rules = ::File.join(iptables_config_dir, ip6tables_rule_file)
 
 # firewalld/ufw conflicts with direct iptables management
-conflicting_packages = value_for_platform(
-  'ubuntu' => { :default => %w{ufw} },
-  :default => %w{firewalld},
+conflicting_package = value_for_platform(
+  'ubuntu' => { :default => 'ufw' },
+  :default => 'firewalld',
 )
-conflicting_packages.each do |pkg|
-  service pkg do
-    only_if { node['fb_iptables']['manage_packages'] }
-    action [:stop, :disable]
-  end
-  package pkg do
-    only_if { node['fb_iptables']['manage_packages'] }
-    action :remove
-  end
+
+service conflicting_package do
+  only_if { node['fb_iptables']['manage_packages'] }
+  action [:stop, :disable]
+end
+
+package conflicting_package do
+  only_if { node['fb_iptables']['manage_packages'] }
+  options '--exclude kernel*' if node.fedora?
+  action :remove
 end
 
 include_recipe 'fb_iptables::packages'
