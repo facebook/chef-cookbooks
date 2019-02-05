@@ -15,9 +15,9 @@
 ['device', 'file'].each do |type|
   next if type == 'device' && FB::FbSwap._device(node).nil?
 
-  service "unmask, start #{type} swap" do
+  service "start #{type} swap" do
     service_name lazy { FB::FbSwap._swap_unit(node, type) }
-    action [:unmask, :start]
+    action [:start]
     only_if do
       node['fb_swap']['enabled'] &&
       node['fb_swap']['_calculated']["#{type}_size_bytes"].positive?

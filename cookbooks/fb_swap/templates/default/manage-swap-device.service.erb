@@ -18,4 +18,8 @@ uuid = info['uuid']
 options = label ? "--label #{Shellwords.escape(label)} " : ''
 options = "#{options}--uuid #{Shellwords.escape(uuid)} " if uuid
 -%>
+<% if node['fb_swap']['enabled'] -%>
 ExecStart=/usr/sbin/mkswap <%= options %><%= device %> <%= node['fb_swap']['_calculated']['device_size_bytes'] / 1024 %>
+<% else -%>
+ExecStart=/usr/bin/echo "Not formatting swap when disabled"
+<% end -%>

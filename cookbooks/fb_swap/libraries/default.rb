@@ -69,7 +69,7 @@ module FB
         if size_bytes % 4096 != 0
           fail "fb_swap::default: #{size_bytes} bytes is not an even number " +
                'of 4KiB pages'
-        elsif size_bytes <= 1048576
+        elsif size_bytes <= 1048576 && node['fb_swap']['enabled']
           fail "fb_swap::default: #{size_bytes} is less than 1MiB. Use " +
                'enabled = false instead'
         elsif size_bytes <= max_device_size_bytes
