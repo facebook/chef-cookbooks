@@ -31,8 +31,9 @@ whyrun_safe_ruby_block 'validate swap size' do
     node['fb_swap']['size'] && node['fb_swap']['size'].to_i < 1024
   end
   block do
-    fail 'You asked for a swap device smaller than 1 MB. This is probably ' +
-         'not what you want. Please make it larger or disable swap altogether.'
+    fail 'fb_swap: You asked for a swap device smaller than 1 MB. This is ' +
+         'probably not what you want. Please make it larger or disable swap ' +
+         'altogether.'
   end
 end
 
@@ -50,7 +51,7 @@ whyrun_safe_ruby_block 'validate resize' do
     (node['fb_swap']['size'].to_i - 4) > node['memory']['swap']['total'].to_i
   end
   block do
-    fail 'fb_swap does not support increasing the size of a swap device'
+    fail 'fb_swap: We do not support increasing the size of a swap device'
   end
 end
 

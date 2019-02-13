@@ -69,7 +69,7 @@ end
     # is first created and swap is already enabled and correct.
     not_if do
       node['fb_swap']['_calculated']["#{type}_size_bytes"] ==
-      node['fb_swap']['_calculated']["#{type}_current_size_bytes"]
+        node['fb_swap']['_calculated']["#{type}_current_size_bytes"]
     end
     # Restarting this unit itself is fairly fast but it's tied to the swap unit
     # by a PartOf relationship. The systemd provider for the service resource
