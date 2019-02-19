@@ -31,6 +31,10 @@ module FB
       'autostart' => true,
     }.freeze
 
+    REQUIRED_TIMER_KEYS = ['calendar', 'command', 'name'].freeze
+
+    TIMER_COOKBOOK_KEYS = (TIMER_DEFAULTS.keys + REQUIRED_TIMER_KEYS).freeze
+
     module Calendar
       def every(value = nil)
         Every.new(value)

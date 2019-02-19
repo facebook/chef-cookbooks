@@ -56,6 +56,16 @@ action :run do
   # Setup current jobs
   node['fb_timers']['jobs'].to_hash.each_pair do |name, conf|
     conf = FB::Systemd::TIMER_DEFAULTS.merge(conf.merge('name' => name))
+    unknown_keys = conf.keys - FB::Systemd::TIMER_COOKBOOK_KEYS
+    if unknown_keys.any?
+      Chef::Log.warn(
+        "fb_timers: Unknown keys for timer #{name}: #{unknown_keys}",
+      )
+      if unknown_keys.find { |key| key.casecmp('user').zero? }
+        Chef::Log.warn('fb_timers: To set a user ' +
+                       "{ 'service_options' => {'User' => 'nobody' }")
+      end
+    end
 
     if conf['only_if']
       unless conf['only_if'].class == Proc

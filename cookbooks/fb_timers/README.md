@@ -24,6 +24,9 @@ For example:
 node.default['fb_timers']['jobs']['my_custom_job'] = {
     'calendar' => FB::Systemd::Calendar.every(15).minutes,
     'command' => '/usr/local/bin/foobar.sh',
+    'service_options' => {
+      'User' => 'nobody',
+    },
 }
 
 # More complex example with other fields you can set:
@@ -34,6 +37,9 @@ node.default['fb_timers']['jobs']['more_complex_job'] = {
     'accuracy' => '1h',
     'persistent' => true,
     'splay' => '0.5h',
+    'service_options' => {
+      'User' => 'nobody',
+    },
 }
 ```
 
