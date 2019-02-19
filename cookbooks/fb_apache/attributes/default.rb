@@ -95,6 +95,7 @@ default['fb_apache'] = {
     'mime_magic' => 'mod_mime_magic.so',
     'negotiation' => 'mod_negotiation.so',
     'php5' => 'libphp5.so',
+    'php7' => 'libphp7.so',
     'proxy_ajp' => 'mod_proxy_ajp.so',
     'proxy_balancer' => 'mod_proxy_balancer.so',
     'proxy_connect' => 'mod_proxy_connect.so',
