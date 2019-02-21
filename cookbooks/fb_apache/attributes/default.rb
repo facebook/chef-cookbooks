@@ -128,6 +128,9 @@ default['fb_apache'] = {
     'php5' => value_for_platform_family(
       'rhel' => 'mod_php',
     ),
+    'php7' => value_for_platform_family(
+      'rhel' => 'mod_php',
+    ),
     'ssl' => value_for_platform_family(
       'rhel' => 'mod_ssl',
     ),
