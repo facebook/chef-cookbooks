@@ -84,3 +84,32 @@ execute 'turn swap off' do
   end
   command '/sbin/swapoff -a'
 end
+
+# T40484873 mitigation - remove new device swap overrides and management unit.
+
+service 'Swap file unmask' do
+  service_name lazy { FB::FbSwap._swap_unit(node, 'file') }
+  action :unmask
+end
+
+%w{device file}.each do |type|
+  file "remove #{type} manage.conf" do
+    path lazy { FB::FbSwap._manage_conf(node, type) }
+    action :delete
+    notifies :run, 'fb_systemd_reload[system instance]', :immediately
+  end
+
+  directory "remove #{type} override_dir" do
+    path lazy { FB::FbSwap._override_dir(node, type) }
+    action :delete
+  end
+
+  service "manage-swap-#{type}.service" do
+    action :stop
+  end
+
+  file "/etc/systemd/system/manage-swap-#{type}.service" do
+    action :delete
+    notifies :run, 'fb_systemd_reload[system instance]', :immediately
+  end
+end
