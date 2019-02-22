@@ -27,8 +27,8 @@ action :run do
       cmd.error!
       output = cmd.stdout.split("\n")
       Chef::Log.debug("apt-key output: #{output.join("\n")}")
-      installed_keys = output.select { |x| x.match(/([A-Z0-9]{4}\s[A-Z0-9]{4})$/) }.map do |x|
-        x[%r{(?<keyid>[A-Z0-9]{4}\s[A-Z0-9]{4})$}, 'keyid'].sub(' ', '')
+      installed_keys = output.select { |x| x.match(/([\w|\s]+)$/) }.map do |x|
+        x[%r/(?<keyid>[\w]{4}\s[\w]{4})$/, 'keyid'].sub(' ', '')
       end
     end
     Chef::Log.debug("Installed keys: #{installed_keys.join(', ')}")
