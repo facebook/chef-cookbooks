@@ -28,7 +28,7 @@ action :run do
       output = cmd.stdout.split("\n")
       Chef::Log.debug("apt-key output: #{output.join("\n")}")
       installed_keys = output.select { |x| x.match(/([\w|\s]+)$/) }.map do |x|
-        x[%r/(?<keyid>[\w]{4}\s[\w]{4})$/, 'keyid'].sub(' ', '')
+        x[%r{(?<keyid>[\w]{4}\s[\w]{4})$}, 'keyid'].sub(' ', '')
       end
     end
     Chef::Log.debug("Installed keys: #{installed_keys.join(', ')}")
