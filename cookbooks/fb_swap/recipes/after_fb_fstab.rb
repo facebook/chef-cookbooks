@@ -16,29 +16,16 @@
   next if type == 'device' && FB::FbSwap._device(node).nil?
 
   service "start #{type} swap" do
+    only_if { node['fb_swap']['_calculated']["#{type}_size_bytes"].positive? }
     service_name lazy { FB::FbSwap._swap_unit(node, type) }
     action [:start]
-    only_if do
-      node['fb_swap']['enabled'] &&
-      node['fb_swap']['_calculated']["#{type}_size_bytes"].positive?
-    end
   end
 
   service "stop #{type} swap" do
-    service_name lazy { FB::FbSwap._swap_unit(node, type) }
-    action [:stop]
     # stopping is dangerous. This is true if it's needed, and it's permitted.
     only_if { node['fb_swap']['_calculated']['swapoff_needed'] }
     not_if { node['fb_swap']['enabled'] }
-  end
-
-  service "mask #{type} swap" do
     service_name lazy { FB::FbSwap._swap_unit(node, type) }
-    action [:mask]
-    # if it's zero size, then mask it so the generated unit is ignored.
-    not_if do
-      node['fb_swap']['enabled'] &&
-      node['fb_swap']['_calculated']["#{type}_size_bytes"].positive?
-    end
+    action [:stop]
   end
 end

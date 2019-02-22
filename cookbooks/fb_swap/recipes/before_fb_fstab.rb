@@ -30,6 +30,7 @@ end
   manage_unit = "manage-swap-#{type}.service"
 
   whyrun_safe_ruby_block "Add #{type} swap to fstab" do
+    only_if { node['fb_swap']['_calculated']["#{type}_size_bytes"].positive? }
     block do
       # ask fb_fstab to create the unit
       node.default['fb_fstab']['mounts']["swap_#{type}"] = {
@@ -40,13 +41,11 @@ end
     end
   end
 
+  # T40484873 always unmask swap units
+  # Remove after 2019-03-01
   service "unmask #{type} swap" do
     service_name lazy { FB::FbSwap._swap_unit(node, type) }
     action [:unmask]
-    only_if do
-      node['fb_swap']['enabled'] &&
-      node['fb_swap']['_calculated']["#{type}_size_bytes"].positive?
-    end
   end
 
   template "/etc/systemd/system/#{manage_unit}" do
@@ -85,27 +84,28 @@ end
   # Note that swap units are more limited in what systemd options they
   # take from the options column.
   file "remove #{type} manage.conf" do
+    not_if { node['fb_swap']['_calculated']["#{type}_size_bytes"].positive? }
     path lazy { FB::FbSwap._manage_conf(node, type) }
     action :delete
-    not_if { node['fb_swap']['enabled'] }
   end
 
   directory "remove #{type} override_dir" do
+    not_if { node['fb_swap']['_calculated']["#{type}_size_bytes"].positive? }
     path lazy { FB::FbSwap._override_dir(node, type) }
     action :delete
-    not_if { node['fb_swap']['enabled'] }
   end
 
   directory "create #{type} override_dir" do
+    only_if { node['fb_swap']['_calculated']["#{type}_size_bytes"].positive? }
     path lazy { FB::FbSwap._override_dir(node, type) }
     owner 'root'
     group 'root'
     mode '0755'
-    only_if { node['fb_swap']['enabled'] }
   end
 
   # Note: FB031 is masked because the path is worked out at runtime.
   template "template #{type} manage.conf" do # ~FB031
+    only_if { node['fb_swap']['_calculated']["#{type}_size_bytes"].positive? }
     path lazy { FB::FbSwap._manage_conf(node, type) }
     source 'manage-override.conf.erb'
     variables(:type => type)
@@ -113,7 +113,6 @@ end
     group 'root'
     mode '0644'
     notifies :run, 'fb_systemd_reload[system instance]', :immediately
-    only_if { node['fb_swap']['enabled'] }
   end
 end
 
