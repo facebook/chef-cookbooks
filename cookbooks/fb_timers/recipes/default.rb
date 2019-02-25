@@ -15,36 +15,6 @@ unless node.systemd?
   fail 'fb_timers is only available for use on systemd-managed machines.'
 end
 
-whyrun_safe_ruby_block 'chef systemd version' do
-  action :run
-  block do
-    # We want to ensure this
-    # https://github.com/systemd/systemd/commit/f777b4345e8c57e739bda746f78757d0fb136ac7
-    # behavior changed in systemd we using with fb_timers cookbook.
-    min_version = '231'
-    if node.centos? && !node.centos7?
-      helper = Chef::Provider::Package::Dnf::PythonHelper.instance
-      # this casting to string isn't beautifull, but
-      # for some reasons epoch breaks comparsion later
-      installed_version = helper.query(:whatinstalled, 'systemd').version.
-                          to_s.gsub(/^[0-9]+:/, '')
-    elsif node.centos? && node.centos7?
-      yc = Chef::Provider::Package::Yum::YumCache.instance
-      installed_version = yc.installed_version('systemd')
-    else
-      Chef::Log.debug('Using ohai attribute to determine systemd version')
-      installed_version = node['packages']['systemd']['version']
-    end
-    min_version = FB::Version.new(min_version)
-    major_version = FB::Version.new(installed_version)
-    Chef::Log.debug("Comparing version #{major_version} against #{min_version}")
-    if major_version < min_version
-      fail "systemd version must be at least #{min_version}." +
-        "Found #{major_version}"
-    end
-  end
-end
-
 # This is not necessary for prod chef, but is necessary for the unit tests
 # of this cookbook, since they don't run fb_systemd in any other way.
 include_recipe 'fb_systemd::default'
