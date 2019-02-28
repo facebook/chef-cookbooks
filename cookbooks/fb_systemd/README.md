@@ -49,10 +49,61 @@ The following methods are available:
 
 ```
  FB::Systemd.path_to_unit('/dev/mapper/dm-0', 'swap')
- => dev-mapper-dm\x2d0.swap
+ => "dev-mapper-dm\\x2d0.swap"
+```
+
+* `FB::Systemd.sanitize(name)`
+  Sanitize a name by replacing non-alphanumeric characters (including spaces)
+  with underscores.
+
+```
+ FB::Systemd.sanitize('disable network')
+ => "disable_network"
+```
+
+* `FB::Systemd.to_ini(content)`
+  Render a Hash or a String into an INI-formatted String that's compliant with
+  [systemd.syntax](https://www.freedesktop.org/software/systemd/man/systemd.syntax.html).
+
+```
+ FB::Systemd.to_ini({'Service'=>{'User'=>'nobody'}})
+ => "[Service]\nUser = nobody\n"
 ```
 
 ### Providers
+
+* a `fb_systemd_override` custom resource to manage systemd unit drop-in
+  overrides, taking inspiration from the `systemd_unit` builtin resource
+
+```
+fb_systemd_override 'run-as-nobody' do
+  unit_name 'foo.service'
+  content({
+    'Service' => {
+      'User' => 'nobody',
+    },
+  })
+end
+```
+
+  The `unit_name` attribute defines the unit the override will be applied to.
+  The override itself is named via `override_name` (which is also the name
+  property for the resource); in the interest of sanity, the resource will
+  sanitize this via `FB::Systemd.sanitize`. The contents of the override are
+  defined via `contents`, which works the same as the eponymous attribute in
+  `systemd_unit`. Note however that if you are overriding a list and want to
+  reset it, you will have to specify `content` as a string, e.g.:
+
+```
+fb_systemd_override 'disable-controllers' do
+  unit_name 'foo.slice'
+  content <<-EOU.gsub(/^\s+/, '')
+  [Slice]
+  DisableControllers=
+  DisableControllers=cpu
+  EOU
+end
+```
 
 * a `fb_systemd_reload` LWRP to safetly trigger a daemon reload for a systemd
   instance (at the system or user level)
