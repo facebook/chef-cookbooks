@@ -220,6 +220,11 @@ class Chef
       File.directory?('/sys/firmware/efi')
     end
 
+    def coreboot?
+      File.directory?('/sys/firmware/vpd') ||
+        node['dmi']['bios']['vendor'] == 'coreboot'
+    end
+
     def aarch64?
       node['kernel']['machine'] == 'aarch64'
     end
