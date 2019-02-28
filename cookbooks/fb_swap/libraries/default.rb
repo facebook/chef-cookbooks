@@ -206,7 +206,7 @@ module FB
     def self._get_swaps_enabled
       cmd = Mixlib::ShellOut.new([
         '/usr/sbin/swapon',
-        '--show=NAME,TYPE,SIZE',
+        '--show=NAME,TYPE,SIZE,USED',
         '--raw',
         '--bytes',
         '--noheadings',
@@ -214,12 +214,13 @@ module FB
       cmd.error!
 
       cmd.stdout.each_line.collect do |line|
-        file, mode, size_bytes = line.chomp.split
+        file, mode, size_bytes, used_bytes = line.chomp.split
         {
           'file' => file,
           'mode' => mode,
           # add 4k to the size to add the header back in
           'size_bytes' => size_bytes.to_i + 4096,
+          'used_bytes' => used_bytes.to_i,
         }
       end
     end
