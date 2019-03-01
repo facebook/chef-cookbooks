@@ -55,7 +55,10 @@ action :delete do
     # if the override directory is empty, there's no reason to keep it around so
     # we reap it as well; this is done here to ensure multiple overrides can be
     # defined against the same unit
-    if ::Dir.empty?(override_dir)
+    #
+    # NOTE: we're not using Dir.empty? here as that was added in ruby 2.4, and
+    # Chef 12 is still on 2.3
+    if (::Dir.entries(override_dir) - %w{. ..}).empty?
       directory override_dir do
         action :delete
       end
