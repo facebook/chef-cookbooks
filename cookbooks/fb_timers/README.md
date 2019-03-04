@@ -60,8 +60,11 @@ Required fields:
 Optional fields:
 
 * `timeout`: How long to allow the command to run before it is stopped
-  forcefully. Corresponds to the `TimeoutSec` field of the systemd timer.
-  (defaults to `infinity`)
+  forcefully. Corresponds to the `TimeoutStartSec` field of the systemd
+  service. (defaults to `infinity`)
+* `timeout_stop`: How long to allow a timer to be deactivating for before being
+  more forceful. Corresponds to the `TimeoutStopSec` field of the systemd
+  service. (defaults to `90s`)
 * `accuracy`: systemd will attempt to group periodic tasks according to their
   calendar fields within their accuracy. Specifying a low accuracy forces
   systemd to run your task at the specified, giving systemd less control over

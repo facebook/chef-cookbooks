@@ -20,6 +20,7 @@ module FB
       # command is required
       # calendar is required
       'timeout' => 'infinity',
+      'timeout_stop' => '90s',
       'accuracy' => '1s',
       'persistent' => false,
       'splay' => '0s',

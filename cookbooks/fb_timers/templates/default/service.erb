@@ -11,7 +11,8 @@ After=network.target
 [Service]
 Type=oneshot
 ExecStart=<%= @conf['command'] %>
-TimeoutSec=<%= @conf['timeout'] %>
+TimeoutStartSec=<%= @conf['timeout'] %>
+TimeoutStopSec=<%= @conf['timeout_stop'] %>
 <% if @conf['syslog'] %>
 StandardOutput=syslog
 StandardError=syslog
