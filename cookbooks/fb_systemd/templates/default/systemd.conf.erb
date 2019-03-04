@@ -1,21 +1,30 @@
 # This file is maintained by Chef. Do not edit, all changes will be
 # overwritten. See fb_systemd/README.md
 
+<%
+  if node['fb_systemd'][@config]['config']
+    config = node['fb_systemd'][@config]['config'].to_hash
+  else
+    config = node['fb_systemd'][@config].to_hash
+  end
+
+  if node.in_shard?(0)
+%>
+<%=  FB::Systemd.to_ini({@section => Hash[config.sort]}) %>
+<% else %>
 [<%= @section %>]
-<% if node['fb_systemd'][@config]['config']
-     keys = node['fb_systemd'][@config]['config'].to_hash
-   else
-     keys = node['fb_systemd'][@config].to_hash
-   end
-   keys.sort.each do |key, val|
-     if val.is_a?(TrueClass)
-       v = 'yes'
-     elsif val.is_a?(FalseClass)
-       v = 'no'
-     elsif val.is_a?(Array)
-       v = val.join(' ')
-     else
-       v = val
-     end %>
-<%=  key %>=<%= v %>
+<%
+     config.sort.each do |key, val|
+       if val.is_a?(TrueClass)
+         v = 'yes'
+       elsif val.is_a?(FalseClass)
+         v = 'no'
+       elsif val.is_a?(Array)
+         v = val.join(' ')
+       else
+         v = val
+       end
+%>
+<%=    key %>=<%= v %>
+<%  end %>
 <% end %>
