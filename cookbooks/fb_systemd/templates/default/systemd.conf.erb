@@ -8,7 +8,7 @@
     config = node['fb_systemd'][@config].to_hash
   end
 
-  if node.in_shard?(14)
+  if node.in_shard?(24)
 %>
 <%=  FB::Systemd.to_ini({@section => Hash[config.sort]}) %>
 <% else %>
