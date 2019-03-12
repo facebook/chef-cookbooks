@@ -158,7 +158,7 @@ module FB
       FB::Fstab.canonicalize_device(device, node)
     end
 
-    # Given a *mounted* device from node['filesystem2'] in `mounted_data`, check
+    # Given a *mounted* device from node['filesystem'] in `mounted_data`, check
     # to see if we want to keep it. It looks in `desired_mounts` (an export of
     # node['fb_fstab']['mounts'] as well as `base_mounts` (a hash
     # representation of the saved OS mounts file).
@@ -241,7 +241,8 @@ module FB
       # we're going to iterate over specified mounts a lot, lets dump it
       desired_mounts = node['fb_fstab']['mounts'].to_hash
 
-      node['filesystem2']['by_pair'].to_hash.each_value do |mounted_data|
+      fs_data = FB::Fstab.get_filesystem_data(node)
+      fs_data['by_pair'].to_hash.each_value do |mounted_data|
         # ohai uses many things to populate this structure, one of which
         # is 'blkid' which gives info on devices that are not currently
         # mounted. This skips those, plus swap, of course.
@@ -397,9 +398,10 @@ module FB
       # Start with checking if it was mounted the way we would mount it
       # this is ALMOST the same as the 'is it identical' check for non-tmpfs
       # filesystems except that with tmpfs we don't treat 'auto' as equivalent
+      fs_data = FB::Fstab.get_filesystem_data(node)
       key = "#{desired['device']},#{desired['mount_point']}"
-      if node['filesystem2']['by_pair'][key]
-        mounted = node['filesystem2']['by_pair'][key].to_hash
+      if fs_data['by_pair'][key]
+        mounted = fs_data['by_pair'][key].to_hash
         if mounted['fs_type'] == 'tmpfs'
           Chef::Log.debug(
             "fb_fstab: tmpfs #{desired['device']} on " +
@@ -424,11 +426,10 @@ module FB
       end
       # OK, if that's not the case, we don't have the same device, which
       # is OK. Find out if we have something mounted at the same spot, and
-      # get its device name so we can find it's entry in node['filesystem2']
-      if node['filesystem2']['by_mountpoint'][desired['mount_point']]
+      # get its device name so we can find it's entry in node['filesystem']
+      if fs_data['by_mountpoint'][desired['mount_point']]
         # If we are here the mountpoints are the same...
-        mounted =
-          node['filesystem2']['by_mountpoint'][desired['mount_point']].to_hash
+        mounted = fs_data['by_mountpoint'][desired['mount_point']].to_hash
         # OK, if it's tmpfs as well, we're diong good
         if mounted['fs_type'] == 'tmpfs'
           Chef::Log.warn(
@@ -482,19 +483,20 @@ module FB
       end
 
       key = "#{desired['device']},#{desired['mount_point']}"
+      fs_data = FB::Fstab.get_filesystem_data(node)
       mounted = nil
-      if node['filesystem2']['by_pair'][key]
-        mounted = node['filesystem2']['by_pair'][key].to_hash
+      if fs_data['by_pair'][key]
+        mounted = fs_data['by_pair'][key].to_hash
       else
         key = "#{desired['device']}/,#{desired['mount_point']}"
-        if node['filesystem2']['by_pair'][key]
-          mounted = node['filesystem2']['by_pair'][key].to_hash
+        if fs_data['by_pair'][key]
+          mounted = fs_data['by_pair'][key].to_hash
         end
       end
 
       if mounted
         Chef::Log.debug(
-          "fb_fstab: There is an entry in node['filesystem2'] for #{key}",
+          "fb_fstab: There is an entry in node['filesystem'] for #{key}",
         )
         # If it's a virtual device, we require the fs type to be identical.
         # otherwise, we require them to be similar. This is because 'auto'
@@ -537,7 +539,7 @@ module FB
       # once place, we look up this device and see if it moved or just isn't
       # mounted
       unless ['nfs', 'glusterfs'].include?(desired['type'])
-        device = node['filesystem2']['by_device'][desired['device']]
+        device = fs_data['by_device'][desired['device']]
         if device && device['mounts'] && !device['mounts'].empty?
           Chef::Log.warn(
             "fb_fstab: #{desired['device']} is at #{device['mounts']}, but" +
@@ -549,8 +551,8 @@ module FB
 
       # Ok, this device isn't mounted, but before we return we need to check
       # if anything else is mounted where we want to be.
-      if node['filesystem2']['by_mountpoint'][desired['mount_point']]
-        devices = node['filesystem2']['by_mountpoint'][
+      if fs_data['by_mountpoint'][desired['mount_point']]
+        devices = fs_data['by_mountpoint'][
             desired['mount_point']]['devices']
         Chef::Log.warn(
           "fb_fstab: Device #{desired['device']} desired at " +
@@ -563,7 +565,7 @@ module FB
     end
 
     def check_wanted_filesystems
-      # before we do anything... node['filesystem2'] is a mapping of devices
+      # before we do anything... node['filesystem'] is a mapping of devices
       # to mountpoint, but that won't work for things with a device of "none",
       # so build a reverse mapping too
       in_maint_disks = FB::Fstab.get_in_maint_disks
@@ -573,7 +575,7 @@ module FB
       node['fb_fstab']['mounts'].to_hash.each_value do |desired_data|
         # Using "none" as a device is deprecated. You can use descriptive
         # strings now. Doing so is not only the new hotness, but it also
-        # prevents dupes in node['filesystem2'] - so we require it.
+        # prevents dupes in node['filesystem'] - so we require it.
         if desired_data['device'] == 'none'
           Chef::Log.warn('fb_fstab: We do not permit "none" devices, please ' +
                           'use a descriptive device name')

@@ -16,6 +16,13 @@ require_relative '../libraries/provider'
 
 describe 'FB::Fstab' do
   let(:node) { Chef::Node.new }
+  let(:attr_name) do
+    if node['filesystem2']
+      'filesystem2'
+    else
+      'filesystem'
+    end
+  end
   # rubocop:disable LineLength
   full_contents = <<EOF
 #
@@ -80,7 +87,7 @@ EOF
 
   context 'autofs_parent' do
     before(:each) do
-      node.default['filesystem2']['by_pair']['foo:/bar/baz,/mnt/foo'] = {
+      node.default[attr_name]['by_pair']['foo:/bar/baz,/mnt/foo'] = {
         'device' => 'foo:/bar/baz',
         'mount' => '/mnt/foo',
         'fs_type' => 'autofs',
@@ -98,7 +105,7 @@ EOF
   end
   context 'label_to_device' do
     it 'should find the right label' do
-      node.default['filesystem2']['by_device'] = {
+      node.default[attr_name]['by_device'] = {
         'foo' => {
           'label' => 'label1',
         },
@@ -109,7 +116,7 @@ EOF
       FB::Fstab.label_to_device('label2', node).should eq('bar')
     end
     it 'should not get confused by fs without label' do
-      node.default['filesystem2']['by_device'] = {
+      node.default[attr_name]['by_device'] = {
         'foo' => {
           'uuid' => 'uuid1',
         },
@@ -120,7 +127,7 @@ EOF
       FB::Fstab.label_to_device('label2', node).should eq('bar')
     end
     it 'should fail on missing label' do
-      node.default['filesystem2']['by_device'] = {
+      node.default[attr_name]['by_device'] = {
         'foo' => {
           'uuid' => 'uuid1',
         },
@@ -135,7 +142,7 @@ EOF
   end
   context 'uuid_to_device' do
     it 'should find the right uuid' do
-      node.default['filesystem2']['by_device'] = {
+      node.default[attr_name]['by_device'] = {
         'foo' => {
           'uuid' => 'uuid1',
         },
@@ -146,7 +153,7 @@ EOF
       FB::Fstab.uuid_to_device('uuid2', node).should eq('bar')
     end
     it 'should not get confused by fs without uuid' do
-      node.default['filesystem2']['by_device'] = {
+      node.default[attr_name]['by_device'] = {
         'foo' => {
           'label' => 'label1',
         },
@@ -157,7 +164,7 @@ EOF
       FB::Fstab.uuid_to_device('uuid2', node).should eq('bar')
     end
     it 'should fail on missing uuid' do
-      node.default['filesystem2']['by_device'] = {
+      node.default[attr_name]['by_device'] = {
         'foo' => {
           'label' => 'label1',
         },
@@ -243,7 +250,7 @@ EOF
       }
     end
     before do
-      node.default['filesystem2']['by_device'] = {
+      node.default[attr_name]['by_device'] = {
         '/dev/sda1' => {
           'mounts' => ['/'],
           'fs_type' => 'ext4',
@@ -366,8 +373,15 @@ describe 'FB::FstabProvider', :include_provider do
 
   # rubocop:enable LineLength
   let(:node) { Chef::Node.new }
+  let(:attr_name) do
+    if node['filesystem2']
+      'filesystem2'
+    else
+      'filesystem'
+    end
+  end
   before do
-    node.default['filesystem2'] = {
+    node.default[attr_name] = {
       'by_pair' => {},
       'by_device' => {},
       'by_mountpoint' => {},
@@ -571,7 +585,7 @@ describe 'FB::FstabProvider', :include_provider do
       ).should eq(false)
     end
     it 'should keep autofs-parented mounts' do
-      node.default['filesystem2']['by_pair']['auto.waka,/foo'] = {
+      node.default[attr_name]['by_pair']['auto.waka,/foo'] = {
         'device' => 'auto.waka',
         'mount' => '/foo',
         'fs_type' => 'autofs',
@@ -587,7 +601,7 @@ describe 'FB::FstabProvider', :include_provider do
       ).should eq(true)
     end
     it 'should keep autofs-parented mounts - non NFS' do
-      node.default['filesystem2']['by_pair']['auto.waka,/foo'] = {
+      node.default[attr_name]['by_pair']['auto.waka,/foo'] = {
         'device' => 'auto.waka',
         'mount' => '/foo',
         'fs_type' => 'autofs',
@@ -603,7 +617,7 @@ describe 'FB::FstabProvider', :include_provider do
       ).should eq(true)
     end
     it 'should not keep non-autofs-parented NFS mounts' do
-      node.default['filesystem2']['by_pair']['auto.waka,/foo'] = {
+      node.default[attr_name]['by_pair']['auto.waka,/foo'] = {
         'device' => 'auto.waka',
         'mount' => '/foo',
         'fs_type' => 'autofs',
@@ -625,13 +639,13 @@ describe 'FB::FstabProvider', :include_provider do
       node.default['fb_fstab']['type_normalization_map'] = {}
     end
     it 'should detect oldschool tmpfs as the same' do
-      node.default['filesystem2']['by_pair']['tmpfs,/mnt/waka'] = {
+      node.default[attr_name]['by_pair']['tmpfs,/mnt/waka'] = {
         'device' => 'tmpfs',
         'mount' => '/mnt/waka',
         'fs_type' => 'tmpfs',
         'mount_options' => ['size=100M', 'rw'],
       }
-      node.default['filesystem2']['by_mountpoint']['/mnt/waka'] = {
+      node.default[attr_name]['by_mountpoint']['/mnt/waka'] = {
         'devices' => ['tmpfs'],
         'fs_type' => 'tmpfs',
         'mount_options' => ['size=100M', 'rw'],
@@ -653,7 +667,7 @@ describe 'FB::FstabProvider', :include_provider do
       ).should eq(:same)
     end
     it 'should detect identical filesystems as such' do
-      node.default['filesystem2']['by_pair']['awesomesauce,/mnt/waka'] = {
+      node.default[attr_name]['by_pair']['awesomesauce,/mnt/waka'] = {
         'device' => 'awesomesauce',
         'mount' => '/mnt/waka',
         'fs_type' => 'tmpfs',
@@ -672,7 +686,7 @@ describe 'FB::FstabProvider', :include_provider do
       ).should eq(:same)
     end
     it 'should detect remounts' do
-      node.default['filesystem2']['by_pair']['awesomesauce,/mnt/waka'] = {
+      node.default[attr_name]['by_pair']['awesomesauce,/mnt/waka'] = {
         'device' => 'awesomesauce',
         'mount' => '/mnt/waka',
         'fs_type' => 'tmpfs',
@@ -691,13 +705,13 @@ describe 'FB::FstabProvider', :include_provider do
       ).should eq(:remount)
     end
     it 'should detect conflict' do
-      node.default['filesystem2']['by_pair']['/dev/sdc1,/mnt/waka'] = {
+      node.default[attr_name]['by_pair']['/dev/sdc1,/mnt/waka'] = {
         'device' => '/dev/sdc1',
         'mount' => '/mnt/waka',
         'fs_type' => 'tmpfs',
         'mount_options' => ['size=100M', 'rw'],
       }
-      node.default['filesystem2']['by_mountpoint']['/mnt/waka'] = {
+      node.default[attr_name]['by_mountpoint']['/mnt/waka'] = {
         'device' => '/dev/sdc1',
         'mount' => '/mnt/waka',
         'fs_type' => 'xfs',
@@ -716,7 +730,7 @@ describe 'FB::FstabProvider', :include_provider do
       ).should eq(:conflict)
     end
     it 'should detect missing fs' do
-      node.default['filesystem2'] = {
+      node.default[attr_name] = {
         'by_pair' => {},
         'by_device' => {},
         'by_mountpoint' => {},
@@ -740,7 +754,7 @@ describe 'FB::FstabProvider', :include_provider do
       node.default['fb_fstab']['type_normalization_map'] = {}
     end
     it 'should detect identical mounts as such' do
-      node.default['filesystem2']['by_pair']['/dev/sdd1,/mnt/d0'] = {
+      node.default[attr_name]['by_pair']['/dev/sdd1,/mnt/d0'] = {
         'device' => '/dev/sdd1',
         'mount' => '/mnt/d0',
         'fs_type' => 'xfs',
@@ -759,7 +773,7 @@ describe 'FB::FstabProvider', :include_provider do
       ).should eq(:same)
     end
     it 'should detect remount needed' do
-      node.default['filesystem2']['by_pair']['/dev/sdd1,/mnt/d0'] = {
+      node.default[attr_name]['by_pair']['/dev/sdd1,/mnt/d0'] = {
         'device' => '/dev/sdd1',
         'mount' => '/mnt/d0',
         'fs_type' => 'xfs',
@@ -778,13 +792,13 @@ describe 'FB::FstabProvider', :include_provider do
       ).should eq(:remount)
     end
     it 'should detect moved filesystems - with different opts' do
-      node.default['filesystem2']['by_pair']['/dev/sdd1,/mnt/d0'] = {
+      node.default[attr_name]['by_pair']['/dev/sdd1,/mnt/d0'] = {
         'device' => '/dev/sdd1',
         'mount' => '/mnt/d0',
         'fs_type' => 'xfs',
         'mount_options' => ['rw'],
       }
-      node.default['filesystem2']['by_device']['/dev/sdd1'] = {
+      node.default[attr_name]['by_device']['/dev/sdd1'] = {
         'mounts' => ['/mnt/d0'],
         'fs_type' => 'xfs',
         'mount_options' => ['rw'],
@@ -802,7 +816,7 @@ describe 'FB::FstabProvider', :include_provider do
       ).should eq(:moved)
     end
     it 'should detect handle auto as not an fstype conflict' do
-      node.default['filesystem2']['by_pair']['/dev/sdd1,/mnt/d0'] = {
+      node.default[attr_name]['by_pair']['/dev/sdd1,/mnt/d0'] = {
         'device' => '/dev/sdd1',
         'mount' => '/mnt/d0',
         'fs_type' => 'auto',
@@ -821,7 +835,7 @@ describe 'FB::FstabProvider', :include_provider do
       ).should eq(:same)
     end
     it 'should detect fstype conflict - with different opts' do
-      node.default['filesystem2']['by_pair']['/dev/sdd1,/mnt/d0'] = {
+      node.default[attr_name]['by_pair']['/dev/sdd1,/mnt/d0'] = {
         'device' => '/dev/sdd1',
         'mount' => '/mnt/d0',
         'fs_type' => 'xfs',
@@ -840,18 +854,18 @@ describe 'FB::FstabProvider', :include_provider do
       ).should eq(:conflict)
     end
     it 'should detect something-already-there conflict' do
-      node.default['filesystem2']['by_pair']['/dev/sdd1,/mnt/d0'] = {
+      node.default[attr_name]['by_pair']['/dev/sdd1,/mnt/d0'] = {
         'device' => '/dev/sdd1',
         'mount' => '/mnt/d0',
         'fs_type' => 'xfs',
         'mount_options' => ['rw', 'noatime'],
       }
-      node.default['filesystem2']['by_device']['/dev/sdd1'] = {
+      node.default[attr_name]['by_device']['/dev/sdd1'] = {
         'mounts' => ['/mnt/d0'],
         'fs_type' => 'xfs',
         'mount_options' => ['rw', 'noatime'],
       }
-      node.default['filesystem2']['by_mountpoint']['/mnt/d0'] = {
+      node.default[attr_name]['by_mountpoint']['/mnt/d0'] = {
         'devices' => ['/dev/sdd1'],
         'fs_type' => 'xfs',
         'mount_options' => ['rw', 'noatime'],
@@ -869,7 +883,7 @@ describe 'FB::FstabProvider', :include_provider do
       ).should eq(:conflict)
     end
     it 'should detect missing filesystems' do
-      node.default['filesystem2']['by_pair']['/dev/sda1,/mnt/waka'] = {
+      node.default[attr_name]['by_pair']['/dev/sda1,/mnt/waka'] = {
         'device' => '/dev/sda1',
         'mount' => '/mnt/waka',
         'fs_type' => 'xfs',
@@ -888,7 +902,7 @@ describe 'FB::FstabProvider', :include_provider do
       ).should eq(:missing)
     end
     it 'should detect missing filesystems even if device is in ohai' do
-      node.default['filesystem2']['by_pair'] = {
+      node.default[attr_name]['by_pair'] = {
         '/dev/sda1,/mnt/waka' => {
           'device' => '/dev/sda1',
           'mount' => '/mnt/waka',
@@ -903,7 +917,7 @@ describe 'FB::FstabProvider', :include_provider do
           'label' => '/mnt/d0',
         },
       }
-      node.default['filesystem2']['by_device'] = {
+      node.default[attr_name]['by_device'] = {
         '/dev/sda1' => {
           'mounts' => ['/mnt/waka'],
           'fs_type' => 'xfs',

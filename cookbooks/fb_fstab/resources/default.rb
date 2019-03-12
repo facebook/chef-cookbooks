@@ -19,7 +19,11 @@ end
 action_class do
   def reload_filesystems
     ohai 'reload filesystems for fb_fstab' do
-      plugin 'filesystem2'
+      if node['filesystem2']
+        plugin 'filesystem2'
+      else
+        plugin 'filesystem'
+      end
       action :nothing
     end.run_action(:reload)
   end
