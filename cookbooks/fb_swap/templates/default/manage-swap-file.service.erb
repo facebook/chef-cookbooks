@@ -1,6 +1,7 @@
 [Unit]
 Description=Manage swap file
-RequiresMountsFor=<%= node['fb_swap']['filesystem'] %>
+DefaultDependencies=no
+RequiresMountsFor=/usr/local/libexec/manage-swap-file <%= node['fb_swap']['filesystem'] %>
 
 [Service]
 Type=oneshot

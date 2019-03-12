@@ -1,5 +1,8 @@
 [Unit]
 Description=Format size of swap device
+DefaultDependencies=no
+Requires=-.mount
+After=-.mount
 
 [Service]
 Type=oneshot
