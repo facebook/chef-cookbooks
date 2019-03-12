@@ -50,11 +50,17 @@ module FB
 
         def hours
           fail "A value is required for #{__method__}" unless @value
+          fail 'A value cannot be > 24' if @value > 24
+          fail 'A value cannot be <= 0' if @value <= 0
+          return 'daily' if @value == 24
           "0/#{@value}:0:0"
         end
 
         def minutes
           fail "A value is required for #{__method__}" unless @value
+          fail 'A value cannot be > 60' if @value > 60
+          fail 'A value cannot be <= 0' if @value <= 0
+          return 'hourly' if @value == 60
           "*:0/#{@value}:0"
         end
 
