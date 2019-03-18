@@ -181,14 +181,6 @@ module FB
       FB::Systemd.path_to_unit(self._path(node, type), 'swap')
     end
 
-    def self._override_dir(node, type)
-      "/etc/systemd/system/#{self._swap_unit(node, type)}.d"
-    end
-
-    def self._manage_conf(node, type)
-      "#{self._override_dir(node, type)}/manage.conf"
-    end
-
     def self._get_max_device_size_bytes(device)
       cmd = Mixlib::ShellOut.new([
         '/usr/sbin/blockdev',

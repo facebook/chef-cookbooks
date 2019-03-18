@@ -93,14 +93,9 @@ service 'Swap file unmask' do
 end
 
 %w{device file}.each do |type|
-  file "remove #{type} manage.conf" do
-    path lazy { FB::FbSwap._manage_conf(node, type) }
-    action :delete
-    notifies :run, 'fb_systemd_reload[system instance]', :immediately
-  end
-
-  directory "remove #{type} override_dir" do
-    path lazy { FB::FbSwap._override_dir(node, type) }
+  fb_systemd_override "remove #{type} swap override" do
+    override_name 'manage'
+    unit_name lazy { FB::FbSwap._swap_unit(node, type) }
     action :delete
   end
 

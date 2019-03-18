@@ -83,36 +83,33 @@ end
   # Override the fb_fstab -> fstab-generator unit with some extra deps
   # Note that swap units are more limited in what systemd options they
   # take from the options column.
-  file "remove #{type} manage.conf" do
-    not_if { node['fb_swap']['_calculated']["#{type}_size_bytes"].positive? }
-    path lazy { FB::FbSwap._manage_conf(node, type) }
-    action :delete
-  end
-
-  directory "remove #{type} override_dir" do
-    not_if { node['fb_swap']['_calculated']["#{type}_size_bytes"].positive? }
-    path lazy { FB::FbSwap._override_dir(node, type) }
-    action :delete
-  end
-
-  directory "create #{type} override_dir" do
+  fb_systemd_override "#{type} swap override" do
     only_if { node['fb_swap']['_calculated']["#{type}_size_bytes"].positive? }
-    path lazy { FB::FbSwap._override_dir(node, type) }
-    owner 'root'
-    group 'root'
-    mode '0755'
+    override_name 'manage'
+    unit_name lazy { FB::FbSwap._swap_unit(node, type) }
+    content({
+              'Unit' => {
+                'BindsTo' => manage_unit,
+                'After' => manage_unit,
+                'PartOf' => manage_unit,
+              },
+              # Stopping swap is pathologically slow on Linux today. The general
+              # default for stopping units in systemd is 90s. Here we'll use
+              # 100s per GiB as a heuristic on top of the default.
+              # T39598868 Disabled until workaround or bug fix
+              # 'Service' => {
+              #   'TimeoutStopSec' => 90 + 100 *
+              #   (node['fb_swap']['_calculated']["#{@type}_size_bytes"]
+              #    / 2 ** 30),
+              # }
+            })
   end
 
-  # Note: FB031 is masked because the path is worked out at runtime.
-  template "template #{type} manage.conf" do # ~FB031
-    only_if { node['fb_swap']['_calculated']["#{type}_size_bytes"].positive? }
-    path lazy { FB::FbSwap._manage_conf(node, type) }
-    source 'manage-override.conf.erb'
-    variables(:type => type)
-    owner 'root'
-    group 'root'
-    mode '0644'
-    notifies :run, 'fb_systemd_reload[system instance]', :immediately
+  fb_systemd_override "remove #{type} swap override" do
+    not_if { node['fb_swap']['_calculated']["#{type}_size_bytes"].positive? }
+    override_name 'manage'
+    unit_name lazy { FB::FbSwap._swap_unit(node, type) }
+    action :delete
   end
 end
 
