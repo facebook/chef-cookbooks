@@ -85,13 +85,6 @@ template '/usr/sbin/fb_iptables_reload' do
   )
 end
 
-execute 'reload iptables' do
-  only_if { node['fb_iptables']['enable'] }
-  command '/usr/sbin/fb_iptables_reload 4 reload'
-  action :nothing
-  subscribes :run, 'package[osquery]'
-end
-
 template "#{iptables_config_dir}/iptables-config" do
   owner 'root'
   group 'root'
@@ -121,13 +114,6 @@ template iptables_rules do
     end
   end
   notifies :run, 'execute[reload iptables]', :immediately
-end
-
-## ip6tables ##
-execute 'reload ip6tables' do
-  only_if { node['fb_iptables']['enable'] }
-  command '/usr/sbin/fb_iptables_reload 6 reload'
-  action :nothing
 end
 
 template "#{iptables_config_dir}/ip6tables-config" do

@@ -26,3 +26,17 @@ package packages do
   notifies :run, 'execute[reload iptables]'
   notifies :run, 'execute[reload ip6tables]'
 end
+
+execute 'reload iptables' do
+  only_if { node['fb_iptables']['enable'] }
+  command '/usr/sbin/fb_iptables_reload 4 reload'
+  action :nothing
+  subscribes :run, 'package[osquery]'
+end
+
+## ip6tables ##
+execute 'reload ip6tables' do
+  only_if { node['fb_iptables']['enable'] }
+  command '/usr/sbin/fb_iptables_reload 6 reload'
+  action :nothing
+end
