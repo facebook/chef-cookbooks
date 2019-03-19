@@ -58,3 +58,16 @@ package 'rpmbuild packages' do
   package_name %w{rpm-build rpm-sign}
   action :upgrade
 end
+
+directory '/etc/rpm' do
+  owner 'root'
+  group 'root'
+  mode '0755'
+end
+
+template '/etc/rpm/macros' do
+  source 'macros.erb'
+  owner 'root'
+  group 'root'
+  mode '0644'
+end
