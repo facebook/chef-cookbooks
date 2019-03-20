@@ -1,5 +1,3 @@
-# vim: syntax=ruby:expandtab:shiftwidth=2:softtabstop=2:tabstop=2
-#
 # Cookbook Name:: fb_iptables
 # Recipe:: default
 #

@@ -2,3 +2,11 @@
 <%=  table.tr('a-z', 'A-Z') %>_CHAINS="<%= chains.keys.join(' ') %>"
 <% end %>
 TABLES="<%= FB::Iptables::TABLES_AND_CHAINS.keys.join(' ') %>"
+<%
+  FB::Iptables::TABLES_AND_CHAINS.each do |table, chains|
+    managed_chains = node['fb_iptables'][table].select do |chain, info|
+      !info['rules'].empty?
+    end.keys
+%>
+STATIC_<%=  table.tr('a-z', 'A-Z') %>_CHAINS="<%= managed_chains.join(' ') %>"
+<% end %>

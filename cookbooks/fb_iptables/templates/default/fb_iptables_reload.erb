@@ -91,10 +91,11 @@ reload() {
     for table in $TABLES; do
       # iptables-restore triggers loading modules, even with empty
       # rules.  Let's avoid that (t28313270).
-      if ! grep -q $table /proc/net/ip*_tables_names; then
+      cap_table=$(echo $table | tr 'a-z' 'A-Z')
+      static_chains=$(eval echo \$STATIC_${cap_table}_CHAINS)
+      if [ -z "$static_chains" ] && ! grep -q $table /proc/net/ip*_tables_names; then
         continue
       fi
-      cap_table=$(echo $table | tr 'a-z' 'A-Z')
       dynamic_chains=$(eval echo \$${cap_table}_CHAINS)
       dump_dynamic_chains $table "$dynamic_chains"
       reload_static_chains $table "$dynamic_chains"
