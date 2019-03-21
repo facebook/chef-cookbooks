@@ -1,0 +1,20 @@
+#!/bin/sh
+
+set -ue
+PATH='/usr/local/sbin:/usr/local/bin:/bin:/usr/bin'
+
+RSYNC_SSL_PORT=${RSYNC_SSL_PORT:-10873}
+
+trap '[ -f "$CONFIG" ] && rm -f "$CONFIG"' TERM INT EXIT
+
+CONFIG=$(mktemp /tmp/rsync-ssl-stunnel.$$.XXXXXXXX)
+cat > $CONFIG <<EOF
+foreground = yes
+debug = 2
+connect = $1:$RSYNC_SSL_PORT
+client = yes
+CAfile = /etc/pki/tls/certs/ca-bundle.crt
+verify = 2
+EOF
+
+/usr/bin/stunnel5 $CONFIG

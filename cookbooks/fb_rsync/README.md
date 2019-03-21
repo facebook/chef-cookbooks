@@ -10,8 +10,10 @@ Attributes
 * node['fb_rsync']['rsync_command']
 * node['fb_rsync']['rsync_server']
 * node['fb_rsync']['rsyncd.conf']
+* node['fb_rsync']['stunnel-rsyncd.conf']
 * node['fb_rsync']['server']['enabled']
 * node['fb_rsync']['server']['start_at_boot']
+* node['fb_rsync']['secure_server']['enabled']
 
 Usage
 -----
@@ -19,6 +21,9 @@ The `fb_rsync::client` recipe installs rsync, and sets the
 `node['fb_rsync']['rsync_server']` node key. This key contains the rsync
 servers that a client can connect to. This is required in `fb_init`, which
 means any machine can be an rsync client.
+
+The `fb_rsync::secure_client` recipe installs stunnel package and adds wrapper
+to /usr/local/libexec/rsync-ssl-stunnel that could be used with `rsync --rsh` key
 
 ### Being an rsync client
 The `fb_rsync` LWRP can be used to run an rsync with configurable options.
@@ -145,3 +150,16 @@ node.default['fb_rsync']['rsyncd.conf']['enabled_modules'] << 'scripts'
 At this point when chef executes the `fb_rsync` recipe `/etc/rsyncd.conf`
 will be generated, and the recipe will manage running the rsync service in
 daemon mode.
+
+### Secure rsync under stunnel
+The `fb_rsync::secure_server` recipe will install systemd unit file for managing
+stunnel-rsyncd.service and generate configuration for stunnel.
+Rsync config file will be the same, as in non-secure version of
+`fb_rsync::server` recipe. That effectively allows to serve the same files
+via plain rsync protocol and encrypted at the same time.
+The default port is 10873.
+
+Daemon service enablement is controled via `node['fb_rsync']['secure_server']['enabled']`
+and mimics `fb_rsync::server` recipe behaviour.
+Configuration is located in `default['fb_rsync']['stunnel-rsyncd.conf']`
+and written with the same idea as `default['fb_rsync']['rsyncd.conf']` did.

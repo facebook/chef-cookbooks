@@ -1,0 +1,14 @@
+[Unit]
+Description=Stunnel wrapper arount rsyncd
+After=syslog.service
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+ExecStart=/usr/bin/stunnel5 /etc/stunnel/stunnel_rsyncd.conf
+TimeoutSec=60
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+

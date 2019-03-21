@@ -1,0 +1,22 @@
+# This file is managed by chef.
+<%
+   # convenience variables
+   enabled_modules = node['fb_rsync']['stunnel-rsyncd.conf']['enabled_modules']
+   global = node['fb_rsync']['stunnel-rsyncd.conf']['global']
+   modules = node['fb_rsync']['stunnel-rsyncd.conf']['modules']
+%>
+<% global.keys.sort.each do |key| -%>
+<%   if global[key] %>
+<%=   key %> = <%= global[key] %>
+<%   end -%>
+<% end -%>
+
+<% enabled_modules.flatten.sort.each do |mod| -%>
+[<%= mod %>]
+<%   modules[mod].keys.sort.each do |key| -%>
+<%   if modules[mod][key] %>
+<%=   key %> = <%= modules[mod][key] %>
+<%   end -%>
+<%   end -%>
+<% end -%>
+
