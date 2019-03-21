@@ -5,6 +5,7 @@ TABLES="<%= FB::Iptables::TABLES_AND_CHAINS.keys.join(' ') %>"
 <%
   FB::Iptables::TABLES_AND_CHAINS.each do |table, chains|
     managed_chains = node['fb_iptables'][table].select do |chain, info|
+      next if chain == 'only'
       !info['rules'].empty?
     end.keys
 %>
