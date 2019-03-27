@@ -13,7 +13,7 @@
 include_recipe 'fb_tmpclean::packages'
 
 case node['platform_family']
-when 'rhel'
+when 'rhel', 'fedora'
   config = '/etc/cron.daily/tmpwatch'
   config_src = 'tmpwatch.erb'
 when 'debian'

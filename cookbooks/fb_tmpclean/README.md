@@ -5,9 +5,10 @@ to ensure more appropriate filesystem cleanup.
 
 Requirements
 ------------
-Supports three platforms:
+Supports four platforms:
 * CentOS = tmpwatch
 * Debian = tmpreaper
+* Fedora = tmpwatch
 * macOS  = tmpreaper
 
 Attributes
@@ -31,7 +32,7 @@ The attributes are used like this:
 This is the lifetime of the files that are cleaned up by default by
 the respective packages. It defaults to 240, and the files covered are:
 
-* CentOS Includes (if exists)
+* CentOS and Fedora Includes (if exists)
   `/var/{cache/man,catman}/{cat?,X11R6/cat?,local/cat?}`
 
 ### directories
@@ -45,9 +46,9 @@ Add other entries as you need.
 This is an array of files to exclude from cleaning in all directories listed in
 `node['fb_tmpclean']['directories']`.
 
-Both tmpwatch (CentOS) and tmpreaper (Debian, macOS) use shell patterns for
-`excludes`. However, these "shell patterns" differ subtly on the two platforms,
-so test carefully. The defaults for `excludes` change per platform.
+Both tmpwatch (CentOS, Fedora) and tmpreaper (Debian, macOS) use shell patterns
+for `excludes`. However, these "shell patterns" differ subtly on the two
+platforms, so test carefully. The defaults for `excludes` change per platform.
 
 When the cron job is built, each of the excludes is appended to the list of
 directories with a slash appended to the directory name. An exclusion of
@@ -63,8 +64,8 @@ for dir in directories:
 
 ### timestamptype
 
-By default we tell tmpwatch (on CentOS) and tmpreaper (on Debian and macOS) to
-use mtime, but you can change this by setting
+By default we tell tmpwatch (on CentOS and Fedora) and tmpreaper (on Debian and
+macOS) to use mtime, but you can change this by setting
 `node['fb_tmpclean']['timestamptype']` to `atime`.
 
 To ensure that empty directories get removed, we still force tmpreaper to use
