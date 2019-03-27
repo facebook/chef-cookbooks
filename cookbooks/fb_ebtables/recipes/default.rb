@@ -10,8 +10,8 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
-unless node.centos?
-  fail 'fb_ebtables is only supported on CentOS'
+unless node.centos? || node.fedora?
+  fail 'fb_ebtables is only supported on CentOS and Fedora'
 end
 
 package 'ebtables' do

@@ -4,6 +4,9 @@ Basic cookbook to manage ebtables.
 
 Requirements
 ------------
+Supports two platforms:
+* CentOS
+* Fedora
 
 Attributes
 ----------
