@@ -21,6 +21,7 @@ Attributes
 * node['fb_swap']['size']
 * node['fb_swap']['swapoff_allowed_because']
 * node['fb_swap']['filesystem']
+* node['fb_swap']['strict']
 
 Usage
 -----
@@ -68,6 +69,14 @@ This cookbook defines a helper method to determine whether extending swap is a
 good idea: FB::FbSwap.swap_file_possible?(node). It uses
 node['fb_swap']['filesystem'] to base it's decisions on. This defaults to the
 root filesystem ('/').
+
+The default configuration has swap enabled, using 100% of a swap device. If
+there is no swap partition this will raise a runtime error. To demote the error
+to a warning, use:
+
+```
+node.default['fb_swap']['strict'] = false
+```
 
 * btrfs root filesystem is not supported until https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=ed46ff3d423780fa5173b38a844bf0fdb210a2a7
 * If any device(s) belonging to the root filesystem are rotational, using a

@@ -55,9 +55,16 @@ module FB
       if size.nil?
         # size nil means use full, existing swap device
         if max_device_size_bytes.zero?
-          fail 'fb_swap: default swap is requested, but there\'s no swap ' +
-               'partition so no implicit size. Set node.default[\'fb_swap\']' +
-               '[\'size\'] to something specific if you want to use a swap file'
+          msg = 'fb_swap: default swap is requested, but there\'s no swap ' +
+            'partition so no implicit size. Set node.default[\'fb_swap\']' +
+            '[\'size\'] to something specific if you want to use a swap file'
+          if node['fb_swap']['strict']
+            fail msg
+          else
+            Chef::Log.warn(msg)
+            device_size_bytes = 0
+            file_size_bytes = 0
+          end
         else
           # default is to use all of the swap device, no swap file
           device_size_bytes = max_device_size_bytes
