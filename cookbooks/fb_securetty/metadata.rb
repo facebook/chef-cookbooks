@@ -2,7 +2,7 @@
 name 'fb_securetty'
 maintainer 'Facebook'
 maintainer_email 'noreply@facebook.com'
-license 'BSD-3-Clause'
+license 'Apache-2.0'
 description 'Installs/Configures securetty'
 source_url 'https://github.com/facebook/chef-cookbooks/'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))

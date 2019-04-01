@@ -75,4 +75,4 @@ that leaverage this model and use other prefixes.
 
 ## License
 By contributing to this repository, you agree that your contributions will be
-licensed under its BSD license.
+licensed under its Apache 2.0 license.
