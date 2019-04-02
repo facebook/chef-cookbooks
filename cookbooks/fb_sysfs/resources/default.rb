@@ -20,8 +20,10 @@
 default_action :set
 
 property :path, :name_property => true
-property :value, :is => [String, Integer], :required => true
+property :value, :is => [String, Integer, :EINVAL], :required => true
 property :type, :is => Symbol, :required => true, :default => :string
+property :ignore_einval, :is => [TrueClass, FalseClass], :required => true,
+                         :default => false
 
 def whyrun_supported?
   true
@@ -33,11 +35,31 @@ end
 
 load_current_value do
   if ::File.exist?(path)
-    value ::File.read(path)
+    begin
+      value ::File.read(path)
+    rescue SystemCallError => e
+      if e.errno == Errno::EINVAL::Errno
+        Chef::Log.debug("fb_sysfs: got EINVAL trying to read #{path}")
+        value :EINVAL
+      else
+        raise e
+      end
+    end
   end
 end
 
 action :set do
+  if current_resource.value == :EINVAL
+    if new_resource.ignore_einval
+      Chef::Log.warn("fb_sysfs: ignoring EINVAL on #{new_resource.path} as " +
+                     'requested, resource will be left unmanaged!')
+      return
+    else
+      fail "fb_sysfs: got EINVAL on #{new_resource.path} and ignore_einval " +
+           'is false, aborting!'
+    end
+  end
+
   if check(current_resource.value, new_resource.value, new_resource.type)
     Chef::Log.debug(
       "fb_sysfs #{new_resource.path}: Value set correctly, nothing to do. " +

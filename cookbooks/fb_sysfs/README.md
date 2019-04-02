@@ -46,3 +46,9 @@ fb_sysfs "Set some stuff" do
   value 'food'
 end
 ```
+
+### EINVAL handling
+Some sysfs paths will return an EINVAL when reads or writes are attempted, to
+signal that the underlying driver doesn't support the operation. The resource
+provides an `ignore_einval` property, which defaults to false, to control
+whether the EINVAL errors should be surfaced or ignored.
