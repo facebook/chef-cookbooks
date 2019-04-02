@@ -35,15 +35,12 @@ platforms:
         # we need dmidecode for the Ohai shard plugin
         - apt-get install -y dmidecode
       run_command: /sbin/init
-  - name: debian-8
+  - name: debian-9
     driver_config:
       provision_command:
         # we need dmidecode for the Ohai shard plugin
-        # we need wget because...
-        # https://github.com/test-kitchen/test-kitchen/issues/1018
-        # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=814070
-        - apt-get install -y wget dmidecode
-      run_command: /sbin/init
+        - apt-get install -y dmidecode
+      run_command: /bin/systemd
   - name: debian-sid
     driver_config:
       provision_command:
