@@ -7,7 +7,7 @@ env:
     - INSTANCE=default-centos-7
     - INSTANCE=default-ubuntu-1404
     - INSTANCE=default-ubuntu-1604
-    - INSTANCE=default-debian-8
+    - INSTANCE=default-debian-9
     - INSTANCE=default-debian-sid
 
 matrix:
