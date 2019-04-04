@@ -85,12 +85,17 @@ action_class do
       "and attributes #{attrs}",
     )
     return unless label
-
-    res = launchd label do
+    res = launchd label do # ~FC022
       action action.to_sym
+      if attrs['only_if']
+        only_if { attrs['only_if'].call }
+      end
+      if attrs['not_if']
+        not_if { attrs['not_if'].call }
+      end
     end
     attrs.each do |attribute, value|
-      next if attribute == 'action'
+      next if ['action', 'only_if', 'not_if'].include?(attribute)
       res.send(attribute.to_sym, value)
     end
 
