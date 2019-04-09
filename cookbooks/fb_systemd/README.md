@@ -105,6 +105,15 @@ fb_systemd_override 'disable-controllers' do
 end
 ```
 
+  Alternatively, you can specify a `source` to generate the override, e.g.:
+
+```
+fb_systemd_override 'disable-controllers' do
+  unit_name 'foo.slice'
+  source 'disable-controllers.conf.erb'
+end
+```
+
 * a `fb_systemd_reload` LWRP to safetly trigger a daemon reload for a systemd
   instance (at the system or user level)
 

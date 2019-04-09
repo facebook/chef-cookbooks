@@ -18,12 +18,22 @@
 
 property :override_name, String, :name_property => true
 property :unit_name, String, :required => true
-property :content, [String, Hash], :required => true
+property :content, [String, Hash], :required => false
+property :source, String, :required => false
 property :triggers_reload, [TrueClass, FalseClass], :default => true
 
 default_action :create
 
 action :create do
+  if new_resource.source && new_resource.content
+    fail 'fb_systemd: cannot pass both source and content at the same time ' +
+         'with fb_systemd_override, you need to pick one. Aborting!'
+  end
+  if !new_resource.source && !new_resource.content
+    fail 'fb_systemd: either source or content are required with ' +
+         'fb_systemd_override but neither was passed, aborting!'
+  end
+
   override_dir = "/etc/systemd/system/#{new_resource.unit_name}.d"
   override_file = "#{FB::Systemd.sanitize(new_resource.override_name)}.conf"
 
@@ -34,14 +44,22 @@ action :create do
   end
 
   template ::File.join(override_dir, override_file) do # ~FB032
-    cookbook 'fb_systemd'
-    source 'systemd-override.conf.erb'
+    # If source is specified, use it, otherwise use our template...
+    if new_resource.source
+      source new_resource.source
+    else
+      cookbook 'fb_systemd'
+      source 'systemd-override.conf.erb'
+    end
     owner 'root'
     group 'root'
     mode '0644'
-    variables({
-                'content' => new_resource.content,
-              })
+    # ... and rely on content to populate the override
+    unless new_resource.source
+      variables({
+                  'content' => new_resource.content,
+                })
+    end
     if new_resource.triggers_reload
       notifies :run, 'fb_systemd_reload[system instance]', :immediately
     end
