@@ -83,7 +83,12 @@ include_recipe 'fb_systemd::timesyncd'
 include_recipe 'fb_systemd::boot'
 
 execute 'process tmpfiles' do
-  command "#{systemd_prefix}/bin/systemd-tmpfiles --create"
+  command lazy {
+    "#{systemd_prefix}/bin/systemd-tmpfiles --create" +
+      node['fb_systemd']['tmpfiles_excluded_prefixes'].
+      map { |x| " --exclude-prefix=#{x}" }.
+      join
+  }
   action :nothing
 end
 

@@ -28,6 +28,7 @@ Attributes
 * node['fb_systemd']['timesyncd']['config']
 * node['fb_systemd']['coredump']
 * node['fb_systemd']['tmpfiles']
+* node['fb_systemd']['tmpfiles_excluded_prefixes']
 * node['fb_systemd']['preset']
 * node['fb_systemd']['manage_systemd_packages']
 * node['fb_systemd']['boot']['enable']
@@ -282,6 +283,14 @@ omitted, it defaults to the configuration key (i.e. `/run/user` in the example).
 If any other argument is omitted, it defaults to `-`. Refer to the
 [tmpfiles documentation](http://www.freedesktop.org/software/systemd/man/tmpfiles.d.html)
 for more details on how to use tmpfiles and the meaning of the various options.
+
+Use `node['fb_systemd']['tmpfiles_excluded_prefixes']` to add to set of paths that
+systemd-tmpfiles will exclude.  For example:
+
+```
+node.default['fb_systemd']['tmpfiles_excluded_prefixes'] << '/sys'
+]
+```
 
 ### Presets
 You can add preset settings to `node['fb_systemd']['preset']`. As an example to

@@ -111,6 +111,7 @@ default['fb_systemd'] = {
   },
   'coredump' => {},
   'tmpfiles' => tmpfiles,
+  'tmpfiles_excluded_prefixes' => [],
   'preset' => {},
   'manage_systemd_packages' => true,
   'boot' => {
