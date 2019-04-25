@@ -22,6 +22,15 @@ def whyrun_supported?
 end
 
 action :run do
+  unless node.systemd?
+    # The predicate used in this node method looks for /run/systemd/system
+    # which is only present on a booted system. This resource is only useful
+    # if the system is booted as it interacts with systemd to reload. If the
+    # system is not booted, then we can safely skip the reload.
+    Chef::Log.info("Requested to reload systemd #{new_resource.instance} " +
+                   'skipped because the system is not booted')
+    return
+  end
   case new_resource.instance
   when 'system'
     execute 'reload systemd system instance' do

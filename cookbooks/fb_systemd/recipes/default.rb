@@ -18,6 +18,11 @@
 # limitations under the License.
 #
 
+# the resources for reloading systemd are useful, even if node.systemd?
+# returns false. This happens when using this cookbook to build a container
+# that is not booted.
+include_recipe 'fb_systemd::reload'
+
 unless node.systemd?
   fail 'fb_systemd is only available on systemd-enabled hosts'
 end
@@ -32,7 +37,6 @@ else
 end
 
 include_recipe 'fb_systemd::default_packages'
-include_recipe 'fb_systemd::reload'
 
 template '/etc/systemd/system.conf' do
   source 'systemd.conf.erb'

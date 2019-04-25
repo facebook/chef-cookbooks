@@ -128,7 +128,8 @@ end
   The `instance` attribute can be `system` or `user` and defines which instance
   will be reloaded. For user instances, the optional attribute `user` defines
   which user instance should be reloaded; if it's omitted or `nil`, the LWRP
-  will reload systemd for all active user sessions.
+  will reload systemd for all active user sessions. Restarting is skipped if it
+  looks like the system is not booted (`node.systemd?` is false).
 
 * two resources (`fb_systemd_reload[system instance]` and
   `fb_systemd_reload[all user instances]`) that other recipes can notify
