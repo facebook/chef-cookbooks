@@ -17,9 +17,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-package_name = 'rsyslog'
+return if node.macosx?
 
-package package_name do
-  not_if { node.macosx? }
+package 'rsyslog' do
   action :upgrade
+end
+
+fb_systemd_override 'override' do
+  unit_name 'rsyslog.service'
+  content({
+            'Unit' => { 'Requires' => 'syslog.socket' },
+            'Install' => { 'Alias' => 'syslog.service' },
+          })
+end
+
+# this is almost identical to running 'systemctl enable rsyslog', except that it
+# has no run-time requirements and can be run while setting up a container.
+link '/etc/systemd/system/syslog.service' do
+  to '/usr/lib/systemd/system/rsyslog.service'
+  owner 'root'
+  group 'root'
 end

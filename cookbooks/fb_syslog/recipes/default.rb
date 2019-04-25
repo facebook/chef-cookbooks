@@ -74,16 +74,6 @@ template config_file do
   notifies :restart, "service[#{service_name}]"
 end
 
-actions = []
-actions << :enable unless node.macosx?
-actions << :start
-
-# workaround for https://github.com/systemd/systemd/issues/6338
-link '/etc/systemd/system/multi-user.target.wants/rsyslog.service' do
-  only_if { node.systemd? }
-  to '/lib/systemd/system/rsyslog.service'
-end
-
 service service_name do
-  action actions
+  action :start
 end
