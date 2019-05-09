@@ -40,7 +40,12 @@ if [ ! -f "${file}" ] ; then
     # Mark as no-copy-on-write. Only works on new/empty files.
     /usr/bin/chattr +C "${unformatted}"
 <% end -%>
+<% if fs_type == 'xfs' -%>
+    # fallocate on xfs can't creates working swapfiles, fill them up with dd
+    /usr/bin/dd if=/dev/zero of="${unformatted}" iflag=count_bytes bs=1M count=<%= file_size_bytes %>
+<% else -%>
     /usr/bin/fallocate --length <%= file_size_bytes %> "${unformatted}"
+<% end -%>
     /usr/bin/chmod 0600 "${unformatted}"
     /usr/sbin/mkswap "${unformatted}"
     /usr/bin/mv --force "${unformatted}" "${file}"

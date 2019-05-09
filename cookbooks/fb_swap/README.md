@@ -68,7 +68,8 @@ This cookbook uses node.default['fb_fstab']['exclude_base_swap'] to exclude any
 This cookbook defines a helper method to determine whether extending swap is a
 good idea: FB::FbSwap.swap_file_possible?(node). It uses
 node['fb_swap']['filesystem'] to base it's decisions on. This defaults to the
-root filesystem ('/').
+root filesystem ('/'). When this is set to a different filesystem, swap
+partition is turned off and only the swap file is used.
 
 The default configuration has swap enabled, using 100% of a swap device. If
 there is no swap partition this will raise a runtime error. To demote the error
