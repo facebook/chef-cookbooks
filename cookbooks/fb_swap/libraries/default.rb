@@ -256,7 +256,8 @@ module FB
           # partitions are represented in sysfs underneath their parent block
           # device. Find the first match for the glob, and take the second
           # from last path item, which is what the glob itself matched.
-          block_device = Dir.glob("/sys/block/*/#{DEV}")[0].split(File::SEPARATOR)[-2]
+          block_device = Dir.glob("/sys/block/*/#{dev}")[0].
+                         split(File::SEPARATOR)[-2]
         else
           match = %r{/dev/(?<block>[[:alpha:]]+)[[:digit:]]}.match(dev)
           # assert we can find a block device name in here
