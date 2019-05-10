@@ -98,7 +98,12 @@ end
     source 'db_file.erb'
     owner 'root'
     group 'root'
-    mode '0644'
+    if text_map_rel == 'sasl_passwd'
+      mode '0600'
+      sensitive true
+    else
+      mode '0644'
+    end
     notifies :run, "execute[postmap #{text_map}]", :immediately
     notifies :reload, 'service[postfix]'
     variables(
