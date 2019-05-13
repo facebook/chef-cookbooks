@@ -43,6 +43,14 @@ class Chef
       self['platform'] == 'fedora'
     end
 
+    def fedora28?
+      self.fedora? && self['platform_version'] == '28'
+    end
+
+    def fedora29?
+      self.fedora? && self['platform_version'] == '29'
+    end
+
     def redhat?
       self['platform'] == 'redhat'
     end
@@ -53,6 +61,10 @@ class Chef
 
     def ubuntu?
       self['platform'] == 'ubuntu'
+    end
+
+    def ubuntu16?
+      self.ubuntu? && self['platform_version'] == '16'
     end
 
     def linux?
