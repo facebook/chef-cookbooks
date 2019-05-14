@@ -259,9 +259,9 @@ module FB
           block_device = Dir.glob("/sys/block/*/#{dev}")[0].
                          split(File::SEPARATOR)[-2]
         else
-          match = %r{/dev/(?<block>[[:alpha:]]+)[[:digit:]]}.match(dev)
+          match = %r{/dev/(?<block>[[:alpha:]]+)[[:digit:]]+}.match(dev)
           # assert we can find a block device name in here
-          return false unless match
+          return false unless match && node['block_device'][match['block']]
           block_device = match['block']
         end
         if node['block_device'][block_device]['rotational'] == '1'
