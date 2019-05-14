@@ -247,7 +247,7 @@ module FB
         Chef::Log.warn('fb_swap: Swap file not generally possible on btrfs')
         return false
       end
-      return self._on_rotational?(node)
+      return !self._on_rotational?(node)
     end
 
     def self._on_rotational?(node)
@@ -261,7 +261,7 @@ module FB
         else
           match = %r{/dev/(?<block>[[:alpha:]]+)[[:digit:]]+}.match(dev)
           # assert we can find a block device name in here
-          return false unless match && node['block_device'][match['block']]
+          return true unless match && node['block_device'][match['block']]
           block_device = match['block']
         end
         if node['block_device'][block_device]['rotational'] == '1'
@@ -269,14 +269,14 @@ module FB
             'fb_swap: Swap file not possible due to rotational device ' +
             block_device,
           )
-          return false
+          return true
         end
       end
       Chef::Log.debug(
         'fb_swap: Swap file possible (no rotational device members on ' +
         'filesytem)',
       )
-      return true
+      return false
     end
   end
 end
