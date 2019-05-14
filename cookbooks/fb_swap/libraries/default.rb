@@ -252,24 +252,28 @@ module FB
 
     def self._on_rotational?(node)
       _filesystem_map_for_fs(node)['devices'].each do |dev|
-        if node['fb_swap']['_use_sysfs']
-          # partitions are represented in sysfs underneath their parent block
-          # device. Find the first match for the glob, and take the second
-          # from last path item, which is what the glob itself matched.
-          block_device = Dir.glob("/sys/block/*/#{dev}")[0].
-                         split(File::SEPARATOR)[-2]
+        if node['fb_swap']['_use_lsblk']
+          lsblk = Mixlib::ShellOut.new("lsblk --json --output ROTA #{dev}")
+          lsblk.run_command.error!
+          block_device = JSON.parse(lsblk.stdout)['blockdevices'][0]
+          if block_device['rota'] == '1'
+            Chef::Log.debug(
+              "fb_swap: Swap file not possible due to rotational device #{dev}",
+            )
+            return true
+          end
         else
           match = %r{/dev/(?<block>[[:alpha:]]+)[[:digit:]]+}.match(dev)
           # assert we can find a block device name in here
           return true unless match && node['block_device'][match['block']]
           block_device = match['block']
-        end
-        if node['block_device'][block_device]['rotational'] == '1'
-          Chef::Log.warn(
-            'fb_swap: Swap file not possible due to rotational device ' +
-            block_device,
-          )
-          return true
+          if node['block_device'][block_device]['rotational'] == '1'
+            Chef::Log.warn(
+              'fb_swap: Swap file not possible due to rotational device ' +
+              block_device,
+            )
+            return true
+          end
         end
       end
       Chef::Log.debug(
