@@ -22,5 +22,5 @@ default['fb_swap'] = {
   'filesystem' => '/',
   'swapoff_allowed_because' => nil,
   'strict' => true,
-  '_use_sysfs' => false,
+  '_use_lsblk' => false,
 }
