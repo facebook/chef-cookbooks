@@ -76,4 +76,5 @@ end
 
 service service_name do
   action :start
+  subscribes :restart, 'package[rsyslog]'
 end
