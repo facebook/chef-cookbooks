@@ -42,4 +42,5 @@ default['fb_tmpclean'] = {
   'extra_lines' => [],
   'excludes' => excludes,
   'remove_special_files' => false,
+  'manage_packages' => true,
 }

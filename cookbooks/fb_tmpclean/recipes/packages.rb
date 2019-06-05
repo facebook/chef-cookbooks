@@ -31,5 +31,6 @@ else
 end
 
 package pkg do
+  only_if { node['fb_tmpclean']['manage_packages'] }
   action :upgrade
 end
