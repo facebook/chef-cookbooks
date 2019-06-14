@@ -25,22 +25,31 @@ module FB
     # Sensible defaults for timer attributes.
     TIMER_DEFAULTS = {
       # name is inferred from the name within node['fb_timers']['jobs']
-      # command is required
-      # calendar is required
-      'timeout' => 'infinity',
-      'timeout_stop' => '90s',
+      # commands is required
+      # calendar is required (unless one of the On... options below are set)
       'accuracy' => '1s',
-      'persistent' => false,
-      'splay' => '0s',
+      'autostart' => true,
+      'command' => nil,
       'only_if' => nil,
-      'syslog' => false,
+      'persistent' => false,
       'service_options' => {},
       'service_unit_options' => {},
+      'splay' => '0s',
+      'syslog' => false,
+      'timeout_stop' => '90s',
+      'timeout' => 'infinity',
       'timer_options' => {},
-      'autostart' => true,
     }.freeze
 
-    REQUIRED_TIMER_KEYS = ['calendar', 'command', 'name'].freeze
+    REQUIRED_TIMER_KEYS = ['calendar', 'commands', 'name'].freeze
+
+    ALTERNATE_CALENDAR_KEYS = [
+      'OnActiveSec',
+      'OnBootSec',
+      'OnStartupSec',
+      'OnUnitActiveSec',
+      'OnUnitInactiveSec',
+    ].freeze
 
     TIMER_COOKBOOK_KEYS = (TIMER_DEFAULTS.keys + REQUIRED_TIMER_KEYS).freeze
 

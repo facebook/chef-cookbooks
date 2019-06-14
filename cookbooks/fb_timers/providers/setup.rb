@@ -64,6 +64,18 @@ action :run do
   # Setup current jobs
   node['fb_timers']['jobs'].to_hash.each_pair do |name, conf|
     conf = FB::Systemd::TIMER_DEFAULTS.merge(conf.merge('name' => name))
+
+    # Do this early so we can rely on commands being filled in
+    if conf['command']
+      if conf['commands']
+        Chef::Log.warn("fb_timers: [#{conf['name']}] You shouldn't mix " +
+                       '`command` and `commands`')
+      else
+        conf['commands'] = []
+      end
+      conf['commands'] << conf['command']
+    end
+
     unknown_keys = conf.keys - FB::Systemd::TIMER_COOKBOOK_KEYS
     if unknown_keys.any?
       Chef::Log.warn(
@@ -71,8 +83,20 @@ action :run do
       )
       if unknown_keys.find { |key| key.casecmp('user').zero? }
         Chef::Log.warn('fb_timers: To set a user ' +
-                       "{ 'service_options' => {'User' => 'nobody' }")
+                       "{ 'timer_options' => {'User' => 'nobody' }")
       end
+    end
+
+    missing_keys = FB::Systemd::REQUIRED_TIMER_KEYS - conf.keys
+    if missing_keys.include?('calendar')
+      # calendar is not entirely mandatory, one can use On...
+      unless (conf['timer_options'].keys &
+        FB::Systemd::ALTERNATE_CALENDAR_KEYS).empty?
+        missing_keys.delete('calendar')
+      end
+    end
+    if missing_keys.any?
+      fail "fb_timers: Missing required key for timer #{name}: #{missing_keys}"
     end
 
     if conf['only_if']

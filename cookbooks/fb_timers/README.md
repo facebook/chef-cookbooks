@@ -56,6 +56,10 @@ Required fields:
   systemd timer. See below for helpers to generate common calendar patterns.
 * `command`: The command to run. Corresponds to the `ExecStart` field of the
   systemd service.
+* `commands`: The commands to run. Will generate several `ExecStart` lines.
+  Useful if you want to run multiple commands in sequence, without forking to
+  bash. Mixing `commands` and `command` will produce a warning, but the
+  `command` will simply be added to the end of the `commands` list.
 
 Optional fields:
 
