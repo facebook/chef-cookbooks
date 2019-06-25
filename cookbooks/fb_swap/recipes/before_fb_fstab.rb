@@ -49,13 +49,6 @@ end
     end
   end
 
-  # T40484873 always unmask swap units
-  # Remove after 2019-03-01
-  service "unmask #{type} swap" do
-    service_name lazy { FB::FbSwap._swap_unit(node, type) }
-    action [:unmask]
-  end
-
   template "/etc/systemd/system/#{manage_unit}" do
     source "#{manage_unit}.erb"
     owner 'root'
