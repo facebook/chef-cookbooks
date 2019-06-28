@@ -71,9 +71,11 @@ class Chef
       self['os'] == 'linux'
     end
 
-    def macosx?
+    def macos?
       self['platform'] == 'mac_os_x'
     end
+
+    alias macosx? macos?
 
     def windows?
       self['os'] == 'windows'
