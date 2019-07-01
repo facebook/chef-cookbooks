@@ -13,7 +13,6 @@ AccuracySec=<%= @conf['accuracy'] %>
 Persistent=<%= @conf['persistent'] %>
 RandomizedDelaySec=<%= @conf['splay'] %>
 Unit=<%= @conf['name'] %>.service
-Requires=<%= @conf['name'] %>.service
 <% @conf['timer_options'].each do |name, value| %>
 <%= name %>=<%= value %>
 <% end %>
