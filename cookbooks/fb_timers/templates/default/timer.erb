@@ -3,6 +3,7 @@
 
 [Unit]
 Description=Run scheduled task <%= @conf['name'] %>
+Requires=<%= @conf['name'] %>.service
 
 [Install]
 WantedBy=timers.target
