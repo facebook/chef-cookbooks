@@ -41,7 +41,7 @@ your node.
 * `node.linux?`
     Is Linux
 
-* `node.macosx?`
+* `node.macos?`
     Is Mac OS X
 
 * `node.windows?`

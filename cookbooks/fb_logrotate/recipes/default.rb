@@ -18,7 +18,7 @@
 # limitations under the License.
 #
 
-if node.macosx?
+if node.macos?
   template '/etc/newsyslog.d/fb_bsd_newsyslog.conf' do
     source 'fb_bsd_newsyslog.conf.erb'
     mode '0644'

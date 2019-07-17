@@ -42,7 +42,7 @@ template config do
   group 'root'
 end
 
-if node.macosx?
+if node.macos?
   launchd 'com.facebook.tmpreaper' do
     action :enable
     program config

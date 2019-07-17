@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-unless node.macosx?
+unless node.macos?
   fail 'fb_launchd is only available on macOS'
 end
 

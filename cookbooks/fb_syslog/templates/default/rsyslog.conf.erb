@@ -91,7 +91,7 @@ $Umask 0002
 <%#  syslog doesn't support not flushing on OS X, so we cannot use the `-`
      prefix for files. %>
 <%   action = entry['action'] -%>
-<%   if node.macosx? && action.start_with?('-') -%>
+<%   if node.macos? && action.start_with?('-') -%>
 <%     action.slice!(0) -%>
 <%   end -%>
 <%=  "%s  %s" % [entry['selector'], action] %>

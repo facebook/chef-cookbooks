@@ -1,6 +1,6 @@
 #!/bin/sh
 <% path = '/usr/sbin:/usr/bin:/sbin:/bin'
-   if node.macosx?
+   if node.macos?
      path << ':/opt/local/sbin:/opt/homebrew/sbin'
    end
    tmpclean = node['fb_tmpclean'].to_hash

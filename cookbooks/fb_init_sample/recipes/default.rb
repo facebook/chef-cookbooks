@@ -41,7 +41,7 @@ if node.systemd?
   include_recipe 'fb_systemd'
   include_recipe 'fb_timers'
 end
-if node.macosx?
+if node.macos?
   include_recipe 'fb_launchd'
 end
 include_recipe 'fb_nsswitch'

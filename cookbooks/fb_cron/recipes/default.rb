@@ -140,7 +140,7 @@ cookbook_file '/usr/local/bin/exclusive_cron.sh' do
   mode '0755'
 end
 
-if node.macosx?
+if node.macos?
   cookbook_file '/usr/local/bin/osx_make_crond.sh' do
     source 'osx_make_crond.sh'
     owner 'root'

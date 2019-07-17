@@ -19,6 +19,6 @@
 #
 
 package 'rsync' do
-  not_if { node.macosx? || node.aristaeos? } # provided by Xcode
+  not_if { node.macos? || node.aristaeos? } # provided by Xcode
   action :upgrade
 end

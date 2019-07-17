@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-if node.systemd? || node.macosx?
+if node.systemd? || node.macos?
   sysconfig = {}
 else
   syslogd_options_var = value_for_platform_family(

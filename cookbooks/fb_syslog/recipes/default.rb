@@ -18,14 +18,14 @@
 # limitations under the License.
 #
 
-if (node.systemd? || node.macosx?) && !node['fb_syslog']['sysconfig'].empty?
+if (node.systemd? || node.macos?) && !node['fb_syslog']['sysconfig'].empty?
   fail 'fb_syslog: sysconfig settings are not supported on systemd or OSX hosts'
 end
 
 service_name = 'rsyslog'
 config_file = '/etc/rsyslog.conf'
 
-if node.macosx?
+if node.macos?
   service_name = 'com.apple.syslogd'
   config_file = '/etc/syslog.conf'
 else
