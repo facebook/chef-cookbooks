@@ -26,6 +26,10 @@ module(load="omprog")
 $ModLoad imudp
 $ModLoad imtcp
 
+<% if node['fb_syslog']['rsyslog_server_address'] -%>
+$UDPServerAddress <%= node['fb_syslog']['rsyslog_server_address'] %>
+<% end -%>
+
 <%   non_ruleset_ports = node['fb_syslog']['rsyslog_nonruleset_ports'].to_hash %>
 <%   non_ruleset_ports.each do |proto, ports| -%>
 <%     if proto == 'udp' -%>

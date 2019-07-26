@@ -69,6 +69,7 @@ default['fb_syslog'] = {
     },
   },
   'rsyslog_server' => false,
+  'rsyslog_server_address' => nil,
   'rsyslog_rulesets' => {},
   'rsyslog_nonruleset_ports' => {
     'tcp' => [],

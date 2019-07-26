@@ -9,6 +9,7 @@ Attributes
 ----------
 * node['fb_syslog']['syslog-entries']
 * node['fb_syslog']['rsyslog_server']
+* node['fb_syslog']['rsyslog_server_address']
 * node['fb_syslog']['rsyslog_upstream']
 * node['fb_syslog']['rsyslog_port']
 * node['fb_syslog']['rsyslog_early_lines']
@@ -141,6 +142,10 @@ $InputUDPServerRun 514
 ```
 
 These don't take effect unless `rsyslog_server` is set.
+
+By default, rsyslog listens on the wildcard address. If you want to listen on
+another address (e.g. localhost), you can set the
+`node['fb_syslog']['rsyslog_server_address']` attribute.
 
 ### Escaping control characters in messages
 If messages entering the syslog system contain control characters and it's
