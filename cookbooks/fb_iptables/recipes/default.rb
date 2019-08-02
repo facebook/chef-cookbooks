@@ -113,7 +113,7 @@ template iptables_rules do
     # every time).
     if FB::Iptables.iptables_active?(4)
       Mixlib::ShellOut.new(
-        "iptables-restore --test #{path}",
+        "/sbin/iptables-restore --test #{path}",
       ).run_command.exitstatus.zero?
     else
       true
@@ -140,7 +140,7 @@ template ip6tables_rules do
     # See comment ip iptables_rules
     if FB::Iptables.iptables_active?(6)
       Mixlib::ShellOut.new(
-        "ip6tables-restore --test #{path}",
+        "/sbin/ip6tables-restore --test #{path}",
       ).run_command.exitstatus.zero?
     else
       true
