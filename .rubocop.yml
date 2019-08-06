@@ -118,6 +118,11 @@ MultilineOperationIndentation:
 Performance/RedundantMatch:
   Enabled: false
 
+# disable until we upgrade chef solo to chef 13. Otherwise people will be told
+# to use a method that doesn't exist in the verison of ruby in solo
+Performance/RegexpMatch:
+  Enabled: false
+
 # We'll .times.map all we want.
 Performance/TimesMap:
   Enabled: false
