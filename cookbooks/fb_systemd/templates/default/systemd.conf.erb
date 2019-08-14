@@ -10,7 +10,7 @@
 
   if node.in_shard?(99)
 %>
-<%=  FB::Systemd.to_ini({@section => Hash[config.sort]}) %>
+<%=  FB::Systemd.to_ini({@section => Hash[config.sort]}) -%>
 <% else %>
 [<%= @section %>]
 <%
