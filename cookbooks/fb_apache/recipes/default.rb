@@ -128,6 +128,16 @@ template "#{confdir}/fb_apache.conf" do
   notifies :reload, 'service[apache]'
 end
 
+# We want to collect apache stats
+template '/etc/httpd/conf.d/status.conf' do
+  source 'status.erb'
+  owner 'root'
+  group 'root'
+  mode '0644'
+  variables(:location => '/server-status')
+  notifies :restart, 'service[apache]'
+end
+
 service 'apache' do
   service_name svc
   action [:enable, :start]
