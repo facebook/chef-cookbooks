@@ -7,24 +7,5 @@
   else
     config = node['fb_systemd'][@config].to_hash
   end
-
-  if node.in_shard?(99)
 %>
 <%=  FB::Systemd.to_ini({@section => Hash[config.sort]}) -%>
-<% else %>
-[<%= @section %>]
-<%
-     config.sort.each do |key, val|
-       if val.is_a?(TrueClass)
-         v = 'yes'
-       elsif val.is_a?(FalseClass)
-         v = 'no'
-       elsif val.is_a?(Array)
-         v = val.join(' ')
-       else
-         v = val
-       end
-%>
-<%=    key %> = <%= v %>
-<%  end %>
-<% end %>
