@@ -4,7 +4,11 @@ rotate <%= node['fb_logrotate']['globals']['rotate'] %>
 maxage <%= node['fb_logrotate']['globals']['maxage'] %>
 compresscmd <%= node['fb_logrotate']['globals']['compresscmd'] %>
 copytruncate
+<% if node['fb_logrotate']['globals']['nocompress'] -%>
+nocompress
+<% else -%>
 compress
+<% end -%>
 notifempty
 missingok
 <% if node['fb_logrotate']['globals']['size'] -%>

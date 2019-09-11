@@ -62,7 +62,7 @@ MAC OS (BSD):
 * when *
 * flags J
 
-Of these compresscmd, rotate and maxage defaults are specified via
+Of these compresscmd, rotate, maxage, and nocompress defaults are specified via
 `node['fb_logrotate']['globals']['...']`
 
 These maybe overridden by recipes for a particular platform.
@@ -78,6 +78,9 @@ These maybe overridden by recipes for a particular platform.
   checked if the logfile is to be rotated. The files are mailed to
   the configured address if `maillast` and `mail` are configured.
   You can specify this by `node['fb_logrotate']['globals']['maxage']`
+* nocompress - Disables compressing the log files on rotatation. Accepts a boolean
+  (see below). Useful to limit disk IO or if the filesystem uses transparent file
+  compression
 
 The following attributes are optional and not populated by default.
 These can be then later specified by setting the appropriate attribute
