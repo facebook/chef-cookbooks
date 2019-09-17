@@ -24,6 +24,8 @@ when 'rhel', 'fedora', 'suse'
   if node['platform'] == 'amazon' || node['platform_version'].to_i >= 6
     package_name = 'cronie'
   end
+when 'debian'
+  package_name = 'cron'
 end
 
 if package_name # ~FC023
