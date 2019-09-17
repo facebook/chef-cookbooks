@@ -3,10 +3,10 @@
 
 [Unit]
 Description=Run scheduled task params
+Requires=params.service
 
 [Install]
 WantedBy=timers.target
-Requires=params.service
 
 [Timer]
 OnCalendar=0:0:0
