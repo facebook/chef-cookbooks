@@ -16,8 +16,8 @@
 #
 
 require './spec/spec_helper'
-require_relative '../../../../cookbooks/core/fb_fstab/libraries/default'
-require_relative '../../../../cookbooks/core/fb_fstab/libraries/provider'
+require_relative '../libraries/default'
+require_relative '../libraries/provider'
 
 # rubocop:disable LineLength
 base_contents = <<EOF

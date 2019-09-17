@@ -16,7 +16,7 @@
 #
 
 require './spec/spec_helper'
-require_relative '../../../../cookbooks/core/fb_grub/libraries/default'
+require_relative '../libraries/default'
 
 # rubocop:disable LineLength
 grub1_contents = <<EOF
