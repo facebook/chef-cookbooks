@@ -23,12 +23,14 @@ package 'rsyslog' do
   action :upgrade
 end
 
-fb_systemd_override 'override' do
-  unit_name 'rsyslog.service'
-  content({
-            'Unit' => { 'Requires' => 'syslog.socket' },
-            'Install' => { 'Alias' => 'syslog.service' },
-          })
+if node.systemd? && node.centos?
+  fb_systemd_override 'override' do
+    unit_name 'rsyslog.service'
+    content({
+              'Unit' => { 'Requires' => 'syslog.socket' },
+              'Install' => { 'Alias' => 'syslog.service' },
+            })
+  end
 end
 
 include_recipe 'fb_syslog::enable'
