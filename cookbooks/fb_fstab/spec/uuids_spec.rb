@@ -65,6 +65,7 @@ recipe 'fb_fstab::default', :unsupported => [:mac_os_x] do |tc|
     it 'should include entries which pass only_if' do
       chef_run.converge(described_recipe) do |node|
         # rubocop:disable UselessComparison
+        # rubocop:disable YodaCondition
         node.default['fb_fstab']['mounts']['tmpfs'] = {
           'only_if' => proc { 3 == 3 },
           'device' => 'tmpfs',
@@ -74,6 +75,7 @@ recipe 'fb_fstab::default', :unsupported => [:mac_os_x] do |tc|
           'pass' => 0,
         }
         # rubocop:enable UselessComparison
+        # rubocop:enable YodaCondition
       end
       expect(chef_run).to render_file('/etc/fstab').
         with_content(tc.fixture('fstab_1Gtmpfs'))
@@ -81,6 +83,7 @@ recipe 'fb_fstab::default', :unsupported => [:mac_os_x] do |tc|
 
     it 'should not include entries which fail only_if' do
       chef_run.converge(described_recipe) do |node|
+        # rubocop:disable YodaCondition
         node.default['fb_fstab']['mounts']['thing'] = {
           'only_if' => proc { 3 == 4 },
           'device' => 'thing',
@@ -89,6 +92,7 @@ recipe 'fb_fstab::default', :unsupported => [:mac_os_x] do |tc|
           'opts' => 'size=36G',
           'pass' => 0,
         }
+        # rubocop:enable YodaCondition
       end
       expect(chef_run).to render_file('/etc/fstab').
         with_content(tc.fixture('fstab'))
