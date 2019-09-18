@@ -8,6 +8,8 @@ gem 'rubocop', '= 0.49'
 gem 'gherkin', '~> 5.1'
 
 %w{
+  chefspec
+  diffy
   test-kitchen
   kitchen-docker
 }.each do |g|
