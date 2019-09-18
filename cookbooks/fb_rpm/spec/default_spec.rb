@@ -25,6 +25,12 @@ recipe 'fb_rpm::default', :unsupported => [:centos6, :mac_os_x] do |tc|
   end
 
   context 'render /etc/rpm/macros' do
+    before(:each) do
+      allow(Chef::Provider::Package::Yum::YumCache.instance).
+        to receive(:package_available?).with('rpm-plugin-selinux').
+        and_return(true)
+    end
+
     it 'with empty macros' do
       chef_run.converge(described_recipe) do |node|
         node.default['fb_rpm']['macros'] = {}
