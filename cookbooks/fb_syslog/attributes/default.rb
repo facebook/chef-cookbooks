@@ -85,5 +85,4 @@ default['fb_syslog'] = {
   'rsyslog_stats_logging' => false,
   'rsyslog_use_omprog_force' => false,
   'sysconfig' => sysconfig,
-  '_enable_syslog_socket_override' => true,
 }

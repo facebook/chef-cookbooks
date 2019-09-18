@@ -25,7 +25,6 @@ end
 
 if node.systemd? && node.centos?
   fb_systemd_override 'override' do
-    only_if { node['fb_syslog']['_enable_syslog_socket_override'] }
     unit_name 'rsyslog.service'
     content({
               'Unit' => { 'Requires' => 'syslog.socket' },

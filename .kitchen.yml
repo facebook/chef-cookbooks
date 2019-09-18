@@ -23,6 +23,8 @@ platforms:
         - rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
         # we need dmidecode for the Ohai shard plugin
         - yum install -y dmidecode
+        # for some reason rsyslog fails to restart cleanly otherwise
+        - yum remove -y rsyslog
       run_command: /usr/sbin/init
   - name: ubuntu-14.04
     driver_config:

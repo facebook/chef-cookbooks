@@ -64,11 +64,6 @@ include_recipe 'fb_limits'
 include_recipe 'fb_hostconf'
 include_recipe 'fb_sysctl'
 # HERE: networking
-if node.centos?
-  # We turn this off because the override causes intermittent failures in
-  # Travis when rsyslog is restarted
-  node.default['fb_syslog']['_enable_syslog_socket_override'] = false
-end
 include_recipe 'fb_syslog'
 if node.linux? && !node.container?
   include_recipe 'fb_hdparm'
