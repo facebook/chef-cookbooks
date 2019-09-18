@@ -1,0 +1,18 @@
+# This file managed by chef.
+# Local changes to this file will be overwritten.
+
+[Unit]
+Description=Run scheduled task params
+
+[Install]
+WantedBy=timers.target
+Requires=params.service
+
+[Timer]
+OnCalendar=0:0:0
+AccuracySec=1s
+Persistent=false
+RandomizedDelaySec=0s
+Unit=params.service
+foo=19
+bar=17

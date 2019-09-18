@@ -1,0 +1,16 @@
+# This file managed by chef.
+# Local changes to this file will be overwritten.
+
+[Unit]
+Description=Run scheduled task complex
+Requires=complex.service
+
+[Install]
+WantedBy=timers.target
+
+[Timer]
+OnCalendar=Sat,Thu,Mon..Wed,Sat..Sun
+AccuracySec=1h
+Persistent=true
+RandomizedDelaySec=0.5h
+Unit=complex.service

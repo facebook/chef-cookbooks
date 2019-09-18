@@ -1,0 +1,15 @@
+# This file managed by chef.
+# Local changes to this file will be overwritten.
+
+[Unit]
+Description=Run scheduled task complex
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/foobar.sh thing1 thing2
+TimeoutStartSec=1d
+TimeoutStopSec=1h
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=complex

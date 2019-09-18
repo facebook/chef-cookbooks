@@ -1,0 +1,15 @@
+# This file managed by chef.
+# Local changes to this file will be overwritten.
+
+[Unit]
+Description=Run scheduled task params
+After=network.target
+jkl=aaaaah
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/foobar.sh
+TimeoutStartSec=infinity
+TimeoutStopSec=90s
+asdf=7
+baz=11

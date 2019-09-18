@@ -1,0 +1,10 @@
+#
+# THIS FILE IS CONTROLLED BY CHEF, DO NOT EDIT!
+#
+# You may add cronjobs following the instructions in
+#   fb_cron/README.md
+#
+# do_this_thing
+MAILTO=noreply@fb.com
+2 1 5 4 3 root /usr/local/bin/foo.php
+MAILTO=root
