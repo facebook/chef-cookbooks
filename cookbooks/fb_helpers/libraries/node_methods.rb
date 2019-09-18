@@ -43,6 +43,10 @@ class Chef
       self['platform'] == 'fedora'
     end
 
+    def fedora27?
+      self.fedora? && self['platform_version'] == '27'
+    end
+
     def fedora28?
       self.fedora? && self['platform_version'] == '28'
     end
@@ -59,16 +63,52 @@ class Chef
       self['platform'] == 'debian'
     end
 
+    def debian_sid?
+      debian? && self['platform_version'].include?('sid')
+    end
+
     def ubuntu?
       self['platform'] == 'ubuntu'
     end
 
+    def ubuntu14?
+      ubuntu? && self['platform_version'].start_with?('14.')
+    end
+
+    def ubuntu15?
+      ubuntu? && self['platform_version'].start_with?('15.')
+    end
+
     def ubuntu16?
-      self.ubuntu? && self['platform_version'] == '16'
+      ubuntu? && self['platform_version'].start_with?('16.')
+    end
+
+    def ubuntu18?
+      ubuntu? && self['platform_version'].start_with?('18.')
+    end
+
+    def linuxmint?
+      self['platform'] == 'linuxmint'
     end
 
     def linux?
       self['os'] == 'linux'
+    end
+
+    def arch?
+      self['platform'] == 'arch'
+    end
+
+    def debian_family?
+      self['platform_family'] == 'debian'
+    end
+
+    def arch_family?
+      self['platform_family'] == 'arch'
+    end
+
+    def fedora_family?
+      self['platform_family'] == 'fedora'
     end
 
     def macos?
@@ -79,6 +119,26 @@ class Chef
 
     def windows?
       self['os'] == 'windows'
+    end
+
+    def windows8?
+      windows? && node['platform_version'].start_with?('6.2')
+    end
+
+    def windows8_1?
+      windows? && node['platform_version'].start_with?('6.3')
+    end
+
+    def windows10?
+      windows? && node['platform_version'].start_with?('10.0')
+    end
+
+    def windows2012?
+      windows? && node['platform_version'].start_with?('6.2')
+    end
+
+    def windows2012r2?
+      windows? && node['platform_version'].start_with?('6.3')
     end
 
     def aristaeos?
@@ -110,6 +170,41 @@ class Chef
       self['virtualization'] &&
         self['virtualization']['role'] == 'guest' &&
         vm_systems.include?(self['virtualization']['system'])
+    end
+
+    def virtual_macos_type
+      unless macos?
+        Chef::Log.warn('node.virtual_macos_type called on non-macOS!')
+        return
+      end
+      return self['virtual_macos'] if self['virtual_macos']
+      if self['hardware']['boot_rom_version'].include? 'VMW'
+        virtual_type = 'vmware'
+      elsif self['hardware']['boot_rom_version'].include? 'VirtualBox'
+        virtual_type = 'virtualbox'
+      else
+        virtual_type = shell_out(
+          '/usr/sbin/system_profiler SPEthernetDataType',
+        ).run_command.stdout.to_s[/Vendor ID: (.*)/, 1]
+        if virtual_type && virtual_type.include?('0x1ab8')
+          virtual_type = 'parallels'
+        else
+          virtual_type = 'physical'
+        end
+      end
+      virtual_type
+    end
+
+    def parallels?
+      virtual_macos_type == 'parallels'
+    end
+
+    def vmware?
+      virtual_macos_type == 'vmware'
+    end
+
+    def virtualbox?
+      virtual_macos_type == 'virtualbox'
     end
 
     def container?
