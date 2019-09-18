@@ -224,7 +224,7 @@ recipe 'fb_timers::default', :unsupported => [:mac_os_x] do |tc|
 
   context 'removes unmanaged jobs' do
     let(:dir_content) do
-      %w[old.timer old.service current.timer current.service README]
+      %w{old.timer old.service current.timer current.service README}
     end
 
     cached(:chef_run) do
