@@ -24,7 +24,7 @@ if node.debian?
   keys = {}
 elsif node.ubuntu?
   mirror = 'http://archive.ubuntu.com/ubuntu'
-  security_mirror = 'http://security.ubuntu.org/ubuntu'
+  security_mirror = 'http://security.ubuntu.com/ubuntu'
   # Ubuntu Archive signing keys -- these are provided by the ubuntu-keyring
   # package and merged into the main keyring, we list them here so they don't
   # get clobbered
