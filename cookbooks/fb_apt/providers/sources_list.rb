@@ -24,6 +24,7 @@ use_inline_resources
 
 action :run do
   mirror = node['fb_apt']['mirror']
+  security_mirror = node['fb_apt']['security_mirror']
   distro = node['lsb']['codename']
 
   # only add base repos if mirror is set and codename is available
@@ -52,10 +53,10 @@ action :run do
     # Security updates
     if node.debian? && distro != 'sid'
       base_repos <<
-        "http://security.debian.org/ #{distro}/updates #{components_entry}"
+        "#{security_mirror} #{distro}/updates #{components_entry}"
     elsif node.ubuntu?
       base_repos <<
-        "http://security.ubuntu.com/ubuntu #{distro}-security " +
+        "#{security_mirror} #{distro}-security " +
         components_entry
     end
 
