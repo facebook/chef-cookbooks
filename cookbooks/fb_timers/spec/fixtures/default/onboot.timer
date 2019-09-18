@@ -1,0 +1,17 @@
+# This file managed by chef.
+# Local changes to this file will be overwritten.
+
+[Unit]
+Description=Run scheduled task onboot
+Requires=onboot.service
+
+[Install]
+WantedBy=timers.target
+
+[Timer]
+OnCalendar=
+AccuracySec=1s
+Persistent=false
+RandomizedDelaySec=0s
+Unit=onboot.service
+OnBootSec=1s

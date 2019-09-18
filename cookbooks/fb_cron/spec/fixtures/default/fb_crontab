@@ -1,0 +1,8 @@
+#
+# THIS FILE IS CONTROLLED BY CHEF, DO NOT EDIT!
+#
+# You may add cronjobs following the instructions in
+#   fb_cron/README.md
+#
+# do_this_thing
+1 2 3 4 5 apache /usr/local/bin/foo.php

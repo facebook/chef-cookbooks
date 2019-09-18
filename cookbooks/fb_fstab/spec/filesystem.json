@@ -1,0 +1,293 @@
+{
+  "by_mountpoint": {
+    "/": {
+      "kb_size": "1920537536",
+      "kb_used": "441398808",
+      "kb_available": "1381581020",
+      "percent_used": "25%",
+      "devices": ["/dev/sda3", "rootfs"],
+      "fs_type": "ext4",
+      "mount_options": [
+        "rw",
+      "discard"
+        ],
+      "uuid": "28137926-9c39-44c0-90d3-3b158fc97ff9",
+      "label": "/"
+    },
+    "/dev/shm": {
+      "kb_size": "2097152",
+      "kb_used": "113028",
+      "kb_available": "1984124",
+      "percent_used": "6%",
+      "devices": ["tmpfs"],
+      "fs_type": "tmpfs",
+      "mount_options": [
+        "rw",
+      "size=2G"
+        ]
+    },
+    "/boot": {
+      "kb_size": "253871",
+      "kb_used": "136490",
+      "kb_available": "104274",
+      "percent_used": "57%",
+      "devices": ["/dev/sda1"],
+      "fs_type": "ext3",
+      "mount_options": [
+        "rw"
+        ],
+      "uuid": "9ebfe8b9-c188-4cda-8383-393deb0ac59c",
+      "label": "/boot"
+    },
+    "/proc": {
+      "devices": ["proc"],
+      "fs_type": "proc",
+      "mount_options": [
+        "rw"
+        ]
+    },
+    "/sys": {
+      "devices": ["sysfs"],
+      "fs_type": "sysfs",
+      "mount_options": [
+        "rw"
+        ]
+    },
+    "/dev/pts": {
+      "devices": ["devpts"],
+      "fs_type": "devpts",
+      "mount_options": [
+        "rw",
+      "gid=5",
+      "mode=620"
+        ]
+    },
+    "/dev": {
+      "devices": ["devtmpfs"],
+      "fs_type": "devtmpfs",
+      "mount_options": [
+        "rw",
+      "relatime",
+      "size=74196996k",
+      "nr_inodes=18549249",
+      "mode=755"
+        ]
+    },
+    "/proc/bus/usb": {
+      "devices": ["/proc/bus/usb"],
+      "fs_type": "usbfs",
+      "mount_options": [
+        "rw",
+      "relatime"
+        ]
+    }
+  },
+  "by_pair": {
+    "/dev/sda3,/": {
+      "kb_size": "1920537536",
+      "kb_used": "441398808",
+      "kb_available": "1381581020",
+      "percent_used": "25%",
+      "mount": "/",
+      "device": "/dev/sda3",
+      "fs_type": "ext4",
+      "mount_options": [
+        "rw",
+      "discard"
+        ],
+      "uuid": "28137926-9c39-44c0-90d3-3b158fc97ff9",
+      "label": "/"
+    },
+    "tmpfs,/dev/shm": {
+      "kb_size": "2097152",
+      "kb_used": "113028",
+      "kb_available": "1984124",
+      "percent_used": "6%",
+      "mount": "/dev/shm",
+      "device": "tmpfs",
+      "fs_type": "tmpfs",
+      "mount_options": [
+        "rw",
+      "size=2G"
+        ]
+    },
+    "/dev/sda1,/boot": {
+      "kb_size": "253871",
+      "kb_used": "136490",
+      "kb_available": "104274",
+      "percent_used": "57%",
+      "mount": "/boot",
+      "device": "/dev/sda1",
+      "fs_type": "ext3",
+      "mount_options": [
+        "rw"
+        ],
+      "uuid": "9ebfe8b9-c188-4cda-8383-393deb0ac59c",
+      "label": "/boot"
+    },
+    "proc,/proc": {
+      "mount": "/proc",
+      "device": "proc",
+      "fs_type": "proc",
+      "mount_options": [
+        "rw"
+        ]
+    },
+    "sysfs,/sys": {
+      "mount": "/sys",
+      "device": "sysfs",
+      "fs_type": "sysfs",
+      "mount_options": [
+        "rw"
+        ]
+    },
+    "devpts,/dev/pts": {
+      "mount": "/dev/pts",
+      "device": "devpts",
+      "fs_type": "devpts",
+      "mount_options": [
+        "rw",
+      "gid=5",
+      "mode=620"
+        ]
+    },
+    "/dev/sda2,": {
+      "device": "/dev/sda2",
+      "fs_type": "swap",
+      "uuid": "2ace4f5f-c8c5-4d3a-a027-d12076bdab0c"
+    },
+    "/dev/block/8:3,": {
+      "fs_type": "ext4",
+      "uuid": "28137926-9c39-44c0-90d3-3b158fc97ff9",
+      "label": "/"
+    },
+    "rootfs,/": {
+      "mount": "/",
+      "device": "rootfs",
+      "fs_type": "rootfs",
+      "mount_options": [
+        "rw"
+        ]
+    },
+    "devtmpfs,/dev": {
+      "mount": "/dev",
+      "device": "devtmpfs",
+      "fs_type": "devtmpfs",
+      "mount_options": [
+        "rw",
+      "relatime",
+      "size=74196996k",
+      "nr_inodes=18549249",
+      "mode=755"
+        ]
+    },
+    "/proc/bus/usb,/proc/bus/usb": {
+      "device": "/proc/bus/usb",
+      "mount": "/proc/bus/usb",
+      "fs_type": "usbfs",
+      "mount_options": [
+        "rw",
+      "relatime"
+        ]
+    }
+  },
+  "by_device": {
+    "/dev/sda3": {
+      "kb_size": "1920537536",
+      "kb_used": "441398808",
+      "kb_available": "1381581020",
+      "percent_used": "25%",
+      "mounts": ["/"],
+      "fs_type": "ext4",
+      "mount_options": [
+        "rw",
+      "discard"
+        ],
+      "uuid": "28137926-9c39-44c0-90d3-3b158fc97ff9",
+      "label": "/"
+    },
+    "tmpfs": {
+      "kb_size": "2097152",
+      "kb_used": "113028",
+      "kb_available": "1984124",
+      "percent_used": "6%",
+      "mounts": ["/dev/shm"],
+      "fs_type": "tmpfs",
+      "mount_options": [
+        "rw",
+      "size=2G"
+        ]
+    },
+    "/dev/sda1": {
+      "kb_size": "253871",
+      "kb_used": "136490",
+      "kb_available": "104274",
+      "percent_used": "57%",
+      "mounts": ["/boot"],
+      "fs_type": "ext3",
+      "mount_options": [
+        "rw"
+        ],
+      "uuid": "9ebfe8b9-c188-4cda-8383-393deb0ac59c",
+      "label": "/boot"
+    },
+    "proc": {
+      "mounts": ["/proc"],
+      "fs_type": "proc",
+      "mount_options": [
+        "rw"
+        ]
+    },
+    "sysfs": {
+      "mounts": ["/sys"],
+      "fs_type": "sysfs",
+      "mount_options": [
+        "rw"
+        ]
+    },
+    "devpts": {
+      "mounts": ["/dev/pts"],
+      "fs_type": "devpts",
+      "mount_options": [
+        "rw",
+      "gid=5",
+      "mode=620"
+        ]
+    },
+    "/dev/sda2": {
+      "fs_type": "swap",
+      "uuid": "2ace4f5f-c8c5-4d3a-a027-d12076bdab0c"
+    },
+    "/dev/block/8:3": {
+      "fs_type": "ext4",
+      "uuid": "28137926-9c39-44c0-90d3-3b158fc97ff9",
+      "label": "/"
+    },
+    "rootfs": {
+      "mounts": ["/"],
+      "fs_type": "rootfs",
+      "mount_options": [
+        "rw"
+        ]
+    },
+    "devtmpfs": {
+      "mounts": ["/dev"],
+      "fs_type": "devtmpfs",
+      "mount_options": [
+        "rw",
+      "relatime",
+      "size=74196996k",
+      "nr_inodes=18549249",
+      "mode=755"
+        ]
+    },
+    "/proc/bus/usb": {
+      "mounts": ["/proc/bus/usb"],
+      "fs_type": "usbfs",
+      "mount_options": [
+        "rw",
+      "relatime"
+        ]
+    }
+  }
+}
