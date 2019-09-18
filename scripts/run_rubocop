@@ -19,27 +19,29 @@
 
 set -eu
 
-if [ -z "$SKEY" ]; then
-  SKEY='../supermarket.pem'
-fi
-if [ -z "$SUSER" ]; then
-  SUSER='phild'
-fi
-if [ -z "$TRAVIS_RUBY_VERSION" ]; then
-  BUNDLE='bundle'
+if bundle exec rubocop --version > /dev/null 2>&1; then
+  RUBOCOP='bundle exec rubocop'
+elif [ -x /opt/chefdk/embedded/bin/rubocop ]; then
+  RUBOCOP='/opt/chefdk/embedded/bin/rubocop'
+elif [ -x /opt/chef/embedded/bin/rubocop ]; then
+  RUBOCOP='/opt/chef/embedded/bin/rubocop'
 else
-  BUNDLE="rvm $TRAVIS_RUBY_VERSION do bundle"
+  echo 'Cannot find rubocop!'
+  exit 1
 fi
 
-COMMON_OPTS="-m https://supermarket.chef.io -k $SKEY -u $SUSER"
+if [ "$#" -eq 0 ]; then
+  config='.rubocop.yml'
+elif [ "$#" -eq 1 ]; then
+  config="$1"
+else
+  echo "Usage: $0 [config]"
+  exit 1
+fi
 
-$BUNDLE install
-cd cookbooks
-for i in *; do
-  echo "Unpublishing $i"
-  # shellcheck disable=SC2086
-  $BUNDLE exec knife supermarket unshare "$i" $COMMON_OPTS -y
-  echo "Publishing $i"
-  # shellcheck disable=SC2086
-  $BUNDLE exec knife supermarket share "$i" Other -o . $COMMON_OPTS
-done
+if [ ! -r "$config" ]; then
+  echo "Cannot read rubocop config: $config"
+  exit 1
+fi
+
+exec $RUBOCOP --display-cop-names -c "$config"

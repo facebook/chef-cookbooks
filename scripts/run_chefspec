@@ -21,7 +21,17 @@ set -eu
 
 COLOR='--color'
 TEST=''
-PATH=/opt/chefdk/embedded/bin:$PATH
+
+if bundle exec rspec --version > /dev/null 2>&1; then
+  RSPEC='bundle exec rspec'
+elif [ -x /opt/chefdk/embedded/bin/rspec ]; then
+  RSPEC='/opt/chefdk/embedded/bin/rspec'
+elif [ -x /opt/chef/embedded/bin/rspec ]; then
+  RSPEC='/opt/chef/embedded/bin/rspec'
+else
+  echo 'Cannot find rspec!'
+  exit 1
+fi
 
 while getopts ":e:c" opt; do
   case $opt in
@@ -51,10 +61,10 @@ done
 
 if [ -z "$TEST" ]; then
   # shellcheck disable=SC2086
-  /opt/chefdk/embedded/bin/rspec $COLOR --format=d $newarg
+  $RSPEC $COLOR --format=d $newarg
 else
   # shellcheck disable=SC2086
-  /opt/chefdk/embedded/bin/rspec -e "$TEST" $COLOR --format=d $newarg
+  $RSPEC -e "$TEST" $COLOR --format=d $newarg
 fi
 RET=$?
 
