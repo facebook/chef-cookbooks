@@ -10,7 +10,6 @@ Attributes
 ----------
 * node['fb_apt']['config']
 * node['fb_apt']['keys']
-* node['fb_apt']['keyring']
 * node['fb_apt']['keyserver']
 * node['fb_apt']['mirror']
 * node['fb_apt']['preserve_sources_list_d']
@@ -20,6 +19,8 @@ Attributes
 * node['fb_apt']['want_backports']
 * node['fb_apt']['want_non_free']
 * node['fb_apt']['want_source']
+* node['fb_apt']['preserve_unknown_keyrings']
+* node['fb_apt']['allow_modified_pkg_keyrings']
 
 Usage
 -----
@@ -47,8 +48,12 @@ ensure it has full control on the repository list; this can be disabled with
 `node['fb_apt']['preserve_sources_list_d']`.
 
 ### Keys
-Repository keys can be added to `node['fb_apt']['keys']` which is a hash in the
-`keyid => key` format; if `key` is `nil` the key will be automatically fetched
+They `keys` hash is pre-populated with any keys from pkg-owned keyrings that
+exist in `/etc/apt/trusted.gpg.d/` so you don't need to worry about keeping
+a list of repository keys in sync.
+
+You can add to this, but setting a key of your keyid and a value of either `nil`
+or the PEM-encoded key. If `key` is `nil` the key will be automatically fetched
 from the `node['fb_apt']['keyserver']` keyserver (`keys.gnupg.net` by default).
 Example:
 
@@ -61,9 +66,14 @@ eos
 ```
 
 Automatic key fetching can be disabled by setting the keyserver to `nil`; this
-will produce an exception for any unspecified key. By default `fb_apt` will
-manage the keyring at `/etc/apt/trusted.gpg`; this can be customized with
-`node['fb_apt']['keyring']`.
+will produce an exception for any unspecified key.
+
+By default any keyring in `/etc/apt/trusted.gpg.d` that is not owned by a
+package will be deleted unless you set `preserve_unknown_keyrings` to false.
+
+If a keyring owned by a package is found to have been modified (based on
+`dpkg -V`), then the run will fail, unless `allow_modified_pkg_keyrings` is
+set.
 
 ### Configuration
 APT behaviour can be customized using `node['fb_apt']['config']`, which will be
@@ -71,10 +81,8 @@ used to populate `/etc/apt/apt.conf`. Note that this will take precedence over
 anything in `/etc/apt/apt.conf.d`. Example:
 
 ```
-node.default['fb_apt']['config'].merge!({
-  'Acquire::http' => {
-    'Proxy' => 'http://myproxy:3412',
-  },
+node.default['fb_apt']['config']['Acquire::http'].merge!({
+  'Proxy' => 'http://myproxy:3412',
 })
 ```
 
@@ -85,11 +93,10 @@ clobber the contents of `/etc/apt/preferences.d` to ensure this always takes
 precedence. Example:
 
 ```
-node.default['fb_apt']['preferences'].merge!({
-  'Pin dpatch package from experimental' => {
+node.default['fb_apt']['preferences'][
+  'Pin dpatch package from experimental'].merge!({
     'Package' => 'dpatch',
     'Pin' => 'release o=Debian,a=experimental',
     'Pin-Priority' => 450,
-  }
-})
+  })
 ```
