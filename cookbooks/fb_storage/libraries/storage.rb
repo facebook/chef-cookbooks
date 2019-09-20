@@ -463,7 +463,7 @@ module FB
       prev = load_previous_disk_order
 
       disk_to_slot_mapping = {}
-      if node['fb']['fbjbod']
+      if node['fb'] && node['fb']['fbjbod']
         unless node['fb']['fbjbod']['shelves'].keys.length.zero?
           shelves = node['fb']['fbjbod']['shelves'].keys.sort
           shelves.each do |shelf|
