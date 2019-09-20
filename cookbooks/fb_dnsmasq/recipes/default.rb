@@ -43,5 +43,6 @@ end
 
 service 'disable dnsmasq' do
   not_if { node['fb_dnsmasq']['enable'] }
+  service_name 'dnsmasq'
   action [:stop, :disable]
 end
