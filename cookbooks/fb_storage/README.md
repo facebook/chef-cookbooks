@@ -282,7 +282,7 @@ relevant `mkfs`.
 
 The `node['fb_storage']['fstab_use_labels']` option will control
 whether or not `fb_fstab`'s information is populated with device names or
-labels. The default is currently `false`.
+labels. The default is currently `true`.
 
 #### manage_mdadm_conf
 
