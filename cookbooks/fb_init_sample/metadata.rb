@@ -45,6 +45,7 @@ end
   fb_rsync
   fb_sdparm
   fb_securetty
+  fb_storage
   fb_swap
   fb_sysctl
   fb_syslog
