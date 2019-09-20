@@ -428,25 +428,13 @@ module FB
         end
       end
 
-      def device_from_partition(partition)
-        # For things like NVME which have a card, disk, and partition number
-        # ${devtype}XnYpZ - i.e. nvme0n1p1, we have to include the 'p' when
-        # nuking their partition number
-        if partition =~ /\dn\d/ || partition =~ %r{/(etherd|md|nbd)}
-          re = /p[0-9]+$/
-        else
-          re = /[0-9]+$/
-        end
-        partition.sub(re, '')
-      end
-
       # Then format the partitions
       def format_storage(partitions, storage)
         Chef::Log.debug(
           "fb_storage: formatting #{partitions}",
         )
         partitions.each do |partition|
-          device = device_from_partition(partition)
+          device = FB::Storage.device_name_from_partition(partition)
           # if this partition is really a device, and if
           # that device is supposed to be treated as an FS...
           device_config = nil
