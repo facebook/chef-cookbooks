@@ -1,0 +1,124 @@
+#!/bin/bash
+#
+# vim: syntax=ruby:expandtab:shiftwidth=2:softtabstop=2:tabstop=2
+#
+# Copyright (c) 2018-present, Facebook, Inc.
+# All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# mount.rtxfs
+#
+# This helper script guarantees the correct mating of XFS real-time devices
+# with their metadata counter-parts via partition labels.
+#
+# mount -t rtxfs [-o <mount options>] <device> <mount point>
+
+set -o pipefail
+
+export PATH="$PATH:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin"
+
+# ------------------------------------------------------------------------
+# FUNCTION die
+#
+# Print out usage info and optionally errors which are passed in.  The
+# odd positional parameter order is necessary to satifsy what the "mount"
+# command expects from mount wrapper scripts.
+#
+# ------------------------------------------------------------------------
+function die() {
+  local MSG=$1
+  local RET=0
+  [ -n "$MSG" ] && echo "ERROR: $MSG" && RET=1
+cat << EOF
+Usage $0 <device> <mount point> <mount point> [-o <mount options>]
+
+Where,
+      <device>               - Device you wish to mount.
+      <mount point>          - The location in the host directory tree on 
+                               which you wish to bind the mount to.
+      -o <mount options>     - The mount options you wish to pass to the mount
+                               command.
+                    
+EOF
+exit $RET
+}
+
+IN_OPT=false
+POS_ARGS=0
+for OPT in "$@"; do
+  if $IN_OPT; then
+    for PAIR in $(echo "$OPT" | tr "," " "); do
+      KEY=$(echo "$PAIR" | cut -d= -f1 )
+      VALUE=$(echo "$PAIR" | cut -d= -f2)
+
+      # Handle options with values.
+      case "$KEY" in
+        "rtdev")   echo "WARNING: Ignoring rtdev option, auto-resolving.";;
+        *)
+          # Passthru
+          [ -z "$MOUNT_OPTS" ] || 
+          MOUNT_OPTS="$MOUNT_OPTS,"
+          MOUNT_OPTS="$MOUNT_OPTS$PAIR"
+        ;;
+      esac
+    done
+    IN_OPT=false
+  elif [ "$OPT" = "-o" ]; then
+    IN_OPT=true
+  else
+    case $POS_ARGS in
+      0) DEVICE=$OPT ;;
+      1) MOUNT_POINT=$OPT ;;
+      *) echo "extra arguments at end (ignored)" ;;
+    esac
+    POS_ARGS=$((POS_ARGS+1))
+  fi
+done
+
+if $IN_OPT || (( $POS_ARGS < 2 )); then
+    die "Invalid number of position arguments!"
+    exit 1
+fi
+
+MOUNT_ARGS=""
+if [ -n "$MOUNT_OPTS" ]; then
+  MOUNT_ARGS="-o $MOUNT_OPTS"
+fi
+
+if ! blkid -t LABEL="$MOUNT_POINT" | grep -q -e "PARTLABEL=\"md:" -e "PARTLABEL=\"md_rescue:" -e "PARTLABEL=\"rescue:"; then
+  echo "ERROR: Device is not labeled as metadata or rescue"
+  exit 1
+fi
+
+if ! [[ $(blkid -o device -t LABEL="$MOUNT_POINT" | wc -l) -eq 1 ]]; then
+  echo "ERROR: Multiple devices matching label $MOUNT_POINT"
+  exit 1
+fi
+
+if ! RT_DEVICE=$(blkid -o device -t PARTLABEL="$MOUNT_POINT"); then
+  echo "ERROR: Unable to determine real-time device for mount @ $MOUNT_POINT"
+  exit 1
+fi
+
+# Attempt the mount and print out any errors which might ocurr.
+echo -n "Mounting $DEVICE @ $MOUNT_POINT, real-time data @ $RT_DEVICE..."
+MOUNT_RESULT=$(mount ${MOUNT_ARGS},rtdev=${RT_DEVICE} $DEVICE $MOUNT_POINT 2>&1)
+RET=$?
+if (( $RET != 0 )); then
+  echo FAILED
+  echo "ERROR: $MOUNT_RESULT"
+else
+  echo DONE
+fi
+exit $RET
