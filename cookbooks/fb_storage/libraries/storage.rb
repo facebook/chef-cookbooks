@@ -111,11 +111,12 @@ module FB
     end
 
     def self.device_name_from_partition(partition)
-      if partition.match(/[0-9]p[0-9]+$/)
-        partition.sub(/p[0-9]+$/, '')
+      if partition =~ /\dn\d/ || partition =~ %r{/(etherd|md|nbd)}
+        re = /p[0-9]+$/
       else
-        partition.sub(/[0-9]+$/, '')
+        re = /[0-9]+$/
       end
+      partition.sub(re, '')
     end
 
     # External automation can pass us disks to rebuild for hot-swap. In order
