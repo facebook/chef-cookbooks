@@ -43,7 +43,7 @@ fe80::1%lo0 localhost
 <%=  ip6 %> <%= hosts_names %>
 <% end %>
 <% unless node['fb_hosts']['extra_entries'].empty? %>
-<%   node['fb_hosts'][ 'extra_entries'].to_hash.each do |ip, names| %>
+<%   node['fb_hosts']['extra_entries'].to_hash.each do |ip, names| %>
 <%=    ip %> <%= names.join(' ') %>
 <%   end %>
 <% end %>
