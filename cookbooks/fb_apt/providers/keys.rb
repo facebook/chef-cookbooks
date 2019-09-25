@@ -23,27 +23,29 @@ end
 use_inline_resources
 
 action :run do
-  keyring = node['fb_apt']['keyring']
   keyserver = node['fb_apt']['keyserver']
-  keys = node['fb_apt']['keys'].to_hash
+  desired_keys = node['fb_apt']['keys'].to_hash
 
-  if keys && keyring
-    installed_keys = []
-    if ::File.exist?(keyring)
-      cmd = Mixlib::ShellOut.new(
-        "LANG=C apt-key --keyring #{keyring} finger --keyid-format long",
-      ).run_command
-      cmd.error!
-      output = cmd.stdout.lines
-      Chef::Log.debug("apt-key output: #{output.join("\n")}")
-      installed_keys = output.select { |x| x.match(/(\s\w{4}){5}/) }.map do |x|
-        x[/(?<keyid>([\w]{4}\s){3}[\w]{4})$/, 'keyid'].delete(' ')
-      end
-    end
+  if desired_keys
+    installed_keys = FB::Apt.get_installed_keyids(node)
     Chef::Log.debug("Installed keys: #{installed_keys.join(', ')}")
 
+    legit_keyrings = FB::Apt._get_owned_keyring_files(node)
+    Dir.glob('/etc/apt/trusted.gpg.d/*').each do |keyring|
+      next if legit_keyrings.include?(keyring)
+      if node['fb_apt']['preserve_unknown_keyrings']
+        Chef::Log.warn(
+          "fb_apt[keys]: Unknown keyring #{keyring} being preserved!",
+        )
+      else
+        file keyring do
+          action :delete
+        end
+      end
+    end
+
     # Process keys to add
-    keys.each do |keyid, key|
+    desired_keys.each do |keyid, key|
       if installed_keys.include?(keyid)
         Chef::Log.debug("Skipping keyid #{keyid} as it's already registered")
       else
@@ -64,7 +66,7 @@ action :run do
 
     # Process keys to remove
     installed_keys.each do |keyid|
-      if keys.include?(keyid)
+      if desired_keys.keys.include?(keyid)
         Chef::Log.debug("Not deleting added keyid #{keyid}")
       else
         execute "delete key for #{keyid} from APT" do
