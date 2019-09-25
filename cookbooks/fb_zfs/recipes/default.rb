@@ -19,7 +19,7 @@
 #
 
 package 'zfs packages' do
-  package_name %w{spl spl-dkms zfs-dkms zfsutils}
+  package_name %w{spl spl-dkms zfs-dkms zfsutils-linux}
   action :upgrade
 end
 
@@ -38,6 +38,7 @@ import_services.each do |svc|
 
   service "disable #{svc}" do
     not_if { node['fb_zfs']['import_on_boot'] }
+    service_name svc
     action :disable
   end
 end
@@ -49,6 +50,7 @@ end
 
 service 'disable zfs-zed' do
   not_if { node['fb_zfs']['enable_zed'] }
+  service_name 'zfs-zed'
   action [:stop, :disable]
 end
 
@@ -59,6 +61,7 @@ end
 
 service 'disable zfs-mount' do
   not_if { node['fb_zfs']['mount_on_boot'] }
+  service_name 'zfs-mount'
   action :disable
 end
 
@@ -69,5 +72,6 @@ end
 
 service 'disable zfs-share' do
   not_if { node['fb_zfs']['share_on_boot'] }
+  service_name 'zfs-share'
   action :disable
 end

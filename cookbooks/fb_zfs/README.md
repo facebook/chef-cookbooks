@@ -14,12 +14,6 @@ Attributes
 
 Usage
 -----
-Include `fb_zfs::zfsonlinux_repo` to enable the
-[ZFS on Linux](http://zfsonlinux.org/debian.html) package repository. This is
-provided as a separate recipe in case you prefer to mirror the packages locally
-or use a different repository. Note that this repo only provides amd64 packages
-for Debian Wheezy and Debian Jessie.
-
 Include `fb_zfs::default` to install and configure ZFS. This will install the
 necessary packages, which in turn will compile and load the ZFS kernel modules.
 Note that this requires you to have kernel headers and a compiler available
