@@ -23,6 +23,10 @@ class Chef
       self['platform'] == 'centos'
     end
 
+    def centos8?
+      self.centos? && self['platform_version'].start_with?('8')
+    end
+
     def centos7?
       self.centos? && self['platform_version'].start_with?('7')
     end
