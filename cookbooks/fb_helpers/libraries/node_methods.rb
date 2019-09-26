@@ -240,6 +240,12 @@ class Chef
         )
         return nil
       end
+      unless node['filesystem2'] && node['filesystem2']['by_pair']
+        Chef::Log.warn(
+          'no filesystem data so no node.device_of_mount',
+        )
+        return nil
+      end
       node['filesystem2']['by_pair'].to_hash.each do |pair, info|
         # we skip fake filesystems 'rootfs', etc.
         next unless pair.start_with?('/')
