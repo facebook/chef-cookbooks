@@ -1,0 +1,9 @@
+# This file is controlled by Chef, do not modify.
+<% node['fb_stunnel']['config'].each do |section, conf| %>
+[<%= section %>]
+<%   conf.each do |k, v| %>
+<%   next if k.start_with?('_') %>
+<%=    k %> = <%= v %>
+<%   end %>
+
+<% end %>
