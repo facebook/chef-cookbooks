@@ -31,6 +31,7 @@ template '/etc/dnsmasq.conf' do
   owner 'root'
   group 'root'
   mode '0644'
+  verify 'dnsmasq --test -C %{path}'
   notifies :restart, 'service[dnsmasq]'
 end
 
