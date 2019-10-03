@@ -26,28 +26,32 @@ platforms:
         # for some reason rsyslog fails to restart cleanly otherwise
         - yum remove -y rsyslog
       run_command: /usr/sbin/init
-  - name: ubuntu-14.04
-    driver_config:
-      provision_command:
-        # we need dmidecode for the Ohai shard plugin
-        - apt-get install -y dmidecode
   - name: ubuntu-16.04
     driver_config:
       provision_command:
         # we need dmidecode for the Ohai shard plugin
         - apt-get install -y dmidecode
       run_command: /sbin/init
+  - name: ubuntu-18.04
+    driver_config:
+      provision_command:
+        # we need dmidecode for the Ohai shard plugin
+        # and apt needs gnugp2, but doesn't depend on it
+        - apt-get install -y dmidecode gnupg2
+      run_command: /sbin/init
   - name: debian-9
     driver_config:
       provision_command:
         # we need dmidecode for the Ohai shard plugin
-        - apt-get install -y dmidecode
+        # and apt needs gnugp2, but doesn't depend on it
+        - apt-get install -y dmidecode gnupg2
       run_command: /bin/systemd
   - name: debian-sid
     driver_config:
       provision_command:
         # we need dmidecode for the Ohai shard plugin
-        - apt-get install -y dmidecode
+        # and apt needs gnugp2, but doesn't depend on it
+        - apt-get install -y dmidecode gnupg2
       run_command: /bin/systemd
 
 provisioner:
