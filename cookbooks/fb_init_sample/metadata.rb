@@ -14,45 +14,51 @@ version '0.0.1'
 }.each do |p|
   supports p
 end
-%w{
-  fb_apt
-  fb_apcupsd
-  fb_collectd
-  fb_cron
-  fb_dnsmasq
-  fb_dracut
-  fb_ebtables
-  fb_ethers
-  fb_fstab
-  fb_grub
-  fb_hdparm
-  fb_hddtemp
-  fb_helpers
-  fb_hostconf
-  fb_hosts
-  fb_ipset
-  fb_iptables
-  fb_iproute
-  fb_launchd
-  fb_ldconfig
-  fb_limits
-  fb_logrotate
-  fb_modprobe
-  fb_motd
-  fb_nsswitch
-  fb_postfix
-  fb_rpm
-  fb_rsync
-  fb_sdparm
-  fb_securetty
-  fb_storage
-  fb_swap
-  fb_sysctl
-  fb_syslog
-  fb_systemd
-  fb_timers
-  fb_tmpclean
-  fb_vsftpd
-}.each do |cb|
+[
+  'fb_apt',
+  'fb_apcupsd',
+  'fb_collectd',
+  'fb_cron',
+  'fb_dnsmasq',
+  'fb_dracut',
+  'fb_ebtables',
+  'fb_ethers',
+  'fb_fstab',
+  'fb_grub',
+  'fb_hdparm',
+  'fb_hddtemp',
+  'fb_helpers',
+  'fb_hostconf',
+  'fb_hosts',
+  # no recipe, but we want the provider included
+  # for the tests
+  'fb_ipc',
+  'fb_ipset',
+  'fb_iptables',
+  'fb_iproute',
+  'fb_launchd',
+  'fb_ldconfig',
+  'fb_limits',
+  'fb_logrotate',
+  'fb_modprobe',
+  'fb_motd',
+  'fb_nsswitch',
+  'fb_postfix',
+  'fb_rpm',
+  'fb_rsync',
+  'fb_sdparm',
+  'fb_securetty',
+  'fb_storage',
+  'fb_swap',
+  'fb_sysctl',
+  # no recipe, but we want the provider included
+  # for the tests
+  'fb_sysfs',
+  'fb_syslog',
+  'fb_systemd',
+  'fb_timers',
+  'fb_tmpclean',
+  'fb_vsftpd',
+].each do |cb|
   depends cb
 end

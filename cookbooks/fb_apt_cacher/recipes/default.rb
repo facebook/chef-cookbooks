@@ -18,8 +18,8 @@
 # limitations under the License.
 #
 
-unless node.debian?
-  fail 'fb_apt_cacher is only supported on Debian.'
+unless node.debian? || node.ubuntu?
+  fail 'fb_apt_cacher is only supported on Debian-like Distros.'
 end
 
 package 'apt-cacher-ng' do
