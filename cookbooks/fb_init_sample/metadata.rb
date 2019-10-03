@@ -58,6 +58,7 @@ end
   'fb_screen',
   'fb_sdparm',
   'fb_securetty',
+  'fb_ssh',
   'fb_storage',
   'fb_stunnel',
   'fb_sudo',
