@@ -1,0 +1,70 @@
+#
+# Cookbook:: fb_sssd
+# Recipe:: default
+#
+# Copyright:: 2019, The Authors, All Rights Reserved.
+
+packages = %w{
+  sssd
+  sssd-ad
+  sssd-common
+  sssd-dbus
+  sssd-ipa
+  sssd-krb5
+  sssd-krb5-common
+  sssd-ldap
+  sssd-proxy
+  sssd-tools
+}
+
+extra_packages = value_for_platform_family(
+  ['fedora', 'rhel'] => ['sssd-client'],
+  ['debian'] => ['sssd-ad-common'],
+)
+
+packages += extra_packages
+
+package packages do
+  only_if { node['fb_sssd']['enable'] && node['fb_sssd']['manage_packages'] }
+  action :upgrade
+end
+
+package 'remove sssd' do
+  not_if { node['fb_sssd']['enable'] }
+  package_name packages
+  action :remove
+end
+
+template '/etc/sssd/sssd.conf' do
+  only_if { node['fb_sssd']['enable'] }
+  owner 'root'
+  group 'root'
+  mode '0600'
+  notifies :restart, 'service[sssd]'
+end
+
+file '/etc/sssd/sssd.conf' do
+  not_if { node['fb_sssd']['enable'] }
+  action :delete
+end
+
+Dir.glob('/etc/sssd/conf.d/*').each do |f|
+  file f do
+    only_if { node['fb_sssd']['enable'] }
+    action :delete
+  end
+end
+
+service 'sssd' do
+  only_if { node['fb_sssd']['enable'] }
+  action [:enable, :start]
+  subscribes :restart, 'template[/etc/nsswitch.conf]', :immediately
+end
+
+service 'disable sssd' do
+  not_if { node['fb_sssd']['enable'] }
+  # once the package is removed, this fails, sadly
+  only_if { File.exist?('/lib/systemd/system/sssd.service') }
+  service_name 'sssd'
+  action [:enable, :start]
+end
