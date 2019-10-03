@@ -75,5 +75,5 @@ action :manage_keys do
 end
 
 action :manage_principals do
-  manager('principals')
+  manage('principals')
 end
