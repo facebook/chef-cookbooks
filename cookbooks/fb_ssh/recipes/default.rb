@@ -62,6 +62,7 @@ template '/etc/ssh/sshd_config' do
   group 'root'
   mode '0644'
   variables({ :type => 'sshd_config' })
+  verify '/usr/sbin/sshd -t -f %{path}'
   notifies :restart, 'service[ssh]'
 end
 
