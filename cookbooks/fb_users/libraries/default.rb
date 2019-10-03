@@ -57,11 +57,15 @@ module FB
               'is not in the GID_MAP'
           end
           gid_int = false
+          # rubocop:disable Style/DoubleNegation
+          # rubocop:disable Lint/HandleExceptions
           begin
             gid_int = !!Integer(gid)
           rescue ArgumentError
             # expected
           end
+          # rubocop:enable Style/DoubleNegation
+          # rubocop:enable Lint/HandleExceptions
           if gid_int
             fail "fb_users[user]: User #{user} has an integer for primary" +
               ' group. Please specify a name.'

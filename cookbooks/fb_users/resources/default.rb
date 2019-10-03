@@ -48,7 +48,8 @@ action :manage do
         manage_homedir = true
         homebase = ::File.dirname(homedir)
         if node['filesystem']['by_mountpoint'][homebase]
-          homebase_type = node['filesystem']['by_mountpoint'][homebase]['fs_type']
+          homebase_type =
+            node['filesystem']['by_mountpoint'][homebase]['fs_type']
           if homebase_type.start_with?('nfs', 'autofs')
             manage_homedir = false
           end
