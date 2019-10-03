@@ -57,6 +57,9 @@ action :run do
         elsif keyserver
           execute "fetch and add key for keyid #{keyid} to APT" do
             command "apt-key adv --keyserver #{keyserver} --recv #{keyid}"
+            # with the DDOS against PGP Keyservers, we need to try
+            # several times
+            retries 2
           end
         else
           fail "Cannot fetch key for #{keyid} as keyserver is not defined"
