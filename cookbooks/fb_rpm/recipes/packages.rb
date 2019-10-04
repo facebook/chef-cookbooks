@@ -75,6 +75,7 @@ end
 
 template '/etc/rpm/macros' do
   source 'macros.erb'
+  variables :overrides => {}
   owner 'root'
   group 'root'
   mode '0644'
