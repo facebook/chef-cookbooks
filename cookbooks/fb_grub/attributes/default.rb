@@ -17,10 +17,15 @@
 #
 
 version = node.centos6? ? 1 : 2
+grub2_base_dir = '/boot/grub2'
 if node.centos6? || node.redhat?
   vendor = 'redhat'
 elsif node.debian?
+  grub2_base_dir = '/boot/grub'
   vendor = 'debian'
+elsif node.ubuntu?
+  vendor = 'ubuntu'
+  grub2_base_dir = '/boot/grub'
 else
   vendor = 'centos'
 end
@@ -29,7 +34,7 @@ fb_grub = {
   '_device_hints' => [],
   '_efi_vendor_dir' => '/notdefined',
   '_grub_base_dir' => '/boot/grub',
-  '_grub2_base_dir' => '/boot/grub2',
+  '_grub2_base_dir' => grub2_base_dir,
   '_grub2_copy_path' => nil,
   '_grub2_module_path' => '/notdefined',
   '_vendor' => vendor,
@@ -65,6 +70,7 @@ fb_grub = {
   'timeout' => 5,
   'use_labels' => false,
   'version' => version,
+  'force_write_both_efi_and_bios' => true,
 }
 
 # Set the path to the grub config files

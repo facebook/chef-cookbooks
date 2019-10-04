@@ -235,22 +235,28 @@ class Chef
       self.cloud? && self['cloud']['provider'] == 'ec2'
     end
 
+    def ohai_fs_ver
+      @fs_ver ||=
+        node['filesystem2'] ? 'filesystem2' : 'filesystem'
+    end
+
     # Take a string representing a mount point, and return the
     # device it resides on.
     def device_of_mount(m)
+      fs = self.ohai_fs_ver
       unless Pathname.new(m).mountpoint?
         Chef::Log.warn(
           "#{m} is not a mount point - I can't determine its device.",
         )
         return nil
       end
-      unless node['filesystem2'] && node['filesystem2']['by_pair']
+      unless node[fs] && node[fs]['by_pair']
         Chef::Log.warn(
           'no filesystem data so no node.device_of_mount',
         )
         return nil
       end
-      node['filesystem2']['by_pair'].to_hash.each do |pair, info|
+      node[fs]['by_pair'].to_hash.each do |pair, info|
         # we skip fake filesystems 'rootfs', etc.
         next unless pair.start_with?('/')
         # is this our FS?
@@ -266,9 +272,10 @@ class Chef
     end
 
     def device_formatted_as?(device, fstype)
-      if node['filesystem2']['by_device'][device] &&
-         node['filesystem2']['by_device'][device]['fs_type']
-        return node['filesystem2']['by_device'][device]['fs_type'] == fstype
+      fs = self.ohai_fs_ver
+      if node[fs]['by_device'][device] &&
+         node[fs]['by_device'][device]['fs_type']
+        return node[fs]['by_device'][device]['fs_type'] == fstype
       end
       false
     end
@@ -307,7 +314,7 @@ class Chef
             else
               fail "fb_util[node.fs_val]: Unknown FS val #{val}"
             end
-      fs = self['filesystem2']['by_mountpoint'][p]
+      fs = self[self.ohai_fs_ver]['by_mountpoint'][p]
       # Some things like /dev/root and rootfs have same mount point...
       if fs && fs[key]
         return fs[key].to_f
@@ -361,16 +368,16 @@ class Chef
     end
 
     def cgroup_mounted?
-      node['filesystem2']['by_mountpoint'].include?('/sys/fs/cgroup')
+      node[self.ohai_fs_ver]['by_mountpoint'].include?('/sys/fs/cgroup')
     end
 
     def cgroup1?
-      cgroup_mounted? && node['filesystem2']['by_mountpoint'][
+      cgroup_mounted? && node[self.ohai_fs_ver]['by_mountpoint'][
         '/sys/fs/cgroup']['fs_type'] != 'cgroup2'
     end
 
     def cgroup2?
-      cgroup_mounted? && node['filesystem2']['by_mountpoint'][
+      cgroup_mounted? && node[self.ohai_fs_ver]['by_mountpoint'][
         '/sys/fs/cgroup']['fs_type'] == 'cgroup2'
     end
 
