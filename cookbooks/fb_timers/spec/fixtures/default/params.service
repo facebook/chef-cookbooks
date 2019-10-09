@@ -8,6 +8,7 @@ jkl=aaaaah
 
 [Service]
 Type=oneshot
+Slice=system-timers-params.slice
 ExecStart=/usr/local/bin/foobar.sh
 TimeoutStartSec=infinity
 TimeoutStopSec=90s

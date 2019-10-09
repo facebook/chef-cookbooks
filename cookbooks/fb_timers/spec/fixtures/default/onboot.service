@@ -7,6 +7,7 @@ After=network.target
 
 [Service]
 Type=oneshot
+Slice=system-timers-onboot.slice
 ExecStart=/usr/local/bin/foobar.sh
 TimeoutStartSec=infinity
 TimeoutStopSec=90s

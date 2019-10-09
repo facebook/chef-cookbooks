@@ -7,6 +7,7 @@ After=network.target
 
 [Service]
 Type=oneshot
+Slice=system-timers-complex.slice
 ExecStart=/usr/local/bin/foobar.sh thing1 thing2
 TimeoutStartSec=1d
 TimeoutStopSec=1h
