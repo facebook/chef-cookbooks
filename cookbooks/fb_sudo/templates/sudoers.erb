@@ -39,6 +39,9 @@ Cmnd_Alias <%= name.upcase -%> = <%= list %>
 <% end -%>
 
 # Users
-<% sudo['users'].sort.each do |user, spec| %>
-<%=  user -%> <%= spec %>
+<% sudo['users'].sort.each do |user, specs| %>
+<%   specs.each do |sname, spec| %>
+## <%= sname %>
+<%=    user -%> <%= spec %>
+<%   end -%>
 <% end -%>

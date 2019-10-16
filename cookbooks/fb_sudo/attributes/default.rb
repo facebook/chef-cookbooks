@@ -35,6 +35,8 @@ default['fb_sudo'] = {
   },
   'default_overrides' => {},
   'users' => {
-    '%sudo' => 'ALL=(ALL) ALL',
+    '%sudo' => {
+      'all' => 'ALL=(ALL) ALL',
+    },
   },
 }

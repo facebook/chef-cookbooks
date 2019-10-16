@@ -33,14 +33,14 @@ value is either bool or a string. If it's a bool then the default will be
 represented as `key` or `!key` as appropriate. If it's a string, then it will
 represented as `key=val`. E.g.
 
-```
+```ruby
 node.default['fb_sudo']['defaults']['timestamp_type'] = 'global'
 node.default['fb_sudo']['defaults']['env_reset'] = true
 ```
 
 Would result in the following values being added to Defaults:
 
-```
+```text
 timestamp_type=global,env_reset
 ```
 
@@ -48,7 +48,7 @@ The defaults correlate to the RHEL defaults.
 
 Default overrides can be specified using `default_overrides` like so:
 
-```
+```ruby
 node.default['fb_sudo']['defaults']['log_output'] = true
 node.default['fb_sudo']['default_overrides']['!/usr/bin/sudoreplay'] =
   '!log_output'
@@ -56,7 +56,7 @@ node.default['fb_sudo']['default_overrides']['!/usr/bin/sudoreplay'] =
 
 which renders like this:
 
-```
+```text
 Defaults log_output
 Defaults!/usr/bin/sudoreplay !log_output
 ```
@@ -65,13 +65,13 @@ Defaults!/usr/bin/sudoreplay !log_output
 This is the thinnest wrapper possible. Simply add aliases as you would in
 `/etc/sudoers`, but don't worry about upcasing alias names, we do that for you:
 
-```
+```ruby
 node.default['fb_sudo']['aliases']['command']['printing'] = '/usr/sbin/lpc, /usr/bin/lprm'
 ```
 
 Will render as:
 
-```
+```text
 Cmnd_Alias PRINTING = /usr/sbin/lpc, /usr/bin/lprm
 ```
 
@@ -79,8 +79,12 @@ We recommend keeping alias names as all-lower-case for easier typing and
 predictably modifying later in the runlist.
 
 ### Users
-Users work the same as aliases - just a simple mapping:
+Users work similar to Aliases, but with an additional level of hashing
+so you can have multiple entries:
 
-```
-node.default['fb_sudo']['users']['johnsmith'] = 'ALL=NOPASSWD: ALL'
+```ruby
+node.default['fb_sudo']['users']['johnsmith'] = {
+  'all the stuff' => 'ALL=ALL ALL'
+  'some passwordleess stuff' => 'ALL=ALL NOPASSWD: /sbin/reboot',
+}
 ```
