@@ -94,5 +94,5 @@ log 'periodic package cache update' do
       ::File.exist?(pkgcache) &&
       ::File.mtime(pkgcache) < Time.now - node['fb_apt']['update_delay'])
   end
-  notifies :run, 'execute[apt-get update]'
+  notifies :run, 'execute[apt-get update]', :immediately
 end
