@@ -74,7 +74,7 @@ module FB
     end
 
     def self._run(cmd, arg)
-      Mixlib::ShellOut.new("LANC=C #{cmd} #{arg}").run_command
+      Mixlib::ShellOut.new("LANG=C #{cmd} #{arg}").run_command
     end
 
     def self.dpkg(arg)
