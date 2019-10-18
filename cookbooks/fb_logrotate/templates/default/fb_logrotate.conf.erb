@@ -28,7 +28,8 @@ compressext <%= node['fb_logrotate']['globals']['compressext'] %>
 <%     block['overrides'].keys.sort.each do |k| -%>
 <%       case k -%>
 <%       when 'rotate', 'maxage', 'minsize', 'create', 'olddir', 'su',
-              'compressoptions', 'dateformat', 'maxsize' -%>
+              'compressoptions', 'dateformat', 'maxsize', 'compresscmd',
+              'compressext' -%>
   <%=      k %> <%= block['overrides'][k] %>
 <%       when 'copytruncate', 'ifempty', 'nocompress', 'missingok',
               'delaycompress', 'sharedscripts', 'nomail', 'dateext',
