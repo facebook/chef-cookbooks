@@ -129,7 +129,7 @@ directory '/etc/systemd/user/default.target.wants' do
 end
 
 execute 'set default target' do
-  not_if do
+  only_if do
     current = Mixlib::ShellOut.new('systemctl get-default').run_command.
       stdout.strip
     current != node['fb_systemd']['default_target']
