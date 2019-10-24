@@ -10,9 +10,7 @@ After=network.target
 
 [Service]
 Type=oneshot
-<% if node.in_shard?(49) %>
 Slice=system-timers-<%= @conf['name'] %>.slice
-<% end %>
 <% @conf['commands'].each do |command| %>
 ExecStart=<%= command %>
 <% end %>
