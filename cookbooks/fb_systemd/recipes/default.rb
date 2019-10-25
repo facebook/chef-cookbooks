@@ -128,6 +128,13 @@ directory '/etc/systemd/user/default.target.wants' do
   mode '0755'
 end
 
-link '/etc/systemd/system/default.target' do
-  to lazy { node['fb_systemd']['default_target'] }
+execute 'set default target' do
+  only_if do
+    current = Mixlib::ShellOut.new('systemctl get-default').run_command.
+              stdout.strip
+    current != node['fb_systemd']['default_target']
+  end
+  command lazy {
+    "systemctl set-default #{node['fb_systemd']['default_target']}"
+  }
 end

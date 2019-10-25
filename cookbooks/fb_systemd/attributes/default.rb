@@ -67,7 +67,7 @@ else
 end
 
 default['fb_systemd'] = {
-  'default_target' => '/lib/systemd/system/multi-user.target',
+  'default_target' => 'multi-user.target',
   'modules' => [],
   'system' => {},
   'user' => {},
