@@ -129,7 +129,7 @@ template "#{confdir}/fb_apache.conf" do
 end
 
 # We want to collect apache stats
-template '/etc/httpd/conf.d/status.conf' do
+template "#{confdir}/status.conf" do
   source 'status.erb'
   owner 'root'
   group 'root'

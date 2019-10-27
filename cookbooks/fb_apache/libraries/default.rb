@@ -53,7 +53,7 @@ module FB
       rules.each do |name, ruleset|
         buf << indentstr(1)
         buf << "# #{name}\n"
-        ruleset['conditions'].each do |cond|
+        ruleset['conditions']&.each do |cond|
           buf << indentstr(1)
           buf << "RewriteCond #{cond}\n"
         end
