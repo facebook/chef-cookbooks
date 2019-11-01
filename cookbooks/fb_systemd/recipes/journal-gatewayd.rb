@@ -23,7 +23,7 @@ service 'systemd-journal-gatewayd' do
   action [:enable, :start]
 end
 
-# Need to use systemd_unit becuase of
+# Need to use systemd_unit because of
 # https://github.com/chef/chef/issues/9041
 systemd_unit 'disable systemd-journal-gatewayd' do
   not_if { node['fb_systemd']['journal-gatewayd']['enable'] }
