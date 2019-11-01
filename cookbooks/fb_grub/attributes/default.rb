@@ -70,7 +70,7 @@ fb_grub = {
   'timeout' => 5,
   'use_labels' => false,
   'version' => version,
-  'force_write_both_efi_and_bios' => true,
+  'force_both_efi_and_bios' => true,
 }
 
 # Set the path to the grub config files

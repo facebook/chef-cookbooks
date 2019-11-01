@@ -21,6 +21,7 @@ Attributes
 * node['fb_grub']['terminal']
 * node['fb_grub']['version']
 * node['fb_grub']['use_labels']
+* node['fb_grub']['force_both_efi_and_bios']
 * node['fb_grub']['boot_disk']
 * node['fb_grub']['manage_packages']
 
@@ -62,6 +63,12 @@ If the device absolutely needs to be hardcoded, it can be overriden, as in:
 ```
 node.default['fb_grub']['boot_disk'] = 'hd1'
 ```
+
+This cookbook will, by default, write to both the EFI and BIOS locations for
+the grub config file. This can be problematic for cases were the EFI directory
+may not exist so this behavior may be disabled by setting
+`force_both_efi_and_bios` to false. This default is mostly an artifact of
+Facebook history - you probably want to disable it.
 
 ### tboot
 This cookbook optionally supports enabling tboot. This is only supported for
