@@ -39,7 +39,7 @@ action :enable do
     unless ::File.exist?('/usr/bin/openssl')
       Chef::Log.error(
         "fb_nginx[#{site}]: Cannot create certificates because no " +
-        'openssl is available'
+        'openssl is available',
       )
       next
     end

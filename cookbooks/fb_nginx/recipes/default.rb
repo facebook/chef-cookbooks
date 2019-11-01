@@ -91,4 +91,3 @@ service 'disable nginx' do
   service_name 'nginx'
   action [:stop, :disable]
 end
-
