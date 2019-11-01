@@ -23,8 +23,10 @@ service 'systemd-journal-gatewayd' do
   action [:enable, :start]
 end
 
-service 'disable systemd-journal-gatewayd' do
+# Need to use systemd_unit becuase of
+# https://github.com/chef/chef/issues/9041
+systemd_unit 'disable systemd-journal-gatewayd' do
   not_if { node['fb_systemd']['journal-gatewayd']['enable'] }
-  service_name 'systemd-journal-gatewayd'
+  unit_name 'systemd-journal-gatewayd.service'
   action [:stop, :disable]
 end

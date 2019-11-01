@@ -42,8 +42,10 @@ service 'systemd-journal-remote' do
   action [:enable, :start]
 end
 
-service 'disable systemd-journal-remote' do
+# Need to use systemd_unit becuase of
+# https://github.com/chef/chef/issues/9041
+systemd_unit 'disable systemd-journal-remote' do
   not_if { node['fb_systemd']['journal-remote']['enable'] }
-  service_name 'systemd-journal-remote'
+  unit_name 'systemd-journal-remote.service'
   action [:stop, :disable]
 end
