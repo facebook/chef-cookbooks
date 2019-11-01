@@ -23,20 +23,22 @@ fb_grub_packages 'manage GRUB packages' do
   notifies :run, 'execute[grub-install]'
 end
 
-grub_base_dir = '/boot/grub'
-grub2_base_dir = '/boot/grub2'
+grub_base_dir = node['fb_grub']['_grub_base_dir']
+grub2_base_dir = node['fb_grub']['_grub2_base_dir']
 
 whyrun_safe_ruby_block 'initialize_grub_locations' do
   block do
     bootdisk_guess = 'hd0'
 
+    fs = node.ohai_fs_ver
+
     if Pathname.new('/boot').mountpoint?
       boot_device = node.device_of_mount('/boot')
-      boot_label = node['filesystem2']['by_mountpoint']['/boot']['label']
+      boot_label = node[fs]['by_mountpoint']['/boot']['label']
       node.default['fb_grub']['path_prefix'] = ''
     else
       boot_device = node.device_of_mount('/')
-      boot_label = node['filesystem2']['by_mountpoint']['/']['label']
+      boot_label = node[fs]['by_mountpoint']['/']['label']
       node.default['fb_grub']['path_prefix'] = '/boot'
     end
 
@@ -49,7 +51,7 @@ whyrun_safe_ruby_block 'initialize_grub_locations' do
 
       # For tboot, we have to specify the full path to the modules.
       # They are in /usr/lib/grub , so we need the label for the root disk
-      slash_label = node['filesystem2']['by_mountpoint']['/']['label']
+      slash_label = node[fs]['by_mountpoint']['/']['label']
       if slash_label
         node.default['fb_grub']['_module_label'] = slash_label
       end
@@ -77,8 +79,8 @@ whyrun_safe_ruby_block 'initialize_grub_locations' do
     # Ensure grub is put down with the label matching the fs mounted at / that
     # has a valid uuid or label. This will skip over things like rootfs mounts.
     node.default['fb_grub']['rootfs_arg'] = 'LABEL=/'
-    label = node['filesystem2']['by_mountpoint']['/']['label']
-    uuid = node['filesystem2']['by_mountpoint']['/']['uuid']
+    label = node[fs]['by_mountpoint']['/']['label']
+    uuid = node[fs]['by_mountpoint']['/']['uuid']
     if label && !label.empty?
       node.default['fb_grub']['rootfs_arg'] = "LABEL=#{label}"
     elsif uuid && !uuid.empty?
@@ -110,8 +112,8 @@ whyrun_safe_ruby_block 'initialize_grub_locations' do
       node.default['fb_grub']['_grub2_module_path'] = module_path
 
       # Until grub2 learns how to deal with zstd compressed filesystems
-      unless node['filesystem2']['by_mountpoint']['/']['mount_options'
-        ].grep(/compress(?:-force)=zstd/).empty?
+      unless node[fs]['by_mountpoint']['/']['mount_options'
+             ].grep(/compress(?:-force)=zstd/).empty?
         node.default['fb_grub']['_grub2_copy_path'] = node['fb_grub'][
           '_grub2_module_path']
         node.default['fb_grub']['_module_label'] = node['fb_grub'][
@@ -193,19 +195,25 @@ directory grub2_base_dir do
   mode '0755'
 end
 
-# For grub 2, we write both efi and bios config files
 [
   { :type => 'bios', :mode => '0644' },
   { :type => 'efi', :mode => '0700' },
 ].each do |tpl|
+  # For grub 2, we MAY be able to write both efi and bios config files
+  # if the user wants us to
+  if tpl[:type] == 'efi'
+    our_type = node.efi?
+  else
+    our_type = !node.efi?
+  end
   # efi command suffixing is a special case in grub2 that only applies
   # to x86_64.
   efi_command = tpl[:type] == 'efi' && node.x64?
 
   template "grub2_config_#{tpl[:type]}" do
     only_if do
-      node['platform_family'] == 'rhel' && node['fb_grub']['kernels'] &&
-        node['fb_grub']['version'] == 2
+      (node['fb_grub']['kernels'] && node['fb_grub']['version'] == 2) &&
+      (our_type || node['fb_grub']['force_both_efi_and_bios'])
     end
     path lazy { node['fb_grub']["_grub2_config_#{tpl[:type]}"] }
     source 'grub2.cfg.erb'
@@ -245,11 +253,13 @@ end
   end
 end
 
-directory "cleanup #{grub_base_dir}" do
-  not_if { node['fb_grub']['version'] == 1 }
-  path grub_base_dir
-  action :delete
-  recursive true
+if grub_base_dir != grub2_base_dir
+  directory "cleanup #{grub_base_dir}" do
+    not_if { node['fb_grub']['version'] == 1 }
+    path grub_base_dir
+    action :delete
+    recursive true
+  end
 end
 
 ['_grub2_config_bios', '_grub2_config_efi'].each do |tpl_name|

@@ -37,6 +37,13 @@ action :install do
       unless node.aarch64?
         packages << 'grub-pc'
       end
+    elsif node.ubuntu?
+      packages += %w{
+        grub2
+        grub2-common
+        grub-pc
+        grub-pc-bin
+      }
     else
       packages += %w{grub2-efi grub2-efi-modules grub2-tools}
       unless node.aarch64?
