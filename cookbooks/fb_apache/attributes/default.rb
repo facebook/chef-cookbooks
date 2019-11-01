@@ -25,6 +25,34 @@ moddir = value_for_platform_family(
 
 auth_core_suffix = node.centos6? ? 'default' : 'core'
 
+modules = [
+  'alias',
+  'auth_basic',
+  'auth_digest',
+  'authn_file',
+  "authn_#{auth_core_suffix}",
+  "authz_#{auth_core_suffix}",
+  'authz_groupfile',
+  'authz_host',
+  'authz_owner',
+  'authz_user',
+  'autoindex',
+  'deflate',
+  'dir',
+  'env',
+  'headers',
+  'mime',
+  'negotiation',
+  'setenvif',
+]
+
+if node['platform_family'] == 'rhel'
+  modules += [
+    'log_config',
+    'logio',
+  ]
+end
+
 default['fb_apache'] = {
   'sysconfig' => {
     '_extra_lines' => [],
@@ -32,28 +60,7 @@ default['fb_apache'] = {
   'manage_packages' => true,
   'sites' => {},
   'extra_configs' => {},
-  'modules' => [
-    'alias',
-    'auth_basic',
-    'auth_digest',
-    'authn_file',
-    "authn_#{auth_core_suffix}",
-    "authz_#{auth_core_suffix}",
-    'authz_groupfile',
-    'authz_host',
-    'authz_owner',
-    'authz_user',
-    'autoindex',
-    'deflate',
-    'dir',
-    'env',
-    'headers',
-    'log_config',
-    'logio',
-    'mime',
-    'negotiation',
-    'setenvif',
-  ],
+  'modules' => modules,
   'modules_directory' => moddir,
   'modules_mapping' => {
     'actions' => 'mod_actions.so',

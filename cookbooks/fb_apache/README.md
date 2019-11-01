@@ -41,7 +41,7 @@ syntax to a hash. So for example:
 node.default['fb_apache']['sites']['*:80'] = {
   'ServerName' => 'example.com',
   'ServerAdmin' => 'l33t@example.com',
-  'DocRoot' => '/var/www',
+  'DocumentRoot' => '/var/www',
 }
 ```
 
@@ -51,7 +51,7 @@ Will produce:
 <VirtualHost *:80>
   ServerName example.com
   ServerAdmin l33t@example.com
-  Docroot /var/www
+  DocumentRoot /var/www
 </VirtualHost>
 ```
 
@@ -82,7 +82,7 @@ This can be used for anything which repeats such as `Alias`, `ServerAlias`, or
 If the value is a hash, then the key is treated like another markup tag in the
 config and the hash is values inside that tag. For example:
 
-```
+```ruby
 node.default['fb_apache']['sites']['*:80'] = {
   'Directory /var/www' => {
     'Options' => 'Indexes FollowSymLinks MultiViews',
@@ -109,6 +109,25 @@ instead of just `Directory`).
 
 Hashes like this work for all nested tags such as `Directory` and `Location`.
 
+If you want to have more than one virtual host with the same name, you can do
+so by giving them unique names and then setting `_virtualhost`, like so:
+
+```ruby
+node.default['fb_apache']['sites']['my cool site'] = {
+  '_virtualhost' => '*:80',
+  'ServerName' => 'example.com',
+  'ServerAdmin' => 'l33t@example.com',
+  'DocumentRoot' => '/var/www/cool',
+}
+
+node.default['fb_apache']['sites']['my uncool site'] = {
+  '_virtualhost' => '*:80',
+  'ServerName' => 'anotherexample.com',
+  'ServerAdmin' => 'l33t@example.com',
+  'DocumentRoot' => '/var/www/uncool',
+}
+```
+
 #### Rewrite rules
 
 One exception to this generic 1:1 mapping is rewrite rules. Because of the
@@ -121,7 +140,7 @@ name (will be used as a comment) and the value is another hash with a
 apache, multiple conditionals in the same block will be ANDed together. To get
 OR, make an additional entry in the hash. So for example:
 
-```
+```ruby
 node.default['fb_apache']['sites']['*:80'] = {
   '_rewrites' => {
     'rewrite old thing to new thing' => {
