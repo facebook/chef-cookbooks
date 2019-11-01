@@ -25,9 +25,8 @@ end
 
 # Need to use systemd_unit because of
 # https://github.com/chef/chef/issues/9041
-systemd_unit 'disable systemd-journal-gatewayd' do
+systemd_unit 'disable systemd-journal-gatewayd' do # ~FC009
   not_if { node['fb_systemd']['journal-gatewayd']['enable'] }
-  # ~FC009 - old version of FC...
   unit_name 'systemd-journal-gatewayd.service'
   action [:stop, :disable]
 end
