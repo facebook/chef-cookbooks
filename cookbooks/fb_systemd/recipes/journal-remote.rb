@@ -46,6 +46,7 @@ end
 # https://github.com/chef/chef/issues/9041
 systemd_unit 'disable systemd-journal-remote' do
   not_if { node['fb_systemd']['journal-remote']['enable'] }
+  # ~FC009 - old version of FC...
   unit_name 'systemd-journal-remote.service'
   action [:stop, :disable]
 end

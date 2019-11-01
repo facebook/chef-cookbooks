@@ -27,6 +27,7 @@ end
 # https://github.com/chef/chef/issues/9041
 systemd_unit 'disable systemd-journal-gatewayd' do
   not_if { node['fb_systemd']['journal-gatewayd']['enable'] }
+  # ~FC009 - old version of FC...
   unit_name 'systemd-journal-gatewayd.service'
   action [:stop, :disable]
 end
