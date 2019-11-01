@@ -20,7 +20,7 @@ module FB
     # To be called at runtime only.
     def self._validate(node)
       uids = {}
-      UID_MAP.each do |user, info|
+      UID_MAP&.each do |user, info|
         if uids[info['uid']]
           fail "fb_users[user]: User #{user} in UID map has a UID conflict"
         end
@@ -29,7 +29,7 @@ module FB
       end
 
       gids = {}
-      GID_MAP.each do |group, info|
+      GID_MAP&.each do |group, info|
         if gids[info['gid']]
           fail "fb_users[group]: group #{group} in GID map has a GID conflict"
         end
