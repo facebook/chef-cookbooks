@@ -59,10 +59,12 @@ if node.ubuntu? &&
    FB::Version.new(node['platform_version']) >= FB::Version.new('18.04')
   enable_networkd = true
   enable_resolved = true
+  enable_nss_resolve = true
   enable_timesyncd = true
 else
   enable_networkd = false
   enable_resolved = false
+  enable_nss_resolve = false
   enable_timesyncd = false
 end
 
@@ -103,6 +105,7 @@ default['fb_systemd'] = {
   },
   'resolved' => {
     'enable' => enable_resolved,
+    'enable_nss_resolve' => enable_nss_resolve,
     'config' => {},
   },
   'timesyncd' => {

@@ -36,7 +36,10 @@ end
 # to place the resolver between mymachines and myhostname as recommended by
 # upstream.
 ruby_block 'enable nss-resolve' do
-  only_if { node['fb_systemd']['resolved']['enable'] }
+  only_if do
+    node['fb_systemd']['resolved']['enable'] &&
+    node['fb_systemd']['resolved']['enable_nss_resolve']
+  end
   block do
     node.default['fb_nsswitch']['databases']['hosts'].delete('dns')
     idx = node['fb_nsswitch']['databases']['hosts'].index('mymachines')
