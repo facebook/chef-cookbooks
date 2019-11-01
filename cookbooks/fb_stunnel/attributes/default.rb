@@ -22,6 +22,6 @@ default['fb_stunnel'] = {
     'files' => '/etc/stunnel/fb_tunnel.conf',
     'ppp_restart' => 0,
     'rlimits' => '',
-    'options' => ''
+    'options' => '',
   },
 }
