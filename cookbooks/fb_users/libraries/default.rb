@@ -19,8 +19,14 @@ module FB
   class Users
     # To be called at runtime only.
     def self._validate(node)
+      # if they're not using the API to add users or groups, then
+      # don't fail on them not defining UID_MAP and GID_MAP
+      unless node['fb_users']['users'] || node['fb_users']['groups']
+        return
+      end
+
       uids = {}
-      UID_MAP&.each do |user, info|
+      UID_MAP.each do |user, info|
         if uids[info['uid']]
           fail "fb_users[user]: User #{user} in UID map has a UID conflict"
         end
@@ -29,7 +35,7 @@ module FB
       end
 
       gids = {}
-      GID_MAP&.each do |group, info|
+      GID_MAP.each do |group, info|
         if gids[info['gid']]
           fail "fb_users[group]: group #{group} in GID map has a GID conflict"
         end
