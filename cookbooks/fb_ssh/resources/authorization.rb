@@ -15,8 +15,6 @@
 # limitations under the License.
 #
 
-actions [:manage_keys, :manage_principals]
-
 action_class do
   def manage(type)
     keydir = FB::SSH::DESTDIR[type]
