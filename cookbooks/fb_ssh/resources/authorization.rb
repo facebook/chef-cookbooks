@@ -60,8 +60,8 @@ action_class do
       user = ::File.basename(keyfile)
       if allowed_users
         next if allowed_users.include?(user)
-      else
-        next if auth_map[user]
+      elsif auth_map[user]
+        next
       end
       file keyfile do
         action :delete
