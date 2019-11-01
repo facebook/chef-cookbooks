@@ -56,6 +56,24 @@ whyrun_safe_ruby_block 'handle late binding ssh configs' do
   end
 end
 
+template '/tmp/sshd_config' do
+  source 'ssh_config.erb'
+  owner 'root'
+  group 'root'
+  mode '0644'
+  variables({ :type => 'sshd_config' })
+end
+
+ruby_block 'debug' do
+  block do
+    puts ::File.read('/tmp/sshd_config')
+    s = Mixlib::ShellOut.new('/usr/sbin/sshd -t -f /tmp/sshd_config')
+    s.run_command
+    puts s.stdout
+    puts s.stderr
+  end
+end
+
 template '/etc/ssh/sshd_config' do
   source 'ssh_config.erb'
   owner 'root'
