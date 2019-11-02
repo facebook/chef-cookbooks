@@ -19,6 +19,17 @@ sftp_path = value_for_platform_family(
   ['rhel', 'fedora'] => '/usr/libexec/openssh/sftp-server',
   ['debian'] => '/usr/lib/openssh/sftp-server',
 )
+
+# centos6 only supports 1...
+if node.centos6?
+  auth_keys = '.ssh/authorized_keys'
+else
+  auth_keys = [
+    '.ssh/authorized_keys',
+    '.ssh/authorized_keys2',
+  ]
+end
+
 default['fb_ssh'] = {
   'enable_central_authorized_keys' => false,
   'manage_packages' => true,
@@ -26,10 +37,7 @@ default['fb_ssh'] = {
     'PermitRootLogin' => false,
     'UsePAM' => true,
     'Subsystem ftp' => sftp_path,
-    'AuthorizedKeysFile' => [
-      '.ssh/authorized_keys',
-      '.ssh/authorized_keys2',
-    ],
+    'AuthorizedKeysFile' => auth_keys,
   },
   'authorized_keys' => {},
   'authorized_keys_users' => [],
