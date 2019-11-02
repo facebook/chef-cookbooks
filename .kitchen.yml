@@ -61,3 +61,4 @@ suites:
   - name: default
     run_list:
       - recipe[fb_init_sample]
+      - recipe[test_services]
