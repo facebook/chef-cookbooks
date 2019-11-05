@@ -39,6 +39,7 @@ module FB
       'timeout_stop' => '90s',
       'timeout' => 'infinity',
       'timer_options' => {},
+      'timer_unit_options' => {},
     }.freeze
 
     REQUIRED_TIMER_KEYS = ['calendar', 'commands', 'name'].freeze

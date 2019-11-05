@@ -101,6 +101,8 @@ whatever you're doing.
 * `service_unit_options`: Additional options to include in the `[Unit]` section
   of the service unit file.
 * `timer_options`: Additional options to include in the timer unit file.
+* `timer_unit_options`: Additional options to include in the `[Unit]` section
+  of the timer unit file.
 * `autostart`: Setting this to false will prevent units from being enabled and
   started in the chef run.  This can be used for creating user units which are
   managed by other means. (defaults to `True`)

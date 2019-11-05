@@ -105,6 +105,9 @@ recipe 'fb_timers::default', :unsupported => [:mac_os_x] do |tc|
               'foo' => '19',
               'bar' => '17',
             },
+            'timer_unit_options' => {
+              'jkl' => 'aaaaah',
+            },
             'service_options' => {
               'asdf' => '7',
               'baz' => '11',
