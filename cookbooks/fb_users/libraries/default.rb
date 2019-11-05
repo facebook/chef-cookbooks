@@ -21,7 +21,7 @@ module FB
     def self._validate(node)
       # if they're not using the API to add users or groups, then
       # don't fail on them not defining UID_MAP and GID_MAP
-      unless node['fb_users']['users'] || node['fb_users']['groups']
+      if node['fb_users']['users'].empty? && node['fb_users']['groups'].empty?
         return
       end
 
