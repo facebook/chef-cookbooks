@@ -29,5 +29,8 @@ ohai 'fb_users reloading ohai->etc' do
 end
 
 fb_users 'converge users and groups' do
+  not_if do
+    node['fb_users']['users'].empty? && node['fb_users']['groups'].empty?
+  end
   notifies :reload, 'ohai[fb_users reloading ohai->etc]', :immediately
 end
