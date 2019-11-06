@@ -5,6 +5,7 @@ gem 'foodcritic', '~> 12'
 gem 'rspec', '= 3.6'
 gem 'rubocop', '= 0.49'
 # work around https://github.com/cucumber/cucumber-ruby-core/issues/160
+# remove this once we're on ruby 2.5 or later
 gem 'gherkin', '~> 5.1'
 
 %w{

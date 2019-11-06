@@ -26,6 +26,7 @@ gemfile:
 before_script:
   # https://github.com/zuazo/kitchen-in-travis-native/issues/1#issuecomment-142455888
   - sudo iptables -L DOCKER || sudo iptables -N DOCKER
+  - bundle update
 
 script:
   - shellcheck ./scripts/*
