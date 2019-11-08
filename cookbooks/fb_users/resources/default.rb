@@ -26,11 +26,18 @@ action :manage do
   pgroups += node['fb_users']['users'].map { |_, info| info['gid'] }
   pgroups = pgroups.compact.sort.uniq
   pgroups.each do |grp|
+    next if node['etc']['group'][grp]
     group "bootstrap #{grp}" do
       group_name grp
       gid ::FB::Users::GID_MAP[grp]['gid']
       action :create
     end
+  end
+
+  begin
+    data_bag_passwords = data_bag('fb_users_auth')
+  rescue Net::HTTPServerException
+    data_bag_passwords = {}
   end
 
   # Now we can add all the users
@@ -57,14 +64,26 @@ action :manage do
       end
     end
 
+    pass = mapinfo['password']
+    if !pass && data_bag_passwords.include?(username)
+      Chef::Log.debug("fb_users[#{username}]: Using password from data_bag")
+      pass = data_bag_item('fb_users_auth', username)['password']
+    end
+
     user username do
       uid mapinfo['uid']
-      gid ::FB::Users::GID_MAP[pgroup]['gid']
+      # the .to_i here is important - if the usermap accidentally
+      # quotes the gid, then it will try to look up a group named "142"
+      # or whatever.
+      #
+      # We explicityly pass in a GID here instead of a name to ensure that
+      # as GIDs are moving, we get the intended outcome.
+      gid ::FB::Users::GID_MAP[pgroup]['gid'].to_i
       shell info['shell'] || node['fb_users']['user_defaults']['shell']
       manage_home manage_homedir
       home homedir
       comment mapinfo['comment'] if mapinfo['comment']
-      comment mapinfo['password'] if mapinfo['password']
+      password pass if pass
       action :create
     end
   end
@@ -74,6 +93,7 @@ action :manage do
     group groupname do
       gid ::FB::Users::GID_MAP[groupname]['gid']
       members info['members'] if info['members']
+      comment info['comment'] if info['comment']
       append false
       action :create
     end

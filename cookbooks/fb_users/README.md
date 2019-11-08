@@ -88,6 +88,10 @@ The default recipe will validate there are no UID or GID conflicts for you,
 but you should keep users and groups in order of their UID/GID for your own
 sanity.
 
+You may specify a `comment` in addition to `uid`/`gid` for the entity.
+
+All other values must be set in the node object.
+
 ### Users and Groups
 Users and groups are setup using the `users` and `groups` hashes and are
 straight forward:
@@ -107,7 +111,6 @@ groups exist before creating users that depend on them and all users exist
 before group membership is managed.
 
 By design, we do not accept all values. Here are the values we do accept:
-* `comment`
 * `gid`
 * `home`
 * `manage_home`
@@ -116,6 +119,27 @@ By design, we do not accept all values. Here are the values we do accept:
 
 They are all optional, see the next section for how default values for these
 work.
+
+## Passwords in data_bags
+
+`fb_users` will also look for user passwords in a data_bag called
+`fb_users_auth`. The node takes precedent, but if no password is set there,
+then data_bags will be checked. This feature is to allow automation of password
+generation or syncing.
+
+To use this the item must be named the same as the user, and the element inside
+of the item should be `password`. For example,
+`data_bags/fb_users_auth/testuser.json` might have the content:
+
+```json
+{"id":"testuser","password":<encryptedpassword>}
+```
+
+An encrypted password string suitable for passing to the Chef `user` resource
+is expected.
+
+If a password is not found in either the node or a data_bag, no password is
+set and the user will not be to authenticate via password.
 
 ## Defaults for users
 Values not specified for users will be handled as follows:
