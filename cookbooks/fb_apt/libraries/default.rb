@@ -46,31 +46,43 @@ module FB
 
     # Grab all keyrings owned by a package. We do not include
     def self._get_owned_keyring_files(node)
-      Dir.glob('/etc/apt/trusted.gpg.d/*').select do |keyring|
-        cmd = dpkg("-S #{keyring}")
-        # reject this file if it isn't in a package...
-        next false if cmd.error?
-
-        # if it is in a package, double check it's not been modified
-        pkg = cmd.stdout.lines.first.split(':').first
+      s = dpkg('-S /etc/apt/trusted.gpg.d/*')
+      # owned keys are on stdout, unowned keys are on stderr
+      owned_keys = Set.new
+      packages = []
+      s.stdout.each_line do |line|
+        package, file = line.strip.split(': ')
+        # dpkg reports on all files that WOULD match the path, even
+        # if they don't exist. Skip ones that have been removed
+        next unless ::File.exist?(file)
+        owned_keys.add(file)
+        packages << package
+      end
+      Chef::Log.debug("fb_apt[keys]: Owned keys: #{owned_keys}")
+      packages.each do |pkg|
         cmd = dpkg("-V #{pkg}")
-        modified_files = cmd.stdout.lines.map { |line| line.split.last }
-        if modified_files.include?(keyring)
+        modified_files = Set.new(cmd.stdout.lines.map { |line| line.split.last })
+        # keys that in both sets are modified keys
+        modified_keys = owned_keys & modified_files
+        Chef::Log.debug(
+          "fb_apt[keys]: Modofied keys from #{pkg}: #{modified_keys}"
+        )
+        unless modified_keys.empty?
           if node['fb_apt']['allow_modified_pkg_keyrings']
             Chef::Log.warn(
-              "fb_apt[keys]: #{keyring} has been modified but we are still " +
-              'trusting it, do to ' +
-              'node["fb_apt"]["allow_modified_pkg_keyrings"]',
+              'fb_apt[keys]: The following keys have been modified but we ' +
+              'are still trusting it, due to ' +
+              'node["fb_apt"]["allow_modified_pkg_keyrings"]: ',
+              "#{modified_keys.to_a.join(', ')}"
             )
           else
-            fail "fb_apt[keys]: keyring #{keyring} would be trusted, but " +
-              "has been modified since package (#{pkg}) was installed."
+            fail "fb_apt[keys]: The following keyrings would be trusted, but " +
+              "has been modified since package (#{pkg}) was installed: " +
+              "#{modified_keys.to_a.join(', ')}"
           end
         end
-
-        # OK, then we can accept this file
-        true
       end
+      owned_keys.to_a
     end
 
     def self._run(cmd, arg)

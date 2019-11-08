@@ -25,7 +25,7 @@ use_inline_resources
 action :run do
   mirror = node['fb_apt']['mirror']
   security_mirror = node['fb_apt']['security_mirror']
-  distro = node['lsb']['codename']
+  distro = node['fb_apt']['distro'] || node['lsb']['codename']
 
   # only add base repos if mirror is set and codename is available
   if mirror && distro
