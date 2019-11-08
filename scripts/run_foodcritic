@@ -35,10 +35,16 @@ excluded_rules='FC014 FC017 FC024 FC059 FC064 FC066 FC071 FC085 FC094 FC113'
 exclude_flags=$(for r in $excluded_rules; do echo "-t ~$r"; done)
 
 if bundle exec foodcritic --version > /dev/null 2>&1; then
+  echo 'Using bundled foodcritic'
   FOODCRITIC='bundle exec foodcritic'
+elif [ -x /opt/chef-workstation/embedded/bin/foodcritic ]; then
+  echo 'Falling back to chef-workstation foodcritic'
+  FOODCRITIC='/opt/chef-workstation/embedded/bin/foodcritic'
 elif [ -x /opt/chefdk/embedded/bin/foodcritic ]; then
+  echo 'Falling back to chefdk foodcritic'
   FOODCRITIC='/opt/chefdk/embedded/bin/foodcritic'
 elif [ -x /opt/chef/embedded/bin/foodcritic ]; then
+  echo 'Falling back to chef foodcritic'
   FOODCRITIC='/opt/chef/embedded/bin/foodcritic'
 else
   echo 'Cannot find foodcritic!'
