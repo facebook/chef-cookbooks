@@ -61,11 +61,12 @@ module FB
       Chef::Log.debug("fb_apt[keys]: Owned keys: #{owned_keys}")
       packages.each do |pkg|
         cmd = dpkg("-V #{pkg}")
-        modified_files = Set.new(cmd.stdout.lines.map { |line| line.split.last })
+        modified_files =
+          Set.new(cmd.stdout.lines.map { |line| line.split.last })
         # keys that in both sets are modified keys
         modified_keys = owned_keys & modified_files
         Chef::Log.debug(
-          "fb_apt[keys]: Modofied keys from #{pkg}: #{modified_keys}"
+          "fb_apt[keys]: Modofied keys from #{pkg}: #{modified_keys}",
         )
         unless modified_keys.empty?
           if node['fb_apt']['allow_modified_pkg_keyrings']
@@ -73,12 +74,12 @@ module FB
               'fb_apt[keys]: The following keys have been modified but we ' +
               'are still trusting it, due to ' +
               'node["fb_apt"]["allow_modified_pkg_keyrings"]: ',
-              "#{modified_keys.to_a.join(', ')}"
+              modified_keys.to_a.join(', ').to_s,
             )
           else
-            fail "fb_apt[keys]: The following keyrings would be trusted, but " +
+            fail 'fb_apt[keys]: The following keyrings would be trusted, but ' +
               "has been modified since package (#{pkg}) was installed: " +
-              "#{modified_keys.to_a.join(', ')}"
+              modified_keys.to_a.join(', ').to_s
           end
         end
       end
