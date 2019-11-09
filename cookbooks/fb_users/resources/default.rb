@@ -90,10 +90,14 @@ action :manage do
 
   # and then converge all groups
   node['fb_users']['groups'].each do |groupname, info|
-    group groupname do
+    # disableing fc009 becasue it triggers on 'comment' below which
+    # is already guarded by a version 'if'
+    group groupname do # ~FC009
       gid ::FB::Users::GID_MAP[groupname]['gid']
       members info['members'] if info['members']
-      comment info['comment'] if info['comment']
+      if FB::Version.new(Chef::VERSION) >= FB::Version.new('14.9')
+        comment info['comment'] if info['comment']
+      end
       append false
       action :create
     end
