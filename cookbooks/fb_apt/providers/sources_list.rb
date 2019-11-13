@@ -25,6 +25,9 @@ use_inline_resources
 action :run do
   mirror = node['fb_apt']['mirror']
   security_mirror = node['fb_apt']['security_mirror']
+  # By default, we want our current distro to assemble to repo URLs.
+  # However, for when people want to upgrade across distros, we let
+  # them specify a distro to upgrade to.
   distro = node['fb_apt']['distro'] || node['lsb']['codename']
 
   # only add base repos if mirror is set and codename is available

@@ -9,6 +9,7 @@ Requirements
 Attributes
 ----------
 * node['fb_apt']['config']
+* node['fb_apt']['distro']
 * node['fb_apt']['keys']
 * node['fb_apt']['keyserver']
 * node['fb_apt']['mirror']
@@ -100,3 +101,9 @@ node.default['fb_apt']['preferences'][
     'Pin-Priority' => 450,
   })
 ```
+
+### Distro
+As mentioned above, `fb_apt` can assemble the basic sources for you. It uses
+the LSB "codename" of the current systemd to build the URLs. In the event you
+want to use Chef to upgrade across distros, however, you can set
+`node['fb_apt']['distro']` to the appropriate name and it will be used instead.

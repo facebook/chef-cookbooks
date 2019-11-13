@@ -66,7 +66,7 @@ module FB
         # keys that in both sets are modified keys
         modified_keys = owned_keys & modified_files
         Chef::Log.debug(
-          "fb_apt[keys]: Modofied keys from #{pkg}: #{modified_keys}",
+          "fb_apt[keys]: Modified keys from #{pkg}: #{modified_keys}",
         )
         unless modified_keys.empty?
           if node['fb_apt']['allow_modified_pkg_keyrings']
