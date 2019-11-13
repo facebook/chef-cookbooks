@@ -17,7 +17,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ##
-#
-package 'stunnel5' do
+
+pkg = node.centos8? ? 'stunnel' : 'stunnel5'
+
+package pkg do
   action :upgrade
 end
