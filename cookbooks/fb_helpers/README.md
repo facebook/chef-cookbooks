@@ -7,6 +7,9 @@ Requirements
 
 Attributes
 ----------
+* node['fb_helpers']['managed_reboot_callback']
+* node['fb_helpers']['reboot_logging_callback']
+* node['fb_helpers']['reboot_allowed']
 
 Usage
 -----
@@ -183,3 +186,103 @@ The following methods are available:
    FB::Version.new('3.3.4') <= FB::Version.new('3.3.02')
    => false
    ```
+
+### Custom resources
+The following custom resources are available
+
+#### fb_helpers_reboot
+Use the `fb_helpers_reboot` resource if you need to indicate to an external
+service that the host needs to be rebooted and when that reboot action should
+be handled. Example:
+
+```ruby
+fb_helpers_reboot 'reboot to enable cgroup2' do
+  not_if { node.cgroup2? }
+  required false
+  action :deferred
+end
+```
+
+This custom resource implements a few different ways to reboot as actions.
+
+* Action `deferred`:
+    Reboot will be queued and evaluated at the end of the Chef run (via the
+    `:process_deferred` action).
+
+    If you want all Chef runs to fail until the host is rebooted successfully,
+    set the `required` attribute to true. If you commit to handle the reboots
+    via some other means, set `required` to false and Chef runs will continue
+    to succeed as normal.
+
+* Action `managed_now`:
+
+    NOTE THAT THIS RULE INTENTIONALLY CRASHES CHEF!
+
+    Perform a managed reboot, where an external entity will perform the reboot,
+    watch the host come back and re-run Chef. To use this you most likely want
+    to set `node['fb_helpers']['managed_reboot_callback']` to a `proc` that can
+    signal the external entity.
+
+* Action `now` (default):
+
+    NOTE THAT THIS RULE INTENTIONALLY CRASHES CHEF!
+
+    If you want to cause a reboot, cause it *as early as possible* in a Chef
+    run so that you don't end up discarding a bunch of queued-up notifications.
+
+    This custom resource will abort the current Chef run and reboot the system
+    if reboots are allowed.
+
+    If reboots are not allowed, by default, this custom resource will crash. If
+    you want Chef to keep going even if it can't reboot, set the attribute
+    `required` to false.
+
+* Action `rtc_wakeup`:
+
+    NOTE THAT THIS RULE INTENTIONALLY CRASHES CHEF!
+
+    Use the Linux RTC to wake up the server from a full power-off state after a
+    specified wait time. The default wait time is 120 seconds and can be
+    customized via the `wakeup_time_secs` property.
+
+    The power-off will only occur if the `rtcwake` command is supported on
+    the server and executes successfully.
+
+    This custom resource will crash if reboots are not allowed, or if the
+    system is in firstboot.
+
+* Action `process_deferred`:
+    This is the counterpart of `action :deferred` and is what processes any
+    enqueued reboots. It is meant to be used at the end of `fb_init`, and by
+    default will fail the Chef run to prevent misuse unless the special
+    property `__fb_helpers_internal_allow_process_deferred` is set to true.
+
+To prevent spurious Chef runs once a reboot request has been issued, it is
+recommended to check for the override flag file in `/etc/chef/client.rb`:
+
+```ruby
+# use /tmp/chef_reboot_override on OSX
+if File.exist?('/dev/shm/chef_reboot_override')
+  abort 'WARN: chef_reboot_override is in effect - aborting until after reboot'
+end
+```
+
+### Reboot control
+If it's safe for Chef to reboot your host, set `reboot_allowed` to true in
+your cookbook:
+
+```ruby
+node.default['fb_helpers']['reboot_allowed'] = true
+```
+
+Note that if Chef reboots the host during a firstboot run, that run will be
+considered as failed, and the *next* Chef run will be in the same phase. For
+example, if a reboot is issued during a firstboot OS run, the next Chef run
+once the host comes back from the reboot will also be an OS run; the one after
+that, assuming the OS run has succeeded, will be a Tier run.
+
+### Reboot logging
+If you'd like to log whenever a reboot is triggered by `fb_helpers_reboot` you
+can set `node['fb_helpers']['reboot_logging_callback']` to perform the logging.
+This should be a proc or library taking `node` (the node object), `reasons` (an
+explanatory message), `action` (the actual action being taked, e.g. `reboot`).

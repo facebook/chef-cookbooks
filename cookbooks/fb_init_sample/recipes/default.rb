@@ -120,3 +120,29 @@ include_recipe 'fb_vsftpd'
 # do that in a ruby_block or provider if this is at the end of the 'base
 # runlist'
 include_recipe 'fb_cron'
+
+fb_helpers_reboot 'process deferred reboots' do
+  __fb_helpers_internal_allow_process_deferred true
+  action :nothing
+end
+
+# We want this to run with the notifications at the very end of the run to
+# handle reboot requests that happen any time during the run.
+# ... but if we run this at the end and the run fails before then we'll drop
+# the reboot on the floor. So we play games. We schedule, as early as possible,
+# the scheduling. :)
+whyrun_safe_ruby_block 'deferred reboot intermediate' do
+  block {}
+  notifies :process_deferred, 'fb_helpers_reboot[process deferred reboots]'
+  action :nothing
+end
+
+# This will run very early, which adds a delayed notification to the
+# intermediate block which won't happen until notifications are being processed
+# at the end of the run. That will then fire a notification which will be added
+# to the end of the notifications list, to schedule the reboot, so it should
+# happen ~last
+whyrun_safe_ruby_block 'Schedule process deferred reboots' do
+  block {}
+  notifies :run, 'whyrun_safe_ruby_block[deferred reboot intermediate]'
+end
