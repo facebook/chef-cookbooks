@@ -46,17 +46,37 @@ modules = [
   'setenvif',
 ]
 
+sysconfig = {
+  '_extra_lines' => [],
+}
+
 if node['platform_family'] == 'rhel'
   modules += [
     'log_config',
     'logio',
   ]
+
+  {
+    'options' => [],
+    'lang' => 'C',
+  }.each do |k, v|
+    sysconfig[k] = v
+  end
+elsif node['platform_family'] == 'debian'
+  {
+    'htcacheclean_run' => 'auto',
+    'htcacheclean_mode' => 'daeon',
+    'htcacheclean_size' => '300M',
+    'htcacheclean_daemon_interval' => '120',
+    'htcacheclean_path' => '/var/cache/apache2/mod_cache_disk',
+    'htcacheclean_options' => ['-n'],
+  }.each do |k, v|
+    sysconfig[k] = v
+  end
 end
 
 default['fb_apache'] = {
-  'sysconfig' => {
-    '_extra_lines' => [],
-  },
+  'sysconfig' => sysconfig,
   'manage_packages' => true,
   'sites' => {},
   'extra_configs' => {},
@@ -154,23 +174,3 @@ default['fb_apache'] = {
     ),
   },
 }
-
-if node.centos?
-  {
-    'options' => [],
-    'lang' => 'C',
-  }.each do |k, v|
-    node.default['fb_apache']['sysconfig'][k] = v
-  end
-elsif node.debian?
-  {
-    'htcacheclean_run' => 'auto',
-    'htcacheclean_mode' => 'daeon',
-    'htcacheclean_size' => '300M',
-    'htcacheclean_daemon_interval' => '120',
-    'htcacheclean_path' => '/var/cache/apache2/mod_cache_disk',
-    'htcacheclean_options' => ['-n'],
-  }.each do |k, v|
-    node.default['fb_apache']['sysconfig'][k] = v
-  end
-end
