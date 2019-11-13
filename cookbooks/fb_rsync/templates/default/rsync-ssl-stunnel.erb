@@ -17,4 +17,8 @@ CAfile = /etc/pki/tls/certs/ca-bundle.crt
 verify = 2
 EOF
 
+<% if node.centos8? %>
+/usr/bin/stunnel $CONFIG
+<% else %>
 /usr/bin/stunnel5 $CONFIG
+<% end %>

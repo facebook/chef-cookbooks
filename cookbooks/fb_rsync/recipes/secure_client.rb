@@ -21,9 +21,9 @@
 include_recipe 'fb_rsync::packages'
 include_recipe 'fb_rsync::stunnel'
 
-cookbook_file '/usr/local/libexec/rsync-ssl-stunnel' do
+template '/usr/local/libexec/rsync-ssl-stunnel' do
   owner 'root'
   group 'root'
   mode '0755'
-  source 'rsync-ssl-stunnel'
+  source 'rsync-ssl-stunnel.erb'
 end
