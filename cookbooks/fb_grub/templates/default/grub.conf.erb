@@ -6,6 +6,9 @@
   cmdline_args = node['fb_grub']['kernel_cmdline_args']
 
   kargs = "ro root=#{root_arg} #{cmdline_args.uniq.join(' ')}"
+  if node['fb_grub']['_rootflags']
+    kargs << " rootflags=#{node['fb_grub']['_rootflags']}"
+  end
   root_device = node['fb_grub']['root_device']
   device_hints = node['fb_grub']['_device_hints']
 

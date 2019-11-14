@@ -6,6 +6,9 @@
   cmdline_args = node['fb_grub']['kernel_cmdline_args']
 
   kargs = "ro root=#{root_arg} #{cmdline_args.uniq.join(' ')}"
+  if node['fb_grub']['_rootflags']
+    kargs << " rootflags=#{node['fb_grub']['_rootflags']}"
+  end
   if node['fb_grub']['_root_label']
     root_line = "search --set=root --label #{node['fb_grub']['_root_label']}"
   else

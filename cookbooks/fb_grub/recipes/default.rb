@@ -126,6 +126,23 @@ whyrun_safe_ruby_block 'initialize_grub_locations' do
   end
 end
 
+if node['filesystem2']['by_mountpoint']['/']['fs_type'] == 'btrfs'
+  FB::Fstab.get_unmasked_base_mounts(:hash, node).each do |_device, metadata|
+    if metadata['mount_point'] == '/'
+      if !metadata.key?('opts') || metadata['opts'].nil?
+        break
+      end
+      metadata['opts'].split(',').each do |opt|
+        if opt.include?('subvolid=')
+          node.default['fb_grub']['_rootflags'] = opt
+          break
+        end
+      end
+      break
+    end
+  end
+end
+
 execute 'grub-install' do
   # https://fedoraproject.org/wiki/GRUB_2 specifically says :
   # 'grub2-install shouldn't be used on EFI systems'.  See T21894396

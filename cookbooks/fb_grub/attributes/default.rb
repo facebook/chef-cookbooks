@@ -37,6 +37,7 @@ fb_grub = {
   '_grub2_base_dir' => grub2_base_dir,
   '_grub2_copy_path' => nil,
   '_grub2_module_path' => '/notdefined',
+  '_rootflags' => nil,
   '_vendor' => vendor,
   'kernel_cmdline_args' => [],
   'kernels' => {},
