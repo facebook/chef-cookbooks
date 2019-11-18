@@ -104,9 +104,7 @@ action_class do
   def do_managed_reboot
     msg = '*** Reboot required to proceed'
 
-    if node['fb_helpers']['managed_reboot_callback']
-      node['fb_helpers']['managed_reboot_callback'].call
-    end
+    node['fb_helpers']['managed_reboot_callback']&.call
 
     ruby_block 'Managed reboot' do
       block do
@@ -135,13 +133,11 @@ action :now do
         action :nothing
       end
 
-      if node['fb_helpers']['reboot_logging_callback']
-        node['fb_helpers']['reboot_logging_callback'].call(
-          node,
-          "reboot reason: '#{new_resource.name}' requested by " +
-          "recipe #{cookbook_name}::#{new_resource.recipe_name}",
-        )
-      end
+      node['fb_helpers']['reboot_logging_callback']&.call(
+        node,
+        "reboot reason: '#{new_resource.name}' requested by " +
+        "recipe #{cookbook_name}::#{new_resource.recipe_name}",
+      )
       command.run_action(:run)
       fail 'Reboot requested, aborting chef run and rebooting'
     end
@@ -186,12 +182,10 @@ action :process_deferred do
       do_managed_reboot
     elsif ::File.exist?(::File.join(current_resource.prefix, REBOOT_REQUIRED))
       if node['fb_helpers']['reboot_allowed']
-        if node['fb_helpers']['reboot_logging_callback']
-          node['fb_helpers']['reboot_logging_callback'].call(
-            node,
-            load_reboot_reason(node),
-          )
-        end
+        node['fb_helpers']['reboot_logging_callback']&.call(
+          node,
+          load_reboot_reason(node),
+        )
         reboot 'reboot' do # ~FB026
           action :request_reboot
         end
@@ -232,14 +226,12 @@ action :rtc_wakeup do
 
     verify_rtc_cap.run_action(:run)
     set_wakeup.run_action(:run)
-    if node['fb_helpers']['reboot_logging_callback']
-      node['fb_helpers']['reboot_logging_callback'].call(
-        node,
-        "poweroff reason: '#{new_resource.name}' (#{message}) requested by " +
-          "recipe #{cookbook_name}::#{new_resource.recipe_name}",
-        'poweroff',
-      )
-    end
+    node['fb_helpers']['reboot_logging_callback']&.call(
+      node,
+      "poweroff reason: '#{new_resource.name}' (#{message}) requested by " +
+        "recipe #{cookbook_name}::#{new_resource.recipe_name}",
+      'poweroff',
+    )
     poweroff.run_action(:run)
     fail "Hard shutdown requested, aborting chef and shutting down.
           Server should wake up in #{new_resource.wakeup_time_secs} seconds."
