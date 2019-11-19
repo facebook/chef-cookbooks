@@ -87,7 +87,7 @@ module FB
         elsif size_bytes <= 1048576 && node['fb_swap']['enabled']
           fail "fb_swap::default: #{size_bytes} is less than 1MiB. Use " +
                'enabled = false instead'
-        elsif node.default['fb_swap']['filesystem'] != '/'
+        elsif node['fb_swap']['filesystem'] != '/'
           device_size_bytes = 0
           file_size_bytes = size_bytes
         elsif size_bytes <= max_device_size_bytes
