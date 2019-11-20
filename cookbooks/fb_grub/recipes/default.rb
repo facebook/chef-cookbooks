@@ -112,8 +112,7 @@ whyrun_safe_ruby_block 'initialize_grub_locations' do
       node.default['fb_grub']['_grub2_module_path'] = module_path
 
       # Until grub2 learns how to deal with zstd compressed filesystems
-      unless node[fs]['by_mountpoint']['/']['mount_options'
-             ].grep(/compress(?:-force)=zstd/).empty?
+      if node.root_compressed?
         node.default['fb_grub']['_grub2_copy_path'] = node['fb_grub'][
           '_grub2_module_path']
         node.default['fb_grub']['_module_label'] = node['fb_grub'][

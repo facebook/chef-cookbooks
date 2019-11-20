@@ -433,5 +433,10 @@ class Chef
       end
       node['block_device'][device]['rotational'] == '0'
     end
+
+    def root_compressed?
+      !node[node.ohai_fs_ver]['by_mountpoint']['/']['mount_options'
+        ].grep(/compress(?:-force)=zstd/).empty?
+    end
   end
 end
