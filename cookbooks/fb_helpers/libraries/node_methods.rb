@@ -438,5 +438,9 @@ class Chef
       !node[node.ohai_fs_ver]['by_mountpoint']['/']['mount_options'
         ].grep(/compress(?:-force)=zstd/).empty?
     end
+
+    def root_btrfs?
+      node[node.ohai_fs_ver]['by_mountpoint']['/']['fs_type'] == 'btrfs'
+    end
   end
 end

@@ -111,8 +111,8 @@ whyrun_safe_ruby_block 'initialize_grub_locations' do
       end
       node.default['fb_grub']['_grub2_module_path'] = module_path
 
-      # Until grub2 learns how to deal with zstd compressed filesystems
-      if node.root_compressed?
+      # So that we can use btrfs subvolumes and still insmod filesystems
+      if node.root_btrfs?
         node.default['fb_grub']['_grub2_copy_path'] = node['fb_grub'][
           '_grub2_module_path']
         node.default['fb_grub']['_module_label'] = node['fb_grub'][
@@ -125,7 +125,7 @@ whyrun_safe_ruby_block 'initialize_grub_locations' do
   end
 end
 
-if node['filesystem2']['by_mountpoint']['/']['fs_type'] == 'btrfs'
+if node.root_btrfs?
   FB::Fstab.get_unmasked_base_mounts(:hash, node).each do |_device, metadata|
     if metadata['mount_point'] == '/'
       if !metadata.key?('opts') || metadata['opts'].nil?
