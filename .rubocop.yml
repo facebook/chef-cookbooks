@@ -1,121 +1,91 @@
-AllCops:  
+AllCops:
   TargetRubyVersion: 2.4
   Exclude:
     # template files named `rb` instead of `erb` are a sin against ruby-nature.
     - '**/templates/**/*.rb'#
 
-# Disabled rules
-#
+Layout/DotPosition:
+  EnforcedStyle: trailing
 
-Encoding:
+# commented out until we upgrade chefdk to 3.x
+# this is misfiring in multiple cookbooks
+# Layout/EmptyLinesAroundArguments:
+#   Enabled: false
+
+# This double-reports what happens in EmptyLines
+Layout/EmptyLineBetweenDefs:
   Enabled: false
 
-NumericLiterals:
-  Enabled: false
-
-MultilineTernaryOperator:
-  Enabled: false
-
-ModuleLength:
-  Enabled: false
-
-MethodLength:
-  Enabled: false
-
-ClassLength:
-  Enabled: false
-
-Style/FormatStringToken:
-  Enabled: false
-
-# This comes with changing the ruby target to 2.3+
-Style/FrozenStringLiteralComment:
-  Enabled: false
-
-# It would forbid action [:enable, :start]
-SymbolArray:
-  Enabled: false
+Layout/IndentArray:
+  EnforcedStyle: consistent
 
 # This recommends using external gems to parse heredocs
 Layout/IndentHeredoc:
   Enabled: false
 
-CyclomaticComplexity:
+# Seems buggy - https://github.com/bbatsov/rubocop/issues/2690
+Layout/MultilineOperationIndentation:
   Enabled: false
 
-# So just keep iterating instead of breaking? wtf.
-Next:
+# this is supposedly the default, but turns not not really
+# https://github.com/bbatsov/rubocop/issues/5277 fix is in 0.52.1
+Layout/SpaceBeforeBlockBraces:
+  # commenting out until we upgrade to chefdk 3.x
+  # this config option added in 0.51.0
+  # EnforcedStyleForEmptyBraces: space
   Enabled: false
 
-# While this can be nice, it also can promote errors. Let people
-# use what's comfortable for them
-GuardClause:
-  Enabled: false
-
-AbcSize:
-  Enabled: false
-
-# less readable, not more
-IfUnlessModifier:
-  Enabled: false
-
-# Really?
-PerlBackrefs:
-  Enabled: false
-
-# Unrealistic
-BlockNesting:
-  Enabled: false
-
-# Disabled because of the way 'variables' works.
-BracesAroundHashParameters:
-  Enabled: false
-
-WordArray:
-  Enabled: false
-
-RedundantReturn:
-  Enabled: false
-
-RedundantSelf:
-  Enabled: false
-
-CommentAnnotation:
-  Enabled: false
-
-# this trips on *any* method called 'get_*' wtf.
-AccessorMethodName:
-  Enabled: false
-
-# backslash is extra dumb in ruby, we want the OPPOSITE of this rule
-LineEndConcatenation:
-  Enabled: false
-
-# this isn't testing for consistency it always wants %w() which is dumb
-PercentLiteralDelimiters:
+# no, we're not putting parens around `lazy`
+Lint/AmbiguousBlockAssociation:
   Enabled: false
 
 # it wants File.exist? instead of File.exists?
-DeprecatedClassMethods:
+Lint/DeprecatedClassMethods:
   Enabled: false
 
-# This blows up on things like base_packages-redhat
-FileName:
+Lint/UnneededDisable:
+  Enabled: false
+
+Metrics/AbcSize:
+  Enabled: false
+
+Metrics/BlockLength:
+  Enabled: false
+
+# Unrealistic
+Metrics/BlockNesting:
+  Enabled: false
+
+Metrics/ClassLength:
+  Enabled: false
+
+Metrics/CyclomaticComplexity:
+  Enabled: false
+
+Metrics/LineLength:
+  Max: 80
+
+Metrics/MethodLength:
+  Enabled: false
+
+Metrics/ModuleLength:
   Enabled: false
 
 # I don't know what it's metric for "human complexity" is, but it's wrong.
-PerceivedComplexity:
+Metrics/PerceivedComplexity:
   Enabled: false
 
-UnneededDisable:
-  Enabled: false
-
-# Seems buggy - https://github.com/bbatsov/rubocop/issues/2690
-MultilineOperationIndentation:
-  Enabled: false
+# commenting out until we upgrade to chefdk 3.x
+# Heredocs are fine with "EOF"
+# Naming/HeredocDelimiterNaming:
+#   Enabled: false
 
 # buggy: https://github.com/bbatsov/rubocop/issues/2639
 Performance/RedundantMatch:
+  Enabled: false
+
+# https://github.com/bbatsov/rubocop/issues/2676
+Performance/RedundantMerge:
   Enabled: false
 
 # disable until we upgrade chef solo to chef 13. Otherwise people will be told
@@ -127,79 +97,115 @@ Performance/RegexpMatch:
 Performance/TimesMap:
   Enabled: false
 
-# https://github.com/bbatsov/rubocop/issues/2676
-Performance/RedundantMerge:
+# this trips on *any* method called 'get_*' wtf.
+Style/AccessorMethodName:
+  Enabled: false
+
+# Disabled because of the way 'variables' works.
+Style/BracesAroundHashParameters:
+  Enabled: false
+
+Style/CommentAnnotation:
   Enabled: false
 
 # Bug with constants? https://phabricator.fb.com/P56108678
 Style/ConditionalAssignment:
   Enabled: false
 
-# Heredocs are fine with "EOF"
-Naming/HeredocDelimiterNaming:
-  Enabled: false
-
-# This double-reports what happens in EmptyLines
-Layout/EmptyLineBetweenDefs:
-  Enabled: false      
-
-# this is supposedly the default, but turns not not really
-# https://github.com/bbatsov/rubocop/issues/5277
-Layout/SpaceBeforeBlockBraces:
-  EnforcedStyleForEmptyBraces: space
-
-#
-# Modified rules
-#
-LineLength:
-  Max: 80
-
-DotPosition:
-  EnforcedStyle: trailing
-
-HashSyntax:
-  EnforcedStyle: hash_rockets
-
 Style/Documentation:
   Enabled: false
 
-TrailingCommaInLiteral:
-  EnforcedStyleForMultiline: comma
+Style/Encoding:
+  Enabled: false
 
-TrailingCommaInArguments:
-  EnforcedStyleForMultiline: comma
+# This blows up on things like base_packages-redhat
+Style/FileName:
+  Enabled: false
 
 Style/FormatStringToken:
   Enabled: false
 
-Layout/IndentArray:
-  EnforcedStyle: consistent
+# This comes with changing the ruby target to 2.3+
+Style/FrozenStringLiteralComment:
+  Enabled: false
 
-Style/SignalException:
-  EnforcedStyle: semantic
+# While this can be nice, it also can promote errors. Let people
+# use what's comfortable for them
+Style/GuardClause:
+  Enabled: false
+
+Style/HashSyntax:
+  EnforcedStyle: hash_rockets
+
+# less readable, not more
+Style/IfUnlessModifier:
+  Enabled: false
+
+# backslash is extra dumb in ruby, we want the OPPOSITE of this rule
+Style/LineEndConcatenation:
+  Enabled: false
+
+Style/MultilineTernaryOperator:
+  Enabled: false
+
+# So just keep iterating instead of breaking? wtf.
+Style/Next:
+  Enabled: false
 
 Style/NumericLiteralPrefix:
   Enabled: false
 
-Naming/VariableNumber:
+Style/NumericLiterals:
+  Enabled: false
+
+# The autocorrect of this one isn't safe, and since using
+# numeric predicts may be more or less readable than comparisons
+# depending on the code, bugging people about this when we can't
+# autocorrect it doesn't seem worth the hastle for our customers
+Style/NumericPredicate:
+  Enabled: false
+
+Style/PercentLiteralDelimiters:
+  PreferredDelimiters:
+    '%':  '{}'
+    '%i': '{}'
+    '%I': '{}'
+    '%q': '{}'
+    '%Q': '{}'
+    '%r': '{}'
+    '%s': '{}'
+    '%w': '{}'
+    '%W': '{}'
+    '%x': '{}'
+
+# Really?
+Style/PerlBackrefs:
+  Enabled: false
+
+Style/RedundantReturn:
+  Enabled: false
+
+Style/RedundantSelf:
   Enabled: false
 
 Style/RegexpLiteral:
   EnforcedStyle: mixed
 
-Metrics/BlockLength:
+Style/SignalException:
+  EnforcedStyle: semantic
+
+# It would forbid action [:enable, :start]
+Style/SymbolArray:
   Enabled: false
 
-Style/PercentLiteralDelimiters:
-  PreferredDelimiters:
-    default: {}
-    '%i': {}
-    '%w': {}
+Style/TrailingCommaInArguments:
+  EnforcedStyleForMultiline: comma
 
-# no, we're not putting parens around `lazy`
-Lint/AmbiguousBlockAssociation:
+Style/TrailingCommaInLiteral:
+  EnforcedStyleForMultiline: comma
+
+Style/VariableNumber:
   Enabled: false
 
-# this is misfiring in multiple cookbooks
-Layout/EmptyLinesAroundArguments:
+Style/WordArray:
   Enabled: false
