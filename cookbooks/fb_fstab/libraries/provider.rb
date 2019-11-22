@@ -546,7 +546,7 @@ module FB
       # expect. Assuming it's not NFS/Gluster which can be mounted in more than
       # once place, we look up this device and see if it moved or just isn't
       # mounted
-      unless ['nfs', 'glusterfs'].include?(desired['type'])
+      unless ['nfs', 'nfs4', 'glusterfs'].include?(desired['type'])
         device = fs_data['by_device'][desired['device']]
         if device && device['mounts'] && !device['mounts'].empty?
           Chef::Log.warn(
@@ -594,6 +594,17 @@ module FB
           Chef::Log.debug('fb_fstab: We do not change swap from fb_fstab, ' +
                           'moving on...')
           next
+        end
+
+        if desired_data['opts']
+          opt_list = desired_data['opts'].split(',')
+          if opt_list.include?('noauto')
+            Chef::Log.debug(
+              "fb_fstab: '#{desired_data['device']}' is configured with " +
+              "'noauto' option, we will not mount."
+            )
+            next
+          end
         end
 
         begin

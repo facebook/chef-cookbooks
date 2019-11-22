@@ -25,6 +25,7 @@ module FB
       def self.determine_base_fstab_entries(full_fstab)
         core_fs_line_matching = [
           '^LABEL=(\/|\/boot|SWAP.*|\/mnt\/d\d+)\s',
+          '^\S+\s/\s',
           '^UUID=',
           '^devpts',
           '^sysfs',
