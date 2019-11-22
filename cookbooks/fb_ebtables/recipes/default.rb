@@ -23,7 +23,7 @@ unless node.centos? || node.fedora?
 end
 
 package 'ebtables' do
-  only_if { node['fb_iptables']['manage_packages'] }
+  only_if { node['fb_ebtables']['manage_packages'] }
   action :upgrade
 end
 
