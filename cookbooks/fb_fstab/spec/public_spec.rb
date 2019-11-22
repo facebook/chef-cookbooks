@@ -31,7 +31,6 @@ describe 'FB::Fstab' do
       'filesystem'
     end
   end
-  # rubocop:disable LineLength
   full_contents = <<EOF
 #
 # /etc/fstab
@@ -58,7 +57,6 @@ sysfs                   /sys                    sysfs   defaults        0 0
 proc                    /proc                   proc    defaults        0 0
 tmpfs /dev/shm tmpfs defaults,size=4G 0 0
 EOF
-  # rubocop:enable LineLength
 
   context 'generate_base_fstab' do
     it 'should not regenerate base fstab' do
@@ -73,9 +71,9 @@ EOF
       File.should_receive(:exist?).with(FB::Fstab::BASE_FILENAME).
         and_return(false)
       FileUtils.should_receive(:cp).and_return(nil)
-      FileUtils.should_receive(:chmod).and_return([
-        '/root/fstab.before_fb_fstab',
-      ])
+      FileUtils.should_receive(:chmod).and_return(
+        ['/root/fstab.before_fb_fstab'],
+      )
       File.should_receive(:read).and_return(full_contents)
       File.should_receive(:write).with(FB::Fstab::BASE_FILENAME, base_contents)
       FB::Fstab.generate_base_fstab
@@ -379,7 +377,6 @@ end
 describe 'FB::FstabProvider', :include_provider do
   include FB::FstabProvider
 
-  # rubocop:enable LineLength
   let(:node) { Chef::Node.new }
   let(:attr_name) do
     if node['filesystem2']

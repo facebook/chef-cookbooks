@@ -24,8 +24,6 @@ def ohai(key)
     File.read(File.expand_path("#{key}.json", File.dirname(__FILE__))),
   )
 end
-
-# rubocop:disable LineLength
 base_contents = <<EOF
 LABEL=/ / ext4 defaults,discard 1 1
 LABEL=/boot /boot ext3    defaults        1 2
@@ -35,7 +33,6 @@ sysfs                   /sys                    sysfs   defaults        0 0
 proc                    /proc                   proc    defaults        0 0
 tmpfs /dev/shm tmpfs defaults,size=4G 0 0
 EOF
-# rubocop:enable LineLength
 
 recipe 'fb_fstab::default', :unsupported => [:mac_os_x] do |tc|
   let(:base_fstab_minimal) { base_contents }

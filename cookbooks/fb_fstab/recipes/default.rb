@@ -42,6 +42,7 @@ whyrun_safe_ruby_block 'validate data' do
         unless data['only_if'].class == Proc
           fail 'fb_fstab\'s only_if requires a Proc'
         end
+
         unless data['only_if'].call
           Chef::Log.debug("fb_fstab: Not including #{name} due to only_if")
           node.rm('fb_fstab', 'mounts', name)
@@ -79,7 +80,7 @@ whyrun_safe_ruby_block 'validate data' do
         is_systemd_automount = opt_list.include?('x-systemd.automount')
       end
       unless ['nfs', 'nfs4', 'glusterfs', 'nfusr'].include?(
-        data['type']
+        data['type'],
       ) || is_bind_mount
         if uniq_devs[data['device']]
           fail 'Device names must be unique and you have repeated ' +

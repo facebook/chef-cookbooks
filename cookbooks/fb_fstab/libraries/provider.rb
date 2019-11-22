@@ -180,13 +180,14 @@ module FB
           desired_device = canonicalize_device(desired_data['device'])
         rescue RuntimeError
           next if desired_data['allow_mount_failure']
+
           raise
         end
         Chef::Log.debug("fb_fstab: --> Lets see if it matches #{desired_data}")
         # if the devices are the same *and* are real devices, the
         # rest doesn't matter - we won't unmount a moved device. moves
         # option changes, etc. are all the work of the 'mount' step later.
-        if mounted_data['device'] && mounted_data['device'].start_with?('/dev/')
+        if mounted_data['device']&.start_with?('/dev/')
           if desired_device == mounted_data['device']
             Chef::Log.debug(
               "fb_fstab: Device #{mounted_data['device']} is supposed to be " +
@@ -289,7 +290,7 @@ module FB
           )
           next
         elsif dev_prefixes_to_skip.any? do |i|
-          mounted_data['device'] && mounted_data['device'].start_with?(i)
+          mounted_data['device']&.start_with?(i)
         end
           Chef::Log.debug(
             "fb_fstab: Skipping umount check for #{mounted_data['device']} " +
@@ -297,7 +298,7 @@ module FB
           )
           next
         elsif mount_prefixes_to_skip.any? do |i|
-          mounted_data['mount'] && mounted_data['mount'].start_with?(i)
+          mounted_data['mount']&.start_with?(i)
         end
           Chef::Log.debug(
             "fb_fstab: Skipping umount check for #{mounted_data['device']} " +
@@ -328,6 +329,7 @@ module FB
       if node['fb_fstab']['type_normalization_map'][type]
         return node['fb_fstab']['type_normalization_map'][type]
       end
+
       type
     end
 
@@ -361,6 +363,7 @@ module FB
       mag = val[-1].downcase
       mags = ['k', 'm', 'g', 't']
       return opt unless mags.include?(mag)
+
       num = val[0..-2].to_i
       mags.each do |d|
         num *= 1024
@@ -601,7 +604,7 @@ module FB
           if opt_list.include?('noauto')
             Chef::Log.debug(
               "fb_fstab: '#{desired_data['device']}' is configured with " +
-              "'noauto' option, we will not mount."
+              "'noauto' option, we will not mount.",
             )
             next
           end
@@ -660,8 +663,6 @@ module FB
         end
       end
     end
-
-    # rubocop:disable Style/RedundantReturn
     def _run_command_flocked(shellout, lock_file, mount_point)
       if lock_file.nil?
         return shellout.run_command
@@ -678,6 +679,5 @@ module FB
         end
       end
     end
-    # rubocop:enable Style/RedundantReturn
   end
 end

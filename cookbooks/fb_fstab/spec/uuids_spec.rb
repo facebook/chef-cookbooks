@@ -18,8 +18,6 @@
 require './spec/spec_helper'
 require_relative '../libraries/default'
 require_relative '../libraries/provider'
-
-# rubocop:disable LineLength
 base_contents = <<EOF
 UUID=28137926-9c39-44c0-90d3-3b158fc97ff9 /                       ext4    defaults,discard 1 1
 UUID=9ebfe8b9-c188-4cda-8383-393deb0ac59c /boot                   ext3    defaults        1 2
@@ -29,7 +27,6 @@ sysfs                   /sys                    sysfs   defaults        0 0
 proc                    /proc                   proc    defaults        0 0
 tmpfs /dev/shm tmpfs defaults,size=4G 0 0
 EOF
-# rubocop:enable LineLength
 
 def ohai(key)
   JSON.parse(
@@ -64,18 +61,16 @@ recipe 'fb_fstab::default', :unsupported => [:mac_os_x] do |tc|
 
     it 'should include entries which pass only_if' do
       chef_run.converge(described_recipe) do |node|
-        # rubocop:disable UselessComparison
-        # rubocop:disable YodaCondition
         node.default['fb_fstab']['mounts']['tmpfs'] = {
+          # rubocop:disable UselessComparison
           'only_if' => proc { 3 == 3 },
+          # rubocop:enable UselessComparison
           'device' => 'tmpfs',
           'mount_point' => '/dev/shm',
           'type' => 'tmpfs',
           'opts' => 'defaults,size=1G',
           'pass' => 0,
         }
-        # rubocop:enable UselessComparison
-        # rubocop:enable YodaCondition
       end
       expect(chef_run).to render_file('/etc/fstab').
         with_content(tc.fixture('fstab_1Gtmpfs'))
@@ -83,7 +78,6 @@ recipe 'fb_fstab::default', :unsupported => [:mac_os_x] do |tc|
 
     it 'should not include entries which fail only_if' do
       chef_run.converge(described_recipe) do |node|
-        # rubocop:disable YodaCondition
         node.default['fb_fstab']['mounts']['thing'] = {
           'only_if' => proc { 3 == 4 },
           'device' => 'thing',
@@ -92,7 +86,6 @@ recipe 'fb_fstab::default', :unsupported => [:mac_os_x] do |tc|
           'opts' => 'size=36G',
           'pass' => 0,
         }
-        # rubocop:enable YodaCondition
       end
       expect(chef_run).to render_file('/etc/fstab').
         with_content(tc.fixture('fstab'))
