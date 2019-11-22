@@ -182,6 +182,7 @@ class Chef
         return
       end
       return self['virtual_macos'] if self['virtual_macos']
+
       if self['hardware']['boot_rom_version'].include? 'VMW'
         virtual_type = 'vmware'
       elsif self['hardware']['boot_rom_version'].include? 'VirtualBox'
@@ -190,7 +191,7 @@ class Chef
         virtual_type = shell_out(
           '/usr/sbin/system_profiler SPEthernetDataType',
         ).run_command.stdout.to_s[/Vendor ID: (.*)/, 1]
-        if virtual_type && virtual_type.include?('0x1ab8')
+        if virtual_type&.include?('0x1ab8')
           virtual_type = 'parallels'
         else
           virtual_type = 'physical'
@@ -236,7 +237,7 @@ class Chef
     end
 
     def ohai_fs_ver
-      @fs_ver ||=
+      @ohai_fs_ver ||=
         node['filesystem2'] ? 'filesystem2' : 'filesystem'
     end
 
@@ -263,6 +264,7 @@ class Chef
         next unless pair.end_with?(",#{m}")
         # make sure this isn't some fake entry
         next unless info['kb_size']
+
         return info['device']
       end
       Chef::Log.warn(
@@ -277,6 +279,7 @@ class Chef
          node[fs]['by_device'][device]['fs_type']
         return node[fs]['by_device'][device]['fs_type'] == fstype
       end
+
       false
     end
 
@@ -319,6 +322,7 @@ class Chef
       if fs && fs[key]
         return fs[key].to_f
       end
+
       Chef::Log.warn(
         "Tried to get filesystem information for '#{p}', but it is not a " +
         'recognized filesystem, or does not have the requested info.',
@@ -335,6 +339,7 @@ class Chef
       if k
         return k / (1024 * 1024)
       end
+
       nil
     end
 
@@ -347,6 +352,7 @@ class Chef
       if k
         return k / (1024 * 1024)
       end
+
       nil
     end
 

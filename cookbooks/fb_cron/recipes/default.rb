@@ -42,6 +42,7 @@ whyrun_safe_ruby_block 'validate_data' do
         unless data['only_if'].class == Proc
           fail 'fb_cron\'s only_if requires a Proc'
         end
+
         unless data['only_if'].call
           Chef::Log.debug("fb_cron: Not including #{name} due to only_if")
           node.rm('fb_cron', 'jobs', name)
@@ -71,6 +72,7 @@ whyrun_safe_ruby_block 'validate_data' do
         if Integer(data['splaysecs']) <= 0 || Integer(data['splaysecs']) > 9600
           fail "unreasonable splaysecs #{data['splaysecs']} in #{name} cron"
         end
+
         sleepnum = node.get_seeded_flexible_shard(Integer(data['splaysecs']),
                                                   data['command'])
         node.default['fb_cron']['jobs'][name]['splaycmd'] =

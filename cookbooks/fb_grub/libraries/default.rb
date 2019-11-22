@@ -43,6 +43,7 @@ module FB
       full_fstab.each_line do |line|
         # We don't care about any of the comments
         next if line.lstrip.start_with?('#')
+
         if line.lstrip.start_with?('device')
           device_hints << line.chomp
         end

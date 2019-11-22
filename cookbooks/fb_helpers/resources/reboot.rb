@@ -76,6 +76,7 @@ action_class do
     unless reboot_type
       fail 'set_reboot_override: reboot_type was not set, aborting!'
     end
+
     file ::File.join(current_resource.prefix, REBOOT_OVERRIDE) do
       owner 'root'
       group 'root'

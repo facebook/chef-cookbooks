@@ -71,6 +71,7 @@ module FB
           fail 'A value cannot be > 24' if @value > 24
           fail 'A value cannot be <= 0' if @value <= 0
           return 'daily' if @value == 24
+
           "0/#{@value}:0:0"
         end
 
@@ -79,6 +80,7 @@ module FB
           fail 'A value cannot be > 60' if @value > 60
           fail 'A value cannot be <= 0' if @value <= 0
           return 'hourly' if @value == 60
+
           "*:0/#{@value}:0"
         end
 
@@ -86,26 +88,33 @@ module FB
 
         def weekday
           fail "A value cannot be provided for #{__method__}" if @value
+
           'Mon..Fri'
         end
 
         def week
           fail "A value cannot be provided for #{__method__}" if @value
+
           'weekly'
         end
 
         def day
           fail "A value cannot be provided for #{__method__}" if @value
+
           'daily'
         end
 
         def month
           fail "A value cannot be provided for #{__method__}" if @value
+
           'monthly'
         end
       end
 
+      # rubocop:disable Style/AccessModifierDeclarations
+      # https://github.com/rubocop-hq/rubocop/issues/5953
       module_function :every
+      # rubocop:enable Style/AccessModifierDeclarations
     end
   end
 end

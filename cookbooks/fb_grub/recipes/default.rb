@@ -46,6 +46,7 @@ whyrun_safe_ruby_block 'initialize_grub_locations' do
       if node['fb_grub']['version'] < 2
         fail 'fb_grub: Booting by label requires grub2.'
       end
+
       # TODO: make this work with both uuid + label, like the rootfs_arg section
       node.default['fb_grub']['_root_label'] = boot_label
 
@@ -64,6 +65,7 @@ whyrun_safe_ruby_block 'initialize_grub_locations' do
         # grub disks start at 0
         m = boot_device.match(/[0-9]+$/)
         fail 'fb_grub::default Cannot parse boot device!' unless m
+
         grub_partition = m[0].to_i
         grub_partition -= 1 if node['fb_grub']['version'] < 2
         # In case somebody has set an override, just take whatever they set
@@ -95,6 +97,7 @@ whyrun_safe_ruby_block 'initialize_grub_locations' do
         os_device = node.device_of_mount('/')
         m = os_device.match(/[0-9]+$/)
         fail 'fb_grub::default Cannot parse OS device!' unless m
+
         # People can override the boot_disk if they have a good reason.
         if node['fb_grub']['boot_disk']
           boot_disk = node['fb_grub']['boot_disk']
@@ -131,6 +134,7 @@ if node.root_btrfs?
       if !metadata.key?('opts') || metadata['opts'].nil?
         break
       end
+
       metadata['opts'].split(',').each do |opt|
         if opt.include?('subvolid=')
           node.default['fb_grub']['_rootflags'] = opt
