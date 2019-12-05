@@ -132,7 +132,8 @@ execute 'set default target' do
   only_if do
     current = Mixlib::ShellOut.new('systemctl get-default').run_command.
               stdout.strip
-    current != node['fb_systemd']['default_target']
+    is_ignored = node['fb_systemd']['ignore_targets'].include?(current)
+    !is_ignored && current != node['fb_systemd']['default_target']
   end
   command lazy {
     "systemctl set-default #{node['fb_systemd']['default_target']}"

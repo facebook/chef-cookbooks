@@ -123,4 +123,5 @@ default['fb_systemd'] = {
     'loader' => loader,
     'entries' => {},
   },
+  'ignore_targets' => [],
 }
