@@ -36,7 +36,7 @@ default['fb_ssh'] = {
   'sshd_config' => {
     'PermitRootLogin' => false,
     'UsePAM' => true,
-    'Subsystem ftp' => sftp_path,
+    'Subsystem sftp' => sftp_path,
     'AuthorizedKeysFile' => auth_keys,
   },
   'authorized_keys' => {},
