@@ -11,10 +11,16 @@ COMMIT
 :INPUT ACCEPT [0:0]
 :OUTPUT ACCEPT [0:0]
 :FORWARD ACCEPT [0:0]
+:LOG_DB  [0:0]
 # test_1
 -A INPUT -p udp -j REJECT
+# test_2
+-A INPUT -p udp -s 192.168.0.1 -j DROP
+-A INPUT -p udp -s 192.168.0.2 -j DROP
 # test_3
--A INPUT -p udp -s 2a03:2880:2130:cf05:face:b00c::3 -j DROP
+-A INPUT -p tcp --dport 3306 -j LOG_DB
+# test_4
+-A LOG_DB -p tcp -j REJECT --reject-with tcp-reset
 COMMIT
 
 *raw

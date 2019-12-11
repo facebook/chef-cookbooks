@@ -9,13 +9,13 @@ COMMIT
 
 *filter
 :INPUT ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+:FORWARD ACCEPT [0:0]
 # test_1
 -A INPUT -p udp -j REJECT
 # test_2
 -A INPUT -p udp -s 192.168.0.1 -j DROP
 -A INPUT -p udp -s 192.168.0.2 -j DROP
-:OUTPUT ACCEPT [0:0]
-:FORWARD ACCEPT [0:0]
 COMMIT
 
 *raw

@@ -113,4 +113,48 @@ recipe 'fb_iptables::default', :unsupported => [:mac_os_x] do |tc|
     expect(chef_run).to render_file('/etc/sysconfig/ip6tables').
       with_content(tc.fixture('ip6tables_complex'))
   end
+
+  it 'multiple chain with ruleset' do
+    chef_run.converge(described_recipe) do |node|
+      {
+        'test_1' => {
+          'rule' => '-p udp -j REJECT',
+        },
+        'test_2' => {
+          'ip' => 4,
+          'rules' => [
+            '-p udp -s 192.168.0.1 -j DROP',
+            '-p udp -s 192.168.0.2 -j DROP',
+          ],
+        },
+        'test_3' => {
+          'rule' => '-p tcp --dport 3306 -j LOG_DB',
+        },
+      }.each do |name, rule|
+        node.default['fb_iptables']['filter']['INPUT']['rules'][name] =
+          rule
+      end
+      {
+        'test_4' => {
+          'ip' => 4,
+          'rules' => [
+            '-p tcp -j REJECT --reject-with tcp-reset',
+          ],
+        },
+        'test_5' => {
+          'ip' => 6,
+          'rules' => [
+            '-j LOG --log-prefix db-packet-dropped: --log-level 4',
+          ],
+        },
+      }.each do |name, rule|
+        node.default['fb_iptables']['filter']['LOG_DB']['rules'][name] =
+          rule
+      end
+    end
+    expect(chef_run).to render_file('/etc/sysconfig/iptables').
+      with_content(tc.fixture('iptables_multi_chain'))
+    expect(chef_run).to render_file('/etc/sysconfig/ip6tables').
+      with_content(tc.fixture('ip6tables_multi_chain'))
+  end
 end

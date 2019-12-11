@@ -5,8 +5,10 @@
 -N <%= chain %>
 <%   end %>
 <%   chains.each do |name, chain| %>
-<%     dynamic_chains = FB::Iptables.get_dynamic_chains(table, name, node) %>
 :<%=   name %> <%= chain['policy'] %> [0:0]
+<%    end %>
+<%   chains.each do |name, chain| %>
+<%     dynamic_chains = FB::Iptables.get_dynamic_chains(table, name, node) %>
 <%       chain['rules'].each do |rule_name, rule| %>
 <%         if FB::Iptables.rule_supports_ip_version?(rule, @ip) %>
 # <%=        rule_name %>
@@ -20,7 +22,7 @@
 <%           end %>
 <%         end %>
 <%       end %>
-<%       
+<%
         unless dynamic_chains
           next
         end
