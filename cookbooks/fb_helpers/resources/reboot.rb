@@ -184,7 +184,7 @@ action :process_deferred do
       if node['fb_helpers']['reboot_allowed']
         node['fb_helpers']['reboot_logging_callback']&.call(
           node,
-          load_reboot_reason(node),
+          load_reboot_reason,
         )
         reboot 'reboot' do # ~FB026
           action :request_reboot
