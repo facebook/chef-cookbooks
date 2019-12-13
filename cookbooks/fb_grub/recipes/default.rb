@@ -35,18 +35,23 @@ whyrun_safe_ruby_block 'initialize_grub_locations' do
     if Pathname.new('/boot').mountpoint?
       boot_device = node.device_of_mount('/boot')
       boot_label = node[fs]['by_mountpoint']['/boot']['label']
+      boot_uuid = node[fs]['by_mountpoint']['/boot']['uuid']
       node.default['fb_grub']['path_prefix'] = ''
     else
       boot_device = node.device_of_mount('/')
       boot_label = node[fs]['by_mountpoint']['/']['label']
+      boot_uuid = node[fs]['by_mountpoint']['/']['uuid']
       node.default['fb_grub']['path_prefix'] = '/boot'
+    end
+
+    if node['fb_grub']['use_labels'] && node['fb_grub']['use_uuids']
+      fail 'fb_grub: must choose one of use_labels or use_uuids'
     end
 
     if node['fb_grub']['use_labels']
       if node['fb_grub']['version'] < 2
         fail 'fb_grub: Booting by label requires grub2.'
       end
-      # TODO: make this work with both uuid + label, like the rootfs_arg section
       node.default['fb_grub']['_root_label'] = boot_label
 
       # For tboot, we have to specify the full path to the modules.
@@ -54,6 +59,16 @@ whyrun_safe_ruby_block 'initialize_grub_locations' do
       slash_label = node[fs]['by_mountpoint']['/']['label']
       if slash_label
         node.default['fb_grub']['_module_label'] = slash_label
+      end
+    elsif node['fb_grub']['use_uuids']
+      if node['fb_grub']['version'] < 2
+        fail 'fb_grub: Booting by label requires grub2.'
+      end
+      node.default['fb_grub']['_root_uuid'] = boot_uuid
+
+      slash_uuid = node[fs]['by_mountpoint']['/']['uuid']
+      if slash_uuid
+        node.default['fb_grub']['_module_uuid'] = slash_uuid
       end
     else
       # If nothing has set the root_device so far, fall back to the old logic

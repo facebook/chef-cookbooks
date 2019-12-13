@@ -9,7 +9,9 @@
   if node['fb_grub']['_rootflags']
     kargs << " rootflags=#{node['fb_grub']['_rootflags']}"
   end
-  if node['fb_grub']['_root_label']
+  if node['fb_grub']['_root_uuid']
+    root_line = "search --set=root --fs-uuid #{node['fb_grub']['_root_uuid']}"
+  elsif node['fb_grub']['_root_label']
     root_line = "search --set=root --label #{node['fb_grub']['_root_label']}"
   else
     root_line = "set root='(#{node['fb_grub']['root_device']})'"
@@ -56,6 +58,9 @@ menuentry 'tboot <%= kernel %>' {
   <%= root_line %>
   <%   if node['fb_grub']['_module_label'] %>
   search --set=module_root --label <%= node['fb_grub']['_module_label'] %>
+  <%     module_root = "($module_root)"
+       elsif node['fb_grub']['_module_uuid'] %>
+  search --set=module_root --fs-uuid <%= node['fb_grub']['_module_uuid'] %>
   <%     module_root = "($module_root)"
        else
          module_root = ''
