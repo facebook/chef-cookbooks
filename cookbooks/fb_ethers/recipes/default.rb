@@ -24,3 +24,9 @@ template '/etc/ethers' do
   group 'root'
   mode '0644'
 end
+
+execute 'reload static arp entries' do
+  command 'arp -f /etc/ethers'
+  action :nothing
+  subscribes :run, 'template[/etc/ethers]'
+end
