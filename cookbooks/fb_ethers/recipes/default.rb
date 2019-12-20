@@ -18,6 +18,10 @@
 # limitations under the License.
 #
 
+package 'net-tools' do
+  action :upgrade
+end
+
 template '/etc/ethers' do
   source 'ethers.erb'
   owner 'root'
