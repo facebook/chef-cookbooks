@@ -241,7 +241,7 @@ that's more convient to use in your template.
 ### Implementating runtime-safe APIs
 
 This model intentionally draws the complexity of Chef into the "core cookbooks"
-(those implementing APIs) so tha the user experience of maintaining systems is
+(those implementing APIs) so that the user experience of maintaining systems is
 simple and (usually) requires little more than writing to the node object.
 However, the trade-off for that simplicity is that implementing the API properly
 can be quite tricky.
