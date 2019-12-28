@@ -138,26 +138,39 @@ and then create a class for their cookbook under that. For example, `fb_fstab`
 creates a `class Fstab` inside of the `module FB`. We will refer to this as
 the cookbook class from here.
 
-We require all cookbooks use this model for consitency.
+We require all cookbooks use this model for consistency.
 
 Since we don't put anything other than other classes inside the top-level
 object, it's clear that a `module` is the right choice.
 
-While there is no reason that a cookbook class can't be one design to be
-instantiated, more often than not it is simply a collection of callable class
-methods - a place to put methods that can then be called both from this
-cookbook and others.
+While there is no reason that a cookbook class can't be one designed to be
+instantiated, more often than not it is simply a collection of class methods and
+constants (i.e. static data and methods that can then be called both from this
+cookbook and others).
 
 Below the cookbook class, the author is free to make whatever class or methods
 they desire.
 
-It is often desirable to `include` a module into a Custom Resource, and we do
-this by creating a module inside of the cookbook class, often ending in
-`Provider`, e.g. `FstabProvider`. This code should be in its own library file.
+When building a complicated Custom Resource, the recommended pattern is to
+factor out the majority of the logic into a module, inside of the cookbook
+class, that can be `include`d in the `action_class`. This allows the logic to be
+easily unit tested using simple rspec. It is preferred for this module to be in
+its own library file, and for its name to end in `Provider`, ala
+`FB::Thing::ThingProvider`.
 
-It is worth noting that `fb_fstab` itself violates this guideline as it is
-quite old before we had solidified a standard and thus it's provider module
-is directly below the `module FB`.
+When more than 1 or 2 methods from this module are called from the custom
+resource itself, it is highly recommended you include it in a Helper class for
+clarity, ala:
+
+```
+action_class do
+  class ThingHelper
+    include FB::Thing::ThingProvider
+  end
+end
+```
+
+In this way, it is clear where methods come from.
 
 ### Extending the node vs self-contained classes
 
@@ -168,7 +181,7 @@ passed as a parameter to some methods.
 In general, the **only** time when extending the `node` is acceptable is when
 you are simply making a convenience function around using the node object. So,
 for example, instead of making people do `node['platform_family'] = 'debian'`,
-there's a `node.debian?`. This is simply syntactic sugar ontop of data entirely
+there's a `node.debian?`. This is simply syntactic sugar on top of data entirely
 in the node.
 
 In all other cases, one should simply have the `node` be an arguement passed on,
@@ -180,10 +193,17 @@ clear dependencies).
 ### Methods in recipes
 
 Sometimes it is convenient to put a method directly in a recipe. It is strongly
-preferred to put these methods in the cookbook class, however there are
-some cases where methods directly in recipes make sense. The primary example
-is a small method which creates a resource based on some input to make
-s set of loops more readable.
+preferred to put these methods in the cookbook class, however there are some
+cases where methods directly in recipes make sense. The primary example is a
+small method which creates a resource based on some input to make s set of loops
+more readable.
+
+### Methods in templates
+
+Methods should not be put into templates. In general, as little logic as
+possible should be in templates. In general the easiest way to do this is to put
+the complex logic into methods in your cookbook class and call them from the
+templates.
 
 ### Err on the side of fail
 
