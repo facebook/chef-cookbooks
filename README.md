@@ -52,7 +52,7 @@ There are two reasons we use attribute-driven APIs:
 1. Cascading configuration
    Since our cookbooks are ordered least specific (core team that owns Chef) to
    most specific (the team that owns this machine or service) it means that the
-   team who cares about this specific instance to always override anything. This
+   team who cares about this specific instance can always override anything. This
    enables stacking that is not possible in many other models. For example, you
    can have a runlist that looks like:
 
@@ -60,7 +60,7 @@ There are two reasons we use attribute-driven APIs:
    * Site/Company cookbooks (site-specific settings)
    * Region cookbooks (overrides for a given region/cluster)
    * Application Category cookbooks (webserver, mail server, etc.)
-   * Specific Application cookbook ("internal app1 servier")
+   * Specific Application cookbook ("internal app1 server")
 
    So let's say that you want a specific amount of shared memory by default,
    but in some region you know you have different size machines, so you shrink
@@ -69,15 +69,15 @@ There are two reasons we use attribute-driven APIs:
    just works.
 
    Further, a cookbook can see the value that was set before it modifies things,
-   so the 'webserver' cookbook could look to see if what the value was (small or
+   so the 'webserver' cookbook could look to see what the value was (small or
    large) before modifying it and adjust it accordingly (so it could be relative
    to the size of memory that the 'region' cookbook set.
 
    Using resources for this does not allow this "cascading", it instead
-   creates "fighting". If use the cron resource to setup an hourly job,
+   creates "fighting". If you use the cron resource to setup an hourly job,
    and then someone else creates a cron for that same job but only twice
-   a day, then each run the cron job gets modified to hourly, then re-modified
-   to twice a day.
+   a day, then during each Chef run the cron job gets modified to hourly, then
+   re-modified to twice a day.
 
 2. Allows for what we refer to as "idempotent systems" instead of "idempotent
    settings." In other words, if you only manage a specific item in a larger
@@ -91,13 +91,13 @@ There are two reasons we use attribute-driven APIs:
 
    For this reason we use templates to take over a whole configuration wherever
    possible. All cron jobs in our `fb_cron` API are written to
-   `/etc/cron.d/fb_crontab` - one you delete the lines adding a cronjob, since
+   `/etc/cron.d/fb_crontab`. If you delete the lines adding a cronjob, since
    they are just entries in a hash, when the template is generated on the next
    Chef run, those crons go away.
 
    Alternatively, consider a sysctl set by the "site" cookbook, then overwritten
-   by a later cookbook. When that code is removed, the entry in the hash falls
-   back to being set again by the next-most-specific value (i.e. the "site" 
+   by a later cookbook. When that later code is removed, the entry in the hash
+   falls back to being set again by the next-most-specific value (i.e. the "site" 
    cookbook in this case).
  
 
@@ -195,7 +195,7 @@ clear dependencies).
 Sometimes it is convenient to put a method directly in a recipe. It is strongly
 preferred to put these methods in the cookbook class, however there are some
 cases where methods directly in recipes make sense. The primary example is a
-small method which creates a resource based on some input to make s set of loops
+small method which creates a resource based on some input to make a set of loops
 more readable.
 
 ### Methods in templates
@@ -208,7 +208,7 @@ templates.
 ### Err on the side of fail
 
 Chef is an ordered system and thus is designed to fail a run if a resource
-cannot be converged. The reason for this is that of one step in an ordered
+cannot be converged. The reason for this is that if one step in an ordered
 list cannot be completed, it's likely not safe to do at least some of the
 following steps. For example, if you were not able to write the correct
 configuration for a service, then starting it may open up a security
@@ -216,7 +216,7 @@ vulnerability.
 
 Likewise, the Facebook cookbooks will err on the side of failing if something
 seems wrong. This is both in line with the Chef philosophy we just outlined, but
-also because this model assumes (1) that code is being tested on real systems
+also because this model assumes that code is being tested on real systems
 before being released using something like
 [taste-tester](https://github.com/facebook/taste-tester/) and that monitoring is
 in place to know if your machines are successfully running Chef.
@@ -243,7 +243,7 @@ pass us a combination of configurations that is conflicting or impossible to
 implement.
 
 In this model, however, this must be done at runtime. If your implementation is
-done primary inside of an internally-called resource, then this validation can
+done primarily inside of an internally-called resource, then this validation can
 also be done there. However, if your implementation is primarily a recipe and
 templates, doing the validation in templates is obviously not desireable. This
 is where `whyrun_safe_ruby_blocks` come in.
@@ -256,7 +256,7 @@ they are run in whyrun mode.
 
 It is worth noting that this is also where you can take input that perhaps was
 in a structure convenient for users and build out a different data structure
-that's more convient to use in your template.
+that's more convenient to use in your template.
 
 ### Implementating runtime-safe APIs
 
@@ -268,13 +268,13 @@ can be quite tricky.
 
 How to do this is a large enough topic that it gets [its own
 document](https://github.com/facebook/chef-utils/blob/master/Compile-Time-Run-Time.md).
-However, some tyle guidance is also useful. This section assumes you have read
+However, some style guidance is also useful. This section assumes you have read
 the aforementioned document.
 
 The three main ways that runtime-safety is achieved are `lazy`, `templates`, and
 `custom resources`. When should you use which?
 
-The template case is fairly straight forward - if have a template, simply read
+The template case is fairly straight forward - if you have a template, simply read
 the node object from the within the template source instead of using `variables`
 on the template resource, and all data read is inherently runtime safe since
 templates run at runtime.
@@ -304,12 +304,12 @@ if node['fb_thingy']['want_devel']
 end
 
 package pkgs do
-  action ;upgrade
+  action :upgrade
 end
 ```
 
 Which one is better? There's not an exact answer, both work, so it's a style
-consideration. In general, there's two times when we suggest a custom resource:
+consideration. In general, there are two times when we suggest a custom resource:
 
 The first is when you need to loop over the node in order to even know what
 resources to create. Since this isn't possible to (well, technically it's
@@ -334,13 +334,13 @@ them with `lazy`, it's a bit cleaner to just make a custom resource that you
 call in your recipe.
 
 It's important here to reiterate: we're **not** referring to using a Custom
-Resource as an API, but simply makign an internal custom resource, called
+Resource as an API, but simply making an internal custom resource, called
 only by your own recipe, as a way to simplify runtime safety.
 
-Outside of these two cases, one should default to implementations inside of
-recipes. this is for a few reasons.
+Outside of these two cases, you should default to implementations inside of
+recipes. This is for a few reasons.
 
-The first reason is it dropping entire implementations in custom resources leads
+The first reason is that dropping entire implementations in custom resources leads
 to confusion and sets a bad precdent for how runtime-safety works. For example,
 consider the custom resource code we saw earlier where you assemble the package
 list in "naked" ruby:
