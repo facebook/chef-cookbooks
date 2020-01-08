@@ -38,8 +38,8 @@ end
 service 'dnsmasq' do
   only_if { node['fb_dnsmasq']['enable'] }
   action [:enable, :start]
-  subscribes :restart, 'template[/etc/hosts]'
-  subscribes :restart, 'template[/etc/ethers]'
+  subscribes :reload, 'template[/etc/hosts]'
+  subscribes :reload, 'template[/etc/ethers]'
 end
 
 service 'disable dnsmasq' do
