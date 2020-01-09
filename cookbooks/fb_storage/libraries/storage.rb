@@ -110,8 +110,27 @@ module FB
       "#{device}#{prefix}#{partnum}"
     end
 
+    # Given a device including a partiition, return just the device without
+    # the partition. i.e.
+    #   /dev/sda1 -> /dev/sd
+    #   /dev/md0p0 -> /dev/md0
+    #   /dev/nvme0n1p0 -> /dev/nvm0n1
+    #
+    # In reality we can just check for the RE /[0-9]+p[0-9]+$/ to know if
+    # we need to drop a pX or an X...
+    #
+    # HOWEVER, since you can make a filesystem on a whole device (we generally
+    # frown upon it, but you never know what you'll run into), this method can
+    # be called with a device path that actually isn't a partition. In such
+    # cases that can give you the wrong behavior. This is why
+    # https://github.com/facebook/chef-cookbooks/commit/22d564a3be86a5258c4a404da997bfc3901a3fe2
+    # was needed.
+    #
+    # So, for devices that we *know* would require such
+    # a thing, we also force them to use that regex, so if someone erroneously
+    # passes in `/dev/md0`, we give them back `/dev/md0`.
     def self.device_name_from_partition(partition)
-      if partition =~ /[0-9]+p[0-9]+$/
+      if partition =~ /[0-9]+p[0-9]+$/ || partition =~ %r{/(nvme|etherd|md|nbd)}
         re = /p[0-9]+$/
       else
         re = /[0-9]+$/
