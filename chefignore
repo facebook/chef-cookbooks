@@ -11,6 +11,7 @@
 .idea
 .mypy_cache
 .vagrant
+.vscode
 _rpms
 build/BUILD
 build/RPMS
