@@ -62,9 +62,7 @@ recipe 'fb_fstab::default', :unsupported => [:mac_os_x] do |tc|
     it 'should include entries which pass only_if' do
       chef_run.converge(described_recipe) do |node|
         node.default['fb_fstab']['mounts']['tmpfs'] = {
-          # rubocop:disable UselessComparison
-          'only_if' => proc { 3 == 3 },
-          # rubocop:enable UselessComparison
+          'only_if' => proc { true },
           'device' => 'tmpfs',
           'mount_point' => '/dev/shm',
           'type' => 'tmpfs',
@@ -79,7 +77,7 @@ recipe 'fb_fstab::default', :unsupported => [:mac_os_x] do |tc|
     it 'should not include entries which fail only_if' do
       chef_run.converge(described_recipe) do |node|
         node.default['fb_fstab']['mounts']['thing'] = {
-          'only_if' => proc { 3 == 4 },
+          'only_if' => proc { false },
           'device' => 'thing',
           'mount_point' => '/mnt/thing-tmpfs',
           'type' => 'tmpfs',
