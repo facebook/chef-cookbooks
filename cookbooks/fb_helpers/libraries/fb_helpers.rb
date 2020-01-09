@@ -179,12 +179,12 @@ If the has is specified, it takes one or more of the following keys:
 
     def <(other)
       other ||= []
-      (@arr <=> other.to_a) < 0
+      (@arr <=> other.to_a).negative?
     end
 
     def >(other)
       other ||= []
-      (@arr <=> other.to_a) > 0
+      (@arr <=> other.to_a).positive?
     end
 
     def ==(other)
@@ -197,10 +197,8 @@ If the has is specified, it takes one or more of the following keys:
     end
 
     # Oh, come on rubocop...
-    # rubocop:disable TrivialAccessors
     def inspect
       @string_form
     end
-    # rubocop:enable TrivialAccessors
   end
 end

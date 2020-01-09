@@ -55,6 +55,7 @@ module FB
         # dpkg reports on all files that WOULD match the path, even
         # if they don't exist. Skip ones that have been removed
         next unless ::File.exist?(file)
+
         owned_keys.add(file)
         packages << package
       end
@@ -104,6 +105,7 @@ module FB
         cmd.error!
         ids = cmd.stdout.lines.map do |line|
           next unless line.start_with?('pub ')
+
           line.split[1].split('/')[1]
         end.compact
         Chef::Log.debug(

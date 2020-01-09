@@ -101,6 +101,7 @@ action :run do
       unless conf['only_if'].class == Proc
         fail 'fb_timers\'s only_if requires a Proc'
       end
+
       unless conf['only_if'].call
         Chef::Log.debug("fb_timers: Not including #{conf['name']}" +
                         'due to only_if')

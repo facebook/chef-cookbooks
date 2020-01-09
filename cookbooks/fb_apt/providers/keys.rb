@@ -33,6 +33,7 @@ action :run do
     legit_keyrings = FB::Apt._get_owned_keyring_files(node)
     Dir.glob('/etc/apt/trusted.gpg.d/*').each do |keyring|
       next if legit_keyrings.include?(keyring)
+
       if node['fb_apt']['preserve_unknown_keyrings']
         Chef::Log.warn(
           "fb_apt[keys]: Unknown keyring #{keyring} being preserved!",

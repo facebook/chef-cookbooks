@@ -24,7 +24,7 @@ module FB
     TABLES_AND_CHAINS = {
       'mangle' => %w{PREROUTING INPUT OUTPUT FORWARD POSTROUTING},
       'filter' => %w{INPUT OUTPUT FORWARD},
-      'raw'    => %w{PREROUTING OUTPUT},
+      'raw' => %w{PREROUTING OUTPUT},
     }
     # rubocop:enable Style/MutableConstant
 
@@ -32,6 +32,7 @@ module FB
     def self.rule_supports_ip_version?(rule, version)
       return true unless rule['ip']
       return true if rule['ip'] == version
+
       rule['ip'].is_a?(Array) && rule['ip'].include?(version)
     end
 
