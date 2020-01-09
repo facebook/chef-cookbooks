@@ -59,6 +59,11 @@ for arg in "$@"; do
   newarg="$newarg $(realpath "$arg")"
 done
 
+# no arguments were passed in, run all specs
+if [ -z "$newarg" ]; then
+  newarg='cookbooks/*/spec/*_spec.rb'
+fi
+
 if [ -z "$TEST" ]; then
   # shellcheck disable=SC2086
   $RSPEC $COLOR --format=d $newarg
