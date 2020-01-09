@@ -25,6 +25,7 @@ module FB
       def self.determine_base_fstab_entries(full_fstab)
         core_fs_line_matching = [
           '^LABEL=(\/|\/boot|SWAP.*|\/mnt\/d\d+)\s',
+          '^\S+\s/\s',
           '^UUID=',
           '^devpts',
           '^sysfs',
@@ -55,7 +56,7 @@ module FB
       end
 
       def self.generate_base_fstab
-        unless File.exist?(BASE_FILENAME) && File.size(BASE_FILENAME) > 0
+        unless File.exist?(BASE_FILENAME) && File.size?(BASE_FILENAME)
           FileUtils.cp('/etc/fstab', '/root/fstab.before_fb_fstab')
           FileUtils.chmod(0400, '/root/fstab.before_fb_fstab')
           full_fstab = File.read('/etc/fstab')
@@ -76,6 +77,7 @@ module FB
       # Returns an array of disks
       def self.get_in_maint_disks
         return [] unless File.exist?(IN_MAINT_DISKS_FILENAME)
+
         age = (
           Time.now - File.stat(IN_MAINT_DISKS_FILENAME).mtime
         ).to_i
@@ -91,6 +93,7 @@ module FB
         File.read(IN_MAINT_DISKS_FILENAME).each_line do |line|
           next if line.start_with?('#')
           next if line.strip.empty?
+
           disks << line.strip
         end
         unless disks.empty?
@@ -131,11 +134,7 @@ module FB
       # So we always try 2 and fail back to 1 (if 2 isn't around, then 1
       # is the new format)
       def self.get_filesystem_data(node)
-        if node['filesystem2']
-          node['filesystem2']
-        else
-          node['filesystem']
-        end
+        node['filesystem2'] || node['filesystem']
       end
 
       def self.label_to_device(label, node)
@@ -143,6 +142,7 @@ module FB
           y['label'] && y['label'] == label && !x.start_with?('/dev/block')
         end
         fail "Requested disk label #{label} doesn't exist" if d.empty?
+
         Chef::Log.debug("fb_fstab: label #{label} is device #{d.keys[0]}")
         d.keys[0]
       end
@@ -152,6 +152,7 @@ module FB
           y['uuid'] && y['uuid'] == uuid && !x.start_with?('/dev/block')
         end
         fail "Requested disk UUID #{uuid} doesn't exist" if d.empty?
+
         Chef::Log.debug("fb_fstab: uuid #{uuid} is device #{d.keys[0]}")
         d.keys[0]
       end
@@ -180,6 +181,7 @@ module FB
           next if line.strip.empty?
           # do not add swap if swap is managed elsewhere, e.g. fb_swap
           next if line.include?('swap') && node['fb_fstab']['exclude_base_swap']
+
           line_parts = line.strip.split
           line_dev_spec = line_parts[0]
 
@@ -191,6 +193,7 @@ module FB
           next if desired_mounts.any? do |_name, data|
             line_dev_spec == data['device']
           end
+
           # If that failed, we canonicalize (if possible) and try again against
           # canonicalized versions of what's in the user's config
           begin
@@ -205,26 +208,29 @@ module FB
               data['mount_point'] == line_parts[1] &&
                 data['device'].start_with?('LABEL=')
             end
+
             raise e
           end
           # If someone has a more specific mount, don't use the original
           next if desired_mounts.any? do |_name, data|
             begin
-              fs_spec == data['device'] ||
-                fs_spec == canonicalize_device(data['device'], node)
+              cdev = canonicalize_device(data['device'], node)
             rescue RuntimeError => e
               # If the entry in node['fstab']['mounts] failed to resolve,
-              # that's an error, orthogonal to what we're doing here, unless
-              # they set `allow_mount_failure`. So if it failed, raise an error,
-              # otherwise don't.
+              # that's an error, orthogonal to what we're doing here,
+              # unless they set `allow_mount_failure`. So if it failed,
+              # raise an error, otherwise don't.
               #
-              # HOWEVER, this `next` is not `next true`, because we're not
-              # skipping the mount - there was no valid comparison done. We're
-              # just moving to the next iteration of any?`
+              # HOWEVER, this `next` is not `next true`, because we're
+              # not skipping the mount - there was no valid comparison
+              # done. We're just moving to the next iteration of any?`
               next if data['allow_mount_failure']
+
               raise e
             end
+            [data['device'], cdev].include?(fs_spec)
           end
+
           case format
           when :hash
             res[fs_spec] = {

@@ -42,6 +42,7 @@ whyrun_safe_ruby_block 'validate data' do
         unless data['only_if'].class == Proc
           fail 'fb_fstab\'s only_if requires a Proc'
         end
+
         unless data['only_if'].call
           Chef::Log.debug("fb_fstab: Not including #{name} due to only_if")
           node.rm('fb_fstab', 'mounts', name)
@@ -72,12 +73,15 @@ whyrun_safe_ruby_block 'validate data' do
           "#{data['mount_point']}."
       end
       is_bind_mount = false
+      is_systemd_automount = false
       if data['opts']
         opt_list = data['opts'].split(',')
         is_bind_mount = opt_list.include?('bind')
+        is_systemd_automount = opt_list.include?('x-systemd.automount')
       end
-      unless ['nfs', 'glusterfs', 'nfusr'].include?(data['type']) ||
-             is_bind_mount
+      unless ['nfs', 'nfs4', 'glusterfs', 'nfusr'].include?(
+        data['type'],
+      ) || is_bind_mount
         if uniq_devs[data['device']]
           fail 'Device names must be unique and you have repeated ' +
             "#{data['device']} for #{uniq_devs[data['device']]} and " +
@@ -89,7 +93,7 @@ whyrun_safe_ruby_block 'validate data' do
 
       # Handle dumb
       auto = FB::Fstab.autofs_parent(data['mount_point'], node)
-      if auto
+      if auto && !is_systemd_automount
         fail "fb_fstab: Refusing to mount '#{name}' because the mount point " +
           "(#{data['mount_point']}) is within an autofs controlled directory" +
           " #{auto}"
