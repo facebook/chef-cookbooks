@@ -103,6 +103,18 @@ describe FB::Storage do
       end
     end
 
+    # see comment in the code for why this is necessary
+    it 'should handle devices that end in digits, even when handed' +
+      ' non-partitions' do
+      {
+        '/dev/md0' => '/dev/md0',
+        '/dev/nvme0n1' => '/dev/nvme0n1',
+      }.each do |part, dev|
+        expect(FB::Storage.device_name_from_partition(part)).
+          to eq(dev)
+      end
+    end
+
     it 'should handle devices that do not end in digits' do
       {
         '/dev/sda1' => '/dev/sda',
