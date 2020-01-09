@@ -62,8 +62,8 @@ EOF
     it 'should not regenerate base fstab' do
       File.should_receive(:exist?).with(FB::Fstab::BASE_FILENAME).
         and_return(true)
-      File.should_receive(:size).with(FB::Fstab::BASE_FILENAME).
-        and_return(12)
+      File.should_receive(:size?).with(FB::Fstab::BASE_FILENAME).
+        and_return(true)
       File.should_not_receive(:open)
       FB::Fstab.generate_base_fstab
     end
