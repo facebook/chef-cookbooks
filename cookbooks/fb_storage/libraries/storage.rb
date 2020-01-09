@@ -111,7 +111,7 @@ module FB
     end
 
     def self.device_name_from_partition(partition)
-      if partition =~ /\dn\d/ || partition =~ %r{/(etherd|md|nbd)}
+      if partition =~ /[0-9]+p[0-9]+$/
         re = /p[0-9]+$/
       else
         re = /[0-9]+$/
