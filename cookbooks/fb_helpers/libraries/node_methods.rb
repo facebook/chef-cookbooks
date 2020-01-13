@@ -414,6 +414,52 @@ class Chef
       self.in_flexible_shard?(shard_threshold, 100)
     end
 
+    def in_timeshard?(start_time, duration)
+      # Validate the start_time string matches our prescribed format.
+      begin
+        st = Time.strptime(start_time, '%Y-%m-%d %H:%M:%S').tv_sec
+      rescue ArgumentError
+        errmsg = "node.in_timeshard?: Invalid start_time arg '#{start_time}'"
+        raise errmsg
+      end
+
+      # Multiply the number of days by 1440 min and 60 s to convert a day into
+      # seconds.
+      if duration.match('^[0-9]+[dD]$')
+        duration = duration.to_i * 1440 * 60
+      # Multiply the number of hours by 3600 s to convert hours into seconds.
+      elsif duration.match('^[0-9]+[hH]$')
+        duration = duration.to_i * 3600
+      else
+        errmsg = "Invalid duration arg, '#{duration}', to in_timeshard?()."
+        fail errmsg
+      end
+      curtime = Time.now.tv_sec
+      # The timeshard will be the number of seconds into the duration.
+      time_shard = self.get_flexible_shard(duration)
+      # The time threshold is the sum of the start time and time shard.
+      time_threshold = st + time_shard
+      Chef::Log.debug(
+        "timeshard: start time: #{start_time}, " +
+        "time threshold: #{Time.at(time_threshold)}",
+      )
+
+      # If the current time is greater than the threshold then the node will be
+      # within the threshold of time as defined by the start time and duration,
+      # and will return true.
+      if curtime > st + duration
+        stack = caller(1, 1)[0]
+        parts = %r{^.*/cookbooks/([^/]*)/([^/]*)/(.*)\.rb:(\d+)}.match(stack)
+        if parts
+          where = "(#{parts[1]}::#{parts[3]} line #{parts[4]})"
+        else
+          where = stack
+        end
+        Chef::Log.warn("Past time shard duration! Please cleanup! #{where}")
+      end
+      curtime >= time_threshold
+    end
+
     def firstboot_os?
       # this has to work even when we fail early on so we can call this from
       # broken runs in handlers

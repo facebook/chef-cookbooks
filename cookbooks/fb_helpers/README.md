@@ -152,6 +152,20 @@ your node.
    Shards are 0-indexed, so the valid shards are 0-99. As such, shard `N` is
    approximately `(N+1)%`, so shard 0 is approximately 1%.
 
+* `node.in_timeshard?(start_time, duration)`
+   NOTE!! IF YOU USE THIS, you MUST go and clean up your code after
+   `start_time+duration`!
+
+   True if the host's timeshard is greater than the sum of the start time and
+   timeshard threshold. The timeshard is calculated by creating time slices,
+   where those slices are the duration divided by 100, then multiply a single
+   slice by the host's shard percentile. We then take the timeshard and add it
+   to the start time to arrive at a threshold. If the current system time is
+   greater than the threshold then return true. The `start_time` format is
+   `YYYY-MM-DD hh:mm:ss`, e.g. `2013-04-17 13:05:00`. The duration format is
+   `Xd` or `Xh` where `d` and `h` are days and hours respectively, and X is
+   the number of days or hours.
+
 * `node.firstboot_any_phase?`
    Returns `true` if we're in any of firstboot steps
 
