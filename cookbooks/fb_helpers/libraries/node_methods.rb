@@ -178,7 +178,9 @@ class Chef
 
     def virtual_macos_type
       unless macos?
-        Chef::Log.warn('node.virtual_macos_type called on non-macOS!')
+        Chef::Log.warn(
+          'fb_helpers: node.virtual_macos_type called on non-macOS!',
+        )
         return
       end
       return self['virtual_macos'] if self['virtual_macos']
@@ -247,13 +249,14 @@ class Chef
       fs = self.ohai_fs_ver
       unless Pathname.new(m).mountpoint?
         Chef::Log.warn(
-          "#{m} is not a mount point - I can't determine its device.",
+          "fb_helpers: #{m} is not a mount point - I can't determine its " +
+          'device.',
         )
         return nil
       end
       unless node[fs] && node[fs]['by_pair']
         Chef::Log.warn(
-          'no filesystem data so no node.device_of_mount',
+          'fb_helpers: no filesystem data so no node.device_of_mount',
         )
         return nil
       end
@@ -268,7 +271,7 @@ class Chef
         return info['device']
       end
       Chef::Log.warn(
-        "#{m} shows as valid mountpoint, but Ohai can't find it.",
+        "fb_helpers: #{m} shows as valid mountpoint, but Ohai can't find it.",
       )
       nil
     end
@@ -298,7 +301,7 @@ class Chef
       elsif !ip_addrs_v4.empty?
         return ip_addrs_v4.map(&:ip_address).uniq[0]
       else
-        fail SocketError, 'No ipv4 addrs found for a non-v6 host'
+        fail SocketError, 'fb_helpers: No ipv4 addrs found for a non-v6 host'
       end
     end
 
@@ -315,7 +318,7 @@ class Chef
             when 'percent'
               'percent_used'
             else
-              fail "fb_util[node.fs_val]: Unknown FS val #{val}"
+              fail "fb_helpers: Unknown FS val #{val} for node.fs_value"
             end
       fs = self[self.ohai_fs_ver]['by_mountpoint'][p]
       # Some things like /dev/root and rootfs have same mount point...
@@ -324,8 +327,8 @@ class Chef
       end
 
       Chef::Log.warn(
-        "Tried to get filesystem information for '#{p}', but it is not a " +
-        'recognized filesystem, or does not have the requested info.',
+        "fb_helpers: Tried to get filesystem information for '#{p}', but it " +
+        'is not a recognized filesystem, or does not have the requested info.',
       )
       nil
     end
@@ -419,7 +422,8 @@ class Chef
       begin
         st = Time.strptime(start_time, '%Y-%m-%d %H:%M:%S').tv_sec
       rescue ArgumentError
-        errmsg = "node.in_timeshard?: Invalid start_time arg '#{start_time}'"
+        errmsg = "fb_helpers: Invalid start_time arg '#{start_time}' for " +
+                 'node.in_timeshard?'
         raise errmsg
       end
 
@@ -431,7 +435,8 @@ class Chef
       elsif duration.match('^[0-9]+[hH]$')
         duration = duration.to_i * 3600
       else
-        errmsg = "Invalid duration arg, '#{duration}', to in_timeshard?()."
+        errmsg = "fb_helpers: Invalid duration arg, '#{duration}' for " +
+                 'node.in_timeshard?'
         fail errmsg
       end
       curtime = Time.now.tv_sec
@@ -440,7 +445,7 @@ class Chef
       # The time threshold is the sum of the start time and time shard.
       time_threshold = st + time_shard
       Chef::Log.debug(
-        "timeshard: start time: #{start_time}, " +
+        "fb_helpers: timeshard start time: #{start_time}, " +
         "time threshold: #{Time.at(time_threshold)}",
       )
 
@@ -455,7 +460,9 @@ class Chef
         else
           where = stack
         end
-        Chef::Log.warn("Past time shard duration! Please cleanup! #{where}")
+        Chef::Log.warn(
+          "fb_helpers: Past time shard duration! Please cleanup! #{where}",
+        )
       end
       curtime >= time_threshold
     end
@@ -480,8 +487,8 @@ class Chef
     # expects a short device name, e.g. 'sda', not '/dev/sda', not '/dev/sda3'
     def device_ssd?(device)
       unless node['block_device'][device]
-        fail "device_ssd?: Device '#{device}' doesn't appear to be a block " +
-          'device!'
+        fail "fb_helpers: Device '#{device}' passed to node.device_ssd? " +
+             "doesn't appear to be a block device!"
       end
       node['block_device'][device]['rotational'] == '0'
     end
