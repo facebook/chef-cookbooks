@@ -131,21 +131,6 @@ If the has is specified, it takes one or more of the following keys:
       end
       final_comment
     end
-
-    def self.root_user
-      value_for_platform(
-        'windows' => { 'default' => 'Administrator' },
-        'default' => 'root',
-      )
-    end
-
-    def self.root_group
-      value_for_platform(
-        ['openbsd', 'freebsd', 'mac_os_x'] => { 'default' => 'wheel' },
-        'windows' => { 'default' => 'Administrators' },
-        'default' => 'root',
-      )
-    end
   end
 
   # Helper class to compare software versions.
