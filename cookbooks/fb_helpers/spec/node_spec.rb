@@ -101,4 +101,78 @@ describe 'Chef::Node' do
       node.in_flexible_shard?(1, 12).should eq(false)
     end
   end
+
+  context 'Chef::Node.in_timeshard?' do
+    # for the purposes of this test we want a consistent shard_seed
+    # this will map to 51336 seconds into a 24h (86400 second) period.
+    before do
+      node.default['fb']['shard_seed'] = 31328136
+    end
+
+    {
+      '24h' => (24 * 60 * 60),
+      '1h' => (60 * 60),
+      '7d' => (7 * 24 * 60 * 60),
+    }.each do |duration, seconds|
+      it "should return false the second before our shard - #{duration}" do
+        our_shard = node.get_flexible_shard(seconds)
+        node.in_timeshard?(
+          (Time.now - (our_shard - 1)).to_s,
+          duration,
+        ).should eq(false)
+      end
+
+      it "should return true the second of our shard - #{duration}" do
+        our_shard = node.get_flexible_shard(seconds)
+        node.in_timeshard?(
+          (Time.now - our_shard).to_s,
+          duration,
+        ).should eq(true)
+      end
+
+      it "should return true much later than our shard - #{duration}" do
+        node.in_timeshard?(
+          (Time.now - (seconds - 1)).to_s,
+          duration,
+        ).should eq(true)
+      end
+
+      it "should return false much earlier than our shard - #{duration}" do
+        node.in_timeshard?(
+          (Time.now - 1).to_s,
+          duration,
+        ).should eq(false)
+      end
+
+      it "should fail if start_time is formatted wrong - #{duration}" do
+        expect do
+          node.in_timeshard?(
+            '2018-09-01i 09:00:00',
+            duration,
+          )
+        end.to raise_error(RuntimeError)
+      end
+
+      it "should fail if start_time is an invalid time - #{duration}" do
+        expect do
+          node.in_timeshard?(
+            '2018-14-1 9:00:00',
+            duration,
+          )
+        end.to raise_error(RuntimeError)
+      end
+    end
+
+    it 'should return true for valid times w single digits' do
+      last_month = Date.today.prev_month
+      start_time = Time.new(last_month.year, last_month.month, 1, 0, 0, 0)
+
+      # Build a string that always has a single digit hour and day value.
+      start_time = start_time.strftime('%Y-%m-%-d %-H:%M:%S')
+      node.in_timeshard?(
+        start_time,
+        '40d',
+      ).should eq(true)
+    end
+  end
 end
