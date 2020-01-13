@@ -35,7 +35,7 @@ end
 # resolver and is required for systemd-resolved to work. This block attempts
 # to place the resolver between mymachines and myhostname as recommended by
 # upstream.
-ruby_block 'enable nss-resolve' do
+whyrun_safe_ruby_block 'enable nss-resolve' do
   only_if do
     node['fb_systemd']['resolved']['enable'] &&
     node['fb_systemd']['resolved']['enable_nss_resolve']
@@ -60,6 +60,7 @@ end
 
 service 'systemd-resolved' do
   only_if { node['fb_systemd']['resolved']['enable'] }
+  subscribes :restart, 'package[systemd packages]', :immediately
   action [:enable, :start]
 end
 

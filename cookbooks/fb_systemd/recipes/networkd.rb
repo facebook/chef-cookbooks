@@ -23,6 +23,7 @@
 }.each do |svc|
   service svc do
     only_if { node['fb_systemd']['networkd']['enable'] }
+    subscribes :restart, 'package[systemd packages]', :immediately
     action [:enable, :start]
   end
 
