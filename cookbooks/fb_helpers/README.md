@@ -183,6 +183,13 @@ The following methods are available:
    for being a comment. By default it'll comment it ruby-style (leading "# ")
    with a width of 80 chars, but the arg hash can specify `start`, `finish`,
    and `width` to adjust it's behavior.
+
+* `FB::Helpers.root_user`
+   Return the platform-specific username for the `root` account.
+
+* `FB::Helpers.root_group`
+   Return the platform-specific group for the `root` account.
+
 * `FB::Version.new(version)`
    Helper class to compare software versions. Sample usage:
 
