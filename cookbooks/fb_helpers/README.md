@@ -175,6 +175,10 @@ your node.
 * `node.firstboot_tier?`
    Shortcut for `node['fb_init']['firstboot_tier']`
 
+* `node.solo?`
+   Returns `true` if a chef run is using chef-solo. Shortcut for
+   `Chef::Config[:solo]` or `Chef::Config[:local_mode]`
+
 ### FB::Helpers
 The following methods are available:
 

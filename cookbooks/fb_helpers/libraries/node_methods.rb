@@ -501,5 +501,9 @@ class Chef
     def root_btrfs?
       node[node.ohai_fs_ver]['by_mountpoint']['/']['fs_type'] == 'btrfs'
     end
+
+    def solo?
+      Chef::Config[:solo] || Chef::Config[:local_mode]
+    end
   end
 end
