@@ -82,7 +82,8 @@ whyrun_safe_ruby_block 'validate data' do
       unless ['nfs', 'nfs4', 'glusterfs', 'nfusr'].include?(
         data['type'],
       ) || is_bind_mount
-        if uniq_devs[data['device']]
+        if uniq_devs[data['device']] &&
+          !FB::Fstab.btrfs_subvol?(data['type'], data['opts'])
           fail 'Device names must be unique and you have repeated ' +
             "#{data['device']} for #{uniq_devs[data['device']]} and " +
             "#{data['mount_point']}. If this is a tmpfs or other virtual " +

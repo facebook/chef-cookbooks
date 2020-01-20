@@ -551,7 +551,29 @@ module FB
       # mounted
       unless ['nfs', 'nfs4', 'glusterfs'].include?(desired['type'])
         device = fs_data['by_device'][desired['device']]
-        if device && device['mounts'] && !device['mounts'].empty?
+        # Here we are checking if the device we want
+        # has already a mount defined
+        # We want to return :moved if it does except
+        # in the case when it's a btrfs
+        # disk and our desired and current options
+        # are trying to mount different subvolumes
+        if device && device['mounts'] && !device['mounts'].empty? &&
+          !(
+            FB::Fstab.btrfs_subvol?(
+              device['fs_type'],
+              device['mount_options'].join(','),
+            ) &&
+            FB::Fstab.btrfs_subvol?(
+              desired['type'],
+              desired['opts'],
+            ) &&
+            !FB::Fstab.same_subvol?(
+              device['mounts'][0],
+              device['mount_options'].join(','),
+              desired['opts'],
+            )
+          )
+
           Chef::Log.warn(
             "fb_fstab: #{desired['device']} is at #{device['mounts']}, but" +
             " we want it at #{desired['mount_point']}",

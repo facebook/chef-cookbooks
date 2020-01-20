@@ -21,6 +21,7 @@ module FB
     class Fstab
       BASE_FILENAME = '/etc/.fstab.chef'.freeze
       IN_MAINT_DISKS_FILENAME = '/var/chef/in_maintenance_disks'.freeze
+      BTRFS_ROOTPARENT = '5'.freeze
 
       def self.determine_base_fstab_entries(full_fstab)
         core_fs_line_matching = [
@@ -169,6 +170,55 @@ module FB
         device
       end
 
+      # This will always return the id of the subvolume specified in the option
+      def self._canonicalize_subvol_opt(mount, opts)
+        type = ''
+        value = ''
+
+        opts.split(',').each do |option|
+          if option.include?('subvol=') || option.include?('subvolid=')
+            data = option.split('=')
+            type = data[0]
+            value = data[1]
+            break
+          end
+        end
+
+        if type == 'subvolid' && !value.empty?
+          return value
+        elsif type != 'subvol'
+          fail "fb_fstab: Cannot canonicalize subvolume from options: #{opts}"
+        end
+
+        cmd = "/usr/sbin/btrfs subvol list #{mount}"
+        subvolume_data = Mixlib::ShellOut.new(cmd).run_command
+        subvolume_data.error!
+
+        subvolume_data.stdout.each_line do |line|
+          # eg. ID 260 gen 49 top level 5 path cache
+          fields = line.split(' ')
+
+          if fields[8] == value
+            return fields[1]
+          end
+        end
+        fail "fb_fstab: Cannot canonicalize subvolume: #{opt}"
+      end
+
+      def self.same_subvol?(mount, opts1, opts2)
+        a = self._canonicalize_subvol_opt(mount, opts1)
+        b = self._canonicalize_subvol_opt(mount, opts2)
+        a == b
+      end
+
+      def self.btrfs_subvol?(fs_type, mount_options)
+        fs_type == 'btrfs' &&
+          (
+            mount_options.include?('subvol=') ||
+            mount_options.include?('subvolid=')
+          )
+      end
+
       def self.get_unmasked_base_mounts(format, node)
         res = case format
               when :hash
@@ -228,7 +278,10 @@ module FB
 
               raise e
             end
-            [data['device'], cdev].include?(fs_spec)
+            # We want to skip btrfs subvolumes as
+            # it's valid to specifiy the same device multiple times
+            [data['device'], cdev].include?(fs_spec) &&
+              !self.btrfs_subvol?(data['type'], data['opts'])
           end
 
           case format

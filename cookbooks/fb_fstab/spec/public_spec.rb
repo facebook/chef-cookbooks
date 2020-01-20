@@ -777,6 +777,25 @@ describe 'FB::FstabProvider', :include_provider do
         desired_mounts['awesomemount'],
       ).should eq(:same)
     end
+    it 'should detect identical mounts subvolumes' do
+      node.default[attr_name]['by_device']['/dev/sdd1'] = {
+        'device' => '/dev/sdd1',
+        'mounts' => '/mnt/d0',
+        'fs_type' => 'btrfs',
+        'mount_options' => ['noatime', 'subvolid=123'],
+      }
+      desired_mounts = {
+        'awesomemount' => {
+          'device' => '/dev/sdd1',
+          'mount_point' => '/mnt/d1',
+          'type' => 'btrfs',
+          'opts' => 'subvolid=123',
+        },
+      }
+      mount_status(
+        desired_mounts['awesomemount'],
+      ).should eq(:moved)
+    end
     it 'should detect remount needed' do
       node.default[attr_name]['by_pair']['/dev/sdd1,/mnt/d0'] = {
         'device' => '/dev/sdd1',
