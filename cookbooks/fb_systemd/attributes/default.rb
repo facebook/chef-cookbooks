@@ -35,11 +35,11 @@ esp_path = nil
   /efi
   /boot
 }.each do |path|
-  # we test for node['filesystem2'] as the plugin can occasionally fail
+  # we test for node[node.ohai_fs_ver] as the plugin can occasionally fail
   # in case of e.g. hung NFS mounts, and would cause a very early Chef failure
   # with a misleading error
-  if node['filesystem2'] && node['filesystem2']['by_mountpoint'][path] &&
-     node['filesystem2']['by_mountpoint'][path]['fs_type'] == 'vfat' &&
+  if node[node.ohai_fs_ver] && node[node.ohai_fs_ver]['by_mountpoint'][path] &&
+     node[node.ohai_fs_ver]['by_mountpoint'][path]['fs_type'] == 'vfat' &&
      (File.exist?("#{path}/EFI") || File.exist?("#{path}/efi"))
     esp_path = path
     break
