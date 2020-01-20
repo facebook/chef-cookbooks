@@ -505,5 +505,20 @@ class Chef
     def solo?
       Chef::Config[:solo] || Chef::Config[:local_mode]
     end
+
+    def root_user
+      value_for_platform(
+        'windows' => { 'default' => 'Administrator' },
+        'default' => 'root',
+      )
+    end
+
+    def root_group
+      value_for_platform(
+        %w{openbsd freebsd mac_os_x} => { 'default' => 'wheel' },
+        'windows' => { 'default' => 'Administrators' },
+        'default' => 'root',
+      )
+    end
   end
 end

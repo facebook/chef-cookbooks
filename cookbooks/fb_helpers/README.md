@@ -179,6 +179,12 @@ your node.
    Returns `true` if a chef run is using chef-solo. Shortcut for
    `Chef::Config[:solo]` or `Chef::Config[:local_mode]`
 
+* `node.root_user`
+   Returns the platform-specific username for the `root` account.
+
+* `node.root_group`
+   Returns the platform-specific group for the `root` account.
+
 ### FB::Helpers
 The following methods are available:
 
