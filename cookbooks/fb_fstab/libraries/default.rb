@@ -202,7 +202,7 @@ module FB
             return fields[1]
           end
         end
-        fail "fb_fstab: Cannot canonicalize subvolume: #{opt}"
+        fail "fb_fstab: Cannot canonicalize subvolume: #{opts}"
       end
 
       def self.same_subvol?(mount, opts1, opts2)
