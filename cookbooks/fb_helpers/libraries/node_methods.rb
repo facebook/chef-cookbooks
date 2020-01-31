@@ -470,13 +470,17 @@ class Chef
     def firstboot_os?
       # this has to work even when we fail early on so we can call this from
       # broken runs in handlers
-      node['fb_init'] && node['fb_init']['firstboot_os']
+      node['fb_init']['firstboot_os']
+    rescue StandardError
+      File.exist?('/root/firstboot_os')
     end
 
     def firstboot_tier?
       # this has to work even when we fail early on so we can call this from
       # broken runs in handlers
-      node['fb_init'] && node['fb_init']['firstboot_tier']
+      node['fb_init']['firstboot_tier']
+    rescue StandardError
+      File.exist?('/root/firstboot_tier')
     end
 
     def firstboot_any_phase?
