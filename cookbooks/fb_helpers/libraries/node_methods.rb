@@ -499,7 +499,7 @@ class Chef
 
     def root_compressed?
       !node[node.ohai_fs_ver]['by_mountpoint']['/']['mount_options'
-        ].grep(/compress(?:-force)=zstd/).empty?
+        ].grep(/compress(-force)?=zstd/).empty?
     end
 
     def root_btrfs?
