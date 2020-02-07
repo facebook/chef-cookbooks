@@ -88,6 +88,8 @@ Optional fields:
 * `only_if`: Specify a Proc which will be evaluated at runtime and used to gate
   whether the timer is setup.  Especially useful if you need to gate on a chef
   API value.  E.g.: 'only_if' => proc { conditional }
+* `description`: A string used for the Description field of the systemd
+  service and timer units.  Defaults to "Run scheduled task [name]"
 
 Advanced fields:
 

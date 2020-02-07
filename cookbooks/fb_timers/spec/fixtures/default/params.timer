@@ -2,7 +2,7 @@
 # Local changes to this file will be overwritten.
 
 [Unit]
-Description=Run scheduled task params
+Description=Custom set description field
 Requires=params.service
 jkl=aaaaah
 

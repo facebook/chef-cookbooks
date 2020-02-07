@@ -74,6 +74,10 @@ action :run do
       conf['commands'] << conf['command']
     end
 
+    unless conf['description']
+      conf['description'] = "Run scheduled task #{conf['name']}"
+    end
+
     unknown_keys = conf.keys - FB::Systemd::TIMER_COOKBOOK_KEYS
     if unknown_keys.any?
       Chef::Log.warn(

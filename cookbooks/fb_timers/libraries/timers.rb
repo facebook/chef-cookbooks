@@ -30,6 +30,7 @@ module FB
       'accuracy' => '1s',
       'autostart' => true,
       'command' => nil,
+      'description' => nil,
       'only_if' => nil,
       'persistent' => false,
       'service_options' => {},

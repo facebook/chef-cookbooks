@@ -101,6 +101,7 @@ recipe 'fb_timers::default', :unsupported => [:mac_os_x] do |tc|
           'params' => {
             'calendar' => '0:0:0',
             'command' => '/usr/local/bin/foobar.sh',
+            'description' => 'Custom set description field',
             'timer_options' => {
               'foo' => '19',
               'bar' => '17',
