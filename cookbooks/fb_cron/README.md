@@ -12,6 +12,7 @@ Attributes
 ----------
 * node['fb_cron']['environment'][$NAME][$VALUE]
 * node['fb_cron']['jobs'][$NAME]['command']
+* node['fb_cron']['jobs'][$NAME]['comment']
 * node['fb_cron']['jobs'][$NAME]['time']
 * node['fb_cron']['jobs'][$NAME]['user']
 * node['fb_cron']['jobs'][$NAME]['only_if']
@@ -58,6 +59,9 @@ node.default['fb_cron']['jobs']['do_this_thing'] = {
   'command' => '/var/www/scripts/foo.php',
 }
 ```
+
+#### comment
+The comment entry of the job, which defaults to the job name.
 
 ### splaysecs
 Defaults to false/none.  Please set a splay time for your cronjob, or

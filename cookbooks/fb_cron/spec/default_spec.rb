@@ -27,6 +27,12 @@ recipe 'fb_cron::default' do |tc|
         'user' => 'apache',
         'command' => '/usr/local/bin/foo.php',
       }
+      node.default['fb_cron']['jobs']['comment_special'] = {
+        'time' => '1 2 3 4 5',
+        'user' => 'apache',
+        'command' => '/usr/local/bin/foo.php',
+        'comment' => 'a very useful comment',
+      }
     end
 
     expect(chef_run).to render_file('/etc/cron.d/fb_crontab').with_content(

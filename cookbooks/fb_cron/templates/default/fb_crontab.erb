@@ -6,7 +6,7 @@
 #
 <% node['fb_cron']['jobs'].to_hash.each do |name, job| %>
 <%   job['user'] = 'root' unless job['user'] -%>
-# <%= name %>
+# <%= job['comment'] %>
 <%   if job['mailto'] -%>
 MAILTO=<%= job['mailto'] %>
 <%   end -%>

@@ -80,6 +80,11 @@ whyrun_safe_ruby_block 'validate_data' do
       else
         node.default['fb_cron']['jobs'][name]['splaycmd'] = ''
       end
+
+      # Populate comment field
+      unless data['comment']
+        node.default['fb_cron']['jobs'][name]['comment'] = name
+      end
     end
   end
 end
