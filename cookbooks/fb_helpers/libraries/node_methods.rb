@@ -524,5 +524,10 @@ class Chef
         'default' => 'root',
       )
     end
+
+    def quiescent?
+      # if this is set, we're trying to be small and anonymous
+      File.exist?('/root/quiesce')
+    end
   end
 end

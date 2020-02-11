@@ -33,7 +33,7 @@ template '/etc/dracut.conf' do
 end
 
 execute 'rebuild all initramfs' do
-  not_if { node.container? }
+  not_if { node.container? || node.quiescent? }
   command 'dracut --force'
   action :nothing
   if node.systemd?
