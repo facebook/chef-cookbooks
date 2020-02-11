@@ -723,6 +723,15 @@ module FB
       retval.empty? ? nil : retval
     end
 
+    def get_expected_label_for_hybrid_md_part(part)
+      @arrays.each_value do |array|
+        if array['journal'] == part
+          return array['label']
+        end
+      end
+      return nil
+    end
+
     # Return a list of devices and partitions that are out of spec.
     # Note: this doesn't take into account what we are or are not allowed
     # to touch - it's just what doesn't match the desired state
@@ -957,11 +966,10 @@ module FB
           end
 
           # We need to validate that member devices of hybrid "arrays" have the
-          # correct partition labels since the rtxfs helpers depend on this. We
-          # skip further validation since these will not have a filesystem
-          # type, label, etc.
+          # correct partition labels since the rtxfs helpers depend on this.
           if conf['partitions'][index]['_xfs_rt_data'] ||
-              conf['partitions'][index]['_xfs_rt_rescue']
+              conf['partitions'][index]['_xfs_rt_rescue'] ||
+              conf['partitions'][index]['_xfs_rt_metadata']
             expected_part_name = conf['partitions'][index]['part_name']
             actual_part_name = FB::Storage.get_actual_part_name(part)
 
@@ -971,12 +979,24 @@ module FB
                              "is '#{actual_part_name}'.")
               mismatched_partitions << device
             end
+          end
+
+          # We skip further validation for hybrid real-time devices since these
+          # will not have a filesystem type, label, etc.
+          if conf['partitions'][index]['_xfs_rt_data'] ||
+              conf['partitions'][index]['_xfs_rt_rescue']
             next
           end
 
           partinfo = @existing['by_device'][part]
           expected_fs = conf['partitions'][index]['type']
           expected_label = conf['partitions'][index]['label']
+          if !expected_label && conf['partitions'][index]['_xfs_rt_metadata']
+            # we have to figure out the label that this device corresponds to
+            # in the array config
+            expected_label = self.get_expected_label_for_hybrid_md_part(part)
+          end
+
           if conf['partitions'][index]['_xfs_rt_metadata']
             expected_fs = 'xfs'
           end

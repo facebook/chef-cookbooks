@@ -1358,7 +1358,267 @@ describe FB::Storage do
         )
       end
 
-      it 'it should identify mismatched partlabels for hybrid FS' do
+      it 'should identify wrong partlabel on hybrid metadata device' do
+        device1 = {
+          'partitions' => [
+            {
+              '_xfs_rt_metadata' => 0,
+              'part_name' => 'wrong_part_name',
+            },
+          ],
+        }
+        device2 = {
+          'partitions' => [
+            {
+              '_xfs_rt_data' => 0,
+              'part_name' => 'correct_part_name',
+            },
+            {
+              '_xfs_rt_rescue' => 0,
+              'part_name' => 'correct_part_name',
+            },
+          ],
+        }
+        array1 = {
+          'type' => 'xfs',
+          'raid_level' => 'hybrid_xfs',
+          'mount_point' => '/data/fa',
+        }
+        node.default['fb_storage']['devices'] = [device1, device2]
+        node.default['fb_storage']['arrays'] = [array1]
+        node.automatic['filesystem2']['by_device'] = {
+          '/dev/sdb' => {},
+          '/dev/sdb1' => { 'fs_type' => 'xfs' },
+          '/dev/sdc' => {},
+          '/dev/sdc1' => {},
+          '/dev/sdc2' => {},
+        }
+        node.automatic['mdadm'] = {}
+        expect(FB::Storage).to receive(:build_mapping).and_return(
+          {
+            :disks => { '/dev/sdb' => device1, '/dev/sdc' => device2 },
+            :arrays => {
+              '/dev/md0' => array1.merge(
+                { 'members' => ['/dev/sdc1'], 'journal' => '/dev/sdb1' },
+              ),
+            },
+          },
+        )
+        expect(FB::Storage).to receive(:get_actual_part_name).and_return(
+          'correct_part_name',
+        ).exactly(3).times
+        storage = FB::Storage.new(node)
+        expect(storage.out_of_spec).to eq(
+          {
+            :mismatched_partitions => ['/dev/sdb'],
+            :mismatched_filesystems => [],
+            :mismatched_arrays => [],
+            :missing_partitions => [],
+            :missing_filesystems => [],
+            :missing_arrays => [],
+            :incomplete_arrays => {},
+            :extra_arrays => [],
+          },
+        )
+      end
+
+      it 'should not consider hybrid md out of spec when partlabel correct' do
+        device1 = {
+          'partitions' => [
+            {
+              '_xfs_rt_metadata' => 0,
+              'part_name' => 'correct_part_name',
+            },
+          ],
+        }
+        device2 = {
+          'partitions' => [
+            {
+              '_xfs_rt_data' => 0,
+              'part_name' => 'correct_part_name',
+            },
+            {
+              '_xfs_rt_rescue' => 0,
+              'part_name' => 'correct_part_name',
+            },
+          ],
+        }
+        array1 = {
+          'type' => 'xfs',
+          'raid_level' => 'hybrid_xfs',
+          'mount_point' => '/data/fa',
+        }
+        node.default['fb_storage']['devices'] = [device1, device2]
+        node.default['fb_storage']['arrays'] = [array1]
+        node.automatic['filesystem2']['by_device'] = {
+          '/dev/sdb' => {},
+          '/dev/sdb1' => { 'fs_type' => 'xfs' },
+          '/dev/sdc' => {},
+          '/dev/sdc1' => {},
+          '/dev/sdc2' => {},
+        }
+        node.automatic['mdadm'] = {}
+        expect(FB::Storage).to receive(:build_mapping).and_return(
+          {
+            :disks => { '/dev/sdb' => device1, '/dev/sdc' => device2 },
+            :arrays => {
+              '/dev/md0' => array1.merge(
+                { 'members' => ['/dev/sdc1'], 'journal' => '/dev/sdb1' },
+              ),
+            },
+          },
+        )
+        expect(FB::Storage).to receive(:get_actual_part_name).and_return(
+          'correct_part_name',
+        ).exactly(3).times
+        storage = FB::Storage.new(node)
+        expect(storage.out_of_spec).to eq(
+          {
+            :mismatched_partitions => [],
+            :mismatched_filesystems => [],
+            :mismatched_arrays => [],
+            :missing_partitions => [],
+            :missing_filesystems => [],
+            :missing_arrays => [],
+            :incomplete_arrays => {},
+            :extra_arrays => [],
+          },
+        )
+      end
+
+      it 'should flag wrong xfs label on hybrid md device as out of spec' do
+        device1 = {
+          'partitions' => [
+            {
+              '_xfs_rt_metadata' => 0,
+              'part_name' => 'correct_part_name',
+            },
+          ],
+        }
+        device2 = {
+          'partitions' => [
+            {
+              '_xfs_rt_data' => 0,
+              'part_name' => 'correct_part_name',
+            },
+            {
+              '_xfs_rt_rescue' => 0,
+              'part_name' => 'correct_part_name',
+            },
+          ],
+        }
+        array1 = {
+          'type' => 'xfs',
+          'raid_level' => 'hybrid_xfs',
+          'mount_point' => '/data/fa',
+        }
+        node.default['fb_storage']['devices'] = [device1, device2]
+        node.default['fb_storage']['arrays'] = [array1]
+        node.automatic['filesystem2']['by_device'] = {
+          '/dev/sdb' => {},
+          '/dev/sdb1' => { 'fs_type' => 'xfs', 'label' => '/wrong_label' },
+          '/dev/sdc' => {},
+          '/dev/sdc1' => {},
+          '/dev/sdc2' => {},
+        }
+        node.automatic['mdadm'] = {}
+        expect(FB::Storage).to receive(:build_mapping).and_return(
+          {
+            :disks => { '/dev/sdb' => device1, '/dev/sdc' => device2 },
+            :arrays => {
+              '/dev/md0' => array1.merge(
+                { 'members' => ['/dev/sdc1'],
+                  'journal' => '/dev/sdb1',
+                  'label' => '/data/fa' },
+              ),
+            },
+          },
+        )
+        expect(FB::Storage).to receive(:get_actual_part_name).and_return(
+          'correct_part_name',
+        ).exactly(3).times
+        storage = FB::Storage.new(node)
+        expect(storage.out_of_spec).to eq(
+          {
+            :mismatched_partitions => [],
+            :mismatched_filesystems => ['/dev/md0', '/dev/sdb1'],
+            :mismatched_arrays => [],
+            :missing_partitions => [],
+            :missing_filesystems => [],
+            :missing_arrays => [],
+            :incomplete_arrays => {},
+            :extra_arrays => [],
+          },
+        )
+      end
+
+      it 'should not flag a hybrid xfs md partition with the correct label' do
+        device1 = {
+          'partitions' => [
+            {
+              '_xfs_rt_metadata' => 0,
+              'part_name' => 'correct_part_name',
+            },
+          ],
+        }
+        device2 = {
+          'partitions' => [
+            {
+              '_xfs_rt_data' => 0,
+              'part_name' => 'correct_part_name',
+            },
+            {
+              '_xfs_rt_rescue' => 0,
+              'part_name' => 'correct_part_name',
+            },
+          ],
+        }
+        array1 = {
+          'type' => 'xfs',
+          'raid_level' => 'hybrid_xfs',
+          'mount_point' => '/data/fa',
+        }
+        node.default['fb_storage']['devices'] = [device1, device2]
+        node.default['fb_storage']['arrays'] = [array1]
+        node.automatic['filesystem2']['by_device'] = {
+          '/dev/sdb' => {},
+          '/dev/sdb1' => { 'fs_type' => 'xfs', 'label' => '/data/fa' },
+          '/dev/sdc' => {},
+          '/dev/sdc1' => {},
+          '/dev/sdc2' => {},
+        }
+        node.automatic['mdadm'] = {}
+        expect(FB::Storage).to receive(:build_mapping).and_return(
+          {
+            :disks => { '/dev/sdb' => device1, '/dev/sdc' => device2 },
+            :arrays => {
+              '/dev/md0' => array1.merge(
+                { 'members' => ['/dev/sdc1'],
+                  'journal' => '/dev/sdb1',
+                  'label' => '/data/fa' },
+              ),
+            },
+          },
+        )
+        expect(FB::Storage).to receive(:get_actual_part_name).and_return(
+          'correct_part_name',
+        ).exactly(3).times
+        storage = FB::Storage.new(node)
+        expect(storage.out_of_spec).to eq(
+          {
+            :mismatched_partitions => [],
+            :mismatched_filesystems => [],
+            :mismatched_arrays => [],
+            :missing_partitions => [],
+            :missing_filesystems => [],
+            :missing_arrays => [],
+            :incomplete_arrays => {},
+            :extra_arrays => [],
+          },
+        )
+      end
+
+      it 'should identify mismatched partlabels for hybrid FS' do
         device1 = {
           'partitions' => [
             {
@@ -1406,7 +1666,7 @@ describe FB::Storage do
         )
         expect(FB::Storage).to receive(:get_actual_part_name).and_return(
           'correct_part_name',
-        ).twice
+        ).exactly(3).times
         storage = FB::Storage.new(node)
         expect(storage.out_of_spec).to eq(
           {
@@ -1470,7 +1730,7 @@ describe FB::Storage do
         )
         expect(FB::Storage).to receive(:get_actual_part_name).and_return(
           'correct_part_name',
-        ).twice
+        ).exactly(3).times
         storage = FB::Storage.new(node)
         expect(storage.out_of_spec).to eq(
           {
