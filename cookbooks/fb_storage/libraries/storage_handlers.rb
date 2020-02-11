@@ -187,6 +187,10 @@ module FB
 
           format_options << ' -d rtinherit=1 -r rtdev=' +
             "#{config['members'].first},extsize=#{extsize}"
+
+          # Realtime is not compatible reflinks.
+          # Default for CentOS 8 is crc=1, so let's switch it off here.
+          format_options << ' -m crc=0 -m reflink=0'
         end
 
         label = config['label']
