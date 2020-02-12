@@ -417,7 +417,7 @@ class Chef
       self.in_flexible_shard?(shard_threshold, 100)
     end
 
-    def in_timeshard?(start_time, duration)
+    def in_timeshard?(start_time, duration, stack_depth = 1)
       # Validate the start_time string matches our prescribed format.
       begin
         st = Time.strptime(start_time, '%Y-%m-%d %H:%M:%S').tv_sec
@@ -453,7 +453,7 @@ class Chef
       # within the threshold of time as defined by the start time and duration,
       # and will return true.
       if curtime > st + duration
-        stack = caller(1, 1)[0]
+        stack = caller(stack_depth, 1)[0]
         parts = %r{^.*/cookbooks/([^/]*)/([^/]*)/(.*)\.rb:(\d+)}.match(stack)
         if parts
           where = "(#{parts[1]}::#{parts[3]} line #{parts[4]})"
