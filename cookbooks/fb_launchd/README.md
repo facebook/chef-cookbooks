@@ -33,6 +33,14 @@ node.default['fb_launchd']['jobs']['chefctl'] = {
 }
 ```
 
+The name of your job must not contain the prefix. If you pass in the prefix into
+the job label, fb_launchd will fail:
+
+```
+fb_launchd: Your label com.facebook.chef.chefctl must not contain the prefix
+already. Ex: node.default['fb_launchd']['jobs']['myservice']
+```
+
 To make the launchd service definition conditional, add the optional 'only_if'
 attribute, and set it to a proc that will be evaluated by the resource at
 runtime:

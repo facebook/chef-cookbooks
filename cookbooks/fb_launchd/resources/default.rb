@@ -69,6 +69,11 @@ action :run do
     # /Library/LaunchAgents) is determined by the label + type (which defaults
     # to daemon if unspecified).
     label = "#{prefix}.#{name}"
+    if name.start_with?(prefix)
+      fail "fb_launchd: The provided job label: '#{name}' cannot include " +
+           "the prefix: '#{prefix}' Instead, pass in the job name only: " +
+           "`node.default['fb_launchd']['jobs']['#{name.gsub(prefix, '')}']`"
+    end
 
     # Create resource
     launchd_resource(label, attrs.fetch('action', :enable), attrs)
