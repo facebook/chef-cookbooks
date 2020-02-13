@@ -8,6 +8,7 @@ You must be running systemd in order to use this cookbook.
 
 Attributes
 ----------
+* node['fb_timers']['enable_named_slices']
 * node['fb_timers']['jobs'][$JOB_NAME]
 
 Usage
@@ -46,6 +47,10 @@ node.default['fb_timers']['jobs']['more_complex_job'] = {
 Specifying a periodic task in this way will create systemd timer and service
 units for your task, and configure them to run periodically based on the
 settings you provide.
+
+A global attribute `node['fb_timers']['enable_named_slices']` controls whether
+the timer units that systemd sets up will be bound to an individual slice,
+versus using `timers.slice` for everything.
 
 ### Fields
 Required fields:
@@ -87,9 +92,9 @@ Optional fields:
   job.
 * `only_if`: Specify a Proc which will be evaluated at runtime and used to gate
   whether the timer is setup.  Especially useful if you need to gate on a chef
-  API value.  E.g.: 'only_if' => proc { conditional }
+  API value.  E.g.: `'only_if' => proc { conditional }`
 * `description`: A string used for the Description field of the systemd
-  service and timer units.  Defaults to "Run scheduled task [name]"
+  service and timer units.  Defaults to `Run scheduled task [name]`
 
 Advanced fields:
 

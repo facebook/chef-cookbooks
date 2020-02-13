@@ -19,6 +19,8 @@
 default['fb_timers'] = {
   'jobs' => {},
 
+  'enable_named_slices' => true,
+
   # Path to use for timer-related unit files.
   # We keep them in a directory separate from normal unit files so we can
   # delete them when they are removed from fb_timers attributes. If they
