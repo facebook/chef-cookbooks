@@ -7,7 +7,7 @@ in terms of Chef `launchd` or `service` resources.
 
 Requirements
 ------------
-This cookbook only works on Mac OS X (which is the only platform where launchd
+This cookbook only works on macOS (which is the only platform where launchd
 itself is supported).
 
 Attributes
@@ -30,6 +30,17 @@ node.default['fb_launchd']['jobs']['chefctl'] = {
   'run_at_load' => true,
   'start_interval' => 1800,
   'time_out' => 600
+}
+```
+
+To make the launchd service definition conditional, add the optional 'only_if'
+attribute, and set it to a proc that will be evaluated by the resource at
+runtime:
+
+```ruby
+node.default['fb_launchd']['jobs']['chefctl'] = {
+  'only_if' => proc { boolean_expression },
+  ...
 }
 ```
 
