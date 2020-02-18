@@ -19,7 +19,7 @@ module FB
   # The storage class takes the user-specificed config, and provides useful
   # interfaces to it. It maps it to real devices, and also generates fstab
   # configs from it. There are also some util class methods
-  class Storage # rubocop:disable Style/MultilineIfModifier
+  class Storage
     REPLACED_DISKS_DIR = '/var/chef/hotswap_replaced_disks'.freeze
     CONVERGE_ALL_FILE = '/var/chef/storage_force_converge_all'.freeze
     ERASE_ALL_FILE = '/var/chef/storage_force_erase_all'.freeze
@@ -56,8 +56,9 @@ module FB
     def self.mountpoint_uses_whole_device(node, mp)
       # if the mountpoint doesn't exist, we're new and can build it
       # on a partition
-      return false unless node['filesystem2']['by_mountpoint'][mp]
-      dev = node['filesystem2']['by_mountpoint'][mp]['devices'][0]
+      return false unless node.filesystem_data['by_mountpoint'][mp]
+
+      dev = node.filesystem_data['by_mountpoint'][mp]['devices'][0]
       # return false if we find a partition, keep it as such
       # In this case I want this code very clear, so we're violating this lint
       # rule
@@ -78,6 +79,7 @@ module FB
     def self.eligible_devices(node)
       root_dev = node.device_of_mount('/')
       return [] unless root_dev
+
       if root_dev
         root_dev = root_dev.split('/').last
       end
@@ -145,6 +147,7 @@ module FB
       if ::File.directory?(FB::Storage::REPLACED_DISKS_DIR)
         Dir.new(FB::Storage::REPLACED_DISKS_DIR).each do |entry|
           next if ['.', '..'].include?(entry)
+
           result << "/dev/#{entry}"
         end
       end
@@ -172,6 +175,7 @@ module FB
       unless m
         fail "fb_storage: Cannot parse #{dev} for sorting"
       end
+
       [m[1], m[2]]
     end
 
@@ -249,6 +253,7 @@ module FB
       if a_base.start_with?('sg')
         return a_base.gsub('sg', '').to_i <=> b_base.gsub('sg', '').to_i
       end
+
       a_array = a_base.split(':').map(&:to_i)
       b_array = b_base.split(':').map(&:to_i)
       a_array <=> b_array
@@ -292,6 +297,7 @@ module FB
             if id.nil?
               return nil
             end
+
             sysfile = "#{DEV_ID_DIR}/#{id}"
             if File.exist?(sysfile)
               disklist << File.basename(File.readlink(sysfile))
@@ -326,6 +332,7 @@ module FB
       id_map = {}
       Dir.open(DEV_ID_DIR).each do |entry|
         next if %w{. ..}.include?(entry)
+
         p = "#{DEV_ID_DIR}/#{entry}"
         id_map[File.basename(File.readlink(p))] = entry
       end
@@ -377,6 +384,7 @@ module FB
       x = load_previous_disk_order
       # just to be safe
       return unless x
+
       write_out_disk_order(x, 2) unless x.empty?
     end
 
@@ -609,6 +617,7 @@ module FB
         )
         desired_disks[dpath] = config[index]
         next if config[index]['_skip']
+
         config[index]['partitions'].each_with_index do |part, pindex|
           pdevice = partition_device_name(
             dpath,
@@ -685,7 +694,7 @@ module FB
       @config = mapping[:disks]
       @arrays = mapping[:arrays]
       # we don't want these changing as we converge...
-      @existing = node['filesystem2'].to_hash
+      @existing = node.filesystem_data.to_hash
       @existing_arrays = node['mdadm'] ? node['mdadm'].to_hash : {}
     end
 
@@ -694,6 +703,7 @@ module FB
       partitions = []
       @config.each do |device, conf|
         next if conf['_skip']
+
         devices << device
         if conf['whole_device']
           partitions << device
@@ -701,12 +711,14 @@ module FB
           partitions += partition_names(device, conf)
         end
       end
+
+      valid_arrays = @arrays.reject { |_array, conf| conf['_skip'] }.keys
       {
         :devices => devices,
         # when rebuilding all storage, we need to format the arrays
         # after we build them
-        :partitions => partitions + @arrays.keys,
-        :arrays => @arrays.keys,
+        :partitions => partitions + valid_arrays,
+        :arrays => valid_arrays,
       }
     end
 
@@ -736,7 +748,7 @@ module FB
     # Note: this doesn't take into account what we are or are not allowed
     # to touch - it's just what doesn't match the desired state
     def out_of_spec
-      @_out_of_spec ||= _out_of_spec
+      @out_of_spec ||= _out_of_spec
     end
 
     def _out_of_spec
@@ -761,7 +773,8 @@ module FB
 
       @arrays.each do |device, conf|
         short_device = File.basename(device)
-        next if conf['raid_level'] == 'hybrid_xfs'
+        next if conf['_skip'] || conf['raid_level'] == 'hybrid_xfs'
+
         unless @existing_arrays.include?(short_device)
           Chef::Log.debug(
             "fb_storage: Array #{device} missing",
@@ -854,6 +867,7 @@ module FB
       @existing_arrays.each_key do |shortarray|
         array = "/dev/#{shortarray}"
         next if @arrays[array]
+
         Chef::Log.info("fb_storage: Extraneous array: #{array}")
         extra_arrays << array
       end
@@ -1073,12 +1087,14 @@ module FB
       end
       @config.each do |device, devconf|
         next if devconf['_skip']
+
         if devconf['whole_device']
           partconf = devconf['partitions'][0]
           if partconf['_swraid_array'] || partconf['_no_mount'] ||
              partconf['_swraid_array_journal']
             next
           end
+
           name = "storage_#{device}_whole"
           fstab[name] = {
             'device' => use_labels ? "LABEL=#{devconf['label']}" : device,
@@ -1099,6 +1115,7 @@ module FB
              partconf['_xfs_rt_metadata']
             next
           end
+
           partnum = index + 1
           partition = FB::Storage.partition_device_name(
             device, partnum
@@ -1114,7 +1131,8 @@ module FB
         # rubocop:enable Lint/ShadowingOuterLocalVariable
       end
       @arrays.each do |array, arrayconf|
-        next if arrayconf['_no_mount']
+        next if arrayconf['_skip'] || arrayconf['_no_mount']
+
         name = "storage_#{array}"
         if use_labels
           device = "LABEL=#{arrayconf['label']}"

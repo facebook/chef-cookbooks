@@ -17,6 +17,7 @@
 
 require './spec/spec_helper'
 require_relative '../../fb_fstab/libraries/default'
+require_relative '../../fb_helpers/libraries/node_methods'
 require_relative '../libraries/storage'
 
 describe FB::Storage do
@@ -963,6 +964,51 @@ describe FB::Storage do
           '/dev/md0' => array1.merge(
             { 'members' => expected_disks.keys[0..4].map { |x| "#{x}1" } },
           ),
+          '/dev/md1' => array2.merge(
+            { 'members' => expected_disks.keys[5..9].map { |x| "#{x}1" } },
+          ),
+          '/dev/md2' => array3.merge(
+            { 'members' => expected_disks.keys[10..14].map { |x| "#{x}1" } },
+          ),
+        }
+        expected = { :disks => expected_disks, :arrays => expected_arrays }
+        expect(FB::Storage.build_mapping(node, [])).to eq(expected)
+      end
+
+      it 'should build a config with multiple array mapping, ' +
+         'and a skipped array' do
+        node.default['fb_storage']['devices'] = [
+          { '_skip' => true }, { '_skip' => true }, { '_skip' => true },
+          { '_skip' => true }, { '_skip' => true },
+          device6, device7, device8, device9, device10,
+          device11, device12, device13, device14, device15
+        ]
+        node.default['fb_storage']['arrays'] = [
+          { '_skip' => true }, array2, array3
+        ]
+        expected_disks = {
+          '/dev/sdb' => { '_skip' => true },
+          '/dev/sdc' => { '_skip' => true },
+          '/dev/sdd' => { '_skip' => true },
+          '/dev/sde' => { '_skip' => true },
+          '/dev/sdf' => { '_skip' => true },
+          '/dev/sdg' => device6,
+          '/dev/sdh' => device7,
+          '/dev/sdi' => device8,
+          '/dev/sdj' => device9,
+          '/dev/sdk' => device10,
+          '/dev/sdl' => device11,
+          '/dev/sdm' => device12,
+          '/dev/sdn' => device13,
+          '/dev/sdo' => device15,
+          '/dev/sdp' => device15,
+        }
+        expected_disks.each_key do |d|
+          node.automatic['block_device'][File.basename(d)] = {}
+        end
+        node.automatic['block_device']['sda'] = {}
+        expected_arrays = {
+          '/dev/md0' => { '_skip' => true, 'members' => [] },
           '/dev/md1' => array2.merge(
             { 'members' => expected_disks.keys[5..9].map { |x| "#{x}1" } },
           ),
@@ -2185,7 +2231,7 @@ describe FB::Storage do
         node.default['fb_storage']['arrays'] = [single_array]
         node.automatic['filesystem2']['by_device'] = {
           '/dev/sdb' => {},
-          '/dev/sdc' => {},
+          '/dev/fioa' => {},
           '/dev/md0' => { 'fs_type' => 'xfs' },
         }
         node.automatic['mdadm']['md0'] = {
@@ -2207,6 +2253,55 @@ describe FB::Storage do
             :devices => ['/dev/sdb', '/dev/fioa'],
             :partitions => ['/dev/sdb1', '/dev/fioa1', '/dev/md0'],
             :arrays => ['/dev/md0'],
+          },
+        )
+      end
+
+      it 'should return all storage with arrays, skipping as necessary' do
+        node.default['fb_storage']['devices'] = [
+          { '_skip' => true }, { '_skip' => true },
+          array_member, array_member
+        ]
+        node.default['fb_storage']['arrays'] = [
+          { '_skip' => true },
+          single_array,
+        ]
+        node.automatic['filesystem2']['by_device'] = {
+          '/dev/sdb' => {},
+          '/dev/sdc' => {},
+          '/dev/sdd' => {},
+          '/dev/sde' => {},
+          '/dev/md0' => { 'fs_type' => 'ext4' },
+          '/dev/md1' => { 'fs_type' => 'xfs' },
+        }
+        node.automatic['mdadm']['md0'] = {
+          'level' => 1,
+          'members' => ['sdb1', 'sdc1'],
+        }
+        node.automatic['mdadm']['md1'] = {
+          'level' => 1,
+          'members' => ['sdd1', 'sde1'],
+        }
+        expect(FB::Storage).to receive(:build_mapping).and_return(
+          {
+            :disks => {
+              '/dev/sdb' => { '_skip' => true },
+              '/dev/sdc' => { '_skip' => true },
+              '/dev/sdd' => array_member,
+              '/dev/sde' => array_member,
+            },
+            :arrays => {
+              '/dev/md0' => { '_skip' => true },
+              '/dev/md1' => single_array,
+            },
+          },
+        )
+        storage = FB::Storage.new(node)
+        expect(storage.all_storage).to eq(
+          {
+            :devices => ['/dev/sdd', '/dev/sde'],
+            :partitions => ['/dev/sdd1', '/dev/sde1', '/dev/md1'],
+            :arrays => ['/dev/md1'],
           },
         )
       end
