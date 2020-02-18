@@ -52,6 +52,18 @@ module FB
       end
 
       node['fb_users']['users'].each do |user, info|
+        unless [nil, :add, :delete].include?(info['action'])
+          fail "fb_users[users]: User #{user} has unknown action #{action}"
+        end
+
+        if info['action'] == :delete
+          if info.keys.count > 1
+            fail "fb_users[user]: User #{user} has action :delete, but also " +
+              "other keys: #{info}"
+          end
+          next
+        end
+
         unless UID_MAP[user]
           fail "fb_users[user]: User #{user} has no UID in the UID_MAP"
         end
@@ -81,11 +93,44 @@ module FB
             'and there is no default set.'
         end
       end
-      node['fb_users']['groups'].keys.sort.uniq do |group|
+      node['fb_users']['groups'].each do |group, info|
+        unless [nil, :add, :delete].include?(info['action'])
+          fail "fb_users[group]: Group #{group} has unknown action #{action}"
+        end
+
+        if info['action'] == :delete
+          if info.keys.count > 1
+            fail "fb_users[group]: Group #{group} has action :delete, but " +
+              "also other keys: #{info}"
+          end
+          next
+        end
         unless GID_MAP[group]
           fail "fb_users[group]: Group #{group} has no GID in the GID_MAP"
         end
       end
+    end
+
+    def self.gid_to_gname(gid)
+      GID_MAP.select { |_, info| info['gid'] == gid }.keys.first
+    end
+
+    def self.uid_to_uname(uid)
+      UID_MAP.select { |_, info| info['uid'] == uid }.keys.first
+    end
+
+    def self.initialize_group(node, group)
+      if node['fb_users']['groups'][group] &&
+          node['fb_users']['groups'][group]['action'] != :delete
+        Chef::Log.debug(
+          "fb_users: Group #{group} already initialized, doing nothing",
+        )
+        return
+      end
+      node.default['fb_users']['groups'][group] = {
+        'members' => [],
+        'action' => :add,
+      }
     end
   end
 end

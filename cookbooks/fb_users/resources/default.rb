@@ -25,8 +25,25 @@ action :manage do
   end
   pgroups += node['fb_users']['users'].map { |_, info| info['gid'] }
   pgroups = pgroups.compact.sort.uniq
+  Chef::Log.debug(
+    'fb_users: the following groups are GIDs and may need bootstrapping: ' +
+    "#{pgroups.join(', ')}.",
+  )
   pgroups.each do |grp|
-    next if node['etc']['group'][grp]
+    if node['etc']['group'][grp]
+      Chef::Log.debug(
+        "fb_users: Will not bootstrap group #{grp} since it exists",
+      )
+      next
+    end
+    if node['fb_users']['groups'][grp]['action'] == :delete
+      Chef::Log.debug(
+        "fb_users: Will not bootstrap group #{grp} since it is marked for " +
+        'deletion',
+      )
+      next
+    end
+
     group "bootstrap #{grp}" do
       group_name grp
       gid ::FB::Users::GID_MAP[grp]['gid']
@@ -42,6 +59,12 @@ action :manage do
 
   # Now we can add all the users
   node['fb_users']['users'].each do |username, info|
+    if info['action'] == :delete
+      user username do
+        action :remove
+      end
+      next
+    end
     mapinfo = ::FB::Users::UID_MAP[username]
     pgroup = info['gid'] || node['fb_users']['user_defaults']['gid']
     homedir = info['home'] || "/home/#{username}"
@@ -90,6 +113,12 @@ action :manage do
 
   # and then converge all groups
   node['fb_users']['groups'].each do |groupname, info|
+    if info['action'] == :delete
+      group groupname do
+        action :remove
+      end
+      next
+    end
     # disableing fc009 becasue it triggers on 'comment' below which
     # is already guarded by a version 'if'
     group groupname do # ~FC009

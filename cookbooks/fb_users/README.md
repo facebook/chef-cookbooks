@@ -100,9 +100,11 @@ straight forward:
 node.default['fb_users']['users']['john'] = {
   'shell' => '/bin/zsh',
   'gid' => 'users',
+  'action' => :add,
 }
 node.default['fb_users']['groups']['admins'] = {
   'members' => ['john'],
+  'action' => :add,
 }
 ```
 
@@ -119,6 +121,14 @@ By design, we do not accept all values. Here are the values we do accept:
 
 They are all optional, see the next section for how default values for these
 work.
+
+Note that `action` may be `:add` or `:delete`. The default, if not set, is
+`:add`, but we highly recommend you be explicit. Doing so will make it really
+easy, for example, to set various users to `:delete` early on in your run,
+and then if later recipes add them, they'll be added, otherwise they'll be
+automatically cleaned up.
+
+Also see `initialize_group` helper below.
 
 ## Passwords in data_bags
 
@@ -159,3 +169,22 @@ in `GID_MAP`.
 
 For all other values we accept, they will only be passed to the resource if
 they exist in the user's hash.
+
+### Helper methods
+
+This cookbook provides a few helper methods for your convenience:
+
+#### FB::Users.initialize_group(node, groupname)
+
+Since initializing a group nicely involves setting `members` to an empty array
+so it may be appended to, we provide a simple method `FB::Users.initialize_group`
+which, *if* the group does not exist in the hash *or* was set to delete, will
+initialize it as an empty group to add.
+
+#### FB::Users.uid_to_name(uid)
+
+Given a UID for a user in the UID_MAP will return the name.
+
+#### FB::Users.gid_to_name(gid)
+
+Given a GID for a group in the GID_MAP will return the name.
