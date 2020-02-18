@@ -41,6 +41,7 @@ module FB
         unless current[k]
           fail "fb_sysctl: Invalid setting #{k}"
         end
+
         cur_val = normalize(current[k])
         Chef::Log.debug("fb_sysctl: current #{k} = #{cur_val}")
         des_val = normalize(v)
