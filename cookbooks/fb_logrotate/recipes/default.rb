@@ -163,6 +163,12 @@ else
 end
 
 # syslog has been moved into the main fb_logrotate.conf
-file '/etc/logrotate.d/syslog' do
+# CentOS and Debian use different files for their main syslog configuration
+syslog_config = value_for_platform_family(
+  ['rhel', 'fedora'] => '/etc/logrotate.d/syslog',
+  'debian' => '/etc/logrotate.d/rsyslog',
+)
+
+file syslog_config do
   action 'delete'
 end
