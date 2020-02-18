@@ -54,6 +54,7 @@ action_class do
           Examples: "ipv6.autoconf=1", "mlx4_en.udp_rss=1"
           FAIL
         end
+
         return True
       end
     end
