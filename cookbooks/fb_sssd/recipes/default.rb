@@ -72,7 +72,16 @@ end
 service 'sssd' do
   only_if { node['fb_sssd']['enable'] }
   action [:enable, :start]
-  subscribes :restart, 'template[/etc/nsswitch.conf]', :immediately
+  # nsswitch is before sssd (for good reasons), but that means on first
+  # boot, we'll trigger on the nsswitch notification and try to restart
+  # even when we can't. This could of course happen outside of firstboot
+  # so if the binary isn't there at compile time, don't bother setting up
+  # the notification. This is safe: if the binary isn't there, it can't
+  # be running and therefore can't have an old config... it will then be
+  # started by this resource
+  if File.exist?('/usr/sbin/sssd')
+    subscribes :restart, 'template[/etc/nsswitch.conf]', :immediately
+  end
 end
 
 service 'disable sssd' do
