@@ -99,6 +99,7 @@ if node.centos? && !node.container?
   include_recipe 'fb_ipset::cleanup'
 end
 include_recipe 'fb_motd'
+include_recipe 'fb_profile'
 
 if node.firstboot_tier?
   include_recipe 'fb_init_sample::firstboot'

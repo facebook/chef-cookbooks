@@ -44,6 +44,7 @@ end
   'fb_motd',
   'fb_nsswitch',
   'fb_postfix',
+  'fb_profile',
   'fb_rpm',
   'fb_rsync',
   'fb_sdparm',
