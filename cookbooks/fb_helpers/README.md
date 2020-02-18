@@ -185,6 +185,10 @@ your node.
 * `node.root_group`
    Returns the platform-specific group for the `root` account.
 
+* `node.filesystem_data`
+   Will return either `node['filesystem']` or `node['filesystem2']`, whichever
+   is the newer format.
+
 ### FB::Helpers
 The following methods are available:
 
