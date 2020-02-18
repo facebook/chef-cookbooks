@@ -107,7 +107,7 @@ module FB
 
       def self.get_autofs_points(node)
         autofs_points = []
-        get_filesystem_data(node)['by_pair'].to_hash.each_value do |data|
+        node.filesystem_data['by_pair'].to_hash.each_value do |data|
           autofs_points << data['mount'] if data['fs_type'] == 'autofs'
         end
         autofs_points
@@ -126,20 +126,8 @@ module FB
         false
       end
 
-      # On Linux and Mac, as of Chef 13, FS and FS2 were identical
-      # and in Chef 14, FS2 is dropped.
-      #
-      # For FreeBSD and other platforms, they become identical in late 15
-      # and FS2 is dropped in late 16
-      #
-      # So we always try 2 and fail back to 1 (if 2 isn't around, then 1
-      # is the new format)
-      def self.get_filesystem_data(node)
-        node['filesystem2'] || node['filesystem']
-      end
-
       def self.label_to_device(label, node)
-        d = get_filesystem_data(node)['by_device'].select do |x, y|
+        d = node.filesystem_data['by_device'].select do |x, y|
           y['label'] && y['label'] == label && !x.start_with?('/dev/block')
         end
         fail "Requested disk label #{label} doesn't exist" if d.empty?
@@ -149,7 +137,7 @@ module FB
       end
 
       def self.uuid_to_device(uuid, node)
-        d = get_filesystem_data(node)['by_device'].to_hash.select do |x, y|
+        d = node.filesystem_data['by_device'].to_hash.select do |x, y|
           y['uuid'] && y['uuid'] == uuid && !x.start_with?('/dev/block')
         end
         fail "Requested disk UUID #{uuid} doesn't exist" if d.empty?
