@@ -49,6 +49,7 @@ end
   'fb_sdparm',
   'fb_securetty',
   'fb_storage',
+  'fb_sudo',
   'fb_swap',
   'fb_sysctl',
   # no recipe, but we want the provider included

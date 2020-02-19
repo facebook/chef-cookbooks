@@ -88,7 +88,7 @@ include_recipe 'fb_fstab'
 include_recipe 'fb_logrotate'
 # HERE: autofs
 include_recipe 'fb_tmpclean'
-# HERE: sudo
+include_recipe 'fb_sudo'
 # HERE: ntp
 if node.centos? && !node.container?
   node.default['fb_ipset']['auto_cleanup'] = false
