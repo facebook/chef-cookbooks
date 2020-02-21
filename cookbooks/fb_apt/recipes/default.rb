@@ -64,7 +64,18 @@ template '/etc/apt/preferences' do
   mode '0644'
 end
 
+execute 'check keyring format' do
+  only_if 'file /etc/apt/trusted.gpg | grep -q keybox'
+  command '
+    gpg --no-default-keyring --keyring /etc/apt/trusted.gpg --export \
+      > /etc/apt/.chef-trusted-export
+    mv /etc/apt/.chef-trusted-export /etc/apt/trusted.gpg
+  '
+  action :nothing
+end
+
 fb_apt_keys 'process keys' do
+  notifies :run, 'execute[check keyring format]', :immediately
   notifies :run, 'execute[apt-get update]'
 end
 
