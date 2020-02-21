@@ -529,5 +529,17 @@ class Chef
       # if this is set, we're trying to be small and anonymous
       File.exist?('/root/quiesce')
     end
+
+    # On Linux and Mac, as of Chef 13, FS and FS2 were identical
+    # and in Chef 14, FS2 is dropped.
+    #
+    # For FreeBSD and other platforms, they become identical in late 15
+    # and FS2 is dropped in late 16
+    #
+    # So we always try 2 and fail back to 1 (if 2 isn't around, then 1
+    # is the new format)
+    def filesystem_data
+      self['filesystem2'] || self['filesystem']
+    end
   end
 end
