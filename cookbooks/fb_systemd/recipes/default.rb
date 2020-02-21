@@ -93,6 +93,11 @@ execute 'process tmpfiles' do
       map { |x| " --exclude-prefix=#{x}" }.
       join
   }
+  # it returns 65 if it had to ignore some lines, which seems to happen
+  # quite often on initial setup
+  if node.firstboot_any_phase?
+    returns [0, 65]
+  end
   action :nothing
 end
 
