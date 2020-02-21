@@ -1,0 +1,47 @@
+# This file is managed by Chef
+
+<% sudo = node['fb_sudo'].to_hash -%>
+<% sudo['defaults'].each do |key, val| %>
+<%   rendered_val = '' %>
+<%   if val.is_a?(TrueClass) %>
+<%     rendered_val = key %>
+<%   elsif val.is_a?(FalseClass) %>
+<%     rendered_val = "!#{key}" %>
+<%   elsif val.is_a?(String) %>
+<%     rendered_val = "#{key}=\"#{val}\"" %>
+<%   end %>
+Defaults <%= rendered_val %>
+<% end %>
+
+<% sudo['default_overrides'].each do |key, val| %>
+Defaults<%= key %> <%= val %>
+<% end %>
+
+# Host aliases
+<% aliases = sudo['aliases'] %>
+<% aliases['host'].sort.each do |name, list| %>
+Host_Alias <%= name.upcase -%> = <%= list %>
+<% end -%>
+
+# User aliases
+<% aliases['user'].sort.each do |name, list| %>
+User_Alias <%= name.upcase -%> = <%= list %>
+<% end -%>
+
+# User aliases
+<% aliases['runas'].sort.each do |name, list| %>
+Runas_Alias <%= name.upcase -%> = <%= list %>
+<% end -%>
+
+# Command aliases
+<% aliases['command'].sort.each do |name, list| %>
+Cmnd_Alias <%= name.upcase -%> = <%= list %>
+<% end -%>
+
+# Users
+<% sudo['users'].sort.each do |user, specs| %>
+<%   specs.each do |sname, spec| %>
+## <%= sname %>
+<%=    user -%> <%= spec %>
+<%   end -%>
+<% end -%>
