@@ -108,13 +108,13 @@ describe FB::Storage::FormatDevicesProvider do
                  :partitions => ['e'],
                  :arrays => ['f'],
                },
-             )).to eq(
-               {
-                 :devices => ['a', 'd'],
-                 :partitions => ['b', 'e'],
-                 :arrays => ['c', 'f'],
-               },
-             )
+      )).to eq(
+        {
+          :devices => ['a', 'd'],
+          :partitions => ['b', 'e'],
+          :arrays => ['c', 'f'],
+        },
+      )
     end
 
     it 'strips duplicates' do
@@ -129,13 +129,13 @@ describe FB::Storage::FormatDevicesProvider do
                  :partitions => ['b'],
                  :arrays => ['f'],
                },
-             )).to eq(
-               {
-                 :devices => ['a'],
-                 :partitions => ['b'],
-                 :arrays => ['c', 'f'],
-               },
-             )
+      )).to eq(
+        {
+          :devices => ['a'],
+          :partitions => ['b'],
+          :arrays => ['c', 'f'],
+        },
+      )
     end
 
     it 'handles empty arrays on either side' do
@@ -150,13 +150,13 @@ describe FB::Storage::FormatDevicesProvider do
                  :partitions => ['b'],
                  :arrays => [],
                },
-             )).to eq(
-               {
-                 :devices => ['a'],
-                 :partitions => ['b'],
-                 :arrays => ['c'],
-               },
-             )
+      )).to eq(
+        {
+          :devices => ['a'],
+          :partitions => ['b'],
+          :arrays => ['c'],
+        },
+      )
     end
   end
 
