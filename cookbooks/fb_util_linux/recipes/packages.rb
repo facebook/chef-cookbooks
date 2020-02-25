@@ -22,11 +22,19 @@
 pkgs = %w{
   util-linux
   libblkid
-  libfdisk
-  libmount
-  libsmartcols
   libuuid
 }
+
+unless node.centos6?
+  pkgs += %w{
+    libmount
+    libsmartcols
+  }
+
+  unless node.centos7?
+    pkgs << 'libfdisk'
+  end
+end
 
 package pkgs do
   only_if { node['fb_util_linux']['manage_packages'] }
