@@ -1,0 +1,19 @@
+# BEGIN GENERAL CONFIG
+<%- cfg = node['fb_nscd']['configs'] %>
+<%- cfg.keys.sort.each do |prop| %>
+<%=   FB::Nscd._global_config(prop, cfg[prop]) %>
+<%- end %>
+
+<%- %w{passwd group hosts}.each do |table| %>
+
+# BEGIN <%= table.upcase %> CONFIG
+<%-   cfg = node['fb_nscd'][table] %>
+<%-   if cfg['enable-cache'] == true || cfg['enable-cache'] == 'yes' %>
+<%-     cfg.keys.sort.each do |prop| %>
+<%=       FB::Nscd._table_config(prop, table, cfg[prop]) %>
+<%-     end %>
+
+<%-   else %>
+<%=     FB::Nscd._table_config('enable-cache', table, false) %>
+<%-   end %>
+<%- end %>
