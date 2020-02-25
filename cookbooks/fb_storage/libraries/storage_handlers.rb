@@ -31,6 +31,7 @@ module FB
       @@handler_cache = {}
       def self.get_handler(device, node)
         return @@handler_cache[device] if @@handler_cache[device]
+
         devname = FB::Storage.device_name_from_path(device)
         if node['block_device'][devname]
           info = node['block_device'][devname].to_hash
@@ -63,9 +64,10 @@ module FB
         if self.class == FB::Storage::Handler
           fail NO_BASE_CLASS_MSG
         end
+
         @device = device
         @node = node
-        @existing_partitions_cache = nil
+        @existing_partitions = nil
         self.mkfs_timeout = 600
       end
 
@@ -108,6 +110,7 @@ module FB
         Mixlib::ShellOut.new("/sbin/parted -s '#{@device}' mklabel gpt").
           run_command.error!
         return if device_config['whole_device']
+
         parted_commands = []
         device_config['partitions'].each_with_index do |partinfo, partindex|
           partnum = partindex + 1
@@ -263,6 +266,7 @@ module FB
 
       def array_device_is_in(device)
         return nil unless @node['mdadm']
+
         @node['mdadm'].each do |array, info|
           Chef::Log.debug(
             "fb_storage: Determining if #{device} is in " +
@@ -416,18 +420,18 @@ module FB
       def umount_by_partition(partition)
         # the 'mounts' check should be all that's necessary - unless we
         # partitioned this device in this run :)
-        if @node['filesystem2']['by_device'][partition] &&
-           @node['filesystem2']['by_device'][partition]['mounts']
-          @node['filesystem2']['by_device'][partition]['mounts'].each do |m|
+        if @node.filesystem_data['by_device'][partition] &&
+           @node.filesystem_data['by_device'][partition]['mounts']
+          @node.filesystem_data['by_device'][partition]['mounts'].each do |m|
             umount(m)
           end
         end
       end
 
       def umount_device
-        if @node['filesystem2']['by_device'][@device] &&
-            @node['filesystem2']['by_device'][@device]['mounts']
-          @node['filesystem2']['by_device'][@device]['mounts'].each do |m|
+        if @node.filesystem_data['by_device'][@device] &&
+            @node.filesystem_data['by_device'][@device]['mounts']
+          @node.filesystem_data['by_device'][@device]['mounts'].each do |m|
             umount(m)
           end
         end
@@ -447,8 +451,8 @@ module FB
       end
 
       def existing_partitions
-        @existing_partitions_cache ||=
-          @node['filesystem2']['by_device'].keys.select do |x|
+        @existing_partitions ||=
+          @node.filesystem_data['by_device'].keys.select do |x|
             x.start_with?(@device) && x != @device
           end
       end

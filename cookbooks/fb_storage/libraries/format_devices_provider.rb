@@ -169,6 +169,7 @@ module FB
         }
         needs_work.each do |key, val|
           next if key == :incomplete_arrays
+
           unless val.empty?
             stats['out_of_spec'] = 1
           end
@@ -238,7 +239,7 @@ module FB
           partitions.each do |p|
             storage.arrays.each do |array, info|
               if (info['members'].include?(p) ||
-                  (info['journal'] && info['journal'].include?(p))) &&
+                  (info['journal']&.include?(p))) &&
                  ['hybrid_xfs', 0].include?(info['raid_level'])
                 arrays << array
               end
@@ -292,6 +293,7 @@ module FB
           needs_work[:missing_arrays] + needs_work[:mismatched_arrays]
         ).each do |array|
           next if to_do[:arrays].include?(array)
+
           if Set.new(storage.arrays[array]['members']) <= partitions_set
             to_do[:arrays] << array
           end
@@ -323,6 +325,7 @@ module FB
             next if to_do[:arrays].include?(array)
             # we can't fill hybrid_xfs arrays
             next if info['raid_level'] == 'hybrid_xfs'
+
             if info['members'].include?(p)
               to_do[:fill_arrays][array] ||= []
               to_do[:fill_arrays][array] << p
@@ -535,6 +538,7 @@ module FB
         arrays.each do |array|
           config = storage.arrays[array]
           next if config['raid_level'] == 'hybrid_xfs'
+
           sh = FB::Storage::Handler.get_handler(array, node)
           sh.build(config)
         end
@@ -577,6 +581,7 @@ module FB
       # as we partition them
       def disable_systemd_fstab_generator
         return unless node.systemd?
+
         Chef::Log.info(
           'fb_storage: Disabling systemd fstab generator',
         )
@@ -599,6 +604,7 @@ module FB
       # put it back...
       def enable_systemd_fstab_generator
         return unless node.systemd?
+
         Chef::Log.info(
           'fb_storage: Enabling systemd fstab generator',
         )

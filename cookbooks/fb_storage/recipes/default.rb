@@ -59,6 +59,7 @@ whyrun_safe_ruby_block 'validate storage options' do
     if node.macos?
       fail 'fb_storage: The `storage` API does not support MacOSX'
     end
+
     # Same with FIO cards.
     if node.device_of_mount('/').include?('fio')
       fail 'fb_storage: The `storage` API does not support ' +
@@ -72,6 +73,7 @@ whyrun_safe_ruby_block 'validate storage options' do
     end
     storage['devices'].each_with_index do |device, didx|
       next if device['_skip']
+
       unless device['partitions'].is_a?(Array)
         fail "fb_storage: The #{didx} device in the Storage API " +
           'has an `partitions` key that is not an array. It must be an array ' +
@@ -108,7 +110,7 @@ whyrun_safe_ruby_block 'validate storage options' do
                  'It must be a number with an optional suffix of %%kmgt'
           %w{start end}.each do |disp|
             unless partition["partition_#{disp}"].match(
-              /^\d+([KkMmGgTt\%](iB)?)?$/,
+              /^\d+(\.\d+)?([KkMmGgTt\%](iB)?)?$/,
             )
               fail format(pmsg, partition["partition_#{disp}"])
             end
@@ -146,8 +148,12 @@ whyrun_safe_ruby_block 'validate storage options' do
       end
     end
     storage['arrays']&.each_with_index do |array, aidx|
+      next if array['_skip']
       # this is roughly the same logic as the label in the partition
       # loop above... but I don't see a good way of abstracting it out
+
+      next if array['_skip']
+
       if array['whole_device']
         fail "fb_storage: 'whole_device' was set on array #{aidx}" +
           ", but that's not a valid setting on an array."
@@ -169,8 +175,12 @@ whyrun_safe_ruby_block 'validate storage options' do
   end
 end
 
-ohai 'filesystem2' do
-  plugin 'filesystem2'
+ohai 'filesystem' do
+  if node['filesystem2']
+    plugin 'filesystem2'
+  else
+    plugin 'filesystem'
+  end
   action :nothing
 end
 
@@ -194,7 +204,7 @@ end
 fb_storage_format_devices 'go' do
   not_if { node['fb_storage']['devices'].empty? }
   # fb_fstab won't mount properly if we don't update data.
-  notifies :reload, 'ohai[filesystem2]', :immediately
+  notifies :reload, 'ohai[filesystem]', :immediately
 end
 
 template '/etc/mdadm.conf' do
