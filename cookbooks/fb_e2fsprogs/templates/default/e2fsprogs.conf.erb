@@ -1,0 +1,12 @@
+# This file is maintained by Chef. Do not edit, all changes will be
+# overwritten. See fb_e2fsprogs/README.md
+<%
+  command_config = node['fb_e2fsprogs'][@command].to_hash
+  command_config.each do |section, config|
+%>
+
+[<%= section %>]
+<%  config.each do |key, val| %>
+<%=   FB::E2fsprogs._gen_e2fsprogs_config(key, val) -%>
+<%  end
+  end %>

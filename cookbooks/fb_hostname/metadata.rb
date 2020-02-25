@@ -1,0 +1,15 @@
+# vim: syntax=ruby:expandtab:shiftwidth=2:softtabstop=2:tabstop=2
+name 'fb_hostname'
+maintainer 'Facebook'
+maintainer_email 'noreply@facebook.com'
+license 'Apache-2.0'
+description 'Manage the system hostname'
+source_url 'https://github.com/facebook/chef-cookbooks/'
+long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
+version '0.1.0'
+supports 'centos'
+supports 'debian'
+supports 'fedora'
+supports 'mac_os_x'
+supports 'ubuntu'
+depends 'fb_helpers'

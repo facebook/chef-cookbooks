@@ -1,0 +1,34 @@
+# This file is maintained by Chef. Do not edit, all changes will be
+# overwritten. See opsfiles/chef/cookbooks/core/fb_chrony
+
+<% 
+  default_opts = node['fb_chrony']['default_options'].join(' ')
+
+  if node['fb_chrony']['servers'].is_a?(Array)
+    servers = {}
+    node['fb_chrony']['servers'].each do |server|
+      servers[server] = []
+    end
+  else
+    servers = node['fb_chrony']['servers'].to_hash
+  end
+
+  if node['fb_chrony']['pools'].is_a?(Array)
+    pools = {}
+    node['fb_chrony']['pools'].each do |pool|
+      pools[pool] = []
+    end
+  else
+    pools = node['fb_chrony']['pools'].to_hash
+  end
+%>
+<% servers.each do |server, opts| -%>
+server <%= server %> <%= opts && !opts.empty? ? opts.join(' ') : default_opts %>
+<% end -%>
+<% pools.each do |pool, opts| -%>
+pool <%= pool %> <%= opts && !opts.empty? ? opts.join(' ') : default_opts %>
+<% end -%>
+
+<% node['fb_chrony']['config'].to_hash.each do |key, val| %>
+<%=  key %> <%= val %>
+<% end %>
