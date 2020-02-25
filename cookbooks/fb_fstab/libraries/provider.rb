@@ -250,7 +250,7 @@ module FB
       # we're going to iterate over specified mounts a lot, lets dump it
       desired_mounts = node['fb_fstab']['mounts'].to_hash
 
-      fs_data = FB::Fstab.get_filesystem_data(node)
+      fs_data = node.filesystem_data
       fs_data['by_pair'].to_hash.each_value do |mounted_data|
         # ohai uses many things to populate this structure, one of which
         # is 'blkid' which gives info on devices that are not currently
@@ -409,7 +409,7 @@ module FB
       # Start with checking if it was mounted the way we would mount it
       # this is ALMOST the same as the 'is it identical' check for non-tmpfs
       # filesystems except that with tmpfs we don't treat 'auto' as equivalent
-      fs_data = FB::Fstab.get_filesystem_data(node)
+      fs_data = node.filesystem_data
       key = "#{desired['device']},#{desired['mount_point']}"
       if fs_data['by_pair'][key]
         mounted = fs_data['by_pair'][key].to_hash
@@ -494,7 +494,7 @@ module FB
       end
 
       key = "#{desired['device']},#{desired['mount_point']}"
-      fs_data = FB::Fstab.get_filesystem_data(node)
+      fs_data = node.filesystem_data
       mounted = nil
       if fs_data['by_pair'][key]
         mounted = fs_data['by_pair'][key].to_hash
