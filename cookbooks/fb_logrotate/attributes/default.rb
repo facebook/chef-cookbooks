@@ -20,7 +20,7 @@ globals = {
   'maxage' => '14',
 }
 
-configs = {
+rhel_configs = {
   'syslog' => {
     'files' => [
       '/var/log/cron',
@@ -43,6 +43,50 @@ configs = {
     },
   },
 }
+
+debian_configs = {
+  'rsyslog-syslog' => {
+    'files' => ['/var/log/syslog'],
+    'overrides' => {
+      'rotate' => '7',
+      'missingok' => true,
+      'delaycompress' => true,
+      # This script handles if we're using systemd or sysvinit to HUP rsyslog
+      'postrotate' => '/usr/lib/rsyslog/rsyslog-rotate',
+    },
+  },
+  'rsyslog' => {
+    'files' => [
+      '/var/log/auth.log',
+      '/var/log/cron.log',
+      '/var/log/debug',
+      '/var/log/daemon.log',
+      '/var/log/kern.log',
+      '/var/log/lpr.log',
+      '/var/log/mail.info',
+      '/var/log/mail.warn',
+      '/var/log/mail.err',
+      '/var/log/mail.log',
+      '/var/log/messages',
+      '/var/log/user.log',
+    ],
+    'overrides' => {
+      'rotate' => '4',
+      'missingok' => true,
+      'delaycompress' => true,
+      'sharedscripts' => true,
+      # This script handles if we're using systemd or sysvinit to HUP rsyslog
+      'postrotate' => '/usr/lib/rsyslog/rsyslog-rotate',
+    },
+  },
+}
+
+# Debian/Ubuntu have different default files to rotate than RHEL/CentOS
+if node.debian? || node.ubuntu?
+  configs = debian_configs
+else
+  configs = rhel_configs
+end
 
 unless node.centos6?
   globals['compresscmd'] = '/usr/bin/pigz'
