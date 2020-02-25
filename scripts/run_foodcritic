@@ -48,6 +48,8 @@ elif [ -x /opt/chef/embedded/bin/foodcritic ]; then
   FOODCRITIC='/opt/chef/embedded/bin/foodcritic'
 else
   echo 'Cannot find foodcritic!'
+  echo 'bundle exec foodcritic --version output:'
+  bundle exec foodcritic --version
   exit 1
 fi
 
