@@ -37,6 +37,10 @@ if node.debian? || node.ubuntu?
   include_recipe 'fb_apt'
 end
 # HERE: chef_client
+if node.centos?
+  include_recipe 'fb_e2fsprogs'
+  include_recipe 'fb_util_linux'
+end
 if node.systemd?
   include_recipe 'fb_systemd'
   include_recipe 'fb_timers'
@@ -46,10 +50,17 @@ if node.macos?
 end
 include_recipe 'fb_nsswitch'
 # HERE: ssh
+include_recipe 'fb_less'
+if node.linux? && !node.embedded? && !node.container?
+  include_recipe 'fb_ethtool'
+end
 if node.centos?
   include_recipe 'fb_ldconfig'
 end
 if node.linux? && !node.container?
+  if node.fedora?
+    include_recipe 'fb_grubby'
+  end
   include_recipe 'fb_grub'
 end
 if node.centos?
@@ -60,6 +71,7 @@ if node.centos? && !node.container?
 end
 include_recipe 'fb_modprobe'
 include_recipe 'fb_securetty'
+include_recipe 'fb_hostname'
 include_recipe 'fb_hosts'
 include_recipe 'fb_ethers'
 # HERE: resolv
@@ -76,6 +88,7 @@ include_recipe 'fb_syslog'
 if node.linux? && !node.container?
   include_recipe 'fb_hdparm'
   include_recipe 'fb_sdparm'
+  include_recipe 'fb_nscd'
   include_recipe 'fb_hddtemp'
 end
 include_recipe 'fb_postfix'
@@ -85,18 +98,23 @@ include_recipe 'fb_swap'
 # fb_fstab is one of the most powerful cookbooks in the facebook suite,
 # but it requires some setup since it will take full ownership of /etc/fstab
 include_recipe 'fb_fstab'
+include_recipe 'fb_mlocate'
 include_recipe 'fb_logrotate'
 # HERE: autofs
 include_recipe 'fb_tmpclean'
 include_recipe 'fb_sudo'
 # HERE: ntp
-if node.centos? && !node.container?
-  node.default['fb_ipset']['auto_cleanup'] = false
-  include_recipe 'fb_ebtables'
-  include_recipe 'fb_ipset'
-  include_recipe 'fb_iptables'
-  include_recipe 'fb_iproute'
-  include_recipe 'fb_ipset::cleanup'
+if node.linux? && !node.container?
+  include_recipe 'fb_chrony'
+
+  if node.centos?
+    node.default['fb_ipset']['auto_cleanup'] = false
+    include_recipe 'fb_ebtables'
+    include_recipe 'fb_ipset'
+    include_recipe 'fb_iptables'
+    include_recipe 'fb_iproute'
+    include_recipe 'fb_ipset::cleanup'
+  end
 end
 include_recipe 'fb_motd'
 
@@ -113,6 +131,12 @@ end
 include_recipe 'fb_collectd'
 include_recipe 'fb_rsync::server'
 include_recipe 'fb_vsftpd'
+if node.centos?
+  include_recipe 'fb_sysstat'
+end
+if node.linux?
+  include_recipe 'fb_screen'
+end
 
 # we recommend you put this as late in the list as possible - it's one of the
 # few places where APIs need to use another API directly... other cookbooks
