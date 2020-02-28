@@ -46,6 +46,24 @@ node.default['fb_logrotate']['configs']['rsyncd'] = {
   },
 }
 
+systemd_unit 'rsyncd.service' do
+  only_if { node.centos8? }
+  # This will only start if the magical file exists
+  action [:create]
+  content <<-EOU.gsub(/^\s+/, '')
+    [Unit]
+    Description=fast remote file copy program daemon
+    ConditionPathExists=/etc/rsyncd.conf
+
+    [Service]
+    # EnvironmentFile=/etc/sysconfig/rsyncd
+    ExecStart=/usr/bin/rsync --daemon --no-detach "$OPTIONS"
+
+    [Install]
+    WantedBy=multi-user.target
+  EOU
+end
+
 svc = value_for_platform_family(
   'rhel' => 'rsyncd',
   'debian' => 'rsync',
