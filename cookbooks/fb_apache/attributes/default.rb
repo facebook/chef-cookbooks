@@ -173,4 +173,5 @@ default['fb_apache'] = {
       'rhel' => 'mod_wsgi',
     ),
   },
+  'mpm' => 'prefork',
 }

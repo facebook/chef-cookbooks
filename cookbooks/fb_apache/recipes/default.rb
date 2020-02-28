@@ -128,6 +128,13 @@ template "#{confdir}/fb_apache.conf" do
   notifies :reload, 'service[apache]'
 end
 
+template "#{moddir}/00-mpm.conf" do
+  owner 'root'
+  group 'root'
+  mode '0644'
+  notifies :reload, 'service[apache]'
+end
+
 # We want to collect apache stats
 template "#{confdir}/status.conf" do
   source 'status.erb'
