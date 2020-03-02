@@ -1,6 +1,8 @@
+# Copyright (c) 2020-present, Vicarious, Inc.
+# Copyright (c) 2020-present, Facebook, Inc.
 name 'fb_profile'
-maintainer 'Vicarious'
-maintainer_email 'noreply@vicarious.com'
+maintainer 'Facebook'
+maintainer_email 'noreply@facebook.com'
 license 'Apache-2.0'
 source_url 'https://github.com/facebook/chef-cookbooks/'
 description 'Installs/Configures /etc/profile.d'
