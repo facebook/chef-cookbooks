@@ -1,0 +1,19 @@
+<% node['fb_profile']['early_entries'].each do |name, entry| %>
+# <%= name %>
+<%= entry %>
+
+<% end %>
+
+<% node['fb_profile']['aliases'].each do |name, cmd| %>
+alias <%= name %>="<%= cmd %>"
+<% end %>
+
+<% node['fb_profile']['variables'].each do |name, cmd| %>
+export <%= name %>="<%= cmd %>"
+<% end %>
+
+<% node['fb_profile']['late_entries'].each do |name, entry| %>
+# <%= name %>
+<%= entry %>
+
+<% end %>

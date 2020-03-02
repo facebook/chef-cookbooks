@@ -52,6 +52,7 @@ end
   'fb_nscd',
   'fb_nsswitch',
   'fb_postfix',
+  'fb_profile',
   'fb_rpm',
   'fb_rsync',
   'fb_screen',
