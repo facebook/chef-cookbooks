@@ -25,11 +25,24 @@ include_recipe 'fb_rsync::server'
 
 fail 'fb_rsync::secure_server supports only systemd nodes' unless node.systemd?
 
-cookbook_file '/etc/systemd/system/stunnel_rsyncd.service' do
-  group 'root'
-  mode '0644'
-  owner 'root'
-  source 'stunnel_rsyncd.service'
+systemd_unit 'stunnel_rsyncd.service' do
+  # This will only start if the magical file exists
+  action [:create]
+  content <<-EOU.gsub(/^\s+/, '')
+    [Unit]
+    Description=Stunnel wrapper around rsyncd
+    After=syslog.service
+    Wants=network-online.target
+    After=network-online.target
+
+    [Service]
+    ExecStart=/usr/bin/#{node.centos8? ? 'stunnel' : 'stunnel5'} /etc/stunnel/stunnel_rsyncd.conf
+    TimeoutSec=60
+    Restart=always
+
+    [Install]
+    WantedBy=multi-user.target
+  EOU
   notifies :run, 'fb_systemd_reload[system instance]', :immediately
 end
 
