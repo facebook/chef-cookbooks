@@ -21,8 +21,18 @@
 # vim: syntax=ruby:expandtab:shiftwidth=2:softtabstop=2:tabstop=2
 #
 
+unless node.linux? || node.macos?
+  fail 'fb_profile: this cookbook only supports Linux and MacOS!'
+end
+
+directory '/etc/profile.d' do
+  owner node.root_user
+  group node.root_group
+  mode '0755'
+end
+
 template '/etc/profile.d/fb_profile.sh' do
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
 end
