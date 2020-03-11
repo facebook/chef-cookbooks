@@ -24,11 +24,16 @@ end
 
 include_recipe 'fb_dracut::packages'
 
-template '/etc/dracut.conf' do
+template '/etc/dracut.conf.d/ZZ-chef.conf' do
   source 'dracut.conf.erb'
   owner 'root'
   group 'root'
   mode '0644'
+  notifies :run, 'execute[rebuild all initramfs]'
+end
+
+file '/etc/dracut.conf' do
+  action :delete
   notifies :run, 'execute[rebuild all initramfs]'
 end
 
