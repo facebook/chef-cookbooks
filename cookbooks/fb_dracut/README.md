@@ -93,3 +93,7 @@ The following are pre-initialized for you as noted:
 * `node['fb_dracut']['conf']['no_kernel']`
   Do not install kernel drivers and firmware files.  (true|false|nil)
   (default=nil)
+
+* `node['fb_dracut']['conf']['early_microcode']`
+  Include CPU microcode for early loading by the kernel.  (true|false|nil)
+  (default=true)

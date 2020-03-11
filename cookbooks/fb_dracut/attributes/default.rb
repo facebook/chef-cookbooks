@@ -43,5 +43,6 @@ default['fb_dracut'] = {
     'lvmconf' => true,
     'kernel_only' => nil,
     'no_kernel' => nil,
+    'early_microcode' => true,
   },
 }
