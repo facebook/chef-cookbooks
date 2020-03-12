@@ -40,5 +40,7 @@ default['fb_chrony'] = {
     'rtcsync' => nil,
     # Enable logging
     'logdir' => '/var/log/chrony',
+    # maximum amount of memory to support interleaved mode
+    'clientloglimit' => '10485760',
   },
 }
