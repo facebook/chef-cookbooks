@@ -59,6 +59,7 @@ end
   'fb_sdparm',
   'fb_securetty',
   'fb_storage',
+  'fb_stunnel',
   'fb_sudo',
   'fb_swap',
   'fb_sysctl',

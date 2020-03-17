@@ -137,6 +137,7 @@ if node.centos?
 end
 if node.linux?
   include_recipe 'fb_screen'
+  include_recipe 'fb_stunnel'
 end
 
 # we recommend you put this as late in the list as possible - it's one of the
