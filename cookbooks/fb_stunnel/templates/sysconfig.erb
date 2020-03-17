@@ -1,0 +1,4 @@
+# This file is managed by Chef, do not modify!
+<% node['fb_stunnel']['sysconfig'].each do |k, v| %>
+<%=  k.upcase %>="<%= v %>"
+<% end %>
