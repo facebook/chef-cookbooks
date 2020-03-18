@@ -1,6 +1,6 @@
 #
 # Copyright (c) 2019-present, Vicarious, Inc.
-# Copyright (c) 2020-present, Vicarious, Inc.
+# Copyright (c) 2020-present, Facebook, Inc.
 # All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
