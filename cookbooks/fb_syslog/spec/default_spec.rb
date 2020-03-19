@@ -32,7 +32,7 @@ recipe 'fb_syslog::default', :unsupported => [:mac_os_x] do |tc|
     end
 
     it 'with empty attributes' do
-      chef_run.converge('fb_systemd', described_recipe) do |node|
+      chef_run.converge('fb_systemd::reload', described_recipe) do |node|
         reset_attributes(node)
       end
 
@@ -41,7 +41,7 @@ recipe 'fb_syslog::default', :unsupported => [:mac_os_x] do |tc|
     end
 
     it 'with syslog entries' do
-      chef_run.converge('fb_systemd', described_recipe) do |node|
+      chef_run.converge('fb_systemd::reload', described_recipe) do |node|
         reset_attributes(node)
         node.default['fb_syslog']['syslog-entries'] = {
           'test' => {
@@ -57,7 +57,7 @@ recipe 'fb_syslog::default', :unsupported => [:mac_os_x] do |tc|
     end
 
     it 'with custom facilities' do
-      chef_run.converge('fb_systemd', described_recipe) do |node|
+      chef_run.converge('fb_systemd::reload', described_recipe) do |node|
         reset_attributes(node)
         node.default['fb_syslog'][
           'rsyslog_facilities_sent_to_remote'] << 'kern.*'
