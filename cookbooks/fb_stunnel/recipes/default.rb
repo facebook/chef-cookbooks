@@ -28,7 +28,18 @@ package packagename do
   action :upgrade
 end
 
-template '/etc/stunnel/fb_tunnel.conf' do
+if node.centos7?
+  # centos7 stunnel rpms doesn't include a systemd unit file
+  cookbook_file '/etc/systemd/system/stunnel.service' do
+    source 'stunnel.service'
+    owner 'root'
+    group 'root'
+    mode '0644'
+    notifies :run, 'fb_systemd_reload[system instance]', :immediately
+  end
+end
+
+template '/etc/stunnel/stunnel.conf' do
   owner 'root'
   group 'root'
   mode '0644'

@@ -41,7 +41,7 @@ key = /etc/stunnel/www.key
 
 ### Sysconfig
 
-The sysconfig will generate `/etc/sysconfig/stunnel` on RH-like OSes or
+The sysconfig will generate `/etc/stunnel/stunnel.conf` on RH-like OSes or
 `/etc/default/stunnel` on Debian-like systems. This must be simple key-value
 pairs, and everything is 1:1 mapped to the final file **except** `enabled`
 which is driven by the `node['fb_stunnel']['enable']` attribute.
@@ -60,7 +60,7 @@ Will render as:
 RLIMITS="-n 4096 -d unlimited"
 ```
 
-Note that `files` defaults to `/etc/stunnel/fb_tunnel.conf`, the file this
+Note that `files` defaults to `/etc/stunnel/stunnel.conf`, the file this
 cookbook writes out so that any other files in that directory do not affect the
 service.
 
