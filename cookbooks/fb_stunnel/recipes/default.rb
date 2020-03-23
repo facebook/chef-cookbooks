@@ -24,8 +24,23 @@ packagename = value_for_platform_family(
   'debian' => 'stunnel4',
 )
 
+sysconfig = value_for_platform_family(
+  ['rhel', 'fedora'] => File.join('/etc/sysconfig/', packagename),
+  'debian' => File.join('/etc/default/', packagename),
+)
+
 package packagename do
   action :upgrade
+end
+
+if node.centos?
+  cookbook_file '/etc/systemd/system/stunnel.service' do
+    source 'stunnel.service'
+    owner 'root'
+    group 'root'
+    mode '0644'
+    notifies :run, 'fb_systemd_reload[system instance]', :immediately
+  end
 end
 
 template '/etc/stunnel/fb_tunnel.conf' do
@@ -42,14 +57,14 @@ if node.debian? || node.ubuntu?
         node['fb_stunnel']['enable'] ? 1 : 0
     end
   end
+end
 
-  template '/etc/default/stunnel4' do
-    source 'sysconfig.erb'
-    owner 'root'
-    group 'root'
-    mode '0644'
-    notifies :restart, 'service[stunnel]'
-  end
+template sysconfig do # ~FB031
+  source 'sysconfig.erb'
+  owner 'root'
+  group 'root'
+  mode '0644'
+  notifies :restart, 'service[stunnel]'
 end
 
 fb_stunnel_create_certs 'do it' do

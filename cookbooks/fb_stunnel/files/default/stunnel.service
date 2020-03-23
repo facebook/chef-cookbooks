@@ -1,0 +1,12 @@
+[Unit]
+Description=TLS tunnel for network daemons
+After=syslog.target network.target
+
+[Service]
+EnvironmentFile=/etc/sysconfig/stunnel
+ExecStart=/usr/bin/stunnel $OPTIONS $FILES
+Type=forking
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
