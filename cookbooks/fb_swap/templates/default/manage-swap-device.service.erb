@@ -13,7 +13,7 @@ device = FB::FbSwap._device(node)
 # if there's an existing device, we should round-trip the existing label and
 # uuid. This way if this code stops being used, and we fall back on the entry
 # in fstab, we'll still find the device using the same predicate as before.
-info = node['filesystem2']['by_device'][device]
+info = node.filesystem_data['by_device'][device]
 label = info['label']
 uuid = info['uuid']
 # While the command line here is systemd's command, not a regular shell this is

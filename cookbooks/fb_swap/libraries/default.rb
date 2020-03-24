@@ -166,7 +166,7 @@ module FB
     end
 
     def self._device(node)
-      swap_mounts = node['filesystem2']['by_device'].to_hash.select do |_k, v|
+      swap_mounts = node.filesystem_data['by_device'].to_hash.select do |_k, v|
         v['fs_type'] == 'swap'
       end
 
@@ -236,7 +236,7 @@ module FB
     end
 
     def self._filesystem_map_for_fs(node)
-      node['filesystem2']['by_mountpoint'][node['fb_swap']['filesystem']]
+      node.filesystem_data['by_mountpoint'][node['fb_swap']['filesystem']]
     end
 
     def self.swap_file_possible?(node)

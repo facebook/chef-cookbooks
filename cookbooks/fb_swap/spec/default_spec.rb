@@ -35,7 +35,7 @@ describe 'fb_swap' do
 
   before(:each) do
     node.default['fb_swap']['filesystem'] = '/'
-    node.default['filesystem2']['by_mountpoint']['/'] = {
+    node.default['filesystem']['by_mountpoint']['/'] = {
       'fs_type' => 'ext4',
       'devices' => ['/dev/blocka42'],
     }
@@ -43,7 +43,7 @@ describe 'fb_swap' do
 
   context 'btrfs' do
     before do
-      node.default['filesystem2']['by_mountpoint']['/']['fs_type'] = 'btrfs'
+      node.default['filesystem']['by_mountpoint']['/']['fs_type'] = 'btrfs'
     end
     it 'should return false if btrfs' do
       FB::FbSwap.swap_file_possible?(node).should eq(false)
