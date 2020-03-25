@@ -23,6 +23,13 @@ describe FB::Storage::FormatDevicesProvider do
   include FB::Storage::FormatDevicesProvider
 
   let(:node) { Chef::Node.new }
+  let(:attr_name) do
+    if node['filesystem2']
+      'filesystem2'
+    else
+      'filesystem'
+    end
+  end
 
   context '#filter_work' do
     let(:data) do
@@ -55,7 +62,7 @@ describe FB::Storage::FormatDevicesProvider do
     it 'handles :missing' do
       fake_storage = double('storage')
       allow(fake_storage).to receive(:arrays).and_return(arrays)
-      node.automatic['filesystem2']['by_device'] = {
+      node.automatic[attr_name]['by_device'] = {
         'c' => {},
         'd' => {},
       }
@@ -71,7 +78,7 @@ describe FB::Storage::FormatDevicesProvider do
     it 'handles :missing - and strips arrays with mounted members' do
       fake_storage = double('storage')
       allow(fake_storage).to receive(:arrays).and_return(arrays)
-      node.automatic['filesystem2']['by_device'] = {
+      node.automatic[attr_name]['by_device'] = {
         'c' => { 'mount_point' => '/mp' },
         'd' => {},
       }
@@ -379,7 +386,7 @@ describe FB::Storage::FormatDevicesProvider do
           node.default['fb_storage']['format'] = default_perms
           node.default['fb_storage']['format'][
             'missing_filesystem_or_partition'] = true
-          node.automatic['filesystem2']['by_device'] = {
+          node.automatic[attr_name]['by_device'] = {
             'j' => {},
             'k' => {},
           }
@@ -396,7 +403,7 @@ describe FB::Storage::FormatDevicesProvider do
           node.default['fb_storage']['format'][
             'missing_filesystem_or_partition'] = true
           allow(node).to receive(:firstboot_tier?).and_return(false)
-          node.automatic['filesystem2']['by_device'] = {
+          node.automatic[attr_name]['by_device'] = {
             'j' => { 'mount_point' => '/data/fa' },
             'k' => {},
           }
@@ -443,7 +450,7 @@ describe FB::Storage::FormatDevicesProvider do
           node.default['fb_storage']['format'][
             'mismatched_filesystem_or_partition'] = true
           allow(node).to receive(:firstboot_tier?).and_return(false)
-          node.automatic['filesystem2']['by_device'] = {
+          node.automatic[attr_name]['by_device'] = {
             'j' => { 'mount_point' => '/data/fa' },
             'k' => {},
           }
@@ -495,7 +502,7 @@ describe FB::Storage::FormatDevicesProvider do
           :partitions => [],
           :arrays => [],
         }
-        node.automatic['filesystem2']['by_device'] = {}
+        node.automatic[attr_name]['by_device'] = {}
         node.default['fb_storage']['format'] = default_perms
         allow(fake_storage).to receive(:out_of_spec).and_return(data)
         allow(node).to receive(:firstboot_tier?).and_return(false)
@@ -517,7 +524,7 @@ describe FB::Storage::FormatDevicesProvider do
           :partitions => [],
           :arrays => [],
         }
-        node.automatic['filesystem2']['by_device'] = {}
+        node.automatic[attr_name]['by_device'] = {}
         node.default['fb_storage']['format'][
           'missing_filesystems_or_partitions'] = true
         allow(fake_storage).to receive(:out_of_spec).and_return(data)

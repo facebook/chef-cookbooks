@@ -22,6 +22,13 @@ require_relative '../libraries/storage_handlers'
 
 describe FB::Storage::Handler do
   let(:node) { Chef::Node.new }
+  let(:attr_name) do
+    if node['filesystem2']
+      'filesystem2'
+    else
+      'filesystem'
+    end
+  end
 
   before do
     # THIS IS VERY IMPORTANT!!! If we don't mock **every** call to
@@ -53,7 +60,7 @@ describe FB::Storage::Handler do
     before do
       # Similarly, all tests happen on sdzX to decrease any chance of
       # actually being related to real disks
-      node.automatic['filesystem2']['by_device'] = {
+      node.automatic[attr_name]['by_device'] = {
         '/dev/sda' => {},
         '/dev/sda1' => {},
         '/dev/sda2' => {},
@@ -107,7 +114,7 @@ describe FB::Storage::Handler do
 
       it 'removes all partitions where there are many' do
         4.times do |i|
-          node.automatic['filesystem2']['by_device']["/dev/sdzz#{i + 1}"] = {}
+          node.automatic[attr_name]['by_device']["/dev/sdzz#{i + 1}"] = {}
           expect(Mixlib::ShellOut).to receive(:new).with(
             "/sbin/parted -s '/dev/sdzz' rm #{i + 1}",
           ).and_return(mock_so)
@@ -577,7 +584,7 @@ describe FB::Storage::Handler do
       it 'finds all partitions' do
         # Similarly, all tests happen on sdzX to decrease any chance of
         # actually being related to real disks
-        node.automatic['filesystem2']['by_device'] = {
+        node.automatic[attr_name]['by_device'] = {
           '/dev/sdzz' => {},
           '/dev/sdzz1' => {},
           '/dev/sdzz2' => {},
@@ -596,7 +603,7 @@ describe FB::Storage::Handler do
       it 'finds all partitions on weirdly named devices' do
         # Similarly, all tests happen on sdzX to decrease any chance of
         # actually being related to real disks
-        node.automatic['filesystem2']['by_device'] = {
+        node.automatic[attr_name]['by_device'] = {
           '/dev/nvme999n0' => {},
           '/dev/nvme999n0p1' => {},
           '/dev/nvme999n0p2' => {},

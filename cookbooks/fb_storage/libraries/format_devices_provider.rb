@@ -23,11 +23,11 @@ module FB
       UDEV_MDADM_RULE =
         '/run/udev/rules.d/65-md-incremental.rules'.freeze
       def device_is_mounted?(device)
-        devices = node['filesystem2']['by_device'].keys
+        devices = node.filesystem_data['by_device'].keys
         devices.select! { |x| x == device || x.start_with?(device) }
         devices.each do |this_device|
-          if node['filesystem2']['by_device'][this_device] &&
-             node['filesystem2']['by_device'][this_device]['mount_point']
+          if node.filesystem_data['by_device'][this_device] &&
+             node.filesystem_data['by_device'][this_device]['mount_point']
             return true
           end
         end
@@ -39,8 +39,8 @@ module FB
         arrays.each do |array|
           can_do = true
           storage.arrays[array]['members'].each do |device|
-            if node['filesystem2']['by_device'][device] &&
-               node['filesystem2']['by_device'][device]['mount_point']
+            if node.filesystem_data['by_device'][device] &&
+               node.filesystem_data['by_device'][device]['mount_point']
               can_do = false
               break
             end

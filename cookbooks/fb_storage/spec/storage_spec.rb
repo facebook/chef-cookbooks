@@ -22,6 +22,14 @@ require_relative '../libraries/storage'
 
 describe FB::Storage do
   let(:node) { Chef::Node.new }
+  let(:attr_name) do
+    if node['filesystem2']
+      'filesystem2'
+    else
+      'filesystem'
+    end
+  end
+
   before do
     node.automatic['fb'] = {}
   end
@@ -1238,7 +1246,7 @@ describe FB::Storage do
           single_partition_device, double_partition_device,
           whole_device_single_fs
         ]
-        node.automatic['filesystem2']['by_device'] = {
+        node.automatic[attr_name]['by_device'] = {
           '/dev/sdb1' => {
             'fs_type' => 'xfs',
             'mounts' => ['/data/fa'],
@@ -1286,7 +1294,7 @@ describe FB::Storage do
         node.default['fb_storage']['devices'] = [
           single_partition_device,
         ]
-        node.automatic['filesystem2']['by_device'] = {
+        node.automatic[attr_name]['by_device'] = {
           '/dev/sdb1' => {
             'fs_type' => 'ext4',
             'mounts' => ['/data/fa'],
@@ -1316,7 +1324,7 @@ describe FB::Storage do
         node.default['fb_storage']['devices'] = [
           single_partition_device,
         ]
-        node.automatic['filesystem2']['by_device'] = {
+        node.automatic[attr_name]['by_device'] = {
           '/dev/sdb1' => {
             'fs_type' => 'xfs',
             'mounts' => ['/data/fa'],
@@ -1350,7 +1358,7 @@ describe FB::Storage do
         node.default['fb_storage']['devices'] = [
           double_partition_device,
         ]
-        node.automatic['filesystem2']['by_device'] = {
+        node.automatic[attr_name]['by_device'] = {
           '/dev/sdb' => {},
         }
         expect(FB::Storage).to receive(:build_mapping).and_return(
@@ -1377,7 +1385,7 @@ describe FB::Storage do
         node.default['fb_storage']['devices'] = [
           single_partition_device,
         ]
-        node.automatic['filesystem2']['by_device'] = {
+        node.automatic[attr_name]['by_device'] = {
           '/dev/sdb1' => {
             'fs_type' => 'xfs',
             'mounts' => ['/data/fa'],
@@ -1432,7 +1440,7 @@ describe FB::Storage do
         }
         node.default['fb_storage']['devices'] = [device1, device2]
         node.default['fb_storage']['arrays'] = [array1]
-        node.automatic['filesystem2']['by_device'] = {
+        node.automatic[attr_name]['by_device'] = {
           '/dev/sdb' => {},
           '/dev/sdb1' => { 'fs_type' => 'xfs' },
           '/dev/sdc' => {},
@@ -1496,7 +1504,7 @@ describe FB::Storage do
         }
         node.default['fb_storage']['devices'] = [device1, device2]
         node.default['fb_storage']['arrays'] = [array1]
-        node.automatic['filesystem2']['by_device'] = {
+        node.automatic[attr_name]['by_device'] = {
           '/dev/sdb' => {},
           '/dev/sdb1' => { 'fs_type' => 'xfs' },
           '/dev/sdc' => {},
@@ -1560,7 +1568,7 @@ describe FB::Storage do
         }
         node.default['fb_storage']['devices'] = [device1, device2]
         node.default['fb_storage']['arrays'] = [array1]
-        node.automatic['filesystem2']['by_device'] = {
+        node.automatic[attr_name]['by_device'] = {
           '/dev/sdb' => {},
           '/dev/sdb1' => { 'fs_type' => 'xfs', 'label' => '/wrong_label' },
           '/dev/sdc' => {},
@@ -1626,7 +1634,7 @@ describe FB::Storage do
         }
         node.default['fb_storage']['devices'] = [device1, device2]
         node.default['fb_storage']['arrays'] = [array1]
-        node.automatic['filesystem2']['by_device'] = {
+        node.automatic[attr_name]['by_device'] = {
           '/dev/sdb' => {},
           '/dev/sdb1' => { 'fs_type' => 'xfs', 'label' => '/data/fa' },
           '/dev/sdc' => {},
@@ -1692,7 +1700,7 @@ describe FB::Storage do
         }
         node.default['fb_storage']['devices'] = [device1, device2]
         node.default['fb_storage']['arrays'] = [array1]
-        node.automatic['filesystem2']['by_device'] = {
+        node.automatic[attr_name]['by_device'] = {
           '/dev/sdb' => {},
           '/dev/sdb1' => { 'fs_type' => 'xfs' },
           '/dev/sdc' => {},
@@ -1756,7 +1764,7 @@ describe FB::Storage do
         }
         node.default['fb_storage']['devices'] = [device1, device2]
         node.default['fb_storage']['arrays'] = [array1]
-        node.automatic['filesystem2']['by_device'] = {
+        node.automatic[attr_name]['by_device'] = {
           '/dev/sdb' => {},
           '/dev/sdb1' => { 'fs_type' => 'xfs' },
           '/dev/sdc' => {},
@@ -1796,7 +1804,7 @@ describe FB::Storage do
         node.default['fb_storage']['devices'] = [
           whole_device_single_fs,
         ]
-        node.automatic['filesystem2']['by_device'] = {
+        node.automatic[attr_name]['by_device'] = {
           '/dev/sdb' => {
             'fs_type' => 'xfs',
             'mounts' => ['/data/fa'],
@@ -1829,7 +1837,7 @@ describe FB::Storage do
           array_member, array_member
         ]
         node.default['fb_storage']['arrays'] = [single_array]
-        node.automatic['filesystem2']['by_device'] = {
+        node.automatic[attr_name]['by_device'] = {
           '/dev/sdb' => {},
           '/dev/sdc' => {},
         }
@@ -1864,7 +1872,7 @@ describe FB::Storage do
           device1, array_member, array_member
         ]
         node.default['fb_storage']['arrays'] = [single_array]
-        node.automatic['filesystem2']['by_device'] = {
+        node.automatic[attr_name]['by_device'] = {
           '/dev/sdb' => {},
           '/dev/sdc' => {},
           '/dev/sdd' => {},
@@ -1908,7 +1916,7 @@ describe FB::Storage do
           array_member, array_member
         ]
         node.default['fb_storage']['arrays'] = [single_array]
-        node.automatic['filesystem2']['by_device'] = {
+        node.automatic[attr_name]['by_device'] = {
           '/dev/sdb' => {},
           '/dev/sdc' => {},
           '/dev/md0' => { 'fs_type' => 'xfs' },
@@ -1969,7 +1977,7 @@ describe FB::Storage do
         }
         node.default['fb_storage']['devices'] = [device1, device2]
         node.default['fb_storage']['arrays'] = [array1]
-        node.automatic['filesystem2']['by_device'] = {
+        node.automatic[attr_name]['by_device'] = {
           '/dev/sdb' => {},
           '/dev/sdb1' => { 'fs_type' => 'xfs' },
           '/dev/sdc' => {},
@@ -2033,7 +2041,7 @@ describe FB::Storage do
         }
         node.default['fb_storage']['devices'] = [device1, device2]
         node.default['fb_storage']['arrays'] = [array1]
-        node.automatic['filesystem2']['by_device'] = {
+        node.automatic[attr_name]['by_device'] = {
           '/dev/sdb' => {},
           '/dev/sdb1' => { 'fs_type' => 'xfs' },
           '/dev/sdc' => {},
@@ -2087,7 +2095,7 @@ describe FB::Storage do
         }
         node.default['fb_storage']['devices'] = [device1, device2]
         node.default['fb_storage']['arrays'] = [array1]
-        node.automatic['filesystem2']['by_device'] = {
+        node.automatic[attr_name]['by_device'] = {
           '/dev/sdb' => {},
           '/dev/sdb1' => { 'fs_type' => 'ext4' },
           '/dev/sdc' => {},
@@ -2141,7 +2149,7 @@ describe FB::Storage do
         }
         node.default['fb_storage']['devices'] = [device1, device2]
         node.default['fb_storage']['arrays'] = [array1]
-        node.automatic['filesystem2']['by_device'] = {
+        node.automatic[attr_name]['by_device'] = {
           '/dev/sdb' => {},
           '/dev/sdb1' => {},
           '/dev/sdc' => {},
@@ -2179,7 +2187,7 @@ describe FB::Storage do
         node.default['fb_storage']['devices'] = [
           single_partition_device,
         ]
-        node.automatic['filesystem2']['by_device'] = {
+        node.automatic[attr_name]['by_device'] = {
           '/dev/sdb' => {},
         }
         expect(FB::Storage).to receive(:build_mapping).and_return(
@@ -2201,7 +2209,7 @@ describe FB::Storage do
         node.default['fb_storage']['devices'] = [
           single_partition_device, double_partition_device
         ]
-        node.automatic['filesystem2']['by_device'] = {
+        node.automatic[attr_name]['by_device'] = {
           '/dev/sdb' => {},
           '/dev/fioa' => {},
         }
@@ -2229,7 +2237,7 @@ describe FB::Storage do
           array_member, array_member
         ]
         node.default['fb_storage']['arrays'] = [single_array]
-        node.automatic['filesystem2']['by_device'] = {
+        node.automatic[attr_name]['by_device'] = {
           '/dev/sdb' => {},
           '/dev/fioa' => {},
           '/dev/md0' => { 'fs_type' => 'xfs' },
@@ -2266,7 +2274,7 @@ describe FB::Storage do
           { '_skip' => true },
           single_array,
         ]
-        node.automatic['filesystem2']['by_device'] = {
+        node.automatic[attr_name]['by_device'] = {
           '/dev/sdb' => {},
           '/dev/sdc' => {},
           '/dev/sdd' => {},
