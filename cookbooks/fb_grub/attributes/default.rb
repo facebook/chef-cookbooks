@@ -39,6 +39,7 @@ fb_grub = {
   '_grub2_module_path' => '/notdefined',
   '_rootflags' => nil,
   '_vendor' => vendor,
+  'enable_bls' => false,
   'kernel_cmdline_args' => [],
   'kernels' => {},
   'manage_packages' => true,

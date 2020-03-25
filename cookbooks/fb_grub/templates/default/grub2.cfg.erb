@@ -50,6 +50,45 @@ serial --speed=<%= serial['speed'] %> --unit=<%= serial['unit'] %> --word=<%= se
 terminal_input <%= terminal %>
 terminal_output <%= terminal %>
 
+<% if node['fb_grub']['enable_bls'] %>
+# load_video directive injected by grubby by default
+# so it must be at least defined or entries would be unbootable
+function load_video {
+  if [ x$feature_all_video_module = xy ]; then
+    insmod all_video
+  else
+    insmod efi_gop
+    insmod efi_uga
+    insmod ieee1275_fb
+    insmod vbe
+    insmod vga
+    insmod video_bochs
+    insmod video_cirrus
+  fi
+}
+
+# efi will use different location for entries and env file
+# force it to use /boot/ device 
+<%= root_line %>
+
+# load bls configs
+set blsdir=/loader/entries
+
+# load variable, mostly for default bootentry
+load_env
+if [ "${saved_entry}" ] ; then
+  set default="${saved_entry}"
+fi
+
+# enforce kernelops from grub.cfg which is managed by chef
+# rather then variable from grubby
+set kernelopts="<%= kargs %>"
+
+# load bls entries
+insmod blscfg
+blscfg
+<% end %>
+
 <% node['fb_grub']['kernels'].to_hash.each do |kernel, data| -%>
 
 <%   if node['fb_grub']['tboot']['enable'] && !kernel.include?('rescue') -%>
