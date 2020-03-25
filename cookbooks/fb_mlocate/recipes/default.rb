@@ -58,3 +58,10 @@ end
     action :delete
   end
 end
+
+if node.centos? && !node.centos6? && !node.centos7?
+  systemd_unit 'mlocate-updatedb.timer' do
+    only_if { node['fb_mlocate']['want_mlocate'] }
+    action [:enable, :start]
+  end
+end
