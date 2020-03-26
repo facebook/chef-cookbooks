@@ -229,31 +229,32 @@ directory grub2_base_dir do
   mode '0755'
 end
 
-[
-  { :type => 'bios', :mode => '0644' },
-  { :type => 'efi', :mode => '0700' },
-].each do |tpl|
+%w{bios efi}.each do |type|
   # For grub 2, we MAY be able to write both efi and bios config files
   # if the user wants us to
-  if tpl[:type] == 'efi'
+  if type == 'efi'
     our_type = node.efi?
   else
     our_type = !node.efi?
   end
   # efi command suffixing is a special case in grub2 that only applies
   # to x86_64.
-  efi_command = tpl[:type] == 'efi' && node.x64?
+  efi_command = type == 'efi' && node.x64?
 
-  template "grub2_config_#{tpl[:type]}" do
+  template "grub2_config_#{type}" do
     only_if do
       (node['fb_grub']['kernels'] && node['fb_grub']['version'] == 2) &&
       (our_type || node['fb_grub']['force_both_efi_and_bios'])
     end
-    path lazy { node['fb_grub']["_grub2_config_#{tpl[:type]}"] }
+    path lazy { node['fb_grub']["_grub2_config_#{type}"] }
     source 'grub2.cfg.erb'
     owner 'root'
     group 'root'
-    mode tpl[:mode]
+    # No "mode" for EFI since mode is determined by mount options,
+    # not files
+    if type == 'bios'
+      mode '0644'
+    end
     variables(
       {
         'linux_statement' => efi_command ? 'linuxefi' : 'linux',
