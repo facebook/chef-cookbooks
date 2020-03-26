@@ -71,12 +71,11 @@ execute 'check keyring format' do
       > /etc/apt/.chef-trusted-export
     mv /etc/apt/.chef-trusted-export /etc/apt/trusted.gpg
   '
-  action :nothing
+  notifies :run, 'execute[apt-get update]', :immediately
 end
 
 fb_apt_keys 'process keys' do
   notifies :run, 'execute[check keyring format]', :immediately
-  notifies :run, 'execute[apt-get update]'
 end
 
 # On Debian nothing should drop things here, but Ubuntu likes to use it for its
