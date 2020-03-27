@@ -24,3 +24,22 @@ template '/etc/motd' do
   owner 'root'
   source 'motd.erb'
 end
+
+# Ubuntu's motd is heavily modified and consists of a few basic parts:
+# * standard /etc/motd (though it's often a symlink to /run/motd.dynamic,
+#   if it's not, it'll be the last part of the motd shown)
+# * /run/motd.dynamic which is a cache of the output of running everything
+#   in /etc/update-motd.d using `run-parts`. Various packages drop things
+#   off in here and the accepted way to disable them is to make them
+#   non-executable
+# * motd-news - a live-go-get-something-from-the-internet-and-display-
+#   it-at-login. This can be disabled in /etc/default/motd-news
+if node.ubuntu?
+  template '/etc/default/motd-news' do
+    owner 'root'
+    group 'root'
+    mode '0644'
+  end
+
+  fb_motd_update_motd 'doit'
+end

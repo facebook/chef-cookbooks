@@ -16,4 +16,14 @@
 #
 default['fb_motd'] = {
   'extra_lines' => [],
+  'motd_news' => {
+    'enabled' => true,
+    'urls' => ['https://motd.ubuntu.com'],
+    'wait' => 5,
+  },
+  'update_motd' => {
+    'enabled' => true,
+    'whitelist' => [],
+    'blacklist' => [],
+  },
 }
