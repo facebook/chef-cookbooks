@@ -20,6 +20,9 @@
 
 include_recipe 'fb_postfix::packages'
 
+node.default['fb_syslog']['rsyslog_additional_sockets'] <<
+  '/var/spool/postfix/dev/log'
+
 template '/etc/postfix/main.cf' do
   source 'main.cf.erb'
   owner 'root'
