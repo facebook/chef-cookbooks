@@ -22,7 +22,7 @@ include_recipe 'fb_postfix::packages'
 
 # Note: we need to test for this because otherwise autovivification will
 # give us a Hash, not an Array, and the append will fail
-if node['fb_syslog']['rsyslog_additional_sockets']
+if node['fb_syslog'] && node['fb_syslog']['rsyslog_additional_sockets']
   node.default['fb_syslog']['rsyslog_additional_sockets'] <<
     '/var/spool/postfix/dev/log'
 end
