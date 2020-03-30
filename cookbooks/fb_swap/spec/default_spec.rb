@@ -17,6 +17,7 @@
 
 require './spec/spec_helper'
 require_relative '../libraries/default'
+require_relative '../../fb_helpers/libraries/node_methods'
 
 def mock_lsblk(rota)
   so = double('lsblk')
