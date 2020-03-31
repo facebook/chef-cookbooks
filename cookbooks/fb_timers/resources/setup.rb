@@ -134,7 +134,7 @@ action :run do
             !conf['autostart']
         end
         command "systemctl link #{filename}"
-        notifies :run, 'fb_systemd_reload[system instance]', :immediately
+        # Don't notify systemd to reload; you're already talking to systemd
       end
     end
 
