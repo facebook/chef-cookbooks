@@ -62,6 +62,7 @@ action :run do
   # Setup current jobs
   node['fb_timers']['jobs'].to_hash.each_pair do |name, conf|
     conf = FB::Systemd::TIMER_DEFAULTS.merge(conf.merge('name' => name))
+    node.default['fb_timers']['jobs'][name] = conf
 
     # Do this early so we can rely on commands being filled in
     if conf['command']
@@ -125,7 +126,8 @@ action :run do
         # It's safe to use here since it's in a provider and isn't used
         # directly.
         variables :conf => conf
-        notifies :run, 'fb_systemd_reload[system instance]', :immediately
+        notifies :reload_needed, 'fb_timers_setup[fb_timers system setup]',
+                 :immediately
       end
 
       execute "link unit file #{filename}" do
@@ -137,7 +139,16 @@ action :run do
         # Don't notify systemd to reload; you're already talking to systemd
       end
     end
+  end
 
+  # Reload systemd, but only if required
+  log 'reloading systemd' do
+    only_if { node['fb_timers']['_reload_needed'] }
+    notifies :run, 'fb_systemd_reload[system instance]', :immediately
+  end
+
+  # Setup services
+  node['fb_timers']['jobs'].to_hash.each_pair do |_name, conf|
     service "#{conf['name']}.timer" do
       only_if { conf['autostart'] }
       action [:enable, :start]
@@ -160,4 +171,8 @@ action :run do
       action :delete
     end
   end
+end
+
+action :reload_needed do
+  node.default['fb_timers']['_reload_needed'] = true
 end
