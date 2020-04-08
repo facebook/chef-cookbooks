@@ -51,6 +51,7 @@ terminal_input <%= terminal %>
 terminal_output <%= terminal %>
 
 <% if node['fb_grub']['enable_bls'] %>
+
 # load_video directive injected by grubby by default
 # so it must be at least defined or entries would be unbootable
 function load_video {
@@ -88,9 +89,7 @@ set kernelopts="<%= kargs %>"
 insmod blscfg
 blscfg
 <% end %>
-
 <% node['fb_grub']['kernels'].to_hash.each do |kernel, data| -%>
-
 <%   if node['fb_grub']['tboot']['enable'] && !kernel.include?('rescue') -%>
 
 menuentry 'tboot <%= kernel %>' {

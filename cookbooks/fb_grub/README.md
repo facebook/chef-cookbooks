@@ -24,6 +24,7 @@ Attributes
 * node['fb_grub']['force_both_efi_and_bios']
 * node['fb_grub']['boot_disk']
 * node['fb_grub']['manage_packages']
+* node['fb_grub']['enable_bls']
 
 Usage
 -----
@@ -84,3 +85,10 @@ directly without tboot.
 
 NOTE: tboot is not compatible with Secure Boot enabled. Please see the RedHat
 bug report for more information: https://bugzilla.redhat.com/show_bug.cgi?id=1318667
+
+### Boot Loader Specification support
+Set `node['fb_grub']['enable_bls']` to `true` to enable automatic parsing and
+menu entry generation from
+[Boot Loader Specification](https://systemd.io/BOOT_LOADER_SPECIFICATION/)
+compliant entries. This is needed e.g. to properly handle grubby-managed
+entries on CentOS 8.
