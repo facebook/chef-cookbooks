@@ -189,6 +189,12 @@ your node.
    Will return either `node['filesystem']` or `node['filesystem2']`, whichever
    is the newer format.
 
+* `node.rpm_version(name)`
+  Returns the version of an RPM if installed, or `nil` if not installed. This
+  method follows changes to the RPM database during a run if a package is
+  installed or removed. For most use cases, please use `node['packages']` as
+  it is cheaper.
+
 ### FB::Helpers
 The following methods are available:
 

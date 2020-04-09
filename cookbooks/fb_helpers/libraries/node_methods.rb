@@ -541,5 +541,16 @@ class Chef
     def filesystem_data
       self['filesystem2'] || self['filesystem']
     end
+
+    # returns the version of an rpm installed, or nil if not present
+    def rpm_version(name)
+      if self.centos? && !self.centos7?
+        Chef::Provider::Package::Dnf::PythonHelper.instance.
+          query(:whatinstalled, name).version
+      else
+        Chef::Provider::Package::Yum::YumCache.instance.
+          installed_version(name)
+      end
+    end
   end
 end
