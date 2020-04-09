@@ -25,6 +25,9 @@ Attributes
 * node['fb_grub']['boot_disk']
 * node['fb_grub']['manage_packages']
 * node['fb_grub']['enable_bls']
+* node['fb_grub']['users'][$USER]['password']
+* node['fb_grub']['users'][$USER]['is_superuser']
+* node['fb_grub']['require_auth_on_boot']
 
 Usage
 -----
@@ -92,3 +95,24 @@ menu entry generation from
 [Boot Loader Specification](https://systemd.io/BOOT_LOADER_SPECIFICATION/)
 compliant entries. This is needed e.g. to properly handle grubby-managed
 entries on CentOS 8.
+
+### User management
+GRUB 2 can optionally restrict menu entries booting and editing. Add any user
+definitions to `node['fb_grub']['users']`, e.g.:
+
+```ruby
+node.default['fb_grub']['users']['root'] = {
+  # this is a plaintext password
+  'password' => 'foo',
+  'is_superuser' => true,
+}
+
+node.default['fb_grub']['users']['toor'] = {
+  # this is an encryped password generated with grub2-mkpasswd-pbkdf2
+  'password' => 'grub.pbkdf2.sha512.10000.A851ED187ADA6317A1E6E44045EA230FAA53B6B8BB0EF23CBE004FB298E78ECE3A0FEE37F732A5E10A96C5949A23A8D77FEF2A92C147E61D679B7028274113E1.3300DE40800F11EAD98F16F718728F8551821C156457B3EE8A4C815A859978E57EE5CF5D07F03833BAB7E2F17B6653031807E36BC94778A78E88D628C3C3E9A8',
+}
+```
+
+By default, if any users are defined authentication will only be required for
+editing menu entries. Set `node['fb_grub']['require_auth_on_boot']` to require
+authentication also for booting.

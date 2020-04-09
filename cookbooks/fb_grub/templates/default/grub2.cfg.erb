@@ -40,6 +40,18 @@
 
   path_prefix = node['fb_grub']['path_prefix']
 
+  users = node['fb_grub']['users'].to_hash
+  superusers = []
+  users.each do |user, data|
+    if data['is_superuser']
+      superusers << user
+    end
+  end
+  restriction = ''
+  if !users.empty? && !node['fb_grub']['require_auth_on_boot']
+    restriction = '--unrestricted '
+  end
+
   # default is 0 because we'll automagically put the non-kdump kernel first
 -%>
 set default=0
@@ -49,7 +61,17 @@ serial --speed=<%= serial['speed'] %> --unit=<%= serial['unit'] %> --word=<%= se
 <% end -%>
 terminal_input <%= terminal %>
 terminal_output <%= terminal %>
+<% unless superusers.empty? %>
 
+set superusers="<%= superusers.join(' ') %>"
+<% end %>
+<% users.each do |user, data| %>
+<%   if data['password'].start_with?('grub.pbkdf2.') %>
+password_pbkdf2 <%= user %> <%= data['password'] %>
+<%   else %>
+password <%= user %> <%= data['password'] %>
+<%   end %>
+<% end %>
 <% if node['fb_grub']['enable_bls'] %>
 
 # load_video directive injected by grubby by default
@@ -92,7 +114,7 @@ blscfg
 <% node['fb_grub']['kernels'].to_hash.each do |kernel, data| -%>
 <%   if node['fb_grub']['tboot']['enable'] && !kernel.include?('rescue') -%>
 
-menuentry 'tboot <%= kernel %>' {
+menuentry 'tboot <%= kernel %>' <%= restriction %>{
   <%= root_line %>
   <%   if node['fb_grub']['_module_label'] %>
   search --set=module_root --label <%= node['fb_grub']['_module_label'] %>
@@ -114,7 +136,7 @@ menuentry 'tboot <%= kernel %>' {
 }
 <%   end -%>
 
-menuentry '<%= kernel %>' {
+menuentry '<%= kernel %>' <%= restriction %>{
   <%= root_line %>
   <%= @linux_statement %> <%= path_prefix %><%= data['path'] %> <%= kargs %>
 <%   if data['initrd_path'] -%>
