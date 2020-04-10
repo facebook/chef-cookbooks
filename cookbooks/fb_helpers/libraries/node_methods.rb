@@ -498,12 +498,16 @@ class Chef
     end
 
     def root_compressed?
-      !node[node.ohai_fs_ver]['by_mountpoint']['/']['mount_options'
-        ].grep(/compress(-force)?=zstd/).empty?
+      node.filesystem_data['by_mountpoint'] &&
+        node.filesystem_data['by_mountpoint']['/'] &&
+        !node.filesystem_data['by_mountpoint']['/']['mount_options'
+          ].grep(/compress(-force)?=zstd/).empty?
     end
 
     def root_btrfs?
-      node[node.ohai_fs_ver]['by_mountpoint']['/']['fs_type'] == 'btrfs'
+      node.filesystem_data['by_mountpoint'] &&
+        node.filesystem_data['by_mountpoint']['/'] &&
+        node.filesystem_data['by_mountpoint']['/']['fs_type'] == 'btrfs'
     end
 
     def solo?
