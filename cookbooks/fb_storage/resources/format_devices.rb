@@ -15,6 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+property :do_reprobe, [true, false]
+
 default_action :run
 
 def whyrun_supported?
@@ -26,6 +28,12 @@ action_class do
 end
 
 action :run do
+  fb_storage_format_devices 'go again' do
+    action :nothing
+    do_reprobe false
+    notifies :reload, 'ohai[filesystem]', :immediately
+  end
+
   storage = FB::Storage.new(node)
   to_do = filesystems_to_format(storage)
   if to_do[:devices].empty? && to_do[:partitions].empty? &&
@@ -42,11 +50,25 @@ action :run do
     Chef::Log.debug(
       "fb_storage: filesystems_to_format to do is #{to_do}",
     )
-    msg = []
-    msg << "Partitioning #{to_do[:devices]}" unless to_do[:devices].empty?
-    msg << "Formatting #{to_do[:partitions]}" unless to_do[:partitions].empty?
-    converge_by msg.join(', ') do
-      converge_storage(to_do, storage)
+    if !to_do[:devices].empty? && new_resource.do_reprobe
+      devices_to_reprobe = to_do[:devices].join(' ')
+      Chef::Log.info("fb_storage: reprobing #{devices_to_reprobe} as requested")
+      execute "reprobe #{devices_to_reprobe}" do
+        command "partprobe #{devices_to_reprobe} && sleep 5"
+        notifies :reload, 'ohai[filesystem]', :immediately
+        notifies :run, 'fb_storage_format_devices[go again]', :immediately
+      end
+    else
+      msg = []
+      unless to_do[:devices].empty?
+        msg << "Partitioning #{to_do[:devices]}"
+      end
+      unless to_do[:partitions].empty?
+        msg << "Formatting #{to_do[:partitions]}"
+      end
+      converge_by msg.join(', ') do
+        converge_storage(to_do, storage)
+      end
     end
   end
 

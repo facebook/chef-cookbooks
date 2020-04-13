@@ -27,6 +27,7 @@ default['fb_storage'] = {
     'missing_filesystem_or_partition' => false,
     'mismatched_filesystem_or_partition' => false,
     'mismatched_filesystem_only' => false,
+    'reprobe_before_repartition' => false,
   },
   'tuning' => {
     'scheduler' => nil,

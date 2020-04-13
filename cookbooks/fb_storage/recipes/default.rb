@@ -203,6 +203,7 @@ end
 
 fb_storage_format_devices 'go' do
   not_if { node['fb_storage']['devices'].empty? }
+  do_reprobe lazy { node['fb_storage']['format']['reprobe_before_repartition'] }
   # fb_fstab won't mount properly if we don't update data.
   notifies :reload, 'ohai[filesystem]', :immediately
 end
