@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=SC2086,SC2018,SC2019,SC1090,SC2064,SC2124,SC2181,SC2002,SC2153,SC2046,SC2173,SC2230
 #
 # Copyright (c) 2016-present, Facebook, Inc.
 # All rights reserved.
@@ -42,15 +43,16 @@ dump_dynamic_chains() {
   local dynamic_chains="$2"
   local outfile
   local chain_regex
+  echo -n "  - Stashing dynamic chains on $table: "
   for chain in $dynamic_chains; do
-    echo -n "Stashing $chain on $table: "
+    echo -n "$chain  "
     "${IPTABLES_CMD}" -t "$table" -S | grep -q "\-N $chain"
     if [ $? -ne 0 ]; then
-      echo 'no chain yet, nothing to stash.'
-      return
+      echo '(no chain yet, nothing to stash) '
+      continue
     fi
     outfile=$TMPDIR/${table}_${chain}_rules
-    chain_regex="\-A $chain"
+    chain_regex="\-A $chain "
     out=$("${IPTABLES_CMD}" -t "$table" -S)
     if [ $? -ne 0 ]; then
       exit_error "Failed to stash $chain on $table"
@@ -58,8 +60,8 @@ dump_dynamic_chains() {
     if [ -n "$out" ]; then
       echo "$out" | grep "$chain_regex" > "$outfile"
     fi
-    echo 'done.'
   done
+  echo 'done.'
 }
 
 # Restore any registered chains we found and backed up
@@ -67,36 +69,38 @@ restore_dynamic_chains() {
   local table="$1"
   local dynamic_chains="$2"
 
+  echo -n "  - Restoring dynamic chains on $table: "
   for chain in $dynamic_chains; do
-    echo -n "Restoring $chain on $table: "
+    echo -n "$chain "
     local rules_file=$TMPDIR/${table}_${chain}_rules
     if [ ! -r $rules_file ]; then
-      echo 'no chain to restore.'
-      return
+      echo '(no chain to restore) '
+      continue
     fi
 
+    ${IPTABLES_CMD} -t $table -F $chain
     while read -r rule
     do
       ${IPTABLES_CMD} -t $table $rule
     done < "$rules_file"
-    echo 'done.'
   done
+  echo 'done.'
 }
 
 reload_static_chains() {
   local table="$1"
-  local dynamic_chains="$2"
 
   # NOTE: You cannot use '-t' here ... ip6tables-* choke on it... you must
   # specify --table=
-  echo "Restoring the rest of $table"
-  cat "<%= @iptables_config_dir %>/${IPTABLES_RULES}" | ${IPTABLES_CMD}-restore --table=$table
+  echo "  - Reloading $table"
+  cat "${CONFIG_DIR}/${IPTABLES_RULES_FILE}" | ${IPTABLES_CMD}-restore --table=$table
 }
 
 reload() {
     for table in $TABLES; do
       # iptables-restore triggers loading modules, even with empty
       # rules.  Let's avoid that (t28313270).
+      echo "Reloading $table..."
       cap_table=$(echo $table | tr 'a-z' 'A-Z')
       static_chains=$(eval echo \$STATIC_${cap_table}_CHAINS)
       if [ -z "$static_chains" ] && ! grep -q $table /proc/net/ip*_tables_names; then
@@ -104,7 +108,7 @@ reload() {
       fi
       dynamic_chains=$(eval echo \$${cap_table}_CHAINS)
       dump_dynamic_chains $table "$dynamic_chains"
-      reload_static_chains $table "$dynamic_chains"
+      reload_static_chains $table
       restore_dynamic_chains $table "$dynamic_chains"
   done
 }
@@ -118,10 +122,10 @@ fi
 
 # v4 or v6
 IPTABLES_CMD=ip6tables
-IPTABLES_RULES=<%= @ip6tables_rules %>
+IPTABLES_RULES_FILE="$RULES6_FILE"
 if [ "$1" == "4" ]; then
   IPTABLES_CMD=iptables
-  IPTABLES_RULES=<%= @iptables_rules %>
+  IPTABLES_RULES_FILE="$RULES_FILE"
 fi
 ACTION="$2"
 

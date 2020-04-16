@@ -77,18 +77,19 @@ template '/etc/fb_iptables.conf' do
   owner 'root'
   group 'root'
   mode '0644'
+  variables(
+    :iptables_config_dir => iptables_config_dir,
+    :iptables_rules_file => iptables_rule_file,
+    :ip6tables_rules_file => ip6tables_rule_file,
+  )
 end
 
-template '/usr/sbin/fb_iptables_reload' do
-  source 'fb_iptables_reload.erb'
+# DO NOT MAKE THIS A TEMPLATE! USE THE CONFIG FILE TEMPLATED ABOVE!!
+cookbook_file '/usr/sbin/fb_iptables_reload' do
+  source 'fb_iptables_reload.sh'
   owner 'root'
   group 'root'
   mode '0755'
-  variables(
-    :iptables_config_dir => iptables_config_dir,
-    :iptables_rules => iptables_rule_file,
-    :ip6tables_rules => ip6tables_rule_file,
-  )
 end
 
 template "#{iptables_config_dir}/iptables-config" do

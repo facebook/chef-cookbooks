@@ -1,6 +1,9 @@
 <% node['fb_iptables']['dynamic_chains'].to_hash.each do |table, chains| %>
 <%=  table.tr('a-z', 'A-Z') %>_CHAINS="<%= chains.keys.join(' ') %>"
 <% end %>
+CONFIG_DIR="<%= @iptables_config_dir %>"
+RULES_FILE="<%= @iptables_rules_file %>"
+RULES6_FILE="<%= @ip6tables_rules_file %>"
 TABLES="<%= FB::Iptables::TABLES_AND_CHAINS.keys.join(' ') %>"
 <%
   FB::Iptables::TABLES_AND_CHAINS.each do |table, chains|
