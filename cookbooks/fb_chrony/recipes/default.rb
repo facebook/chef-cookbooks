@@ -22,9 +22,13 @@
 if node.centos? || node.redhat? || node.fedora?
   chrony_svc = 'chronyd'
   chrony_conf = '/etc/chrony.conf'
+  chrony_user = 'chrony'
+  chrony_group = 'chrony'
 elsif node.debian_family?
   chrony_svc = 'chrony'
   chrony_conf = '/etc/chrony/chrony.conf'
+  chrony_user = '_chrony'
+  chrony_group = '_chrony'
 else
   fail 'fb_chrony: unsupported platform, aborting!'
 end
@@ -32,8 +36,8 @@ end
 include_recipe 'fb_chrony::packages'
 
 directory '/var/run/chrony' do
-  owner 'chrony'
-  group 'chrony'
+  owner chrony_user
+  group chrony_group
   mode '0750'
 end
 
