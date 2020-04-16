@@ -37,6 +37,13 @@ recipe 'fb_timers::default', :unsupported => [:mac_os_x] do |tc|
       allow(File).to receive(:readlink).with("#{s_path}#{unit}").
         and_return("#{t_path}#{unit}")
     end
+    ml = double('systemctl')
+    allow(ml).to receive_messages(
+      :run_command => ml,
+      :stdout => "multi-user.target\n",
+    )
+    allow(Mixlib::ShellOut).to receive(:new).with('systemctl get-default').
+      and_return(ml)
   end
 
   context 'not managed by systemd' do
