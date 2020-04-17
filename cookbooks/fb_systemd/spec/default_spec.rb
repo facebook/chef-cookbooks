@@ -26,6 +26,13 @@ recipe 'fb_systemd::default', :supported => [:centos7] do |tc|
     allow(File).to receive(:directory?).and_call_original
     allow(File).to receive(:directory?).with('/run/systemd/system').
       and_return(true)
+    ml = double('systemctl')
+    allow(ml).to receive_messages(
+      :run_command => ml,
+      :stdout => "multi-user.target\n",
+    )
+    allow(Mixlib::ShellOut).to receive(:new).with('systemctl get-default').
+      and_return(ml)
   end
 
   it 'should render empty config' do
