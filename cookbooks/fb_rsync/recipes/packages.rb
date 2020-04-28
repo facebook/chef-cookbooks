@@ -21,4 +21,5 @@
 package 'rsync' do
   not_if { node.macos? || node.aristaeos? } # provided by Xcode
   action :upgrade
+  only_if { node['fb_rsync']['manage_packages'] }
 end

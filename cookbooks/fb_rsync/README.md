@@ -14,13 +14,15 @@ Attributes
 * node['fb_rsync']['server']['enabled']
 * node['fb_rsync']['server']['start_at_boot']
 * node['fb_rsync']['secure_server']['enabled']
+* node['fb_rsync']['manage_packages']
 
 Usage
 -----
 The `fb_rsync::client` recipe installs rsync, and sets the
 `node['fb_rsync']['rsync_server']` node key. This key contains the rsync
 servers that a client can connect to. This is required in `fb_init`, which
-means any machine can be an rsync client.
+means any machine can be an rsync client. You can opt out of package
+management by settings `node['fb_rsync']['manage_packages']` to `false`.
 
 The `fb_rsync::secure_client` recipe installs stunnel package and adds wrapper
 to /usr/local/libexec/rsync-ssl-stunnel that could be used with `rsync --rsh` key

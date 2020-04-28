@@ -16,6 +16,7 @@
 # limitations under the License.
 
 default['fb_rsync'] = {
+  'manage_packages' => true,
   'server' => {
     'enabled' => true,
     'start_at_boot' => true,
