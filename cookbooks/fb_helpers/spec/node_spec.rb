@@ -20,10 +20,17 @@ require_relative '../libraries/node_methods'
 
 describe 'Chef::Node' do
   let(:node) { Chef::Node.new }
+  let(:attr_name) do
+    if node['filesystem2']
+      'filesystem2'
+    else
+      'filesystem'
+    end
+  end
 
   context 'Chef::Node.fs_size_gb' do
     before(:each) do
-      node.default['filesystem2']['by_mountpoint']['/'] = {
+      node.default[attr_name]['by_mountpoint']['/'] = {
         'kb_size' => '959110616',
         'devices' => ['/dev/sda3'],
       }
@@ -42,7 +49,7 @@ describe 'Chef::Node' do
 
   context 'Chef::Node.fs_size_kb' do
     before do
-      node.default['filesystem2']['by_mountpoint']['/'] = {
+      node.default[attr_name]['by_mountpoint']['/'] = {
         'kb_size' => '959110616',
         'devices' => ['/dev/sda3'],
       }
@@ -56,7 +63,7 @@ describe 'Chef::Node' do
 
   context 'Chef::Node.fs_value' do
     before do
-      node.default['filesystem2']['by_mountpoint']['/'] = {
+      node.default[attr_name]['by_mountpoint']['/'] = {
         'kb_size' => '959110616',
         'kb_available' => '810110218',
         'kb_used' => '149000398',

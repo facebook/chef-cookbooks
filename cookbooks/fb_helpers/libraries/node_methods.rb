@@ -246,7 +246,7 @@ class Chef
     # Take a string representing a mount point, and return the
     # device it resides on.
     def device_of_mount(m)
-      fs = self.ohai_fs_ver
+      fs = self.filesystem_data
       unless Pathname.new(m).mountpoint?
         Chef::Log.warn(
           "fb_helpers: #{m} is not a mount point - I can't determine its " +
@@ -254,13 +254,13 @@ class Chef
         )
         return nil
       end
-      unless node[fs] && node[fs]['by_pair']
+      unless fs && fs['by_pair']
         Chef::Log.warn(
           'fb_helpers: no filesystem data so no node.device_of_mount',
         )
         return nil
       end
-      node[fs]['by_pair'].to_hash.each do |pair, info|
+      fs['by_pair'].to_hash.each do |pair, info|
         # we skip fake filesystems 'rootfs', etc.
         next unless pair.start_with?('/')
         # is this our FS?
@@ -277,10 +277,10 @@ class Chef
     end
 
     def device_formatted_as?(device, fstype)
-      fs = self.ohai_fs_ver
-      if node[fs]['by_device'][device] &&
-         node[fs]['by_device'][device]['fs_type']
-        return node[fs]['by_device'][device]['fs_type'] == fstype
+      fs = self.filesystem_data
+      if fs && fs['by_device'] && fs['by_device'][device] &&
+          fs['by_device'][device]['fs_type']
+        return fs['by_device'][device]['fs_type'] == fstype
       end
 
       false
@@ -320,10 +320,11 @@ class Chef
             else
               fail "fb_helpers: Unknown FS val #{val} for node.fs_value"
             end
-      fs = self[self.ohai_fs_ver]['by_mountpoint'][p]
+      fs = self.filesystem_data
       # Some things like /dev/root and rootfs have same mount point...
-      if fs && fs[key]
-        return fs[key].to_f
+      if fs && fs['by_mountpoint'] && fs['by_mountpoint'][p] &&
+          fs['by_mountpoint'][p][key]
+        return fs['by_mountpoint'][p][key].to_f
       end
 
       Chef::Log.warn(
@@ -377,16 +378,18 @@ class Chef
     end
 
     def cgroup_mounted?
-      node[self.ohai_fs_ver]['by_mountpoint'].include?('/sys/fs/cgroup')
+      fs = self.filesystem_data
+      fs && fs['by_mountpoint'] &&
+        fs['by_mountpoint'].include?('/sys/fs/cgroup')
     end
 
     def cgroup1?
-      cgroup_mounted? && node[self.ohai_fs_ver]['by_mountpoint'][
+      cgroup_mounted? && self.filesystem_data['by_mountpoint'][
         '/sys/fs/cgroup']['fs_type'] != 'cgroup2'
     end
 
     def cgroup2?
-      cgroup_mounted? && node[self.ohai_fs_ver]['by_mountpoint'][
+      cgroup_mounted? && self.filesystem_data['by_mountpoint'][
         '/sys/fs/cgroup']['fs_type'] == 'cgroup2'
     end
 
@@ -498,16 +501,16 @@ class Chef
     end
 
     def root_compressed?
-      node.filesystem_data['by_mountpoint'] &&
-        node.filesystem_data['by_mountpoint']['/'] &&
-        !node.filesystem_data['by_mountpoint']['/']['mount_options'
-          ].grep(/compress(-force)?=zstd/).empty?
+      fs = self.filesystem_data
+      fs && fs['by_mountpoint'] && fs['by_mountpoint']['/'] &&
+        !fs['by_mountpoint']['/']['mount_options'].
+          grep(/compress(-force)?=zstd/).empty?
     end
 
     def root_btrfs?
-      node.filesystem_data['by_mountpoint'] &&
-        node.filesystem_data['by_mountpoint']['/'] &&
-        node.filesystem_data['by_mountpoint']['/']['fs_type'] == 'btrfs'
+      fs = self.filesystem_data
+      fs && fs['by_mountpoint'] && fs['by_mountpoint']['/'] &&
+        fs['by_mountpoint']['/']['fs_type'] == 'btrfs'
     end
 
     def solo?
@@ -542,6 +545,9 @@ class Chef
     #
     # So we always try 2 and fail back to 1 (if 2 isn't around, then 1
     # is the new format)
+    #
+    # This will return modern filesystem data, where it exists *if* it exists.
+    # Otherwise it will fail
     def filesystem_data
       self['filesystem2'] || self['filesystem']
     end
