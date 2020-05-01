@@ -18,6 +18,12 @@
 # limitations under the License.
 #
 
+link '/sbin/udevadm' do
+  to '/bin/udevadm'
+  owner 'root'
+  group 'root'
+end
+
 execute 'trigger udev' do
   command '/sbin/udevadm trigger'
   action :nothing
