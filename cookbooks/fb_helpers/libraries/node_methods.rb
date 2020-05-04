@@ -91,6 +91,10 @@ class Chef
       ubuntu? && self['platform_version'].start_with?('18.')
     end
 
+    def ubuntu20?
+      ubuntu? && self['platform_version'].start_with?('20.')
+    end
+
     def linuxmint?
       self['platform'] == 'linuxmint'
     end
