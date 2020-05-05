@@ -20,9 +20,9 @@
 
 udevadm = value_for_platform(
   'centos' => {
-    '< 6.0' => '/sbin/udevadm'
+    '< 6.0' => '/sbin/udevadm',
   },
-  default => '/bin/udevadm',
+  'default' => '/bin/udevadm',
 )
 
 execute 'trigger udev' do
