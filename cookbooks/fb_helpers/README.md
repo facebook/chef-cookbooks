@@ -29,8 +29,20 @@ your node.
 * `node.centos7?`
     Is CentOS7
 
+* `node.centos8?`
+    Is CentOS8
+
 * `node.fedora?`
     Is Fedora
+
+* `node.fedora27?`
+    Is Fedora27
+
+* `node.fedora28?`
+    Is Fedora28
+
+* `node.fedora29?`
+    Is Fedora29
 
 * `node.redhat?`
     Is Redhat Enterprise Linux
@@ -40,6 +52,21 @@ your node.
 
 * `node.ubuntu?`
     Is Ubuntu
+
+* `node.ubuntu14?`
+    Is Ubuntu14
+
+* `node.ubuntu15?`
+    Is Ubuntu15
+
+* `node.ubuntu16?`
+    Is Ubuntu16
+
+* `node.ubuntu18?`
+    Is Ubuntu18
+
+* `node.ubuntu20?`
+    Is Ubuntu20
 
 * `node.linux?`
     Is Linux
