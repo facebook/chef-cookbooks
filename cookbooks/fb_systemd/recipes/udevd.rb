@@ -18,19 +18,26 @@
 # limitations under the License.
 #
 
+udevadm = value_for_platform(
+  'centos' => {
+    '< 6.0' => '/sbin/udevadm'
+  },
+  default => '/bin/udevadm',
+)
+
 execute 'trigger udev' do
-  command '/sbin/udevadm trigger'
+  command "#{udevadm} trigger"
   action :nothing
 end
 
 execute 'reload udev' do
-  command '/sbin/udevadm control --reload'
+  command "#{udevadm} control --reload"
   action :nothing
   notifies :run, 'execute[trigger udev]', :immediately
 end
 
 execute 'update hwdb' do
-  command '/sbin/udevadm hwdb --update'
+  command "#{udevadm} hwdb --update"
   action :nothing
 end
 
