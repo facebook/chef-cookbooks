@@ -22,5 +22,4 @@
 package 'chrony' do
   only_if { node['fb_chrony']['manage_packages'] }
   action :upgrade
-  notifies :restart, 'service[chrony]'
 end

@@ -53,4 +53,5 @@ end
 service 'chrony' do
   service_name chrony_svc
   action [:enable, :start]
+  subscribes :restart, 'package[chrony]'
 end
