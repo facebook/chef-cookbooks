@@ -207,13 +207,17 @@ module FB
           )
       end
 
-      def self.get_unmasked_base_mounts(format, node)
+      def self.get_unmasked_base_mounts(format, node, hash_by = 'device')
         res = case format
               when :hash
                 {}
               when :lines
                 []
               end
+        hash_by_values = Set['device', 'mount_point']
+        unless hash_by_values.include?(hash_by)
+          fail "fb_fstab: Invalid hash_by value, allowed are: #{hash_by_values}"
+        end
         desired_mounts = node['fb_fstab']['mounts'].to_hash
         FB::Fstab.base_fstab_contents(node).each_line do |line|
           next if line.strip.empty?
@@ -274,13 +278,25 @@ module FB
 
           case format
           when :hash
-            res[fs_spec] = {
-              'mount_point' => line_parts[1],
-              'type' => line_parts[2],
-              'opts' => line_parts[3],
-              'dump' => line_parts[4],
-              'pass' => line_parts[5],
-            }
+            mount_point = line_parts[1]
+            case hash_by
+            when 'device'
+              res[fs_spec] = {
+                'mount_point' => mount_point,
+                'type' => line_parts[2],
+                'opts' => line_parts[3],
+                'dump' => line_parts[4],
+                'pass' => line_parts[5],
+              }
+            when 'mount_point'
+              res[mount_point] = {
+                'device' => fs_spec,
+                'type' => line_parts[2],
+                'opts' => line_parts[3],
+                'dump' => line_parts[4],
+                'pass' => line_parts[5],
+              }
+            end
           when :lines
             res << line.strip
           end

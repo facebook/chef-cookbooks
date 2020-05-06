@@ -143,14 +143,18 @@ whyrun_safe_ruby_block 'initialize_grub_locations' do
 end
 
 if node.root_btrfs?
-  FB::Fstab.get_unmasked_base_mounts(:hash, node).each do |_device, metadata|
-    if metadata['mount_point'] == '/'
+  FB::Fstab.get_unmasked_base_mounts(
+    :hash,
+    node,
+    'mount_point',
+  ).each do |mount_point, metadata|
+    if mount_point == '/'
       if !metadata.key?('opts') || metadata['opts'].nil?
         break
       end
 
       metadata['opts'].split(',').each do |opt|
-        if opt.include?('subvolid=')
+        if opt.include?('subvolid=') || opt.include?('subvol=')
           node.default['fb_grub']['_rootflags'] = opt
           break
         end
