@@ -1,8 +1,8 @@
+# Cookbook Name:: fb_sudo
+# Recipe:: packages
 #
-# Cookbook:: fb_sudo
-# Recipe:: default
+# vim: syntax=ruby:expandtab:shiftwidth=2:softtabstop=2:tabstop=2
 #
-# Copyright (c) 2019-present, Vicarious, Inc.
 # Copyright (c) 2020-present, Facebook, Inc.
 # All rights reserved.
 #
@@ -19,17 +19,6 @@
 # limitations under the License.
 #
 
-include_recipe 'fb_sudo::packages'
-
-template '/etc/sudoers' do
-  source 'sudoers.erb'
-  mode '0440'
-  owner 'root'
-  group 'root'
-  verify 'visudo -c -q -f %{path}'
-end
-
-directory '/etc/sudoers.d' do
-  action :delete
-  recursive true
+package 'sudo' do
+  action :upgrade
 end
