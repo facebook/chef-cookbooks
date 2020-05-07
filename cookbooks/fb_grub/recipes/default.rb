@@ -30,17 +30,15 @@ whyrun_safe_ruby_block 'initialize_grub_locations' do
   block do
     bootdisk_guess = 'hd0'
 
-    fs = node.ohai_fs_ver
-
     if Pathname.new('/boot').mountpoint?
       boot_device = node.device_of_mount('/boot')
-      boot_label = node[fs]['by_mountpoint']['/boot']['label']
-      boot_uuid = node[fs]['by_mountpoint']['/boot']['uuid']
+      boot_label = node.filesystem_data['by_mountpoint']['/boot']['label']
+      boot_uuid = node.filesystem_data['by_mountpoint']['/boot']['uuid']
       node.default['fb_grub']['path_prefix'] = ''
     else
       boot_device = node.device_of_mount('/')
-      boot_label = node[fs]['by_mountpoint']['/']['label']
-      boot_uuid = node[fs]['by_mountpoint']['/']['uuid']
+      boot_label = node.filesystem_data['by_mountpoint']['/']['label']
+      boot_uuid = node.filesystem_data['by_mountpoint']['/']['uuid']
       node.default['fb_grub']['path_prefix'] = '/boot'
     end
 
@@ -56,7 +54,7 @@ whyrun_safe_ruby_block 'initialize_grub_locations' do
 
       # For tboot, we have to specify the full path to the modules.
       # They are in /usr/lib/grub , so we need the label for the root disk
-      slash_label = node[fs]['by_mountpoint']['/']['label']
+      slash_label = node.filesystem_data['by_mountpoint']['/']['label']
       if slash_label
         node.default['fb_grub']['_module_label'] = slash_label
       end
@@ -66,7 +64,7 @@ whyrun_safe_ruby_block 'initialize_grub_locations' do
       end
       node.default['fb_grub']['_root_uuid'] = boot_uuid
 
-      slash_uuid = node[fs]['by_mountpoint']['/']['uuid']
+      slash_uuid = node.filesystem_data['by_mountpoint']['/']['uuid']
       if slash_uuid
         node.default['fb_grub']['_module_uuid'] = slash_uuid
       end
@@ -95,8 +93,8 @@ whyrun_safe_ruby_block 'initialize_grub_locations' do
     # Ensure grub is put down with the label matching the fs mounted at / that
     # has a valid uuid or label. This will skip over things like rootfs mounts.
     node.default['fb_grub']['rootfs_arg'] = 'LABEL=/'
-    label = node[fs]['by_mountpoint']['/']['label']
-    uuid = node[fs]['by_mountpoint']['/']['uuid']
+    label = node.filesystem_data['by_mountpoint']['/']['label']
+    uuid = node.filesystem_data['by_mountpoint']['/']['uuid']
     if label && !label.empty?
       node.default['fb_grub']['rootfs_arg'] = "LABEL=#{label}"
     elsif uuid && !uuid.empty?
