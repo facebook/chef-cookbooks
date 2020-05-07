@@ -16,5 +16,48 @@
 # limitations under the License.
 #
 
-actions :install
-default_action :install
+def whyrun_supported?
+  true
+end
+
+action :install do
+  packages = []
+  case node['fb_grub']['version']
+  when 1
+    if node.debian?
+      packages << 'grub-legacy'
+    else
+      packages << 'grub'
+    end
+  when 2
+    if node.debian?
+      packages += %w{grub-efi}
+      unless node.aarch64?
+        packages << 'grub-pc'
+      end
+    elsif node.ubuntu?
+      packages += %w{
+        grub2
+        grub2-common
+        grub-pc
+        grub-pc-bin
+      }
+    else
+      packages += %w{grub2-efi grub2-efi-modules grub2-tools}
+      unless node.aarch64?
+        packages << 'grub2'
+      end
+    end
+  else
+    fail "Unsupported grub version: #{node['fb_grub']['version']}"
+  end
+
+  if node['fb_grub']['tboot']['enable']
+    packages << 'tboot'
+  end
+
+  package 'grub packages' do
+    package_name packages
+    action :upgrade
+  end
+end
