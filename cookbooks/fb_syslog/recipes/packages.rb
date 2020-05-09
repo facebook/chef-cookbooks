@@ -23,7 +23,8 @@ package 'rsyslog' do
   action :upgrade
 end
 
-if node.systemd? && node.centos?
+# TODO(davide125): Document this
+if node.systemd?
   fb_systemd_override 'override' do
     only_if { node['fb_syslog']['_enable_syslog_socket_override'] }
     unit_name 'rsyslog.service'

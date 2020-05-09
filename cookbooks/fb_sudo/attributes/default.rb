@@ -41,6 +41,10 @@ default['fb_sudo'] = {
       '%sudo' => {
         'all' => 'ALL=(ALL) ALL',
       },
+      # uncomment the block below when debugging kitchen tests
+      # 'kitchen' => {
+      #   'all' => 'ALL=(ALL) NOPASSWD: ALL',
+      # },
     },
     'mac_os_x' => {
       'root' => {

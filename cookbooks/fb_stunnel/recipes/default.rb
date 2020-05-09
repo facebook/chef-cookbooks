@@ -33,7 +33,8 @@ package packagename do
   action :upgrade
 end
 
-if node.centos?
+# Debian/Ubuntu has a unit file
+if node.centos? && node.systemd?
   cookbook_file '/etc/systemd/system/stunnel.service' do
     source 'stunnel.service'
     owner 'root'
@@ -72,7 +73,9 @@ fb_stunnel_create_certs 'do it' do
 end
 
 service 'stunnel' do
-  only_if { node['fb_stunnel']['enable'] }
+  only_if do
+    node['fb_stunnel']['enable'] && !node['fb_stunnel']['config'].empty?
+  end
   service_name packagename
   action [:enable, :start]
 end

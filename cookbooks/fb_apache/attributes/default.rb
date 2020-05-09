@@ -54,7 +54,16 @@ if node['platform_family'] == 'rhel'
   modules += [
     'log_config',
     'logio',
+    'ssl',
   ]
+
+  unless node.centos6?
+    modules += [
+      'socache_shmcb',
+      'systemd',
+      'unixd',
+    ]
+  end
 
   {
     'options' => [],
@@ -141,14 +150,17 @@ default['fb_apache'] = {
     'reqtimeout' => 'mod_reqtimeout.so',
     'rewrite' => 'mod_rewrite.so',
     'setenvif' => 'mod_setenvif.so',
+    'socache_shmcb' => 'mod_socache_shmcb.so',
     'speling' => 'mod_speling.so',
     'ssl' => 'mod_ssl.so',
     'status' => 'mod_status.so',
     'substitute' => 'mod_substitute.so',
     'suexec' => 'mod_suexec.so',
+    'systemd' => 'mod_systemd.so',
     'unique_id' => 'mod_unique_id.so',
     'userdir' => 'mod_userdir.so',
     'usertrack' => 'mod_usertrack.so',
+    'unixd' => 'mod_unixd.so',
     'version' => 'mod_version.so',
     'vhost_alias' => 'mod_vhost_alias.so',
   },

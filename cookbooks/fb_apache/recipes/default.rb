@@ -120,6 +120,27 @@ end
   end
 end
 
+if node.debian? || node.ubuntu?
+  # CentOS makes this symlink to the right module dir, and we make assumptions
+  # it exists, so be sure to do the same on debian
+  link '/etc/apache2/modules' do
+    to '/usr/lib/apache2/modules'
+  end
+
+  # For reasons I don't understand on Ubuntu, Apache looks for mime.types in
+  # /etc/apache2/mime.types even though it's not configured to. So make a
+  # symlink
+  link '/etc/apache2/mime.types' do
+    to '/etc/mime.types'
+  end
+end
+
+# The package comes pre-installed with module configs, but we dropp off our own
+# in fb_modules.conf. Also, we don't want non-Chef controlled module configs.
+fb_apache_cleanup_modules 'doit' do
+  mod_dir moddir
+end
+
 template "#{moddir}/fb_modules.conf" do
   not_if { node.centos6? }
   owner 'root'

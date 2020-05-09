@@ -78,5 +78,6 @@ service service_name do
   action :start
   subscribes :restart, 'package[rsyslog]'
   # within vagrant, sometimes rsyslog fails to restart the first time
-  retries 1
+  retries 5
+  retry_delay 5
 end

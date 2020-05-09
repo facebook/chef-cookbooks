@@ -31,7 +31,7 @@ script:
   - shellcheck ./scripts/*
   - ./scripts/run_chefspec
   - ./scripts/run_rubocop .rubocop.yml
-  - ./scripts/run_foodcritic
+  - travis_wait 30 ./scripts/run_foodcritic
   - bundle exec kitchen verify $INSTANCE
 
 # Disabling deploy until we sort out Supermarket issues t39456893
