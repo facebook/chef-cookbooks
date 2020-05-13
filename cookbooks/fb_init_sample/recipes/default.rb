@@ -80,6 +80,7 @@ include_recipe 'fb_hostconf'
 include_recipe 'fb_sysctl'
 # HERE: networking
 include_recipe 'fb_users'
+include_recipe 'fb_networkmanager'
 if node.centos?
   # We turn this off because the override causes intermittent failures in
   # Travis when rsyslog is restarted

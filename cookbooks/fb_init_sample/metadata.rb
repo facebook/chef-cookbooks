@@ -49,6 +49,7 @@ end
   'fb_mlocate',
   'fb_modprobe',
   'fb_motd',
+  'fb_networkmanager',
   'fb_nscd',
   'fb_nsswitch',
   'fb_postfix',
