@@ -2,8 +2,8 @@
 # Cookbook:: fb_networkmanager
 # Recipe:: default
 #
-# Copyright (c) 2019-present, Vicarious, Inc.
-# Copyright (c) 2019-present, Facebook, Inc.
+# Copyright (c) 2020-present, Vicarious, Inc.
+# Copyright (c) 2020-present, Facebook, Inc.
 # All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,6 +21,7 @@
 
 default['fb_networkmanager'] = {
   'enable' => false,
+  'manage_packages' => true,
   'system_connections' => {},
   'config' => {
     'main' => {
@@ -31,7 +32,9 @@ default['fb_networkmanager'] = {
     },
     'ifupdown' => {
       # yup... this boolean does NOT take true/false like others,
-      # but instead yes/no.
+      # but instead yes/no. Since there's no programatic way to know
+      # when true/false is wanted vs yes/no, we leave it up to the user
+      # to specify the right one at the right time.
       #
       # NetworkManager is the worst.
       'managed' => 'no',

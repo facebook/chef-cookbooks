@@ -2,8 +2,8 @@
 # Cookbook:: fb_networkmanager
 # Recipe:: default
 #
-# Copyright (c) 2019-present, Vicarious, Inc.
-# Copyright (c) 2019-present, Facebook, Inc.
+# Copyright (c) 2020-present, Vicarious, Inc.
+# Copyright (c) 2020-present, Facebook, Inc.
 # All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -38,7 +38,10 @@ packages = %w{
 }
 
 package packages do
-  only_if { node['fb_networkmanager']['enable'] }
+  only_if do
+    node['fb_networkmanager']['enable'] &&
+      node['fb_networkmanager']['manage_packages']
+  end
   action :upgrade
 end
 
@@ -58,11 +61,12 @@ template '/etc/NetworkManager/NetworkManager.conf' do
 
   # NM is too stupid to resume VPN on a restart, so if we're VPN'd
   # do NOT restart and hope we pick up whatever we needed later
-  unless vpned
+  if vpned
     Chef::Log.warn(
       'fb_networkmanager: NOT restarting NetworkManager because machine ' +
       'is connected to VPN',
     )
+  else
     notifies :restart, 'service[NetworkManager]'
   end
 end

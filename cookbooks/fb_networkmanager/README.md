@@ -100,6 +100,15 @@ psk=SuperS3kr1t
 Note that all files we make are prefixed with `fb_networkmanager`, so that we
 can cleanup files we created that are no longer in the config.
 
+### A note on booleans
+
+It is worth noting that various plugins and parts of the config expect
+different kinds of booleans - some `true` and `false`, others `yes` and `no`.
+Normally, an FB Attribute API cookbook would take a true ruby boolean and
+convert it to the appropriate string for a system, but since it's not
+consistent across NM, we leave it to the user to specify the right one for the
+right value. This is true both in `config` and in `system_connections`.
+
 ### A note on UUIDs
 
 We generally recommend coming up with a static UUID per connection you want
