@@ -32,7 +32,7 @@ default['fb_networkmanager'] = {
     },
     'ifupdown' => {
       # yup... this boolean does NOT take true/false like others,
-      # but instead yes/no. Since there's no programatic way to know
+      # but instead yes/no. Since there's no programmatic way to know
       # when true/false is wanted vs yes/no, we leave it up to the user
       # to specify the right one at the right time.
       #

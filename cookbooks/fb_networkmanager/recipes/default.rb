@@ -19,17 +19,23 @@
 # limitations under the License.
 #
 
-vpnhome = '/var/lib/openvpn/chroot'
-FB::Users.initialize_group(node, 'nm-openvpn')
-node.default['fb_users']['users']['nm-openvpn'] = {
-  'gid' => 'nm-openvpn',
-  # If /var/lib/openvpn doesn't exist yet, we can't create it in time
-  # but we want to create the user, so for the first run, create it
-  # with /tmp
-  'home' => ::File.directory?(vpnhome) ? vpnhome : '/tmp',
-  'shell' => '/usr/sbin/nologin',
-  'action' => :add,
-}
+unless node.ubuntu? || node.debian?
+  fail 'fb_networkmanager: Only Ubuntu or Debian are currently supported'
+end
+
+if node['fb_users']
+  vpnhome = '/var/lib/openvpn/chroot'
+  FB::Users.initialize_group(node, 'nm-openvpn')
+  node.default['fb_users']['users']['nm-openvpn'] = {
+    'gid' => 'nm-openvpn',
+    # If /var/lib/openvpn doesn't exist yet, we can't create it in time
+    # but we want to create the user, so for the first run, create it
+    # with /tmp
+    'home' => ::File.directory?(vpnhome) ? vpnhome : '/tmp',
+    'shell' => '/usr/sbin/nologin',
+    'action' => :add,
+  }
+end
 
 packages = %w{
   network-manager
