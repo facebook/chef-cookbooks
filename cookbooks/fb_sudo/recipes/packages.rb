@@ -20,5 +20,6 @@
 #
 
 package 'sudo' do
+  not_if { node.macos? }
   action :upgrade
 end
