@@ -48,7 +48,7 @@ The command that will be used to create the ipset is:
 
 The commands that will be used to add the members to the ipset are:
 
-```
+```shell
 ipset add rfc1918 10.0.0.0/8
 ipset add rfc1918 172.16.0.0/12
 ipset add rfc1918 192.168.0.0/16
