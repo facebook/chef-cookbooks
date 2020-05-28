@@ -87,7 +87,7 @@ end
 service 'disable sssd' do
   not_if { node['fb_sssd']['enable'] }
   # once the package is removed, this fails, sadly
-  only_if { File.exist?('/lib/systemd/system/sssd.service') }
+  only_if { ::File.exist?('/lib/systemd/system/sssd.service') }
   service_name 'sssd'
   action [:stop, :disable]
 end
