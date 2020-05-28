@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
 default_action :load
 
 property :module_name, :kind_of => String, :name_property => true
@@ -21,10 +22,6 @@ property :verbose, :kind_of => [TrueClass, FalseClass], :default => false
 property :timeout, :kind_of => Integer, :default => 300
 property :fallback, :kind_of => [TrueClass, FalseClass], :default => false
 property :module_params, :kind_of => [String, Array], :required => false
-
-def whyrun_supported?
-  true
-end
 
 action_class do
   def modprobe_module(new_resource, unload)
