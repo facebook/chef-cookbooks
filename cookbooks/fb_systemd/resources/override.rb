@@ -20,7 +20,7 @@ property :override_name, String, :name_property => true
 property :unit_name, String, :required => true
 property :content, [String, Hash], :required => false
 property :source, String, :required => false
-property :triggers_reload, [TrueClass, FalseClass], :default => true
+property :triggers_reload, [true, false], :default => true
 
 default_action :create
 
@@ -70,7 +70,7 @@ action :delete do
   override_dir = "/etc/systemd/system/#{new_resource.unit_name}.d"
   override_file = "#{FB::Systemd.sanitize(new_resource.override_name)}.conf"
 
-  if ::Dir.exists?(override_dir)
+  if ::Dir.exist?(override_dir)
     file ::File.join(override_dir, override_file) do
       action :delete
       if new_resource.triggers_reload

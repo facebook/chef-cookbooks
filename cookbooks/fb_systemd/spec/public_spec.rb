@@ -59,7 +59,7 @@ describe FB::Systemd do
                                 )
     end
 
-    it' renders a unit with a boolean' do
+    it 'renders a unit with a boolean' do
       expect(FB::Systemd.to_ini({
                                   'Service' => {
                                     'PrivateNetwork' => true,

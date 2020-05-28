@@ -20,10 +20,6 @@ default_action :reload
 property :instance, :kind_of => String, :default => 'system'
 property :user, :kind_of => [String, NilClass], :default => nil
 
-def whyrun_supported?
-  true
-end
-
 action_class do
   def daemon_reload_or_reexec(action)
     unless node.systemd?
