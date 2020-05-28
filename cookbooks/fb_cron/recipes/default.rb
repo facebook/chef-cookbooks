@@ -131,7 +131,7 @@ end
 # Make sure we nuke all crons from the cron resource.
 root_crontab = value_for_platform_family(
   ['rhel', 'fedora', 'suse'] => '/var/spool/cron/root',
-  ['debian', 'ubuntu'] => '/var/spool/cron/crontabs/root',
+  ['debian'] => '/var/spool/cron/crontabs/root',
 )
 if root_crontab
   file 'clean out root crontab' do
