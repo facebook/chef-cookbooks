@@ -20,10 +20,6 @@ require 'fileutils'
 
 default_action :doeverything
 
-def whyrun_supported?
-  true
-end
-
 action_class do
   def reload_filesystems
     # this should not trigger the parent resource as an 'update' because
