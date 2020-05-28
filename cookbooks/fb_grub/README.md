@@ -53,7 +53,7 @@ an element to the `node['fb_grub']['kernel_cmdline_args']` array.
 Simply append the full text of the kernel command line arg as an element
 to that array, e.g.:
 
-```
+```ruby
 node.default['fb_grub']['kernel_cmdline_args'] << 'crashkernel=128M'
 ```
 
@@ -64,7 +64,7 @@ instead of hard coding the device.
 
 If the device absolutely needs to be hardcoded, it can be overriden, as in:
 
-```
+```ruby
 node.default['fb_grub']['boot_disk'] = 'hd1'
 ```
 
