@@ -16,10 +16,6 @@
 # limitations under the License.
 #
 
-def whyrun_supported?
-  true
-end
-
 action :run do
   mirror = node['fb_apt']['mirror']
   security_mirror = node['fb_apt']['security_mirror']
