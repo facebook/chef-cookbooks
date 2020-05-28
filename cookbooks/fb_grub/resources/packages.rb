@@ -16,10 +16,6 @@
 # limitations under the License.
 #
 
-def whyrun_supported?
-  true
-end
-
 action :install do
   packages = []
   case node['fb_grub']['version']
