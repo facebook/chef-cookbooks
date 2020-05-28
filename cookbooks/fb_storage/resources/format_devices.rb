@@ -17,12 +17,6 @@
 
 property :do_reprobe, [true, false]
 
-default_action :run
-
-def whyrun_supported?
-  true
-end
-
 action_class do
   include FB::Storage::FormatDevicesProvider
 end

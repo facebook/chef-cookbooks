@@ -239,7 +239,7 @@ module FB
           partitions.each do |p|
             storage.arrays.each do |array, info|
               if (info['members'].include?(p) ||
-                  (info['journal']&.include?(p))) &&
+                  info['journal']&.include?(p)) &&
                  ['hybrid_xfs', 0].include?(info['raid_level'])
                 arrays << array
               end
