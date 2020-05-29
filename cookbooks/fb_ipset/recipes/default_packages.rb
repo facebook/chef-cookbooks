@@ -19,7 +19,7 @@
 #
 
 pkgs = ['ipset']
-unless node.centos6?
+if node.centos? && !node.centos6?
   pkgs << 'ipset-service'
 end
 

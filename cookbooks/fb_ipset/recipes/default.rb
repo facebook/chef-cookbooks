@@ -18,8 +18,8 @@
 # limitations under the License.
 #
 
-unless node.centos?
-  fail 'fb_ipset is only supported on CentOS hosts'
+unless node.linux?
+  fail 'fb_ipset is only supported on Linux'
 end
 
 include_recipe 'fb_ipset::default_packages'
@@ -43,6 +43,12 @@ if node.centos6?
     not_if { node['fb_ipset']['enable'] }
     action :disable
   end
+end
+
+directory '/etc/ipset' do
+  owner 'root'
+  group 'root'
+  mode '0755'
 end
 
 fb_ipset 'fb_ipset' do
