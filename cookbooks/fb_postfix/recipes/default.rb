@@ -20,9 +20,13 @@
 
 include_recipe 'fb_postfix::packages'
 
-# Note: we need to test for this because otherwise autovivification will
-# give us a Hash, not an Array, and the append will fail
-if node['fb_syslog'] && node['fb_syslog']['rsyslog_additional_sockets']
+# if someone is using fb_syslog
+if node['fb_syslog']
+  # If we append but it's not an array, things go boom, so make sure it's
+  # an array
+  unless node['fb_syslog']['rsyslog_additional_sockets']
+    node.default['fb_syslog']['rsyslog_additional_sockets'] = []
+  end
   node.default['fb_syslog']['rsyslog_additional_sockets'] <<
     '/var/spool/postfix/dev/log'
 end
@@ -135,8 +139,21 @@ service 'disable postfix' do
   action [:stop, :disable]
 end
 
-log 'masking postfix' do
-  not_if { node['fb_postfix']['enable'] }
-  only_if { node['fb_postfix']['mask_service'] }
-  notifies :mask, 'service[disable postfix]'
+if Chef::VERSION.to_i >= 16
+  notify_group 'masking postfix' do
+    only_if do
+      !node['fb_postfix']['enable'] && node['fb_postfix']['mask_service']
+    end
+    action :run
+    notifies :mask, 'service[disable postfix]'
+  end
+else
+  # rubocop:disable ChefDeprecations/LogResourceNotifications
+  log 'masking postfix' do
+    only_if do
+      !node['fb_postfix']['enable'] && node['fb_postfix']['mask_service']
+    end
+    notifies :mask, 'service[disable postfix]'
+  end
+  # rubocop:enable ChefDeprecations/LogResourceNotifications
 end
