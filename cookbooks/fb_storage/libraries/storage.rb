@@ -85,7 +85,7 @@ module FB
       end
       node['block_device'].to_hash.reject do |x, _y|
         ['ram', 'loop', 'dm-', 'sr'].include?(x.delete('0-9')) ||
-          (root_dev&.start_with?(x)) ||
+          root_dev&.start_with?(x) ||
           x.start_with?('md')
       end.keys
     end

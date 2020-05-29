@@ -104,18 +104,20 @@ describe FB::Storage::FormatDevicesProvider do
 
   context '#merge_work' do
     it 'handles stuff on the left and right' do
-      expect(merge_work(
-               {
-                 :devices => ['a'],
-                 :partitions => ['b'],
-                 :arrays => ['c'],
-               },
-               {
-                 :devices => ['d'],
-                 :partitions => ['e'],
-                 :arrays => ['f'],
-               },
-      )).to eq(
+      expect(
+        merge_work(
+          {
+            :devices => ['a'],
+            :partitions => ['b'],
+            :arrays => ['c'],
+          },
+          {
+            :devices => ['d'],
+            :partitions => ['e'],
+            :arrays => ['f'],
+          },
+        ),
+      ).to eq(
         {
           :devices => ['a', 'd'],
           :partitions => ['b', 'e'],
@@ -125,18 +127,20 @@ describe FB::Storage::FormatDevicesProvider do
     end
 
     it 'strips duplicates' do
-      expect(merge_work(
-               {
-                 :devices => ['a'],
-                 :partitions => ['b'],
-                 :arrays => ['c'],
-               },
-               {
-                 :devices => ['a'],
-                 :partitions => ['b'],
-                 :arrays => ['f'],
-               },
-      )).to eq(
+      expect(
+        merge_work(
+          {
+            :devices => ['a'],
+            :partitions => ['b'],
+            :arrays => ['c'],
+          },
+          {
+            :devices => ['a'],
+            :partitions => ['b'],
+            :arrays => ['f'],
+          },
+        ),
+      ).to eq(
         {
           :devices => ['a'],
           :partitions => ['b'],
@@ -146,18 +150,20 @@ describe FB::Storage::FormatDevicesProvider do
     end
 
     it 'handles empty arrays on either side' do
-      expect(merge_work(
-               {
-                 :devices => [],
-                 :partitions => ['b'],
-                 :arrays => ['c'],
-               },
-               {
-                 :devices => ['a'],
-                 :partitions => ['b'],
-                 :arrays => [],
-               },
-      )).to eq(
+      expect(
+        merge_work(
+          {
+            :devices => [],
+            :partitions => ['b'],
+            :arrays => ['c'],
+          },
+          {
+            :devices => ['a'],
+            :partitions => ['b'],
+            :arrays => [],
+          },
+        ),
+      ).to eq(
         {
           :devices => ['a'],
           :partitions => ['b'],

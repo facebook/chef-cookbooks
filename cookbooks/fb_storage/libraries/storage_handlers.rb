@@ -27,7 +27,7 @@ module FB
           'to be instantiated directly, please use a subclass'.freeze
       MDADM = '/sbin/mdadm'.freeze
 
-      # rubocop:disable ClassVars
+      # rubocop:disable Style/ClassVars
       @@handler_cache = {}
       def self.get_handler(device, node)
         return @@handler_cache[device] if @@handler_cache[device]
@@ -56,7 +56,7 @@ module FB
 
         fail "fb_storage: unknown handler for device #{devname}"
       end
-      # rubocop:enable ClassVars
+      # rubocop:enable Style/ClassVars
 
       attr_accessor :mkfs_timeout
 
