@@ -16,10 +16,6 @@
 # limitations under the License.
 #
 
-def whyrun_supported?
-  true
-end
-
 action :run do
   # Delete old jobs
   Dir.glob("#{node['fb_timers']['_timer_path']}/*").each do |path|
@@ -142,9 +138,19 @@ action :run do
   end
 
   # Reload systemd, but only if required
-  log 'reloading systemd' do
-    only_if { node['fb_timers']['_reload_needed'] }
-    notifies :run, 'fb_systemd_reload[system instance]', :immediately
+  if Chef::VERSION.to_i >= 16
+    notify_group 'reloading systemd' do
+      only_if { node['fb_timers']['_reload_needed'] }
+      action :run
+      notifies :run, 'fb_systemd_reload[system instance]', :immediately
+    end
+  else
+    # rubocop:disable ChefDeprecations/LogResourceNotifications
+    log 'reloading systemd' do
+      only_if { node['fb_timers']['_reload_needed'] }
+      notifies :run, 'fb_systemd_reload[system instance]', :immediately
+    end
+    # rubocop:enable ChefDeprecations/LogResourceNotifications
   end
 
   # Setup services
