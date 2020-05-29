@@ -22,6 +22,8 @@ unless node.debian? || node.ubuntu?
   fail 'fb_apt is only supported on Debian and Ubuntu.'
 end
 
+# rubocop:disable ChefModernize/ExecuteAptUpdate
+
 package 'apt' do
   action :upgrade
 end
@@ -96,13 +98,28 @@ execute 'apt-get update' do
   action :nothing
 end
 
-# Dummy resource to trigger an update when the package cache goes stale.
-log 'periodic package cache update' do
-  only_if do
-    pkgcache = '/var/cache/apt/pkgcache.bin'
-    !::File.exist?(pkgcache) || (
-      ::File.exist?(pkgcache) &&
-      ::File.mtime(pkgcache) < Time.now - node['fb_apt']['update_delay'])
+if Chef::VERSION.to_i >= 16
+  notify_group 'periodic package cache update' do
+    only_if do
+      pkgcache = '/var/cache/apt/pkgcache.bin'
+      !::File.exist?(pkgcache) || (
+        ::File.exist?(pkgcache) &&
+        ::File.mtime(pkgcache) < Time.now - node['fb_apt']['update_delay'])
+    end
+    action :run
+    notifies :run, 'execute[apt-get update]', :immediately
   end
-  notifies :run, 'execute[apt-get update]', :immediately
+else
+  # rubocop:disable ChefDeprecations/LogResourceNotifications
+  log 'periodic package cache update' do
+    only_if do
+      pkgcache = '/var/cache/apt/pkgcache.bin'
+      !::File.exist?(pkgcache) || (
+        ::File.exist?(pkgcache) &&
+        ::File.mtime(pkgcache) < Time.now - node['fb_apt']['update_delay'])
+    end
+    notifies :run, 'execute[apt-get update]', :immediately
+  end
+  # rubocop:enable ChefDeprecations/LogResourceNotifications
 end
+# rubocop:enable ChefModernize/ExecuteAptUpdate

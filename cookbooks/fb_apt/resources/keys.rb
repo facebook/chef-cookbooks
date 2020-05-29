@@ -16,10 +16,6 @@
 # limitations under the License.
 #
 
-def whyrun_supported?
-  true
-end
-
 action :run do
   keyserver = node['fb_apt']['keyserver']
   desired_keys = node['fb_apt']['keys'].to_hash
