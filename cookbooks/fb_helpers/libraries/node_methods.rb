@@ -560,7 +560,7 @@ class Chef
     def rpm_version(name)
       if self.centos? && !self.centos7?
         Chef::Provider::Package::Dnf::PythonHelper.instance.
-          query(:whatinstalled, name).version
+          package_query(:whatinstalled, name).version
       else
         Chef::Provider::Package::Yum::YumCache.instance.
           installed_version(name)
