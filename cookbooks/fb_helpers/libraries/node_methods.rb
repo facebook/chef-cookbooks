@@ -566,5 +566,25 @@ class Chef
           installed_version(name)
       end
     end
+
+    def selinux_mode
+      if node['selinux'] && node['selinux']['current_mode']
+        node['selinux']['current_mode']
+      else
+        'unknown'
+      end
+    end
+
+    def selinux_policy
+      if node['selinux'] && node['selinux']['loaded_policy_name']
+        node['selinux']['loaded_policy_name']
+      end
+    end
+
+    def selinux_enabled?
+      if node['selinux'] && node['selinux']['selinux_status']
+        node['selinux']['selinux_status'] == 'enabled'
+      end
+    end
   end
 end

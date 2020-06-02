@@ -215,10 +215,21 @@ your node.
    is the newer format.
 
 * `node.rpm_version(name)`
-  Returns the version of an RPM if installed, or `nil` if not installed. This
-  method follows changes to the RPM database during a run if a package is
-  installed or removed. For most use cases, please use `node['packages']` as
-  it is cheaper.
+   Returns the version of an RPM if installed, or `nil` if not installed. This
+   method follows changes to the RPM database during a run if a package is
+   installed or removed. For most use cases, please use `node['packages']` as
+   it is cheaper.
+
+* `node.selinux_mode`
+   Returns the current SELinux mode (one of `enforcing`, `permissive`,
+   `disabled` or `unknown`).
+
+* `node.selinux_policy`
+   Returns the loaded SELinux policy name, or `nil` if it cannot be determined.
+
+* `node.selinux_enabled?`
+   Returns true if SELinux is not disabled (meaning, it's running in enforcing
+   or permissive mode), or `nil` if it cannot be determined.
 
 ### FB::Helpers
 The following methods are available:
