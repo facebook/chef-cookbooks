@@ -18,6 +18,20 @@
 # limitations under the License.
 #
 
+if node.centos8?
+  node.default['fb_apache']['module_packages']['wsgi'] =
+    value_for_platform_family(
+      'rhel' => 'python3-mod_wsgi',
+    )
+  node.default['fb_apache']['modules_mapping']['wsgi'] = 'mod_wsgi_python3.so'
+else
+  node.default['fb_apache']['module_packages']['wsgi'] =
+    value_for_platform_family(
+      'rhel' => 'mod_wsgi',
+    )
+  node.default['fb_apache']['modules_mapping']['wsgi'] = 'mod_wsgi.so'
+end
+
 apache_version =
   case node['platform_family']
   when 'debian'

@@ -151,7 +151,6 @@ default['fb_apache'] = {
     'usertrack' => 'mod_usertrack.so',
     'version' => 'mod_version.so',
     'vhost_alias' => 'mod_vhost_alias.so',
-    'wsgi' => 'mod_wsgi.so',
   },
   'module_packages' => {
     'dav_svn' => value_for_platform_family(
@@ -168,9 +167,6 @@ default['fb_apache'] = {
     ),
     'ssl' => value_for_platform_family(
       'rhel' => 'mod_ssl',
-    ),
-    'wsgi' => value_for_platform_family(
-      'rhel' => 'mod_wsgi',
     ),
   },
   'mpm' => 'prefork',
