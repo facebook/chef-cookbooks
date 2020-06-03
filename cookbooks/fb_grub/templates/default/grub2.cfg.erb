@@ -104,8 +104,9 @@ if [ "${saved_entry}" ] ; then
 fi
 
 # enforce kernelops from grub.cfg which is managed by chef
-# rather then variable from grubby
-set kernelopts="<%= kargs %>"
+# rather then variable from grubby. Single quotes are required
+# to preserve escape chars in kernel opts like memmap=128M\$1G
+set kernelopts='<%= kargs %>'
 
 # load bls entries
 insmod blscfg
