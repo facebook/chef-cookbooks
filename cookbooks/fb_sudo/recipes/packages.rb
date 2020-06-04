@@ -20,6 +20,7 @@
 #
 
 package 'sudo' do
+  only_if { node['fb_sudo']['manage_packages'] }
   not_if { node.macos? }
   action :upgrade
 end

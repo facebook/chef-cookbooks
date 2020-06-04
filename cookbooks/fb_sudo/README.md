@@ -18,6 +18,7 @@ Attributes
 * node['fb_sudo']['aliases']['runas'][$ALIAS]
 * node['fb_sudo']['defaults'][$SETTING]
 * node['fb_sudo']['default_overrides'][$OVERRIDE]
+* node['fb_sudo']['manage_packages']
 * node['fb_sudo']['users'][$USER]
 
 Usage
@@ -87,3 +88,8 @@ node.default['fb_sudo']['users']['johnsmith'] = {
   'some passwordleess stuff' => 'ALL=ALL NOPASSWD: /sbin/reboot',
 }
 ```
+
+### Packages
+By default this cookbook keeps the sudo package up-to-date, but if you
+want to manage them locally, simply set
+`node['fb_sudo']['manage_packages']` to false.

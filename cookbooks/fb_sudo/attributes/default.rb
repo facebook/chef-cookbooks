@@ -17,6 +17,7 @@
 #
 
 default['fb_sudo'] = {
+  'manage_packages' => true,
   'aliases' => {
     'host' => {},
     'user' => {},
