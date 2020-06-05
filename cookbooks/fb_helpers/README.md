@@ -229,7 +229,7 @@ your node.
 
 * `node.selinux_enabled?`
    Returns true if SELinux is not disabled (meaning, it's running in enforcing
-   or permissive mode), or `nil` if it cannot be determined.
+   or permissive mode), otherwise returns false.
 
 ### FB::Helpers
 The following methods are available:
