@@ -33,9 +33,8 @@ whyrun_safe_ruby_block 'validate sudoers configuration' do
   only_if { node.macos? }
   block do
     %w{root %admin}.each do |user|
-      if (
-        !node['fb_sudo']['users'][user] || node['fb_sudo']['users'][user]['all']
-      ) != 'ALL=(ALL) ALL'
+      if !node['fb_sudo']['users'][user] ||
+       !node['fb_sudo']['users'][user].value?('ALL=(ALL) ALL')
         fail "fb_sudo: missing mandatory rule to grant #{user} access"
       end
     end
