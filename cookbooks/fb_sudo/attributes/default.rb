@@ -36,9 +36,19 @@ default['fb_sudo'] = {
     'secure_path' => '/sbin:/bin:/usr/sbin:/usr/bin',
   },
   'default_overrides' => {},
-  'users' => {
-    '%sudo' => {
-      'all' => 'ALL=(ALL) ALL',
+  'users' => value_for_platform_family(
+    :default => {
+      '%sudo' => {
+        'all' => 'ALL=(ALL) ALL',
+      },
     },
-  },
+    'mac_os_x' => {
+      'root' => {
+        'all' => 'ALL=(ALL) ALL',
+      },
+      '%admin' => {
+        'all' => 'ALL=(ALL) ALL',
+      },
+    },
+  ),
 }
