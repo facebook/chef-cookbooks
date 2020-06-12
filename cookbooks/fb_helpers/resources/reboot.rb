@@ -105,7 +105,7 @@ action_class do
   def do_managed_reboot
     msg = '*** Reboot required to proceed'
 
-    node['fb_helpers']['managed_reboot_callback']&.call
+    node['fb_helpers']['managed_reboot_callback']&.call(node)
 
     ruby_block 'Managed reboot' do
       block do
