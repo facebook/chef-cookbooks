@@ -400,10 +400,6 @@ class Chef
     def get_flexible_shard(shard_size)
       if node['shard_seed']
         node['shard_seed'] % shard_size
-      else
-        # backwards compat for Facebook until
-        # https://github.com/chef/ohai/pull/877 is out
-        node['fb']['shard_seed'] % shard_size
       end
     end
 
