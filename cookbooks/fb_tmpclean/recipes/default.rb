@@ -1,9 +1,8 @@
 #
-# Cookbook Name:: fb_tmpwatch
+# Cookbook Name:: fb_tmpclean
 # Recipe:: default
 #
-# Copyright (c) 2016-present, Facebook, Inc.
-# All rights reserved.
+# Copyright (c) Facebook, Inc. and its affiliates.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -38,8 +37,8 @@ end
 template config do
   source config_src
   mode '0755'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
 end
 
 if node.macos?

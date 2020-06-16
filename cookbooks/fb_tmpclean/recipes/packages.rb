@@ -1,9 +1,8 @@
 #
-# Cookbook Name:: fb_tmpwatch
+# Cookbook Name:: fb_tmpclean
 # Recipe:: packages
 #
-# Copyright (c) 2016-present, Facebook, Inc.
-# All rights reserved.
+# Copyright (c) Facebook, Inc. and its affiliates.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
