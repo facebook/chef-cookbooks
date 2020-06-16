@@ -113,7 +113,7 @@ describe 'Chef::Node' do
     # for the purposes of this test we want a consistent shard_seed
     # this will map to 51336 seconds into a 24h (86400 second) period.
     before do
-      node.default['shard_seed'] = 31328136
+      node.default['fb']['shard_seed'] = 31328136
     end
 
     {
