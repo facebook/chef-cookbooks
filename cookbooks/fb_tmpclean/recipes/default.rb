@@ -27,7 +27,7 @@ when 'debian'
   config = '/etc/cron.daily/tmpreaper'
   config_src = 'tmpreaper.erb'
 when 'mac_os_x'
-  config = '/usr/bin/fb_tmpreaper'
+  config = '/usr/local/bin/fb_tmpreaper'
   config_src = 'tmpreaper.erb'
 else
   fail "Unsupported platform_family #{node['platform_family']}, cannot" +
@@ -42,6 +42,11 @@ template config do
 end
 
 if node.macos?
+  # TODO T68640353 clean up once this is fully rolled out
+  file '/usr/bin/fb_tmpreaper' do
+    action :delete
+  end
+
   launchd 'com.facebook.tmpreaper' do
     action :enable
     program config
