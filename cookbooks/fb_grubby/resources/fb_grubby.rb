@@ -17,6 +17,7 @@
 #
 
 resource_name :fb_grubby
+provides :fb_grubby
 default_action :manage
 
 action_class do
