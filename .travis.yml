@@ -15,10 +15,9 @@ matrix:
     - env: INSTANCE=default-debian-sid
 
 rvm:
-  # 2.1.0 is not supported anymore by chef-zero
-  # 2.2.0 fails due to https://github.com/flori/json/issues/253
-  - 2.3.1
   - 2.4.0
+  - 2.5.0
+  - 2.6.0
 
 gemfile:
   Gemfile
