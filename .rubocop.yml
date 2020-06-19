@@ -18,7 +18,9 @@ Layout/IndentArray:
 Layout/IndentHeredoc:
   Enabled: false
 
+# disabling until corrected in core
 Layout/MultilineOperationIndentation:
+  Enabled: false
   EnforcedStyle: indented
 
 # no, we're not putting parens around `lazy`
