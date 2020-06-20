@@ -685,6 +685,7 @@ module FB
         end
       end
     end
+
     def _run_command_flocked(shellout, lock_file, mount_point)
       if lock_file.nil?
         return shellout.run_command
