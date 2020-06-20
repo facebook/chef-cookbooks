@@ -112,10 +112,7 @@ module FB
         end
       end
 
-      # rubocop:disable Style/AccessModifierDeclarations
-      # https://github.com/rubocop-hq/rubocop/issues/5953
       module_function :every
-      # rubocop:enable Style/AccessModifierDeclarations
     end
   end
 end

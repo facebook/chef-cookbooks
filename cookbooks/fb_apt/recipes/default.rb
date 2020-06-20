@@ -22,6 +22,7 @@ unless node.debian? || node.ubuntu?
   fail 'fb_apt is only supported on Debian and Ubuntu.'
 end
 
+# rubocop:disable Lint/UnneededCopDisableDirective
 # rubocop:disable ChefModernize/ExecuteAptUpdate
 
 package 'apt' do
@@ -123,3 +124,4 @@ else
   # rubocop:enable ChefDeprecations/LogResourceNotifications
 end
 # rubocop:enable ChefModernize/ExecuteAptUpdate
+# rubocop:enable Lint/UnneededCopDisableDirective
