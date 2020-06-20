@@ -97,7 +97,7 @@ module FB
         # look in fb_cookbook/spec/fixtures/default/ (fallback)
         default_path = fixture_path('default', name)
 
-        path = File.exists?(profile_path) ? profile_path : default_path
+        path = File.exist?(profile_path) ? profile_path : default_path
         begin
           File.read(path)
         rescue StandardError

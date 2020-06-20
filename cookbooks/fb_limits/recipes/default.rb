@@ -28,7 +28,7 @@ end
 # We want to manage all limits config via /etc/security/limits.conf so
 # clean out limits.d
 directory '/etc/security/limits.d' do
-  only_if { Dir.exists?('/etc/security/limits.d') }
+  only_if { Dir.exist?('/etc/security/limits.d') }
   action :delete
   recursive true
 end
