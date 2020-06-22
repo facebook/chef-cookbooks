@@ -191,6 +191,9 @@ Style/RedundantSelf:
 Style/RegexpLiteral:
   EnforcedStyle: mixed
 
+Style/SafeNavigation:
+  Enabled: false
+
 Style/SignalException:
   EnforcedStyle: semantic
 
