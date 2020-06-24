@@ -1,0 +1,27 @@
+name: Continuous Integration
+on:
+  push:
+    branches: [master]
+  pull_request:
+jobs:
+  ruby:
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby: [2.4, 2.5, 2.6]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+    - name: Setup Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ matrix.ruby }}
+    - name: Install dependencies
+      run: bundle install
+    - name: Run rspec
+      run: ./scripts/run_chefspec
+    - name: Run rubocop
+      run: ./scripts/run_rubocop .rubocop.yml
+    - name: Run foodcritic
+      run: ./scripts/run_foodcritic
