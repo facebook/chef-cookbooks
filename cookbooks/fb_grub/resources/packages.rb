@@ -27,8 +27,12 @@ action :install do
     end
   when 2
     if node.debian?
-      packages += %w{grub-efi}
-      unless node.aarch64?
+      if node.efi?
+        packages << 'grub-efi'
+        unless node.aarch64?
+          packages << 'grub-efi-amd64'
+        end
+      else
         packages << 'grub-pc'
       end
     elsif node.ubuntu?
@@ -38,14 +42,13 @@ action :install do
         grub-pc
         grub-pc-bin
       }
-    else
+    elsif node.efi?
       packages += %w{grub2-efi grub2-efi-modules grub2-tools}
-      unless node.aarch64?
-        packages << 'grub2'
-      end
+    else
+      packages << 'grub2'
     end
   else
-    fail "Unsupported grub version: #{node['fb_grub']['version']}"
+    fail "fb_grub: unsupported grub version: #{node['fb_grub']['version']}"
   end
 
   if node['fb_grub']['tboot']['enable']

@@ -75,8 +75,14 @@ whyrun_safe_ruby_block 'initialize_grub_locations' do
         # This is the old, somewhat broken logic to use a hardcoded root
         # udev block device partitions start at 1
         # grub disks start at 0
-        m = boot_device.match(/[0-9]+$/)
-        fail 'fb_grub::default Cannot parse boot device!' unless m
+        if boot_device
+          m = boot_device.match(/[0-9]+$/)
+          unless m
+            fail 'fb_grub: cannot parse the boot device!'
+          end
+        else
+          fail 'fb_grub: cannot find the boot device!'
+        end
 
         grub_partition = m[0].to_i
         grub_partition -= 1 if node['fb_grub']['version'] < 2
@@ -84,7 +90,7 @@ whyrun_safe_ruby_block 'initialize_grub_locations' do
         # otherwise just use the default and hope for the best.
         boot_disk = node['fb_grub']['boot_disk'] || bootdisk_guess
         root_device = "#{boot_disk},#{grub_partition}"
-        Chef::Log.info("Using old root device logic: #{root_device}")
+        Chef::Log.info("fb_grub: Using old root device logic: #{root_device}")
         node.default['fb_grub']['root_device'] = root_device
       end
     end
@@ -107,8 +113,14 @@ whyrun_safe_ruby_block 'initialize_grub_locations' do
         module_path = "/usr/lib/grub/#{node['kernel']['machine']}-efi"
       else
         os_device = node.device_of_mount('/')
-        m = os_device.match(/[0-9]+$/)
-        fail 'fb_grub::default Cannot parse OS device!' unless m
+        if os_device
+          m = os_device.match(/[0-9]+$/)
+          unless m
+            fail 'fb_grub: cannot parse the OS device!'
+          end
+        else
+          fail 'fb_grub: cannot find the OS device!'
+        end
 
         # People can override the boot_disk if they have a good reason.
         if node['fb_grub']['boot_disk']

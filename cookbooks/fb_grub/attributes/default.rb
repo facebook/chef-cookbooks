@@ -112,12 +112,17 @@ else
     if original_root_device
       # Setting this will make sure we don't
       fb_grub['root_device'] = original_root_device
-      Chef::Log.debug("Re-using existing root device: #{original_root_device}")
+      Chef::Log.debug(
+        "fb_grub: Re-using existing root device: #{original_root_device}",
+      )
       fb_grub['_device_hints'] = original_device_hints
-      Chef::Log.debug("Found #{original_device_hints.size} grub device hints.")
+      Chef::Log.debug(
+        "fb_grub: Found #{original_device_hints.size} grub device hints.",
+      )
     else
-      Chef::Log.warn("fb_grub::default Can't parse grub config: " +
-                     original_grub_config.to_s)
+      Chef::Log.warn(
+        "fb_grub: Can't parse grub config: #{original_grub_config}",
+      )
     end
   end
 end
