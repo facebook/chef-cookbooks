@@ -167,7 +167,8 @@ template "#{moddir}/00-mpm.conf" do
   owner 'root'
   group 'root'
   mode '0644'
-  notifies :reload, 'service[apache]'
+  # MPM cannot be changed on reload, only restart
+  notifies :restart, 'service[apache]'
 end
 
 # We want to collect apache stats
@@ -178,6 +179,21 @@ template "#{confdir}/status.conf" do
   mode '0644'
   variables(:location => '/server-status')
   notifies :restart, 'service[apache]'
+end
+
+if node['platform_family'] == 'debian'
+  # By default the apache package lays down a '000-default.conf' symlink to
+  # sites-available/000-default.conf which contains a generic :80 listener.
+  # This can conflict if we want to control :80 ourselves.
+  file "#{sitesdir}/000-default.conf" do
+    not_if { node['fb_apache']['enable_default_site'] }
+    action :delete
+  end
+
+  link "#{sitesdir}/000-default.conf" do
+    only_if { node['fb_apache']['enable_default_site'] }
+    to '../sites-available/000-default.conf'
+  end
 end
 
 service 'apache' do
