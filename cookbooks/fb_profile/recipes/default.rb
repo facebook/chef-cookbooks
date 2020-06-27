@@ -36,3 +36,14 @@ template '/etc/profile.d/fb_profile.sh' do
   group node.root_group
   mode '0644'
 end
+
+# Debian doesn't do the redhat make-sure-non-login-shells-get-aliases
+# So this is the bashrc from debian/ubuntu with that extra bit in there
+if node.debian? || node.ubuntu?
+  cookbook_file '/etc/bash.bashrc' do
+    owner 'root'
+    group 'root'
+    mode '0644'
+    source 'debian.bashrc'
+  end
+end
