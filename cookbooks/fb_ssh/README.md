@@ -142,6 +142,15 @@ These work similarly to Authorized Principals. If you set
 There should be one item for each user, as many keys as you'd like may
 be in that item.
 
+Alternatively you can populate `node['fb_ssh']['authorized_keys'][$USER]`.
+Doing so should be done similarly to the databags and each key given a name:
+
+```ruby
+node.default['fb_ssh']['authorized_keys']['john']['key1'] = '...'
+```
+
+Anything in the node overrides databags.
+
 ### Client config (ssh_config)
 The client config works the same as the server config, except the special-case
 is `Host` keys instead of `Match` keys. As an example:
