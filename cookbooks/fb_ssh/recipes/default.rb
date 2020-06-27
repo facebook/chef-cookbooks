@@ -63,7 +63,10 @@ template '/etc/ssh/sshd_config' do
   mode '0644'
   variables({ :type => 'sshd_config' })
   verify '/usr/sbin/sshd -t -f %{path}'
-  notifies :restart, 'service[ssh]'
+  # in firstboot we may not be able to get in until ssh is restarted
+  # on the desired config, so restart immediately. Otherwise, delay
+  ntype = node.firstboot_any_phase? ? :immediately : :delayed
+  notifies :restart, 'service[ssh]', ntype
 end
 
 template '/etc/ssh/ssh_config' do

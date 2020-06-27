@@ -32,6 +32,7 @@ action_class do
       auth_map = Hash[
         data_bag('fb_ssh_authorized_keys').map { |x| [x, nil] }
       ]
+      auth_map.merge!(node['fb_ssh']['authorized_keys'])
     else
       auth_map = node['fb_ssh']["authorized_#{type}"]
     end
@@ -44,7 +45,7 @@ action_class do
         owner 'root'
         group 'root'
         mode '0644'
-        if type == 'keys'
+        if type == 'keys' && !auth_map[user]
           d = data_bag_item('fb_ssh_authorized_keys', user)
           d.delete('id')
           variables({ :data => d })
