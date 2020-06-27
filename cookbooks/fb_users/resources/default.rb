@@ -30,24 +30,33 @@ action :manage do
     "#{pgroups.join(', ')}.",
   )
   pgroups.each do |grp|
-    if node['etc']['group'][grp]
+    if node['etc']['group'][grp] &&
+        node['etc']['group'][grp]['gid'] == ::FB::Users::GID_MAP[grp]['gid']
       Chef::Log.debug(
-        "fb_users: Will not bootstrap group #{grp} since it exists",
+        "fb_users: Will not bootstrap group #{grp} since it exists, and has " +
+        'the right GID',
       )
       next
     end
-    if node['fb_users']['groups'][grp]['action'] == :delete
+
+    # We may not have this group if it's a remote one, so check we do and
+    # that it's set to create
+
+    if node['fb_users']['groups'][grp] &&
+        node['fb_users']['groups'][grp]['action'] &&
+        node['fb_users']['groups'][grp]['action'] != :delete
+
+      group "bootstrap #{grp}" do
+        group_name grp
+        gid ::FB::Users::GID_MAP[grp]['gid']
+        action :create
+      end
+    else
       Chef::Log.debug(
         "fb_users: Will not bootstrap group #{grp} since it is marked for " +
         'deletion',
       )
       next
-    end
-
-    group "bootstrap #{grp}" do
-      group_name grp
-      gid ::FB::Users::GID_MAP[grp]['gid']
-      action :create
     end
   end
 

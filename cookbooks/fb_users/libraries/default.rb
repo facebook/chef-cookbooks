@@ -84,6 +84,7 @@ module FB
           end
           # rubocop:enable Style/DoubleNegation
           # rubocop:enable Lint/HandleExceptions
+
           if gid_int
             fail "fb_users[user]: User #{user} has an integer for primary" +
               ' group. Please specify a name.'
