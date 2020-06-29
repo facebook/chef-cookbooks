@@ -15,6 +15,7 @@ Attributes
 * node['fb_apache']['modules_directory']
 * node['fb_apache']['modules_mapping']
 * node['fb_apache']['module_packages']
+* node['fb_apache']['enable_default_site']
 * node['fb_apache']['extra_configs']
 * node['fb_apache']['mpm']
 
@@ -48,7 +49,7 @@ node.default['fb_apache']['sites']['*:80'] = {
 
 Will produce:
 
-```
+```text
 <VirtualHost *:80>
   ServerName example.com
   ServerAdmin l33t@example.com
@@ -70,7 +71,7 @@ node.default['fb_apache']['sites']['*:80'] = {
 
 Would produce:
 
-```
+```text
 <VirtualHost *:80>
   ServerAlias cool.example.com
   ServerAlias awesome.example.com
@@ -95,7 +96,7 @@ node.default['fb_apache']['sites']['*:80'] = {
 
 Would produce:
 
-```
+```text
 <VirtualHost *:80>
   <Directory /var/www>
     Options Indexes FollowSymLinks MultiViews
@@ -129,6 +130,18 @@ node.default['fb_apache']['sites']['my uncool site'] = {
 }
 ```
 
+#### Debian/Ubuntu default site note
+
+By default the Debian and Ubuntu Apache packages lay down a default webserver
+config for a server listening on :80 and serving up files from /var/www/html.
+This can be undesirable if you want a custom document root or customizations.
+This cookbook provides an attribute,
+`node['fb_apache']['enable_default_site']`, to enable/disable this default
+configuration.  The default is `true`, which preserves the package default.
+Setting this to `false` will disable the default :80 configuration.  Note this
+only applies to Debian and Ubuntu systems. Other distributions may/may not have
+this default behaviour.
+
 #### Rewrite rules
 
 One exception to this generic 1:1 mapping is rewrite rules. Because of the
@@ -157,7 +170,7 @@ node.default['fb_apache']['sites']['*:80'] = {
 
 Would produce:
 
-```
+```text
 <VirtualHost *:80>
   # rewrite old thing to new thing
   RewriteCond %{REQUEST_URI} ^/old_thing
