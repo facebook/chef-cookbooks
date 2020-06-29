@@ -155,8 +155,8 @@ your node.
    buckets.  Let's say that you want a consistent shard that correlates a
    minute in the whole day (1,400 min/day).  You would use this in your code:
 
-   ```
-     node.get_flexible_shard(1440)
+   ```ruby
+   node.get_flexible_shard(1440)
    ```
 
    This helps also to release code to shards smaller than 1% of the fleet,
@@ -242,7 +242,7 @@ The following methods are available:
 * `FB::Version.new(version)`
    Helper class to compare software versions. Sample usage:
 
-   ```
+   ```ruby
    FB::Version.new('1.3') < FB::Version.new('1.21')
    => true
    FB::Version.new('4.5') < FB::Version.new('4.5')
