@@ -1,4 +1,5 @@
-# controlled by Chef, do not edit
+# This file is maintained by Chef. Do not edit, all changes will be
+# overwritten. See fb_profile/README.md
 #
 # This file is the stock debian/ubuntu file but with an extra bit at the end
 # borrowed from redhat to make non-login shells sane.
