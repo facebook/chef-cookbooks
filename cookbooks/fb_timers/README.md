@@ -149,6 +149,15 @@ node.default['fb_timers']['jobs']['my_custom_job'] = {
 
 More complex time specs can be defined using the [systemd calendar spec](https://www.freedesktop.org/software/systemd/man/systemd.time.html).
 
+### Optional keys
+You can indicate to fb_timers that a key is expected, even when that key may
+not be natively understood by systemd (and thereby suppress
+chef warning logs), by adding to `node['fb_timers']['optional_keys']`:
+
+```
+node.default['fb_timers']['optional_keys'] << 'oncall'
+```
+
 ### More Info About Systemd Timers
 
 For more information about systemd timers read the

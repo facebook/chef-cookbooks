@@ -55,6 +55,7 @@ action :run do
     end
   end
 
+  optional_keys = node['fb_timers']['optional_keys']
   # Setup current jobs
   node['fb_timers']['jobs'].to_hash.each_pair do |name, conf|
     conf = FB::Systemd::TIMER_DEFAULTS.merge(conf.merge('name' => name))
@@ -75,7 +76,7 @@ action :run do
       conf['description'] = "Run scheduled task #{conf['name']}"
     end
 
-    unknown_keys = conf.keys - FB::Systemd::TIMER_COOKBOOK_KEYS
+    unknown_keys = conf.keys - FB::Systemd::TIMER_COOKBOOK_KEYS - optional_keys
     if unknown_keys.any?
       Chef::Log.warn(
         "fb_timers: Unknown keys for timer #{name}: #{unknown_keys}",

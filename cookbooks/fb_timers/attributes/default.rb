@@ -32,4 +32,5 @@ default['fb_timers'] = {
   # they're doing.
   '_timer_path' => '/etc/systemd/timers'.freeze,
   '_reload_needed' => false,
+  'optional_keys' => [],
 }
