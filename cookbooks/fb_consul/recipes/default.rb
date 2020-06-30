@@ -18,6 +18,10 @@
 # limitations under the License.
 #
 
+unless node.debian? || node.ubuntu?
+  fail 'fb_consul: Used on unsupported platform!'
+end
+
 node.default['fb_iptables']['filter']['INPUT']['rules']['consul']['rules'] = [
   # Gossip protocol between agents and servers
   '-p tcp --dport 8301 -j ACCEPT',
@@ -31,6 +35,7 @@ node.default['fb_users']['users']['consul'] = {
 }
 
 package 'consul' do
+  only_if { node['fb_consul']['manage_packages'] }
   action :upgrade
   notifies :restart, 'service[consul]'
 end
@@ -48,23 +53,12 @@ end
 
 directory 'consul data dir' do
   only_if do
-    node['fb_consul']['enabled']
+    node['fb_consul']['enable']
   end
   path lazy { node['fb_consul']['config']['data_dir'] }
   owner 'consul'
   group 'root'
   mode '0770'
-end
-
-execute 'fix_perms' do
-  command 'chown -R consul /var/lib/consul'
-  action :nothing
-end
-
-file '/etc/systemd/system/consul.service' do
-  action :delete
-  notifies :reload, 'fb_systemd_reload[system instance]', :immediately
-  notifies :run, 'execute[fix_perms]', :immediately
 end
 
 directory '/etc/consul' do
@@ -147,11 +141,11 @@ template '/etc/consul/consul.json' do
 end
 
 service 'consul' do
-  only_if { node['fb_consul']['enabled'] }
+  only_if { node['fb_consul']['enable'] }
   action [:enable, :start]
 end
 
 service 'disable consul' do
-  not_if { node['fb_consul']['enabled'] }
+  not_if { node['fb_consul']['enable'] }
   action [:stop, :disable]
 end

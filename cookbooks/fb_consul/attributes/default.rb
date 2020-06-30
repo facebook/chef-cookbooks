@@ -16,7 +16,8 @@
 #
 
 default['fb_consul'] = {
-  'enabled' => true,
+  'enable' => true,
+  'manage_packages' => true,
   'config' => {
     'node_name' => node['hostname'],
     'bind_addr' => '0.0.0.0',
