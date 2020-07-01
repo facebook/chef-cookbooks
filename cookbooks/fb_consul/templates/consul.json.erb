@@ -1,0 +1,11 @@
+<%
+  data = node['fb_consul']['config'].to_hash
+  %w{services checks}.each do |type|
+    data[type] = []
+    names = node['fb_consul'][type].keys.sort
+    names.each do |name|
+      data[type] << {'name' => name}.merge(node['fb_consul'][type][name])
+    end
+  end
+%>
+<%= JSON.pretty_generate(data) %>

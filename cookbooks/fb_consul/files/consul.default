@@ -1,0 +1,6 @@
+# This file is controlled by Chef. Do not modify!
+#
+# Other arguments exist, but they can all be specified in the config file.
+# Importantly, we don't want to let people change this as it allows bypassing
+# Chef (by passing in other config files) and breaking the model.
+DAEMON_ARGS='-config-file /etc/consul/consul.json'
