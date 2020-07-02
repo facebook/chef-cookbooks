@@ -4,9 +4,16 @@
 [Unit]
 Description=<%= @conf['description'] %>
 After=network.target
-<% @conf['service_unit_options'].each do |name, value| %>
+<% @conf['service_unit_options'].each do |name, value|
+     if value.is_a?(Array)
+       value.each do |v|
+ %>
+<%= name %>=<%= v %>
+<%     end
+     else %>
 <%= name %>=<%= value %>
-<% end %>
+<%   end
+   end %>
 
 [Service]
 Type=oneshot
