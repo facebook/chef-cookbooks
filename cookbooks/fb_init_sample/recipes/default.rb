@@ -131,7 +131,6 @@ unless node.centos6?
 end
 include_recipe 'fb_collectd'
 include_recipe 'fb_rsync::server'
-include_recipe 'fb_vsftpd'
 if node.centos?
   include_recipe 'fb_sysstat'
 end

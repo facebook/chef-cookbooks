@@ -1,65 +1,70 @@
 driver:
-  name: docker
+  name: dokken
   privileged: true
   # our cookbooks should be compatible with the latest Chef,
   # but we nee to ensure they still work on 13 until we move to 14
-  require_chef_omnibus: "13"
+  chef_version: <%= ENV['CHEF_VERSION'] || 'current' %>
 
 platforms:
   - name: centos-6
-    driver_config:
-      provision_command:
+    driver:
+      image: dokken/centos-6
+      pid_one_command: /sbin/init
+      intermediate_instructions:
         # remove bogus entry to make fb_fstab happy
-        - sed -i '/UUID=/d' /etc/fstab
+        - RUN sed -i '/UUID=/d' /etc/fstab
         # enable EPEL (for stuff like hddtemp)
-        - rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
-        # we need dmidecode for the Ohai shard plugin
-        - yum install -y dmidecode
+        - RUN rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
+        # we need dmidecode for the Ohai shard and virtualization plugins
+        # https://github.com/test-kitchen/dokken-images/pull/32
+        - RUN yum install -y dmidecode
   - name: centos-7
-    driver_config:
-      provision_command:
+    driver:
+      image: dokken/centos-7
+      pid_one_command: /usr/lib/systemd/systemd
+      intermediate_instructions:
         # stub out /etc/fstab for fb_fstab
-        - touch /etc/fstab
+        - RUN touch /etc/fstab
         # enable EPEL (for stuff like hddtemp)
-        - rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-        # we need dmidecode for the Ohai shard plugin
-        - yum install -y dmidecode
-        # for some reason rsyslog fails to restart cleanly otherwise
-        - yum remove -y rsyslog
-      run_command: /usr/sbin/init
+        - RUN rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+        # we need dmidecode for the Ohai shard and virtualization plugins
+        # https://github.com/test-kitchen/dokken-images/pull/32
+        - RUN yum install -y dmidecode
   - name: ubuntu-16.04
-    driver_config:
-      provision_command:
-        # we need dmidecode for the Ohai shard plugin
-        - apt-get install -y dmidecode
-      run_command: /sbin/init
+    driver:
+      image: dokken/ubuntu-16.04
+      pid_one_command: /bin/systemd
+      intermediate_instructions:
+        # we need dmidecode for the Ohai shard and virtualization plugins
+        # https://github.com/test-kitchen/dokken-images/pull/32
+        - RUN apt-get install -y dmidecode
   - name: ubuntu-18.04
-    driver_config:
-      provision_command:
-        # we need dmidecode for the Ohai shard plugin
-        # and apt needs gnugp2, but doesn't depend on it
-        - apt-get install -y dmidecode gnupg2
-      run_command: /sbin/init
+    driver:
+      image: dokken/ubuntu-18.04
+      pid_one_command: /bin/systemd
+      intermediate_instructions:
+        # we need dmidecode for the Ohai shard and virtualization plugins
+        # https://github.com/test-kitchen/dokken-images/pull/32
+        - RUN apt-get install -y dmidecode
   - name: debian-9
-    driver_config:
-      provision_command:
-        # we need dmidecode for the Ohai shard plugin
-        # and apt needs gnugp2, but doesn't depend on it
-        - apt-get install -y dmidecode gnupg2
-      run_command: /bin/systemd
-  - name: debian-sid
-    driver_config:
-      provision_command:
-        # we need dmidecode for the Ohai shard plugin
-        # and apt needs gnugp2, but doesn't depend on it
-        - apt-get install -y dmidecode gnupg2
-      run_command: /bin/systemd
+    driver:
+      image: dokken/debian-9
+      pid_one_commmand: /bin/systemd
+      intermediate_instructions:
+        # we need dmidecode for the Ohai shard and virtualization plugins
+        # https://github.com/test-kitchen/dokken-images/pull/32
+        - RUN apt-get install -y dmidecode
 
 provisioner:
-  name: chef_zero
+  name: dokken
+  chef_log_level: <%= ENV['CHEF_LOG_LEVEL'] || 'auto' %>
+
+transport:
+  name: dokken
 
 suites:
   - name: default
     run_list:
+      - recipe[ci_fixes]
       - recipe[fb_init_sample]
       - recipe[test_services]
