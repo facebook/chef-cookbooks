@@ -1,3 +1,5 @@
+# Copyright (c) 2020-present, Vicarious, Inc.
+# Copyright (c) 2020-present, Facebook, Inc.
 name 'fb_consul'
 maintainer 'Facebook'
 maintainer_email 'noreply@facebook.com'
