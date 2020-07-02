@@ -1,6 +1,6 @@
 # Facebook Cookbooks Suite
 
-[![Build Status](https://travis-ci.org/facebook/chef-cookbooks.svg)](http://travis-ci.org/facebook/chef-cookbooks)
+![Continuous Integration](https://github.com/facebook/chef-cookbooks/workflows/Continuous%20Integration/badge.svg?event=push)
 
 This repo contains attribute-driven-API cookbooks maintained by Facebook. It's
 a large chunk of what we refer to as our "core cookbooks."

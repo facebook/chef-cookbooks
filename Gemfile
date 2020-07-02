@@ -14,7 +14,7 @@ gem 'cucumber-core', '~> 3.2.1'
   chefspec
   diffy
   test-kitchen
-  kitchen-docker
+  kitchen-dokken
 }.each do |g|
   gem g
 end

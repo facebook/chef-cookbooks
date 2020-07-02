@@ -25,3 +25,40 @@ jobs:
       run: ./scripts/run_rubocop .rubocop.yml
     - name: Run foodcritic
       run: ./scripts/run_foodcritic
+  kitchen:
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - centos-6
+          - centos-7
+          - ubuntu-1604
+          - ubuntu-1804
+          - debian-9
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+    - name: Install Chef
+      uses: actionshub/chef-install@1.1.0
+      with:
+        project: chefdk
+        version: 3.13.1
+    - name: Run Kitchen
+      uses: actionshub/test-kitchen@1.0.2
+      with:
+        suite: default
+        os: ${{ matrix.os }}
+      env:
+        CHEF_VERSION: 13.10.0
+  shellcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Run Shellcheck
+        uses: ludeeus/action-shellcheck@0.3.0
+        with:
+          # these have outstanding issues
+          # https://github.com/facebook/chef-cookbooks/issues/150
+          ignore: cookbooks/fb_ipset cookbooks/fb_less

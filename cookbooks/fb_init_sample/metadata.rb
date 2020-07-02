@@ -72,7 +72,6 @@ end
   'fb_timers',
   'fb_tmpclean',
   'fb_util_linux',
-  'fb_vsftpd',
 ].each do |cb|
   depends cb
 end
