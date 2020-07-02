@@ -27,12 +27,33 @@ end
 
 directory '/etc/profile.d' do
   owner node.root_user
+  # https://github.com/chef/cookstyle/issues/657
+  # rubocop:disable Lint/UnneededCopDisableDirective
+  # rubocop:disable ChefDeprecations/NodeMethodsInsteadofAttributes
   group node.root_group
+  # rubocop:enable ChefDeprecations/NodeMethodsInsteadofAttributes
+  # rubocop:enable Lint/UnneededCopDisableDirective
   mode '0755'
 end
 
 template '/etc/profile.d/fb_profile.sh' do
   owner node.root_user
+  # https://github.com/chef/cookstyle/issues/657
+  # rubocop:disable Lint/UnneededCopDisableDirective
+  # rubocop:disable ChefDeprecations/NodeMethodsInsteadofAttributes
   group node.root_group
+  # rubocop:enable ChefDeprecations/NodeMethodsInsteadofAttributes
+  # rubocop:enable Lint/UnneededCopDisableDirective
   mode '0644'
+end
+
+# Debian doesn't do the redhat make-sure-non-login-shells-get-aliases
+# So this is the bashrc from debian/ubuntu with that extra bit in there
+if node.debian? || node.ubuntu?
+  cookbook_file '/etc/bash.bashrc' do
+    owner 'root'
+    group 'root'
+    mode '0644'
+    source 'debian.bashrc'
+  end
 end
