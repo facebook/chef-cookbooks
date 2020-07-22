@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # To use this filter with less, define LESSOPEN:
 # export LESSOPEN="|/usr/bin/lesspipe.sh %s"
@@ -24,8 +24,7 @@ exec 2>/dev/null
 
 # Allow for user defined filters
 if [ -x ~/.lessfilter ]; then
-	~/.lessfilter "$1"
-	if [ $? -eq 0 ]; then
+	if ~/.lessfilter "$1"; then
 		exit 0
 	fi
 fi
@@ -56,7 +55,7 @@ case "$1" in
 	*.gz)		DECOMPRESSOR="gzip -dc" ;;
 	*.bz2)		DECOMPRESSOR="bzip2 -dc" ;;
 	*.xz|*.lzma)	DECOMPRESSOR="xz -dc" ;;
-	*.zst)		DECOMPRESSON="zstd -dcq" ;;
+	*.zst)		DECOMPRESSOR="zstd -dcq" ;;
 	esac
 	if [ -n "$DECOMPRESSOR" ] && $DECOMPRESSOR -- "$1" | file - | grep -q troff; then
 		$DECOMPRESSOR -- "$1" | manfilter -
@@ -106,14 +105,14 @@ case "$1" in
 	fi ;;
 *)
 	if [ -x /usr/bin/file ] && [ -x /usr/bin/iconv ] && [ -x /usr/bin/cut ]; then
-		case `file -b "$1"` in
+    case $(file -b "$1") in
 		*UTF-16*) conv='UTF-16' ;;
 		*UTF-32*) conv='UTF-32' ;;
 		esac
 		if [ -n "$conv" ]; then
-			env=`echo $LANG | cut -d. -f2`
-			if [ -n "$env" -a "$conv" != "$env" ]; then
-				iconv -f $conv -t $env "$1"
+      env=$(echo "$LANG" | cut -d. -f2)
+			if [ -n "$env" ] && [ "$conv" != "$env" ]; then
+				iconv -f "$conv" -t "$env" "$1"
 				exit $?
 			fi
 		fi

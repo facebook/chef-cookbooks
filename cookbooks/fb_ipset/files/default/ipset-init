@@ -18,6 +18,7 @@
 ### END INIT INFO
 
 # Source function library.
+# shellcheck disable=SC1091
 . /etc/init.d/functions
 
 IPSET=ipset
@@ -25,7 +26,9 @@ IPSET_BIN=/usr/sbin/$IPSET
 IPSET_DATA=/etc/sysconfig/$IPSET
 
 if [ ! -x ${IPSET_BIN} ]; then
-    echo -n $"${IPSET}: ${IPSET_BIN} does not exist."; warning; echo
+    printf '%s: %s does not exist.' ${IPSET} ${IPSET_BIN}
+    warning
+    echo
     exit 5
 fi
 
@@ -33,23 +36,27 @@ start() {
     # Do not start if there is no config file.
     [ ! -f "${IPSET_DATA}" ] && return 6
 
-    ${IPSET_BIN} restore < ${IPSET_DATA}
-
-    if [ $? -eq 0 ]; then
-        success; echo
+    if ${IPSET_BIN} restore < ${IPSET_DATA}; then
+        success
+        echo
     else
-        failure; echo; return 1
+        failure
+        echo
+        return 1
     fi
 }
 
 stop() {
     TMP=$(/bin/mktemp -q /tmp/$IPSET.XXXXXXXXX)
-    ${IPSET_BIN} list -o save > ${TMP} && mv -f ${TMP} ${IPSET_DATA}
 
-    if [ $? -eq 0 ]; then
-        success; echo
+    if ${IPSET_BIN} list -o save > "${TMP}" && mv -f "${TMP}" "${IPSET_DATA}"
+    then
+        success
+        echo
     else
-        failure; echo; return 1
+        failure
+        echo
+        return 1
     fi
 }
 
@@ -80,7 +87,7 @@ case "$1" in
       RETVAL=$?
     ;;
     *)
-      echo $"Usage: ${IPSET} {start|stop|status|save}"
+      echo "Usage: ${IPSET} {start|stop|status|save}"
       RETVAL=2
     ;;
 esac

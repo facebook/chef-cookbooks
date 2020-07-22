@@ -58,7 +58,3 @@ jobs:
         uses: actions/checkout@v2
       - name: Run Shellcheck
         uses: ludeeus/action-shellcheck@0.3.0
-        with:
-          # these have outstanding issues
-          # https://github.com/facebook/chef-cookbooks/issues/150
-          ignore: cookbooks/fb_ipset cookbooks/fb_less
