@@ -33,7 +33,19 @@ action :run do
     if m
       name = m[1]
       type = m[2]
-      next if node['fb_timers']['jobs'].to_hash.key?(name)
+      if node['fb_timers']['jobs'][name]
+        # It might be defined, but disabled by an only_if
+        conf = node['fb_timers']['jobs'][name]
+        if conf['only_if'].nil?
+          next
+        else
+          unless conf['only_if'].class == Proc
+            fail "fb_timers's only_if requires a Proc for #{name}"
+          end
+
+          next if conf['only_if'].call
+        end
+      end
     end
 
     # If there's a link in systemd's unit path, delete it too
@@ -99,9 +111,9 @@ action :run do
       fail "fb_timers: Missing required key for timer #{name}: #{missing_keys}"
     end
 
-    if conf['only_if']
+    unless conf['only_if'].nil?
       unless conf['only_if'].class == Proc
-        fail 'fb_timers\'s only_if requires a Proc'
+        fail "fb_timers's only_if requires a Proc for #{name}"
       end
 
       unless conf['only_if'].call

@@ -235,7 +235,12 @@ recipe 'fb_timers::default', :unsupported => [:mac_os_x] do |tc|
 
   context 'removes unmanaged jobs' do
     let(:dir_content) do
-      %w{old.timer old.service current.timer current.service README}
+      %w{
+        README
+        old.timer old.service current.timer current.service
+        only_if_disabled.timer only_if_disabled.service
+        only_if_enabled.timer only_if_enabled.service
+      }
     end
 
     cached(:chef_run) do
@@ -248,28 +253,45 @@ recipe 'fb_timers::default', :unsupported => [:mac_os_x] do |tc|
             'calendar' => 1,
             'command' => 'bar',
           },
+          # If the only_if becomes false, in which case we should disable
+          'only_if_disabled' => {
+            'only_if' => proc { false },
+            'calendar' => 1,
+            'command' => 'bar',
+          },
+          'only_if_enabled' => {
+            'only_if' => proc { true },
+            'calendar' => 1,
+            'command' => 'bar',
+          },
         }
       end
     end
 
-    it 'should disable the old unit' do
+    it 'should disable the old service units' do
       unit_types.each do |type|
         expect(chef_run).to disable_service("old.#{type}")
+        expect(chef_run).to disable_service("only_if_disabled.#{type}")
         expect(chef_run).to_not disable_service("current.#{type}")
+        expect(chef_run).to_not disable_service("only_if_enabled.#{type}")
       end
     end
 
-    it 'should stop the old unit' do
+    it 'should stop the old service units' do
       unit_types.each do |type|
         expect(chef_run).to stop_service("old.#{type}")
+        expect(chef_run).to stop_service("only_if_disabled.#{type}")
         expect(chef_run).to_not stop_service("current.#{type}")
+        expect(chef_run).to_not stop_service("only_if_enabled.#{type}")
       end
     end
 
     it 'should delete the old timer units' do
       unit_types.each do |type|
         expect(chef_run).to delete_file("#{t_path}old.#{type}")
+        expect(chef_run).to delete_file("#{t_path}only_if_disabled.#{type}")
         expect(chef_run).to_not delete_file("#{t_path}current.#{type}")
+        expect(chef_run).to_not delete_file("#{t_path}only_if_enabled.#{type}")
       end
     end
 
