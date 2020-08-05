@@ -143,6 +143,11 @@ $InputTCPServerRun <%= specs['port'] %>
       !node['fb_syslog']['rsyslog_facilities_sent_to_remote'].empty?
      if node['fb_syslog']['rsyslog_use_omprog']
        rsyslog_omprog_binary = node['fb_syslog']['rsyslog_omprog_binary']
+       rsyslog_omprog_binary_args =
+         node['fb_syslog']['rsyslog_omprog_binary_args']
+       unless rsyslog_omprog_binary_args.empty?
+         rsyslog_omprog_binary += ' ' + rsyslog_omprog_binary_args.join(' ')
+       end
        if node.linux?
 %>
 # Program Logging

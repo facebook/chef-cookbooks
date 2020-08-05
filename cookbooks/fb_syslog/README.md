@@ -20,6 +20,7 @@ Attributes
 * node['fb_syslog']['rsyslog_additional_sockets']
 * node['fb_syslog']['rsyslog_facilities_sent_to_remote']
 * node['fb_syslog']['rsyslog_omprog_binary']
+* node['fb_syslog']['rsyslog_omprog_binary_args']
 * node['fb_syslog']['rsyslog_use_omprog']
 * node['fb_syslog']['rsyslog_use_omprog_force']
 * node['fb_syslog']['rsyslog_stats_logging']
@@ -197,6 +198,7 @@ that binary. For example:
 node.default['fb_syslog']['rsyslog_facilities_sent_to_remote'] << 'auth.*'
 node.default['fb_syslog']['rsyslog_use_omprog'] = true
 node.default['fb_syslog']['rsyslog_omprog_binary'] = '/usr/bin/myprogram'
+node.default['fb_syslog']['rsyslog_omprog_binary_args'] << '-myProgramArg=42'
 ```
 
 By default, program forwarding (omprog) will only be enabled if
@@ -207,6 +209,12 @@ and a rsyslog server simultaneously. For example:
 ```
 node.default['fb_syslog']['rsyslog_use_omprog_force'] = true
 ```
+
+Strings added to `node.default['fb_syslog']['rsyslog_omprog_binary_args']` will
+become command line arguments separated by spaces and appended to
+`node.default['fb_syslog']['rsyslog_omprog_binary']`. Avoid strings
+containing spaces or double quotes, rsyslog/omprog does not support
+proper escaping.
 
 ### Suspension reporting
 Setting `node['fb_syslog']['rsyslog_report_suspension']` controls suspension
