@@ -182,4 +182,19 @@ describe 'Chef::Node' do
       ).should eq(true)
     end
   end
+
+  context 'Chef::Node.systemd?' do
+    it 'should check the running system for running systemd' do
+      ::File.stub(:directory?).with(anything).and_call_original
+      ::File.stub(:directory?).with('/run/systemd/system').
+        and_return true
+      node.systemd?.should eq(true)
+    end
+    it 'should check the running system for systemd not running' do
+      ::File.stub(:directory?).with(anything).and_call_original
+      ::File.stub(:directory?).with('/run/systemd/system').
+        and_return false
+      node.systemd?.should eq(false)
+    end
+  end
 end
