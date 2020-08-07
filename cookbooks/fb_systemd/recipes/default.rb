@@ -138,9 +138,22 @@ execute 'set default target' do
     current = Mixlib::ShellOut.new('systemctl get-default').run_command.
               stdout.strip
     is_ignored = node['fb_systemd']['ignore_targets'].include?(current)
-    !is_ignored && current != node['fb_systemd']['default_target']
+    is_supported = FB::Version.new(node['packages']['systemd'][
+      'version']) >= FB::Version.new('205')
+    is_supported && !is_ignored &&
+      current != node['fb_systemd']['default_target']
   end
   command lazy {
     "systemctl set-default #{node['fb_systemd']['default_target']}"
+  }
+end
+
+link '/etc/systemd/system/default.target' do
+  only_if do
+    FB::Version.new(node['packages']['systemd'][
+      'version']) < FB::Version.new('205')
+  end
+  to lazy {
+    "/lib/systemd/system/#{node['fb_systemd']['default_target']}.target"
   }
 end
