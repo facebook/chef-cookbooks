@@ -14,6 +14,7 @@
 # limitations under the License.
 #
 
+require 'chef/json_compat'
 require 'chef/log'
 
 module FB
@@ -237,6 +238,85 @@ If the has is specified, it takes one or more of the following keys:
       end
 
       filtered_hash
+    end
+
+    # parse_json() takes a JSON string and converts it to a Ruby object,
+    # also enforcing that the top-level object matches what is expected.
+    #
+    # Usage:
+    #   parse_json(json_string, top_level_class)
+    #
+    # Arguments:
+    #   json_string: Required string. The JSON string to parse.
+    #   top_level_class: Optional class, defaults to Hash.
+    #   fallback: Optional boolean, defaults to false.
+    def self.parse_json(json_string, top_level_class = Hash, fallback = false)
+      unless [Array, Hash, String].include?(top_level_class)
+        fail 'fb_helpers: top_level_class can only be Array, Hash or ' +
+          "(actual: #{top_level_class})"
+      end
+
+      begin
+        parsed_json = Chef::JSONCompat.parse(json_string)
+      rescue Chef::Exceptions::JSON::ParseError => e
+        m = 'fb_helpers: cannot parse string as JSON; returning an empty ' +
+            "#{top_level_class} instead: #{e}"
+        if fallback
+          Chef::Log.error(m)
+          return top_level_class.new
+        else
+          # rubocop:disable Style/SignalException
+          fail m
+          # rubocop:enable Style/SignalException
+        end
+      end
+
+      unless parsed_json.is_a?(top_level_class)
+        m = 'fb_helpers: parsed JSON does not match the expected ' +
+            "#{top_level_class} (actual: #{parsed_json.class})"
+        if fallback
+          Chef::Log.error(m)
+          return top_level_class.new
+        else
+          fail m
+        end
+      end
+
+      parsed_json
+    end
+
+    # parse_json_file() takes a path string and converts its contents to a
+    # Ruby object, also enforcing that the top-level object matches what is
+    # expected.
+    #
+    # Usage:
+    #   parse_json_file(path, top_level_class)
+    #
+    # Arguments:
+    #   path: Required string. Path to the file to parse.
+    #   top_level_class: Optional class, defaults to Hash.
+    #   fallback: Optional boolean, defaults to false.
+    def self.parse_json_file(path, top_level_class = Hash, fallback = false)
+      Chef::Log.debug(
+        "fb_helpers: parsing #{path} as JSON (expecting: #{top_level_class})",
+      )
+
+      begin
+        content = File.read(path)
+      rescue IOError, SystemCallError => e
+        # SystemCallError is because of -ENOENT
+        m = "fb_helpers: cannot read #{path}: #{e}"
+        if fallback
+          Chef::Log.error(m)
+          return top_level_class.new
+        else
+          # rubocop:disable Style/SignalException
+          fail m
+          # rubocop:enable Style/SignalException
+        end
+      end
+
+      self.parse_json(content, top_level_class)
     end
   end
 

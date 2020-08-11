@@ -265,6 +265,16 @@ The following methods are available:
      }
   ```
 
+* `FB::Helpers.parse_json(json_string, top_level_class, fallback)`
+  Parse a JSON string and return the appropriate object, while validating
+  that it matches what is expected. If `fallback` is true, return an empty
+  object in case of errors.
+
+* `FB::Helpers.parse_json_file(path, top_level_class, fallback)`
+  Parse a JSON file and return the appropriate object, while validating that
+  it matches what is expected. If `fallback` is true, return an empty object
+  in case of errors.
+
 * `FB::Version.new(version)`
    Helper class to compare software versions. Sample usage:
 

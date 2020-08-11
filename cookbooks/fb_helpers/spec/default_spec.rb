@@ -18,6 +18,48 @@
 require_relative '../libraries/fb_helpers.rb'
 
 describe FB::Helpers do
+  context 'parse_json' do
+    it 'parses basic JSON' do
+      expect(FB::Helpers.parse_json('{}')).to eq({})
+    end
+
+    it 'parses complex JSON' do
+      json_str = '{"fb_sysctl": {"kernel.core_uses_pid": 0}}'
+      json_hash = {
+        'fb_sysctl' => {
+          'kernel.core_uses_pid' => 0,
+        },
+      }
+      expect(FB::Helpers.parse_json(json_str)).to eq(json_hash)
+    end
+
+    it 'ignores empty JSON' do
+      expect(FB::Helpers.parse_json('', Hash, true)).to eq({})
+    end
+
+    it 'ignores invalid JSON' do
+      expect(FB::Helpers.parse_json('"foo"', Hash, true)).to eq({})
+    end
+
+    it 'ignores broken JSON' do
+      expect(FB::Helpers.parse_json('{bar}', Hash, true)).to eq({})
+    end
+  end
+
+  context 'parse_json_file' do
+    PATH = 'json_file.json'.freeze
+
+    it 'ignores a file that cannot be read' do
+      allow(File).to receive(:read).with(PATH).and_raise(IOError)
+      expect(FB::Helpers.parse_json_file(PATH, Hash, true)).to eq({})
+    end
+
+    it 'parses a basic JSON file' do
+      allow(File).to receive(:read).with(PATH).and_return('{}')
+      expect(FB::Helpers.parse_json_file(PATH)).to eq({})
+    end
+  end
+
   context 'filter_hash' do
     it 'returns a passing hash unchanged' do
       hash = {
