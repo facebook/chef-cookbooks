@@ -239,6 +239,32 @@ The following methods are available:
    for being a comment. By default it'll comment it ruby-style (leading "# ")
    with a width of 80 chars, but the arg hash can specify `start`, `finish`,
    and `width` to adjust it's behavior.
+
+* `FB::Helpers.filter_hash(hash, filter)`
+  Apply `filter` to `hash`, by recursively returning only the items from
+  `hash` whose keys are also in `filter`, preserving its structure. Example:
+
+  ```ruby
+  hash = {
+    'foo' => 1,
+    'bar' => 2,
+    'baz' => {
+      'cake' => 'asdf',
+      'pie' => 42,
+    },
+  }
+
+  filter = ['foo', 'baz/cake']
+
+  filter_hash(hash, filter)
+  => {
+       'foo' => 1,
+       'baz' => {
+         'cake' => 'asdf',
+       },
+     }
+  ```
+
 * `FB::Version.new(version)`
    Helper class to compare software versions. Sample usage:
 

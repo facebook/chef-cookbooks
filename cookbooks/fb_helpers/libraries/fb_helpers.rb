@@ -13,6 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+require 'chef/log'
+
 module FB
   # Various utility grab-bag.
   class Helpers
@@ -130,6 +133,110 @@ If the has is specified, it takes one or more of the following keys:
         final_comment += "\n#{finish}"
       end
       final_comment
+    end
+
+    # filter_hash() takes two Hash objects and applies the second as a filter
+    # on the first one.
+    #
+    # Usage:
+    #   filter_hash(hash, filter)
+    #
+    # Arguments:
+    #   hash: Required Hash. The Hash to be filtered
+    #   filter: Required Hash. The filter to apply against hash
+    #
+    # Sample usage:
+    # hash = {
+    #   'foo' => 1,
+    #   'bar' => 2,
+    #   'baz' => {
+    #     'cake' => 'asdf',
+    #     'pie' => 42,
+    #   },
+    # }
+    #
+    # filter = ['foo', 'baz/cake']
+    #
+    # filter_hash(hash, filter) = {
+    #   'foo' => 1,
+    #   'baz' => {
+    #     'cake' => 'asdf',
+    #   },
+    # }
+    def self.filter_hash(hash, filter)
+      self._filter_hash(hash, self._expand_filter(filter))
+      # self._filter_hash_alt(hash, filter)
+    end
+
+    # helper method to convert AttributeAllowlist-style filters to something
+    # usable by _filter_hash
+    def self._expand_filter(array_filter)
+      hash_filter = {}
+      array_filter.each do |f|
+        keys = f.split('/')
+        h = nil
+        keys.reverse.each do |k|
+          h = { k => h }
+        end
+        hash_filter.merge!(h)
+      end
+      hash_filter
+    end
+
+    # alternate implementation using AttributeAllowlist; does not work yet due
+    # to https://github.com/chef/chef/issues/10276
+    def self._filter_hash_alt(hash, filter)
+      if FB::Version.new(Chef::VERSION) >= FB::Version.new('16.3')
+        require 'chef/attribute_allowlist'
+        Chef::AttributeAllowlist.filter(hash, filter)
+      else
+        require 'chef/whitelist'
+        Chef::Whitelist.filter(hash, filter)
+      end
+    end
+
+    # private method to implement filter_hash using recursion
+    # note: we can't use Chef::AttributeAllowlist here because it doesn't
+    # handle empty values properly at the moment
+    def self._filter_hash(hash, filter, depth = 0)
+      unless filter.is_a?(Hash)
+        fail 'fb_helpers: the filter argument to filter_hash needs to be a ' +
+          "Hash (actual: #{filter.class})"
+      end
+
+      filtered_hash = {}
+
+      # We loop over the filter and pull out only allowed items from the hash
+      # provided by the user. Since users might pass in something huge like
+      # the entire saved node object, don't make the performance of this code
+      # be defined by them.
+      filter.each do |k, v|
+        if hash.include?(k)
+          if v.nil?
+            filtered_hash[k] = hash[k]
+          elsif v.is_a?(Hash)
+            # we need to go deeper
+            ret = self._filter_hash(hash[k], v, depth + 1)
+            # if the filter returned nil, it means it had no matches, so
+            # don't add it to the filtered_hash to avoid creating spurious
+            # entries
+            unless ret.nil?
+              filtered_hash[k] = ret
+            end
+          else
+            fail "fb_helpers: invalid filter passed to filter_hash: #{filter}"
+          end
+        end
+      end
+
+      # if we're recursing and get an empty hash here, it means we had no
+      # matches; change it to nil so we can detect it appropriately in the
+      # loop above
+      if depth > 0 && filtered_hash == {}
+        filtered_hash = nil
+      end
+
+      filtered_hash
     end
   end
 
