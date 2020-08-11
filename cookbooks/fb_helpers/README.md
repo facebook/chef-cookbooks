@@ -296,6 +296,24 @@ The following methods are available:
 ### Custom resources
 The following custom resources are available
 
+#### fb_helpers_serialize
+Use the `fb_helpers_serialize` resource to serialize an Object to a JSON file
+on disk. This can be useful, for example, to checkpoint a data structure at a
+given point in the run to ease troubleshooting. Note that if you feed a large
+hash to this (e.g. the whole node object), it will be a very expensive
+operation. To mitigate this the ability to filter Hash objects before writing
+is provided.
+
+```
+fb_helpers_serialize '/tmp/foo.json' do
+  object foo
+  filter foo_filter
+  owner 'root'
+  group 'root'
+  mode '0644'
+end
+```
+
 #### fb_helpers_reboot
 Use the `fb_helpers_reboot` resource if you need to indicate to an external
 service that the host needs to be rebooted and when that reboot action should
