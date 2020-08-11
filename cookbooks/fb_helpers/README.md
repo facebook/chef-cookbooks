@@ -231,6 +231,10 @@ your node.
    Returns true if SELinux is not disabled (meaning, it's running in enforcing
    or permissive mode), otherwise returns false.
 
+* `node.chef_base_path`
+   Returns the base path for the Chef installation, i.e. `C:/chef` on Windows,
+   and `/var/chef` on other platforms.
+
 ### FB::Helpers
 The following methods are available:
 
