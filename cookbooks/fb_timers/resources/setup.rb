@@ -168,11 +168,48 @@ action :run do
     # rubocop:enable Lint/UnneededCopDisableDirective
   end
 
+  directory '/etc/systemd/system/timers.target.wants' do
+    only_if do
+      FB::Version.new(node['packages']['systemd'][
+        'version']) <= FB::Version.new('201')
+    end
+    owner 'root'
+    group 'root'
+    mode '0755'
+  end
+
   # Setup services
   node['fb_timers']['jobs'].to_hash.each_pair do |_name, conf|
-    service "#{conf['name']}.timer" do
-      only_if { conf['autostart'] }
+    timer_name = "#{conf['name']}.timer"
+
+    service "#{timer_name} enable/start" do
+      only_if do
+        conf['autostart'] && FB::Version.new(node['packages']['systemd'][
+          'version']) > FB::Version.new('201')
+      end
+      service_name timer_name
       action [:enable, :start]
+    end
+
+    # Versions prior to 201 did not support enablement of unit symlinks.
+    # Workaround is to create the following symlink.
+    link "/etc/systemd/system/timers.target.wants/#{timer_name}" do
+      only_if do
+        conf['autostart'] && FB::Version.new(node['packages']['systemd'][
+          'version']) <= FB::Version.new('201')
+      end
+      to lazy {
+        "#{node['fb_timers']['_timer_path']}/#{conf['name']}.timer"
+      }
+    end
+
+    service "#{timer_name} start only" do
+      only_if do
+        conf['autostart'] && FB::Version.new(node['packages']['systemd'][
+          'version']) <= FB::Version.new('201')
+      end
+      service_name timer_name
+      action [:start]
     end
   end
 
