@@ -146,4 +146,201 @@ describe FB::Helpers do
       expect(FB::Helpers.filter_hash(hash, filter)).to eq(hash)
     end
   end
+
+  # These tests are based on spec/unit/mixin/deep_merge_spec.rb from
+  # https://github.com/chef/chef at revision
+  # 5c8383fedd13b07f13d64a58f7cc78664a235ced
+  context 'merge_hash' do
+    it 'merges Hashes like normal deep merge' do
+      merge_ee_hash = {
+        'top_level_a' => {
+          '1_deep_a' => '1-a-merge-ee',
+          '1_deep_b' => '1-deep-b-merge-ee',
+        },
+        'top_level_b' => 'top-level-b-merge-ee',
+      }
+      merge_with_hash = {
+        'top_level_a' => {
+          '1_deep_b' => '1-deep-b-merged-onto',
+          '1_deep_c' => '1-deep-c-merged-onto',
+        },
+        'top_level_b' => 'top-level-b-merged-onto',
+      }
+
+      merged_result = FB::Helpers.merge_hash(merge_ee_hash, merge_with_hash)
+
+      expect(merged_result['top_level_b']).to eq('top-level-b-merged-onto')
+      expect(merged_result['top_level_a']['1_deep_a']).to eq('1-a-merge-ee')
+      expect(merged_result['top_level_a']['1_deep_b']).
+        to eq('1-deep-b-merged-onto')
+      expect(merged_result['top_level_a']['1_deep_c']).
+        to eq('1-deep-c-merged-onto')
+    end
+
+    it 'replaces arrays rather than merging them' do
+      merge_ee_hash = {
+        'top_level_a' => {
+          '1_deep_a' => '1-a-merge-ee',
+          '1_deep_b' => %w{A A A},
+        },
+        'top_level_b' => 'top-level-b-merge-ee',
+      }
+      merge_with_hash = {
+        'top_level_a' => {
+          '1_deep_b' => %w{B B B},
+          '1_deep_c' => '1-deep-c-merged-onto',
+        },
+        'top_level_b' => 'top-level-b-merged-onto',
+      }
+
+      merged_result = FB::Helpers.merge_hash(merge_ee_hash, merge_with_hash)
+
+      expect(merged_result['top_level_b']).to eq('top-level-b-merged-onto')
+      expect(merged_result['top_level_a']['1_deep_a']).to eq('1-a-merge-ee')
+      expect(merged_result['top_level_a']['1_deep_b']).to eq(%w{B B B})
+    end
+
+    it 'replaces non-hash items with hashes when there is a conflict' do
+      merge_ee_hash = {
+        'top_level_a' => 'top-level-a-mergee',
+        'top_level_b' => 'top-level-b-merge-ee',
+      }
+      merge_with_hash = {
+        'top_level_a' => {
+          '1_deep_b' => %w{B B B},
+          '1_deep_c' => '1-deep-c-merged-onto',
+        },
+        'top_level_b' => 'top-level-b-merged-onto',
+      }
+
+      merged_result = FB::Helpers.merge_hash(merge_ee_hash, merge_with_hash)
+
+      expect(merged_result['top_level_a']).to be_a(Hash)
+      expect(merged_result['top_level_a']['1_deep_a']).to be_nil
+      expect(merged_result['top_level_a']['1_deep_b']).to eq(%w{B B B})
+    end
+
+    it 'does not mutate deeply-nested original hashes by default' do
+      merge_ee_hash = {
+        'top_level_a' => {
+          '1_deep_a' => {
+            '2_deep_a' => {
+              '3_deep_a' => 'foo',
+            },
+          },
+        },
+      }
+      merge_with_hash = {
+        'top_level_a' => {
+          '1_deep_a' => {
+            '2_deep_a' => {
+              '3_deep_b' => 'bar',
+            },
+          },
+        },
+      }
+
+      FB::Helpers.merge_hash(merge_ee_hash, merge_with_hash)
+
+      expect(merge_ee_hash).to eq({
+                                    'top_level_a' => {
+                                      '1_deep_a' => {
+                                        '2_deep_a' => {
+                                          '3_deep_a' => 'foo',
+                                        },
+                                      },
+                                    },
+                                  })
+      expect(merge_with_hash).to eq({
+                                      'top_level_a' => {
+                                        '1_deep_a' => {
+                                          '2_deep_a' => {
+                                            '3_deep_b' => 'bar',
+                                          },
+                                        },
+                                      },
+                                    })
+    end
+
+    it 'does not error merging un-dupable items' do
+      merge_ee_hash = {
+        'top_level_a' => 1,
+        'top_level_b' => false,
+      }
+      merge_with_hash = {
+        'top_level_a' => 2,
+        'top_level_b' => true,
+      }
+
+      FB::Helpers.merge_hash(merge_ee_hash, merge_with_hash)
+    end
+
+    it 'merges leaf Hashes by default' do
+      merge_ee_hash = {
+        'top_level_a' => {
+          '1_deep_a' => {
+            '2_deep_a' => {
+              '3_deep_a' => 'foo',
+            },
+          },
+        },
+      }
+      merge_with_hash = {
+        'top_level_a' => {
+          '1_deep_a' => {
+            '2_deep_a' => {
+              '3_deep_b' => 'bar',
+            },
+          },
+        },
+      }
+
+      merged_result = FB::Helpers.merge_hash(merge_ee_hash, merge_with_hash)
+
+      expect(merged_result).to eq({
+                                    'top_level_a' => {
+                                      '1_deep_a' => {
+                                        '2_deep_a' => {
+                                          '3_deep_a' => 'foo',
+                                          '3_deep_b' => 'bar',
+                                        },
+                                      },
+                                    },
+                                  })
+    end
+
+    it 'overwrites leaf Hashes if requested' do
+      merge_ee_hash = {
+        'top_level_a' => {
+          '1_deep_a' => {
+            '2_deep_a' => {
+              '3_deep_a' => 'foo',
+            },
+          },
+        },
+      }
+      merge_with_hash = {
+        'top_level_a' => {
+          '1_deep_a' => {
+            '2_deep_a' => {
+              '3_deep_b' => 'bar',
+            },
+          },
+        },
+      }
+
+      merged_result = FB::Helpers.merge_hash(merge_ee_hash, merge_with_hash,
+                                             true)
+
+      expect(merged_result).to eq({
+                                    'top_level_a' => {
+                                      '1_deep_a' => {
+                                        '2_deep_a' => {
+                                          '3_deep_b' => 'bar',
+                                        },
+                                      },
+                                    },
+                                  })
+    end
+  end
 end

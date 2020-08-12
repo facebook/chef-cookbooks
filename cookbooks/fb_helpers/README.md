@@ -269,6 +269,15 @@ The following methods are available:
      }
   ```
 
+* `FB::Helpers.merge_hash(merge_onto, merge_with, overwrite_leaves)`
+  Return the resulting hash from recursively merging merge_with onto
+  merge_onto. Only hashes are merged -- other objects, including arrays, will
+  be replaced. Leaf hashes are also merged by default; this can be changed
+  with overwrite_leaves, which will replace them instead.
+
+* `FB::Helpers.merge_hash!(merge_onto, merge_with, overwrite_leaves)`
+  Same as `merge_hash()`, but update the merge_onto hash in place.
+
 * `FB::Helpers.parse_json(json_string, top_level_class, fallback)`
   Parse a JSON string and return the appropriate object, while validating
   that it matches what is expected. If `fallback` is true, return an empty
@@ -278,6 +287,10 @@ The following methods are available:
   Parse a JSON file and return the appropriate object, while validating that
   it matches what is expected. If `fallback` is true, return an empty object
   in case of errors.
+
+* `FB::Helpers.safe_dup(thing)`
+  Wrapper around `dup` that always returns a valid object, even for things
+  that do not support `dup`.
 
 * `FB::Version.new(version)`
    Helper class to compare software versions. Sample usage:

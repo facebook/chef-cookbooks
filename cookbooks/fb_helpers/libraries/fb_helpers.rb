@@ -240,6 +240,92 @@ If the has is specified, it takes one or more of the following keys:
       filtered_hash
     end
 
+    # safe_dup() takes an object and duplicates it. This method always returns
+    # a valid object, even if thing is not dup'able.
+    #
+    # This method is based on lib/chef/mixin/deep_merge.rb from
+    # https://github.com/chef/chef at revision
+    # 5c8383fedd13b07f13d64a58f7cc78664a235ced.
+    #
+    # Usage:
+    #   safe_dup(thing)
+    #
+    # Arguments:
+    #   thing: Required object. The object to duplicate.
+    def self.safe_dup(thing)
+      thing.dup
+    rescue TypeError
+      thing
+    end
+
+    # merge_hash() takes two hashes and returns the result of recursively
+    # merging one onto the other. Only hashes are merged -- other objects,
+    # including arrays, will be replaced. Leaf hashes are also merged by
+    # default; this can be changed with overwrite_leaves, which will replace
+    # them instead.
+    #
+    # This method is based on lib/chef/mixin/deep_merge.rb from
+    # https://github.com/chef/chef at revision
+    # 5c8383fedd13b07f13d64a58f7cc78664a235ced.
+    #
+    # Usage:
+    #   merge_hash(merge_onto, merge_with, overwrite_leaves)
+    #
+    # Arguments:
+    #   merge_onto: Required hash. The base hash that will be merged onto
+    #   merge_with: Required hash. The hash that will be merged on merge_onto
+    #   overwrite_leaves: Optiona boolean. Whether to overwrite leaves or not
+    def self.merge_hash(merge_onto, merge_with, overwrite_leaves = false)
+      self.merge_hash!(safe_dup(merge_onto), safe_dup(merge_with),
+                       overwrite_leaves)
+    end
+
+    # merge_hash!() takes two hashes and recursively merges one onto the
+    # other, altering it in place, and returns the merged hash. See
+    # merge_hash() for details on the merge semantics.
+    #
+    # This method is based on lib/chef/mixin/deep_merge.rb from
+    # https://github.com/chef/chef at revision
+    # 5c8383fedd13b07f13d64a58f7cc78664a235ced.
+    #
+    # Usage:
+    #   merge_hash(merge_onto, merge_with, overwrite_leaves)
+    #
+    # Arguments:
+    #   merge_onto: Required hash. The base hash that will be merged onto
+    #   merge_with: Required hash. The hash that will be merged on merge_onto
+    #   overwrite_leaves: Optional boolean. Whether to overwrite leaves or not
+    def self.merge_hash!(merge_onto, merge_with, overwrite_leaves = false)
+      # If there are two Hashes, recursively merge.
+      if merge_onto.is_a?(Hash) && merge_with.is_a?(Hash)
+        merge_with.each do |key, merge_with_value|
+          is_leaf = false
+          if overwrite_leaves && merge_with_value.is_a?(Hash)
+            # if we're overwriting leaves, we need to know when we have one
+            merge_with_value.each do |_k, v|
+              if v.is_a?(Hash)
+                is_leaf = true
+                break
+              end
+            end
+          end
+          value =
+            if merge_onto.key?(key) && !is_leaf
+              self.merge_hash(merge_onto[key], merge_with_value,
+                              overwrite_leaves)
+            else
+              merge_with_value
+            end
+
+          merge_onto[key] = value
+        end
+        merge_onto
+      else
+        # In all other cases, replace merge_onto with merge_with
+        merge_with
+      end
+    end
+
     # parse_json() takes a JSON string and converts it to a Ruby object,
     # also enforcing that the top-level object matches what is expected.
     #
