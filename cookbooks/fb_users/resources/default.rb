@@ -46,7 +46,7 @@ action :manage do
         node['fb_users']['groups'][grp]['action'] &&
         node['fb_users']['groups'][grp]['action'] != :delete
 
-      group "bootstrap #{grp}" do
+      group "bootstrap #{grp}" do # ~FB015
         group_name grp
         gid ::FB::Users::GID_MAP[grp]['gid']
         action :create
@@ -69,7 +69,7 @@ action :manage do
   # Now we can add all the users
   node['fb_users']['users'].each do |username, info|
     if info['action'] == :delete
-      user username do
+      user username do # ~FB014
         action :remove
       end
       next
@@ -102,7 +102,7 @@ action :manage do
       pass = data_bag_item('fb_users_auth', username)['password']
     end
 
-    user username do
+    user username do # ~FB014
       uid mapinfo['uid']
       # the .to_i here is important - if the usermap accidentally
       # quotes the gid, then it will try to look up a group named "142"
@@ -123,14 +123,14 @@ action :manage do
   # and then converge all groups
   node['fb_users']['groups'].each do |groupname, info|
     if info['action'] == :delete
-      group groupname do
+      group groupname do # ~FB015
         action :remove
       end
       next
     end
     # disableing fc009 becasue it triggers on 'comment' below which
     # is already guarded by a version 'if'
-    group groupname do # ~FC009
+    group groupname do # ~FC009 ~FB015
       gid ::FB::Users::GID_MAP[groupname]['gid']
       members info['members'] if info['members']
       if FB::Version.new(Chef::VERSION) >= FB::Version.new('14.9')

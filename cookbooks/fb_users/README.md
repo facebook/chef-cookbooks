@@ -33,7 +33,10 @@ UIDs, GIDs, and (optional) user/group "comments" are considered consistent data
 by `fb_users`. These exist in a single map. They do *not* effect what users or
 groups are installed on a system are are just a source of data.
 
-In order to make it this data not modifiable through the run, we put it in class constants, instead of in the node object. This is not - and should not - be a common pattern, but it's a clean way of keeping this data (somewhat more) singley-definable.
+In order to make it this data not modifiable through the run, we put it in
+class constants, instead of in the node object. This is not - and should not -
+be a common pattern, but it's a clean way of keeping this data (somewhat more)
+singley-definable.
 
 In a cookbook of your choice, simply re-open the `FB::Users` class, and define
 class constants like so:
@@ -130,7 +133,7 @@ automatically cleaned up.
 
 Also see `initialize_group` helper below.
 
-## Passwords in data_bags
+### Passwords in data_bags
 
 `fb_users` will also look for user passwords in a data_bag called
 `fb_users_auth`. The node takes precedent, but if no password is set there,
@@ -151,7 +154,7 @@ is expected.
 If a password is not found in either the node or a data_bag, no password is
 set and the user will not be to authenticate via password.
 
-## Defaults for users
+### Defaults for users
 Values not specified for users will be handled as follows:
 
 * home - will default to `/home/$USER`
