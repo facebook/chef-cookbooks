@@ -72,6 +72,7 @@ end
   'fb_timers',
   'fb_tmpclean',
   'fb_util_linux',
+  'fb_users',
 ].each do |cb|
   depends cb
 end
