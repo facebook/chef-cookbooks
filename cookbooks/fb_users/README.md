@@ -157,10 +157,10 @@ set and the user will not be to authenticate via password.
 ### Defaults for users
 Values not specified for users will be handled as follows:
 
-* home - will default to `/home/$USER`
-* shell - will default to `node['fb_users']['user_defaults']['shell']`
-* gid - will default to `node['fb_users']['user_defaults']['gid']`
-* manage_home - this one is more complex:
+* `home` - will default to `/home/$USER`
+* `shell` - will default to `node['fb_users']['user_defaults']['shell']`
+* `gid` - will default to `node['fb_users']['user_defaults']['gid']`
+* `manage_home` - this one is more complex:
   * if `node['fb_users']['user_defaults']['manage_home']` is specified, that
     value will be used
   * otherwise, if the `dirname` of the `home` value appears to be on NFS or
@@ -186,8 +186,8 @@ initialize it as an empty group to add.
 
 #### FB::Users.uid_to_name(uid)
 
-Given a UID for a user in the UID_MAP will return the name.
+Given a UID for a user in the `UID_MAP` will return the name.
 
 #### FB::Users.gid_to_name(gid)
 
-Given a GID for a group in the GID_MAP will return the name.
+Given a GID for a group in the `GID_MAP` will return the name.
