@@ -1,0 +1,39 @@
+#!/bin/bash
+
+. /etc/init.d/functions
+
+cd /etc/sysconfig/network-scripts
+. ./network-functions
+
+[ -f ../network ] && . ../network
+
+CONFIG=${1}
+
+need_config "${CONFIG}"
+
+source_config
+
+# If we're not setting up a bridge member interface, exit now
+[ -z "${BRIDGE}" -a -z "${OVS_BRIDGE}" ] && exit 0
+
+# This will run ifup-eth, then ifup-local, but then /sbin/ifup (our caller)
+# will RE-RUN ifup-eth. This seems to be ok in practice, as most of the things
+# ifup-eth does are idempotent. Note that we have to do this because ifup-eth
+# will 'exit 0' in the middle when setting up a bridge member interface, thus
+# preventing ifup-local from even being called.
+OTHERSCRIPT="/etc/sysconfig/network-scripts/ifup-${DEVICETYPE}"
+
+if [ ! -x ${OTHERSCRIPT} ]; then
+  OTHERSCRIPT="/etc/sysconfig/network-scripts/ifup-eth"
+fi
+
+${OTHERSCRIPT} ${CONFIG} $2
+
+if [ -x /sbin/ifup-local ]; then
+  /sbin/ifup-local ${DEVICE}
+fi
+
+# give it some time to settle
+sleep 2
+
+exit 0

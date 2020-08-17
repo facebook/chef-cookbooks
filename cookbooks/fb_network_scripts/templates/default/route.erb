@@ -1,0 +1,30 @@
+# This file is maintained by Chef. Do not edit, all changes will be
+# overwritten. See fb_network_scripts/README.md
+
+<%
+  @routes.each do |net, vals|
+    unless vals.is_a?(Array)
+      vals = [vals]
+    end
+    vals.each do |route|
+      rt = "#{net} "
+      if route['gw']
+        nexthop = route['gw']
+        route.delete('gw')
+      else
+        nexthop = @config['gateway']
+      end
+
+      route.each do |cmd, value|
+        rt << "#{cmd} #{value} "
+      end
+
+      if nexthop
+        rt << "via #{nexthop}"
+      end
+-%>
+<%= rt %>
+<%
+    end
+  end
+-%>

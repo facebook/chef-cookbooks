@@ -1,0 +1,11 @@
+# This file is maintained by Chef. Do not edit, all changes will be
+# overwritten. See fb_ntp/README.md
+
+# Options for ntpdate
+OPTIONS="<%= node['fb_ntp']['ntpdate_options'] %>"
+
+# Set to 'yes' to sync hw clock after successful ntpdate
+SYNC_HWCLOCK=<%= node['fb_ntp']['sync_hwclock'] ? 'yes' : 'no' %>
+
+# Number of retries
+RETRIES=<%= node['fb_ntp']['ntpdate_retries'] %>

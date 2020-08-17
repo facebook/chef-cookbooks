@@ -1,0 +1,61 @@
+#!/bin/sh
+#
+# This file is maintained by Chef. Do not edit, all changes will be
+# overwritten. See fb_network_scripts/README.md
+#
+CONFIG="$1"
+
+<%
+  # Apply sysctl overrides on interface restart
+  node['fb_network_scripts']['ifup']['sysctl'].to_hash.each do |key, val|
+    if node['fb_sysctl'][key]
+      Chef::Log.warn("Sysctl #{key} is already defined in fb_sysctl!")
+      next
+    end
+-%>
+/sbin/sysctl -e -w <%= key %>=<%= val %> >/dev/null 2>&1
+<%
+  end
+
+  # Run ethtool commands
+  node['fb_network_scripts']['ifup']['ethtool'].each do |ethtool_change|
+    interface = ethtool_change['interface']
+    change_field = ethtool_change['field']
+    # Sadly in ethtool the field you want to change and the one you want to check
+    # do not always match. Example: receive-hashing in -k
+    if ethtool_change['check_field']
+      check_field = ethtool_change['check_field']
+    else
+      check_field = change_field
+    end
+    check_subcommand = ethtool_change['subcommand'].downcase
+    subcommand = ethtool_change['subcommand'].upcase
+    # ethtool output is inconsistent. If needed, pipe to format to something
+    # reasonable
+    if ethtool_change['check_pipe']
+      check_pipe = "| #{ethtool_change['check_pipe']}"
+    else
+      check_pipe = ""
+    end
+    value = ethtool_change['value']
+
+    check_cond = "\"`ethtool #{check_subcommand} #{interface} #{check_pipe} | awk '/#{check_field}:/{print $2}'`\" != \"#{value}\""
+    ethtool_cmd = "ethtool #{subcommand} #{interface} #{change_field} #{value}"
+-%>
+if [ "$1" = <%= interface %> ] || [ "$1" = 'all' ]; then
+  if [ <%= check_cond %> ]; then
+    <%= ethtool_cmd %>
+  fi
+fi
+<%
+  end
+
+  # Run any extra ifup-local logic
+  node['fb_network_scripts']['ifup']['extra_commands'].each do |cmd|
+%>
+<%= cmd %> "$CONFIG"
+<%
+  end
+%>
+
+exit 0

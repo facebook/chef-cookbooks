@@ -1,0 +1,9 @@
+# This file is maintained by Chef. Do not edit, all changes will be
+# overwritten. See fb_network_scripts/README.md
+
+# Note that we don't set GATEWAY in here because ifup-local will do it
+NETWORKING=yes
+HOSTNAME=<%= node['fqdn'] %>
+LINKDELAY=<%= node['fb_network_scripts']['linkdelay'] %>
+NETWORKING_IPV6=yes
+IFDOWN_ON_SHUTDOWN=no

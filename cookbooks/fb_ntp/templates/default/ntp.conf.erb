@@ -1,0 +1,26 @@
+# This file is maintained by Chef. Do not edit, all changes will be
+# overwritten. See fb_ntp/README.md
+
+<% node['fb_ntp']['servers'].each do |server| -%>
+server <%= server %> <%= node['fb_ntp']['ntp_conf_server_options'] %>
+<% end -%>
+
+<% if node.macos? %>
+driftfile /var/db/ntp.drift
+<% else %>
+driftfile /var/lib/ntp/drift
+<% end %>
+
+<% if node['fb_ntp']['listen_interfaces'] %>
+<%   node['fb_ntp']['listen_interfaces'].each do |interface| -%>
+interface listen <%= interface %>
+<%   end -%>
+<% end -%>
+
+<% unless node['fb_ntp']['monitor'] -%>
+disable monitor
+<% end -%>
+
+<% node['fb_ntp']['acl_entries'].each do |entry| -%>
+<%= entry %>
+<% end -%>
