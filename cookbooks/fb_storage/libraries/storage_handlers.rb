@@ -571,6 +571,7 @@ module FB
           end
           cmd << " #{config['members'].join(' ')}"
           Mixlib::ShellOut.new(cmd).run_command.error!
+          Mixlib::ShellOut.new("udevadm trigger #{@device}").run_command.error!
         end
 
         def stop
