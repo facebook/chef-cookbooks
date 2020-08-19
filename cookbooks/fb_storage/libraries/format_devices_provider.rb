@@ -615,17 +615,20 @@ module FB
 
       def converge_storage(to_do, storage)
         disable_systemd_fstab_generator
-        nuke_arrays(to_do[:arrays], storage)
-        stop_unneeded_arrays(to_do[:stop_arrays])
-        partition_storage(to_do[:devices], storage)
-        build_arrays(to_do[:arrays], storage)
-        format_storage(to_do[:partitions], storage)
-        if to_do[:fill_arrays]
-          fill_arrays(to_do[:fill_arrays], storage)
+        begin
+          nuke_arrays(to_do[:arrays], storage)
+          stop_unneeded_arrays(to_do[:stop_arrays])
+          partition_storage(to_do[:devices], storage)
+          build_arrays(to_do[:arrays], storage)
+          format_storage(to_do[:partitions], storage)
+          if to_do[:fill_arrays]
+            fill_arrays(to_do[:fill_arrays], storage)
+          end
+          clear_flag_files(to_do[:devices], storage)
+          set_flag_files
+        ensure
+          enable_systemd_fstab_generator
         end
-        clear_flag_files(to_do[:devices], storage)
-        set_flag_files
-        enable_systemd_fstab_generator
       end
     end
   end
