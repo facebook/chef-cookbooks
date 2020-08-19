@@ -1,4 +1,4 @@
-# vim: syntax=ruby:expandtab:shiftwidth=2:softtabstop=2:tabstop=2
+# Copyright (c) 2012-present, Facebook, Inc.
 name 'fb_network_scripts'
 maintainer 'Facebook'
 maintainer_email 'noreply@facebook.com'
