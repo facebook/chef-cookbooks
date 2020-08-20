@@ -78,7 +78,7 @@ These maybe overridden by recipes for a particular platform.
   checked if the logfile is to be rotated. The files are mailed to
   the configured address if `maillast` and `mail` are configured.
   You can specify this by `node['fb_logrotate']['globals']['maxage']`
-* nocompress - Disables compressing the log files on rotatation. Accepts a boolean
+* nocompress - Disables compressing the log files on rotation. Accepts a boolean
   (see below). Useful to limit disk IO or if the filesystem uses transparent file
   compression
 
@@ -94,6 +94,10 @@ and would get picked up by this logrotate recipe.
 * compressext - Specifies which extension to use on compressed logfiles,
   if compression is enabled.
   specified by `node['fb_logrotate']['globals']['compressext']`
+* dateext (boolean) - Append daily extension to logfiles.
+  specified by `node['fb_logrotate']['globals']['dateext']`
+* dateformat - Format of daily extension.
+  specified by `node['fb_logrotate']['globals']['dateformat']`
 
 Overrides accepts the following booleans:
 

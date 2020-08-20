@@ -11,6 +11,12 @@ compress
 <% end -%>
 notifempty
 missingok
+<% if node['fb_logrotate']['globals']['dateext'] -%>
+dateext
+<% end -%>
+<% if node['fb_logrotate']['globals']['dateformat'] -%>
+dateformat <%= node['fb_logrotate']['globals']['dateformat'] %>
+<% end -%>
 <% if node['fb_logrotate']['globals']['size'] -%>
 size  <%= node['fb_logrotate']['globals']['size'] %>
 <% end -%>
