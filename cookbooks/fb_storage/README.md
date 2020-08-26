@@ -275,8 +275,11 @@ fbjbod | | sdl (slot 2)    \
 
 ### Format options
 
-`node['fb_storage']['format_options']` are options to pass to the
-relevant `mkfs`.
+`node['fb_storage']['format_options']` are options to pass to the relevant
+`mkfs`. As you might want to format more than one disks, with more than one
+kind of filesystems, it accepts several formats:
+* String: just pass it to `mkfs`
+* Hash: pass the entry corresponding to the filesystem type being formatted
 
 #### fstab_use_labels
 

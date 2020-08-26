@@ -39,7 +39,7 @@ whyrun_safe_ruby_block 'validate data' do
     node['fb_fstab']['mounts'].to_hash.each do |name, data|
       # Handle only_if
       if data['only_if']
-        unless data['only_if'].class == Proc
+        unless data['only_if'].respond_to?(:call)
           fail 'fb_fstab\'s only_if requires a Proc'
         end
 

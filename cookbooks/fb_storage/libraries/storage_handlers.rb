@@ -176,8 +176,16 @@ module FB
         end
         format_options = default_format_options(config['type'])
         if @node['fb_storage']['format_options']
-          format_options =
-            @node['fb_storage']['format_options'].dup
+          if @node['fb_storage']['format_options'].is_a?(String)
+            format_options =
+              @node['fb_storage']['format_options'].dup
+          elsif @node['fb_storage']['format_options'].is_a?(Hash)
+            format_options =
+              @node['fb_storage']['format_options'][config['type']]
+          else
+            fail "fb_storage: Not sure what to do with 'format_options': " +
+              @node['fb_storage']['format_options'].to_s
+          end
         end
 
         device = partition

@@ -34,7 +34,7 @@ describe FB::Storage::Handler do
     # THIS IS VERY IMPORTANT!!! If we don't mock **every** call to
     # Mixlibh::ShellOut we can nuke the data on any machine that runs the unit
     # tests so we mock it to return BS, this ensures if we miss mocking a call
-    # the tests fail rather than nuking hte host
+    # the tests fail rather than nuking the host
     allow_any_instance_of(Mixlib::ShellOut).to receive(:run_command).
       and_return(nil)
   end
@@ -350,6 +350,46 @@ describe FB::Storage::Handler do
             },
           )
         end
+
+        it 'accepts format_options as string' do
+          expect(Mixlib::ShellOut).to receive(:new).with(
+            %r{mkfs -t xfs -f blah -L \"foo\" /dev/sdzz1},
+            { :timeout => 600 },
+          ).and_return(mock_so)
+          node.default['fb_storage'] = { 'format_options' => 'blah' }
+          sh = TestHandler.new('/dev/sdzz', node)
+          expect(sh).to receive(:umount_by_partition)
+          expect(sh).to receive(:remove_device_from_any_arrays)
+          sh.format_partition(
+            '/dev/sdzz1', { 'type' => 'xfs', 'label' => 'foo' }
+          )
+        end
+      end
+
+      context 'with more than one mkfs' do
+        it 'accepts format_options as hash' do
+          expect(Mixlib::ShellOut).to receive(:new).with(
+            %r{mkfs.btrfs -f blah -L \"foo\" /dev/sdzz1},
+            { :timeout => 600 },
+          ).and_return(mock_so)
+          expect(Mixlib::ShellOut).to receive(:new).with(
+            %r{mkfs -t ext3 -F blah3 -L \"foo3\" /dev/sdzz2},
+            { :timeout => 600 },
+          ).and_return(mock_so)
+          node.default['fb_storage'] = {
+            'format_options' => { 'btrfs' => 'blah', 'ext3' => 'blah3' },
+          }
+          sh = TestHandler.new('/dev/sdzz', node)
+          expect(mock_so).to receive(:error!).twice
+          expect(sh).to receive(:umount_by_partition).twice
+          expect(sh).to receive(:remove_device_from_any_arrays).twice
+          sh.format_partition(
+            '/dev/sdzz1', { 'type' => 'btrfs', 'label' => 'foo' }
+          )
+          sh.format_partition(
+            '/dev/sdzz2', { 'type' => 'ext3', 'label' => 'foo3' }
+          )
+        end
       end
 
       context 'with unsuccessful mkfs' do
@@ -411,6 +451,20 @@ describe FB::Storage::Handler do
                 'raid_level' => 1,
                 'members' => ['/dev/sdb1', '/dev/sdc1'],
               },
+            )
+          end.to raise_error(RuntimeError)
+        end
+
+        it 'throws unknown format_options' do
+          node.default['fb_storage'] = {
+            'format_options' => proc { |t| "blah_#{t}" },
+          }
+          sh = TestHandler.new('/dev/sdzz', node)
+          expect(sh).to receive(:umount_by_partition)
+          expect(sh).to receive(:remove_device_from_any_arrays)
+          expect do
+            sh.format_partition(
+              '/dev/sdzz1', { 'type' => 'ext3', 'label' => 'foo' }
             )
           end.to raise_error(RuntimeError)
         end
