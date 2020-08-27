@@ -15,9 +15,6 @@ platforms:
         - RUN sed -i '/UUID=/d' /etc/fstab
         # enable EPEL (for stuff like hddtemp)
         - RUN rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
-        # we need dmidecode for the Ohai shard and virtualization plugins
-        # https://github.com/test-kitchen/dokken-images/pull/32
-        - RUN yum install -y dmidecode
   - name: centos-7
     driver:
       image: dokken/centos-7
@@ -27,33 +24,18 @@ platforms:
         - RUN touch /etc/fstab
         # enable EPEL (for stuff like hddtemp)
         - RUN rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-        # we need dmidecode for the Ohai shard and virtualization plugins
-        # https://github.com/test-kitchen/dokken-images/pull/32
-        - RUN yum install -y dmidecode
   - name: ubuntu-16.04
     driver:
       image: dokken/ubuntu-16.04
       pid_one_command: /bin/systemd
-      intermediate_instructions:
-        # we need dmidecode for the Ohai shard and virtualization plugins
-        # https://github.com/test-kitchen/dokken-images/pull/32
-        - RUN apt-get install -y dmidecode
   - name: ubuntu-18.04
     driver:
       image: dokken/ubuntu-18.04
       pid_one_command: /bin/systemd
-      intermediate_instructions:
-        # we need dmidecode for the Ohai shard and virtualization plugins
-        # https://github.com/test-kitchen/dokken-images/pull/32
-        - RUN apt-get install -y dmidecode
   - name: debian-9
     driver:
       image: dokken/debian-9
       pid_one_commmand: /bin/systemd
-      intermediate_instructions:
-        # we need dmidecode for the Ohai shard and virtualization plugins
-        # https://github.com/test-kitchen/dokken-images/pull/32
-        - RUN apt-get install -y dmidecode
 
 provisioner:
   name: dokken
