@@ -26,19 +26,32 @@ else
   fail "fb_sysstat: not supported on #{node['platform_family']}, aborting!"
 end
 
-{
-  'sysstat_accounting_1' => {
-    'calendar' => FB::Systemd::Calendar.every(10).minutes,
-    'command' => "#{sa_dir}/sa1 -S DISK,SNMP 1 1",
-    'oncall' => 'oncall+oscore@xmail.facebook.com',
-  },
-  'sysstat_accounting_2' => {
-    'calendar' => '23:53',
-    'command' => "#{sa_dir}/sa2 -A",
-    'oncall' => 'oncall+oscore@xmail.facebook.com',
-  },
-}.each do |k, v|
-  node.default['fb_timers']['jobs'][k] = v
+if node.systemd?
+  {
+    'sysstat_accounting_1' => {
+      'calendar' => FB::Systemd::Calendar.every(10).minutes,
+      'command' => "#{sa_dir}/sa1 -S DISK,SNMP 1 1",
+    },
+    'sysstat_accounting_2' => {
+      'calendar' => '23:53',
+      'command' => "#{sa_dir}/sa2 -A",
+    },
+  }.each do |k, v|
+    node.default['fb_timers']['jobs'][k] = v
+  end
+else
+  {
+    'sysstat_accounting_1' => {
+      'time' => '*/10 * * * *',
+      'command' => "#{sa_dir}/sa1 -S DISK,SNMP 1 1 &> /dev/null",
+    },
+    'sysstat_accounting_2' => {
+      'time' => '53 23 * * *',
+      'command' => "#{sa_dir}/sa2 -A &> /dev/null",
+    },
+  }.each do |k, v|
+    node.default['fb_cron']['jobs'][k] = v
+  end
 end
 
 # the sa[12] commands here trample on those defined in the
