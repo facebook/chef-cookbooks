@@ -21,8 +21,23 @@ property :unit_name, String, :required => true
 property :content, [String, Hash], :required => false
 property :source, String, :required => false
 property :triggers_reload, [true, false], :default => true
+property :instance, :kind_of => String, :default => 'system'
 
 default_action :create
+
+action_class do
+  def get_override_dir
+    "/etc/systemd/#{new_resource.instance}/#{new_resource.unit_name}.d"
+  end
+
+  def get_reload_resource
+    if new_resource.instance == 'user'
+      'fb_systemd_reload[all user instances]'
+    else
+      'fb_systemd_reload[system instance]'
+    end
+  end
+end
 
 action :create do
   if new_resource.source && new_resource.content
@@ -33,8 +48,12 @@ action :create do
     fail 'fb_systemd: either source or content are required with ' +
          'fb_systemd_override but neither was passed, aborting!'
   end
+  if new_resource.instance != 'system' && new_resource.instance != 'user'
+    fail 'fb_systemd: instance has to be either "system" or "user" ' +
+          'in fb_systemd_override. Aborting!'
+  end
 
-  override_dir = "/etc/systemd/system/#{new_resource.unit_name}.d"
+  override_dir = get_override_dir
   override_file = "#{FB::Systemd.sanitize(new_resource.override_name)}.conf"
 
   directory override_dir do
@@ -43,7 +62,7 @@ action :create do
     mode '0755'
   end
 
-  template ::File.join(override_dir, override_file) do # ~FB032
+  template ::File.join(override_dir, override_file) do # ~FB031 ~FB032
     # If source is specified, use it, otherwise use our template...
     if new_resource.source
       source new_resource.source
@@ -61,20 +80,24 @@ action :create do
                 })
     end
     if new_resource.triggers_reload
-      notifies :run, 'fb_systemd_reload[system instance]', :immediately
+      notifies :run,
+               get_reload_resource,
+               :immediately
     end
   end
 end
 
 action :delete do
-  override_dir = "/etc/systemd/system/#{new_resource.unit_name}.d"
+  override_dir = get_override_dir
   override_file = "#{FB::Systemd.sanitize(new_resource.override_name)}.conf"
 
   if ::Dir.exist?(override_dir)
     file ::File.join(override_dir, override_file) do
       action :delete
       if new_resource.triggers_reload
-        notifies :run, 'fb_systemd_reload[system instance]', :immediately
+        notifies :run,
+                 get_reload_resource,
+                 :immediately
       end
     end
 
