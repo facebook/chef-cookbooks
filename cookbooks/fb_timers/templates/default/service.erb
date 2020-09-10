@@ -8,10 +8,10 @@ After=network.target
      if value.is_a?(Array)
        value.each do |v|
  %>
-<%= name %>=<%= v %>
+<%=      name %>=<%= v %>
 <%     end
      else %>
-<%= name %>=<%= value %>
+<%=    name %>=<%= value %>
 <%   end
    end %>
 
@@ -30,6 +30,13 @@ StandardOutput=syslog
 StandardError=syslog
 SyslogIdentifier=<%= @conf['name'] %>
 <% end %>
-<% @conf['service_options'].each do |name, value| %>
-<%= name %>=<%= value %>
-<% end %>
+<% @conf['service_options'].each do |name, value|
+     if value.is_a?(Array)
+       value.each do |v|
+ %>
+<%=      name %>=<%= v %>
+<%     end
+     else %>
+<%=    name %>=<%= value %>
+<%   end
+   end %>

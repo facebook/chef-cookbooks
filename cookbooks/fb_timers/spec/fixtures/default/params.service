@@ -5,6 +5,9 @@
 Description=Custom set description field
 After=network.target
 jkl=aaaaah
+barbaz=a
+barbaz=b
+barbaz=c
 
 [Service]
 Type=oneshot
@@ -14,3 +17,6 @@ TimeoutStartSec=infinity
 TimeoutStopSec=90s
 asdf=7
 baz=11
+foobar=1
+foobar=2
+foobar=3

@@ -119,9 +119,11 @@ recipe 'fb_timers::default', :unsupported => [:mac_os_x] do |tc|
             'service_options' => {
               'asdf' => '7',
               'baz' => '11',
+              'foobar' => ['1', '2', '3'],
             },
             'service_unit_options' => {
               'jkl' => 'aaaaah',
+              'barbaz' => ['a', 'b', 'c'],
             },
           },
           'no_start' => {
