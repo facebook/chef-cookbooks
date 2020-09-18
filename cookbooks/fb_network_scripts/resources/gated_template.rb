@@ -63,7 +63,6 @@ action :manage do
                      new_resource.name.to_s)
       converge_by("Updating template #{new_resource.name}") do
         t.run_action(new_resource.gated_action)
-        Helpers.cleanup_nw_permission_files(run_context, new_resource)
       end
     else
       Chef::Log.info('fb_network_scripts: not allowed to change configs for ' +

@@ -24,14 +24,18 @@ action :request_nw_changes do
   end
 end
 
-action :cleanup_nw_changes_signal_files do
-  [
-    FB::NetworkScripts::NW_CHANGES_NEEDED,
-    FB::NetworkScripts::NW_CHANGES_ALLOWED,
-  ].each do |the_file|
-    file "cleanup signal file #{the_file}" do
-      path the_file
-      action :delete
+all_signal_files = [
+  FB::NetworkScripts::NW_CHANGES_NEEDED,
+  FB::NetworkScripts::NW_CHANGES_ALLOWED,
+]
+
+action :cleanup_signal_files_when_no_change_required do
+  unless node['fb_network_scripts']['_perm_requested']
+    all_signal_files.each do |the_file|
+      file "cleanup no longer required signal file #{the_file}" do
+        path the_file
+        action :delete
+      end
     end
   end
 end

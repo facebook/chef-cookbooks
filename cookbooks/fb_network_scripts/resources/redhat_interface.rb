@@ -188,7 +188,6 @@ action :enable do # ~FC017
       tempfile.close
       FileUtils.copy(tmp_ifcfg_file, tpath)
       ::File.rename(tpath, ifcfg_file)
-      Helpers.cleanup_nw_permission_files(run_context, new_resource)
     else
       Chef::Log.info(
         "fb_network_scripts[#{interface}]: not allowed to change " +
@@ -352,7 +351,6 @@ action :start do
         "fb_network_scripts_redhat_interface[#{interface}] started",
       )
     end
-    Helpers.cleanup_nw_permission_files(run_context, new_resource)
   else
     Chef::Log.info(
       "fb_network_scripts[#{interface}]: not allowed to start #{interface}",
@@ -375,7 +373,6 @@ action :stop do
       stop(interface)
       Chef::Log.info("fb_network_scripts_redhat_interface[#{interface}] stop")
     end
-    Helpers.cleanup_nw_permission_files(run_context, new_resource)
   else
     Chef::Log.info("fb_network_scripts[#{interface}]: not allowed to stop " +
                       interface.to_s)
@@ -411,7 +408,6 @@ action :disable do
         action :delete
       end
     end
-    Helpers.cleanup_nw_permission_files(run_context, new_resource)
   else
     Chef::Log.info(
       "fb_network_scripts[#{interface}]: not allowed to disable #{interface}",
