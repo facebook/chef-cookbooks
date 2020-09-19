@@ -32,7 +32,7 @@ end
 
 default['fb_ssh'] = {
   'enable_central_authorized_keys' => false,
-  'manage_packages' => true,
+  'manage_packages' => !node.windows?,
   'sshd_config' => {
     'PermitRootLogin' => false,
     'UsePAM' => true,
