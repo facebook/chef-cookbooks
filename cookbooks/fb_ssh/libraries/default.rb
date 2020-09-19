@@ -17,9 +17,13 @@
 
 module FB
   class SSH
+    def self.confdir(node)
+      node.windows? ? 'C:/ProgramData/ssh' : '/etc/ssh'
+    end
+
     DESTDIR = {
-      'keys' => '/etc/ssh/authorized_keys',
-      'principals' => '/etc/ssh/authorized_princs',
+      'keys' => 'authorized_keys',
+      'principals' => 'authorized_princs',
     }.freeze
   end
 end

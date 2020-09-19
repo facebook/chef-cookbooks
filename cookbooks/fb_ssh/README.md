@@ -25,6 +25,9 @@ packages for ssh.
 You can skip package management if you have local packages or otherwise need to
 do your own management by setting `manage_packages` to false.
 
+Given the many ways to manage packages on Windows, especially for SSH,
+we default `manage_packages` to false on Windows.
+
 ### Server configuration (sshd_config)
 The `sshd_config` hash holds configs that go into `/etc/ssh/sshd_config`. In
 general each key can have one of three types, bool, string/ints, or array.
@@ -32,24 +35,26 @@ general each key can have one of three types, bool, string/ints, or array.
 Bools are translated into `yes`/`no` when emitted into the config file. These
 are straight-forward:
 
-```
+```ruby
 node.default['fb_ssh']['sshd_config']['PubkeyAuthentication'] = true
 ```
 
 Becomes:
-```
+
+```text
 PubkeyAuthentication yes
 ```
 
 Strings and ints are always treated like normal strings:
 
-```
+```ruby
 node.default['fb_ssh']['sshd_config']['ClientAliveInterval'] = 0
 node.default['fb_ssh']['sshd_config']['ForceCommand'] = '/bin/false'
 ```
 
 Becomes:
-```
+
+```text
 ClientAliveInterval 0
 ForceCommand /bin/false
 ```
@@ -59,7 +64,7 @@ here to make management easy, one could clearly take a multi-value value key
 and make it a string and it would work, but we support arrays to make modifying
 the value later in the runlist easier. For example:
 
-```
+```ruby
 node.default['fb_ssh']['sshd_config']['AuthorizedKeysFile'] = [
   '.ssh/authorized_keys',
   '.ssh/authorized_keys2',
@@ -68,13 +73,14 @@ node.default['fb_ssh']['sshd_config']['AuthorizedKeysFile'] = [
 
 Means later it's easy for someone to do:
 
-```
+```ruby
 node.default['fb_ssh']['sshd_config']['AuthorizedKeysFile'].
   delete('.ssh/authorized_keys2')
 ```
 
 or:
-```
+
+```ruby
 node.default['fb_ssh']['sshd_config']['AuthorizedKeysFile'] <<
   '/etc/ssh/authorized_keys/%u'
 ```
@@ -96,7 +102,7 @@ change the order of your match statements, so be careful.
 Match statements are the exception to the datatype rule above - their value is
 a hash, and that hash is treated the same as the top-level sshd_config hash:
 
-```
+```ruby
 node.default['fb_ssh']['sshd_config']['Match Address 1.2.3.4'] => {
   'PasswordAuthentication' => true,
 }
@@ -114,7 +120,7 @@ happen:
    `node['fb_ssh']['authorized_principals_users']`. The format of the
    `authorized_principals` attribute is:
 
-```
+```ruby
 node.default['fb_ssh']['authorized_principals'][$USER] = ['one', 'two']
 ```
 
@@ -130,7 +136,7 @@ These work similarly to Authorized Principals. If you set
    `node['fb_ssh']['authorized_keys_users']`. The format of the items
    in databag is:
 
-```
+```ruby
 {
   'id': $USER,
   'keyname1': $KEY1,
@@ -138,7 +144,7 @@ These work similarly to Authorized Principals. If you set
   ...
 }
 ```
-    
+
 There should be one item for each user, as many keys as you'd like may
 be in that item.
 
@@ -151,11 +157,17 @@ node.default['fb_ssh']['authorized_keys']['john']['key1'] = '...'
 
 Anything in the node overrides databags.
 
+*NOTE FOR WINDOWS USERS*: On Windows the keys are managed in the homedirectory,
+not in a central location. This is because usernames are often in the format of
+`domain\user`, which means that `%u` causes sshd to expand the path to
+`C:\ProgramData\ssh\authorized_keys\domain\\user`, which is an illegal filename
+you can never make.
+
 ### Client config (ssh_config)
 The client config works the same as the server config, except the special-case
 is `Host` keys instead of `Match` keys. As an example:
 
-```
+```ruby
 node.default['fb_ssh']['ssh_config']['ForwardAgent'] = true
 node.default['fb_ssh']['ssh_config']['Host *.cool.com'] = {
   'ForwardX11' => true,

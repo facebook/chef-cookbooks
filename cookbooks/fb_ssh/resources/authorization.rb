@@ -17,12 +17,14 @@
 
 action_class do
   def manage(type)
-    keydir = FB::SSH::DESTDIR[type]
+    keydir = ::File.join(FB::SSH.confdir(node), FB::SSH::DESTDIR[type])
 
     directory keydir do
-      owner 'root'
-      group 'root'
-      mode '0755'
+      unless node.windows?
+        owner 'root'
+        group 'root'
+        mode '0755'
+      end
     end
 
     unless node['fb_ssh']["authorized_#{type}_users"].empty?
@@ -40,11 +42,35 @@ action_class do
     auth_map.each_key do |user|
       next if allowed_users && !allowed_users.include?(user)
 
-      template "#{keydir}/#{user}" do
+      # windows sucks and on ssh the "username" is "corp\\whatever" which is
+      # not a valid file name. Ugh. So we leave it in the user's homedir
+      if node.windows?
+        user = user.split('\\').last
+        homedir = "C:/Users/#{user}"
+        keyfile = "#{homedir}/.ssh/authorized_keys"
+        # users who don't have homedirectories, we skip
+        next unless ::File.exist?(homedir)
+
+        directory "#{homedir}/.ssh" do
+          rights :read, user
+          rights :full_control, 'Administrators'
+          inherits false
+        end
+      else
+        keyfile = "#{keydir}/#{user}"
+      end
+
+      template keyfile do
         source "authorized_#{type}.erb"
-        owner 'root'
-        group 'root'
-        mode '0644'
+        if node.windows?
+          rights :read, user
+          rights :full_control, 'Administrators'
+          inherits false
+        else
+          owner 'root'
+          group 'root'
+          mode '0644'
+        end
         if type == 'keys' && !auth_map[user]
           d = data_bag_item('fb_ssh_authorized_keys', user)
           d.delete('id')

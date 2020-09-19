@@ -21,11 +21,14 @@
 client_pkg = value_for_platform_family(
   ['rhel', 'fedora'] => 'openssh-clients',
   ['debian'] => 'openssh-client',
+  # not used, but keeps the resource compiling
+  ['windows'] => 'openssh-client',
 )
 
 svc = value_for_platform_family(
   ['rhel', 'fedora'] => 'sshd',
   ['debian'] => 'ssh',
+  ['windows'] => 'sshd',
 )
 
 package client_pkg do
@@ -34,11 +37,13 @@ package client_pkg do
 end
 
 package 'openssh-server' do
+  only_if { node['fb_ssh']['manage_packages'] }
   action :upgrade
   notifies :restart, 'service[ssh]'
 end
 
 whyrun_safe_ruby_block 'handle late binding ssh configs' do
+  not_if { node.windows? }
   block do
     %w{keys principals}.each do |type|
       enable_name = "enable_central_authorized_#{type}"
@@ -50,30 +55,38 @@ whyrun_safe_ruby_block 'handle late binding ssh configs' do
           )
         end
         node.default['fb_ssh']['sshd_config'][cfgname] =
-          "#{FB::SSH::DESTDIR[type]}/%u"
+          File.join(FB::SSH.confdir(node), FB::SSH::DESTDIR[type], '%u')
       end
     end
   end
 end
 
-template '/etc/ssh/sshd_config' do
+template ::File.join(FB::SSH.confdir(node), 'sshd_config') do
   source 'ssh_config.erb'
-  owner 'root'
-  group 'root'
-  mode '0644'
+  unless node.windows?
+    owner 'root'
+    group 'root'
+    mode '0644'
+    if node.windows?
+      verify '"C:/Program Files/OpenSSH-Win64/sshd.exe" -t -f %{path}'
+    else
+      verify '/usr/sbin/sshd -t -f %{path}'
+    end
+  end
   variables({ :type => 'sshd_config' })
-  verify '/usr/sbin/sshd -t -f %{path}'
   # in firstboot we may not be able to get in until ssh is restarted
   # on the desired config, so restart immediately. Otherwise, delay
   ntype = node.firstboot_any_phase? ? :immediately : :delayed
   notifies :restart, 'service[ssh]', ntype
 end
 
-template '/etc/ssh/ssh_config' do
+template ::File.join(FB::SSH.confdir(node), 'ssh_config') do
   source 'ssh_config.erb'
-  owner 'root'
-  group 'root'
-  mode '0644'
+  unless node.windows?
+    owner 'root'
+    group 'root'
+    mode '0644'
+  end
   variables({ :type => 'ssh_config' })
 end
 
@@ -93,4 +106,10 @@ service 'ssh' do
   # the service name internally to the resource
   service_name svc
   action [:enable, :start]
+end
+
+if node.windows?
+  service 'ssh-agent' do
+    action [:enable, :start]
+  end
 end
