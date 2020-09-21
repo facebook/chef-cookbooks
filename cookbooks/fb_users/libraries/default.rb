@@ -32,6 +32,14 @@ module FB
           fail "fb_users[user]: User #{user} in UID map has a UID conflict"
         end
 
+        if defined?(RESERVED_UID_RANGES)
+          RESERVED_UID_RANGES.each do |identifier, range|
+            if range.include?(info['uid'])
+              fail "fb_users[user]: User #{user} in UID map is in the " +
+                "reserved range for '#{identifier}'"
+            end
+          end
+        end
         uids[info['uid']] = nil
       end
 
@@ -41,6 +49,14 @@ module FB
           fail "fb_users[group]: group #{group} in GID map has a GID conflict"
         end
 
+        if defined?(RESERVED_GID_RANGES)
+          RESERVED_GID_RANGES.each do |identifier, range|
+            if range.include?(info['gid'])
+              fail "fb_users[group]: Group #{group} in GID map is in the " +
+                "reserved range for '#{identifier}'"
+            end
+          end
+        end
         uids[info['gid']] = nil
       end
 

@@ -133,6 +133,27 @@ automatically cleaned up.
 
 Also see `initialize_group` helper below.
 
+If you want to protect certain UID / GID ranges from being used across your
+managed system, you can add them to `RESERVED_UID_RANGES` and `RESERVED_GID_RANGES`.
+This can be useful if 3rd party software creates those users/groups.
+The key in the `Hash` will be a printable identifier, the value will be an object
+that responds to `.include?()`, so usually `Range` or `Array`.
+
+```
+module FB
+  class Users
+    RESERVED_UID_RANGES = {
+      'systemd dynamic users' => 61184..65519,
+      'project foo service users' => [52231, 52233],
+    }
+    RESERVED_GID_RANGES = {
+      'project x service groups' => 30100..30200
+      'acme corp service groups' => [30100,30442]
+    }
+  end
+end
+```
+
 ### Passwords in data_bags
 
 `fb_users` will also look for user passwords in a data_bag called
