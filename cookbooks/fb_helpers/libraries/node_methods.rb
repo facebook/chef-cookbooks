@@ -596,5 +596,9 @@ class Chef
         File.join('/var', 'chef')
       end
     end
+
+    def taste_tester_mode?
+      Chef::Config[:mode] == 'taste-tester'
+    end
   end
 end

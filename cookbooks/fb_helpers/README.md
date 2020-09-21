@@ -235,6 +235,14 @@ your node.
    Returns the base path for the Chef installation, i.e. `C:/chef` on Windows,
    and `/var/chef` on other platforms.
 
+* `node.taste_tester_mode?`
+   Returns true if the chef run is in taste-tester mode.  This makes it possible
+   to alter whether something will happen depending on if a change is being
+   tested or not.  This may be useful for stubbing out operations that would
+   normally expose secrets, or for highlighting special conditions to testers.
+   This should be used only under very special conditions; it makes testing
+   less meaningful because it alters the outcome.
+
 ### FB::Helpers
 The following methods are available:
 
