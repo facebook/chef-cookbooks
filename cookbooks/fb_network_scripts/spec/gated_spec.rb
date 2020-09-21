@@ -19,7 +19,6 @@
 require './spec/spec_helper'
 
 recipe 'fb_network_scripts::spec', :unsupported => [:mac_os_x] do |tc|
-  include FB::Spec::Helpers
 
   # hack for t70172554
   stubs_for_provider('template[/tmp/testfile]') do |provider|
@@ -36,7 +35,6 @@ recipe 'fb_network_scripts::spec', :unsupported => [:mac_os_x] do |tc|
     chef_run = tc.chef_run(
       :step_into => ['fb_network_scripts_gated_template', 'template'],
     ) do |node|
-      mock_fb_hostinfo(node)
       allow_any_instance_of(Chef::Node).to receive(:nw_changes_allowed?).
         and_return(true)
     end
@@ -48,7 +46,6 @@ recipe 'fb_network_scripts::spec', :unsupported => [:mac_os_x] do |tc|
     chef_run = tc.chef_run(
       :step_into => ['fb_network_scripts_gated_template'],
     ) do |node|
-      mock_fb_hostinfo(node)
       allow_any_instance_of(Chef::Node).to receive(:nw_changes_allowed?).
         and_return(false)
     end
