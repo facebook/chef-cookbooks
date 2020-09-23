@@ -20,7 +20,7 @@
 
 include_recipe 'fb_chef_hints::common'
 
-hints_base = ::File.join(node.chef_base_path, FB::ChefHints::HINTS_BASE)
+hints_base = ::File.join(node.host_chef_base_path, FB::ChefHints::HINTS_BASE)
 hints_glob = ::File.join(hints_base, '*.json')
 hints_files = Dir.glob(hints_glob).sort
 if hints_files.empty?

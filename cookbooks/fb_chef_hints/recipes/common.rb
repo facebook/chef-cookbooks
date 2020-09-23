@@ -18,7 +18,7 @@
 # limitations under the License.
 #
 
-hints_base = ::File.join(node.chef_base_path, FB::ChefHints::HINTS_BASE)
+hints_base = ::File.join(node.host_chef_base_path, FB::ChefHints::HINTS_BASE)
 
 directory hints_base do
   owner node.root_user
