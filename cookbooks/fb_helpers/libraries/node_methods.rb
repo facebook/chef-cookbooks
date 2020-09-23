@@ -583,17 +583,27 @@ class Chef
       node['selinux']['status']['selinux_status'] == 'enabled'
     end
 
-    def chef_base_path
+    def host_chef_base_path
       if node.windows?
-        if node.solo?
-          File.join('C:', 'chef', 'solo')
-        else
-          File.join('C:', 'chef')
-        end
-      elsif node.solo?
-        File.join('/opt', 'chef-solo')
+        File.join('C:', 'chef')
       else
         File.join('/var', 'chef')
+      end
+    end
+
+    def solo_chef_base_path
+      if node.windows?
+        File.join('C:', 'chef', 'solo')
+      else
+        File.join('/opt', 'chef-solo')
+      end
+    end
+
+    def chef_base_path
+      if node.solo?
+        self.solo_chef_base_path
+      else
+        self.host_chef_base_path
       end
     end
 

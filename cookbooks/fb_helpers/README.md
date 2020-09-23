@@ -231,9 +231,17 @@ your node.
    Returns true if SELinux is not disabled (meaning, it's running in enforcing
    or permissive mode), otherwise returns false.
 
+* `node.host_chef_base_path`
+   Returns the base path for the host Chef installation, i.e. `C:/chef` on
+   Windows, and `/var/chef` on other platforms.
+
+* `node.solo_chef_base_path`
+   Returns the base path for the Chef Solo installation, i.e. `C:/chef/solo` on
+   Windows, and `/opt/chef-solo` on other platforms.
+
 * `node.chef_base_path`
-   Returns the base path for the Chef installation, i.e. `C:/chef` on Windows,
-   and `/var/chef` on other platforms.
+   Returns the base path for the current Chef installation; see
+   `node.host_chef_base_path` and `node.solo_chef_base_path`.
 
 * `node.taste_tester_mode?`
    Returns true if the chef run is in taste-tester mode.  This makes it possible
