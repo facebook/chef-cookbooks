@@ -68,8 +68,7 @@ class Chef
       else
         return @nw_changes_allowed unless @nw_changes_allowed.nil?
         @nw_changes_allowed = node.firstboot_any_phase? ||
-          node.taste_tester_mode? ||
-          ::File.exist?(::FB::NetworkScripts::NW_CHANGES_ALLOWED)
+        ::File.exist?(::FB::NetworkScripts::NW_CHANGES_ALLOWED)
       end
     end
 
