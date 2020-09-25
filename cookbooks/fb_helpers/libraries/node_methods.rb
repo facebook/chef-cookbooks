@@ -120,7 +120,7 @@ class Chef
     end
 
     def macos?
-      self['platform'] == 'mac_os_x'
+      %w{mac_os_x macos}.include?(self['platform'])
     end
 
     alias macosx? macos?
