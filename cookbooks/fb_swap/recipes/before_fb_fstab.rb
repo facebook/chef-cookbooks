@@ -90,22 +90,24 @@ end
     only_if { node['fb_swap']['_calculated']["#{type}_size_bytes"].positive? }
     override_name 'manage'
     unit_name lazy { FB::FbSwap._swap_unit(node, type) }
-    content({
-              'Unit' => {
-                'BindsTo' => manage_unit,
-                'After' => manage_unit,
-                'PartOf' => manage_unit,
-              },
-              # Stopping swap is pathologically slow on Linux today. The general
-              # default for stopping units in systemd is 90s. Here we'll use
-              # 100s per GiB as a heuristic on top of the default.
-              # T39598868 Disabled until workaround or bug fix
-              # 'Service' => {
-              #   'TimeoutStopSec' => 90 + 100 *
-              #   (node['fb_swap']['_calculated']["#{@type}_size_bytes"]
-              #    / 2 ** 30),
-              # }
-            })
+    content(
+      lazy do
+        {
+          'Unit' => {
+            'BindsTo' => manage_unit,
+            'After' => manage_unit,
+            'PartOf' => manage_unit,
+          },
+          # Stopping swap is pathologically slow on Linux today. The general
+          # default for stopping units in systemd is 90s. Here we'll use
+          # 100s per GiB as a heuristic on top of the default.
+          'Swap' => {
+            'TimeoutSec' => 90 + 100 *
+            (node['fb_swap']['_calculated']["#{type}_size_bytes"] / 2**30),
+          },
+        }
+      end,
+    )
   end
 
   fb_systemd_override "remove #{type} swap override" do
