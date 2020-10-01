@@ -73,6 +73,42 @@ The following methods are available:
  => "[Service]\nUser = nobody\n"
 ```
 
+* `FB::Systemd.merge_unit(default_hash, override_hash)`
+  Take two hashes of systemd unit properties, and merge them together.
+  Arguments are expected to be a hash, with the three unit file stanzas.
+  The merge will append values together if a key from either hash is a list.
+  Otherwise, it will override.
+
+```
+ default_hash= {
+   'Service' => {
+     'PrivateTmp' => 'yes',
+     'Unmodified' => 'true',
+     'Something' => ['val1'],
+     'AnotherThing' => 'val3',
+   },
+   'Unit' => {},
+   'Install' => {},
+ }
+ override_hash= {
+   'Service' => {
+     'PrivateTmp' => 'no',
+     'Something' => ['val2'],
+     'AnotherThing' => ['val4'],
+   },
+ }
+
+ FB::Systemd.merge_unit(default_hash, override_hash)
+ => {
+      "Service"=>{
+        "AnotherThing"=>["val3", "val4"],
+        "PrivateTmp"=>"no",
+        "Something"=>["val1", "val2"],
+        "Unmodified"=>"true"
+      }
+    }
+```
+
 ### Providers
 
 * a `fb_systemd_override` custom resource to manage systemd unit drop-in

@@ -53,5 +53,44 @@ module FB
         IniParse.parse(content.to_s).to_s
       end
     end
+
+    def self.merge_unit(default_systemd_settings, systemd_overrides)
+      merged = {
+        'Service' => {},
+        'Unit' => {},
+        'Install' => {},
+      }
+      default_systemd_settings.each do |k, v|
+        merged[k] = v.clone
+      end
+      if systemd_overrides
+        ['Service', 'Unit', 'Install'].each do |stanza|
+          if systemd_overrides[stanza]
+            systemd_overrides[stanza].each do |k, override|
+              default = merged[stanza][k]
+              # If either value is a list, append them together
+              list = override.is_a?(Array) || default.is_a?(Array)
+              if list
+                merged[stanza][k] = Array(default) + Array(override)
+              else
+                # Override
+                merged[stanza][k] = override
+              end
+            end
+          end
+        end
+      end
+
+      # Remove empty keys in the systemd_overrides
+      merged.reject! { |_k, v| v.empty? }
+
+      # Sort the stanzas so reordering the keys doesn't alter the
+      # returned hash structure
+      ['Service', 'Unit', 'Install'].each do |stanza|
+        merged[stanza] = merged[stanza].sort.to_h if merged[stanza]
+      end
+
+      merged
+    end
   end
 end
