@@ -369,6 +369,13 @@ journal on the supercapacitor-backed DRAM device. It works identically to
 The `_no_mount` option also works here. In addition you can specify
 `raid_stripe_size` to specify the striping width (i.e. chunk size).
 
+You may also specify additional options to be passed to the 'mdadm create'
+command using the 'create_options' option, e.g.
+
+```
+    'create_options' => '--assume-clean --bitmap=none --layout=o2',
+```
+
 NOTE: `whole_device` is incompatible with `_swraid_array` and they may not be
 used together. Arrays must be on top of partition devices.
 

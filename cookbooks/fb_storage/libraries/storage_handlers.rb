@@ -577,7 +577,11 @@ module FB
           if config['journal']
             cmd << " --write-journal #{config['journal']}"
           end
+          if config['create_options']
+            cmd << " #{config['create_options']}"
+          end
           cmd << " #{config['members'].join(' ')}"
+
           Mixlib::ShellOut.new(cmd).run_command.error!
           Mixlib::ShellOut.new("udevadm trigger #{@device}").run_command.error!
         end
