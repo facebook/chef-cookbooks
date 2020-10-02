@@ -448,7 +448,7 @@ class Chef
       end
       curtime = Time.now.tv_sec
       # The timeshard will be the number of seconds into the duration.
-      time_shard = self.get_flexible_shard(duration)
+      time_shard = duration == 0 ? duration : self.get_flexible_shard(duration)
       # The time threshold is the sum of the start time and time shard.
       time_threshold = st + time_shard
       Chef::Log.debug(
