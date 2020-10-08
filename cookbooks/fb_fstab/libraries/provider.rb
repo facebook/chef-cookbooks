@@ -20,18 +20,20 @@ module FB
   module FstabProvider
     def mount(mount_data, in_maint_disks)
       relevant_disk = nil
-      if in_maint_disks.any? do |disk|
+      in_maint_disks.each do |disk|
         if mount_data['device'].start_with?(disk)
           relevant_disk = disk
-          next true
+          break
         end
       end
+      if relevant_disk
         Chef::Log.warn(
           "fb_fstab: Skipping mount of #{mount_data['mount_point']} because " +
           " device #{relevant_disk} is marked as in-maintenance",
         )
         return true
       end
+
       # We don't use a 'directory' resource, because that would happen
       # later. Also, we don't want to conflict with resources that may
       # actually managed this directory (though they better check it's
