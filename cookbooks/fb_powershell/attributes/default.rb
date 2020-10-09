@@ -26,4 +26,7 @@ default['fb_powershell'] = {
     'manage' => false,
     'version' => nil,
   },
+  # Manage the powershell.config.json used by PowerShell Core
+  'manage_config' => false,
+  'config' => {},
 }

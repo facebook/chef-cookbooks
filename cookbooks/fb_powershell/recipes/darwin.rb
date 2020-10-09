@@ -24,16 +24,23 @@
 # This install Powershell core via homebrew. They just call it "powershell"
 
 # Upgrade to latest package if no specific version given
-package 'upgrade powershell' do
+homebrew_cask 'install powershell' do
+  cask_name 'powershell'
   only_if { node['fb_powershell']['pwsh']['manage'] }
-  only_if { node['fb_powershell']['pwsh']['version'].nil? }
-  action :upgrade
+  action :install
 end
 
-# Only install specific version, if given
-package 'install powershell' do
-  only_if { node['fb_powershell']['pwsh']['manage'] }
-  not_if { node['fb_powershell']['pwsh']['version'].nil? }
-  action :install
-  version lazy { node['fb_powershell']['pwsh']['version'] }
+# https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-core-on-macos
+# Setup PowerShell-Config folder
+installs = Dir.glob('/usr/local/microsoft/powershell/[6789]*')
+installs.each do |install|
+  path = File.join(install, 'powershell.config.json')
+  template path do # ~FB031
+    only_if { node['fb_powershell']['manage_config'] }
+    source 'powershell.config.json.erb'
+    owner node.root_user
+    group node.root_group
+    mode '0744'
+    action :create
+  end
 end

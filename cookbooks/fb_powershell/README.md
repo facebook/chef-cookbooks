@@ -60,15 +60,28 @@ node.default['fb_powershell']['pwsh']['manage'] = true
 node.default['fb_powershell']['pwsh']['version'] = '7.0.3'
 ```
 
-### Upgrade Powershell Core (Mac/Linux) to Latest
+### Upgrade Powershell Core on Linux to Latest
 
 ```
 node.default['fb_powershell']['pwsh']['manage'] = true
 ```
 
-### Upgrade Powershell Core (Mac/Linux) to Specific Version
+### Upgrade Powershell Core on Linux to Specific Version
 
 ```
 node.default['fb_powershell']['pwsh']['manage'] = true
 node.default['fb_powershell']['pwsh']['version'] = '7.0.3'
 ```
+
+### Install Powershell Core on Mac
+
+```
+node.default['fb_powershell']['pwsh']['manage'] = true
+```
+
+### Upgrade Powershell Core on Mac to Specific Version
+
+Because the recipe uses the `homebrew_cask` resource, it is only able to install
+the cask. You will need to run `brew` commands to upgrade the casks.
+
+See: https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-core-on-macos?view=powershell-7
