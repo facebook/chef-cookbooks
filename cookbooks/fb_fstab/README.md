@@ -217,6 +217,15 @@ is one device, ala:
 * /dev/sdd1
 * /dev/sdq2
 
-If this file has not been touched in 7 days it will be assumed to be stale and
-will be removed. This is designed for online _repair_ not ignoring disks
-permanently.
+Chef will also read a file `/var/chef/in_maintenance_mounts` to determine any
+mounts that should be skipped, regardless of the status of the underlying
+devices. This is especially useful if maintenance needs to be performed on an
+array that can't be kept online (e.g. for RAID0). The format of the file is
+one mount, ala:
+
+* /mnt/d0
+* /mnt/d1
+
+For both these files, if this file has not been touched in 7 days it will be
+assumed to be stale and will be removed. This is designed for online
+_repair_, not for ignoring disks permanently.

@@ -183,11 +183,12 @@ EOF
       end.to raise_error(RuntimeError)
     end
   end
-  context 'get_in_maint_disks' do
+  context 'parse_in_maint_file' do
     it 'should return an empty array if file does not exist' do
       File.should_receive(:exist?).with(FB::Fstab::IN_MAINT_DISKS_FILENAME).
         and_return(false)
-      FB::Fstab.get_in_maint_disks.should eq([])
+      FB::Fstab.parse_in_maint_file(FB::Fstab::IN_MAINT_DISKS_FILENAME).
+        should eq([])
     end
     it 'should delete stale files' do
       stat = double('FSstat')
@@ -198,7 +199,15 @@ EOF
         and_return(stat)
       File.should_receive(:unlink).with(FB::Fstab::IN_MAINT_DISKS_FILENAME).
         and_return(true)
-      FB::Fstab.get_in_maint_disks.should eq([])
+      FB::Fstab.parse_in_maint_file(FB::Fstab::IN_MAINT_DISKS_FILENAME).
+        should eq([])
+    end
+  end
+  context 'get_in_maint_mounts' do
+    it 'should canonicalize mount paths' do
+      expect(FB::Fstab).to receive(:parse_in_maint_file).
+        with(FB::Fstab::IN_MAINT_MOUNTS_FILENAME).and_return(['/mnt/d0/'])
+      FB::Fstab.get_in_maint_mounts.should eq(['/mnt/d0'])
     end
   end
   context 'get_unmasked_base_mounts' do
@@ -986,7 +995,7 @@ describe 'FB::FstabProvider', :include_provider do
       Mixlib::ShellOut.should_receive(:new).with(
         "cd /dev/shm && /bin/mount #{desired_mount['mount_point']}",
       ).and_return(so)
-      mount(desired_mount, []).should eq(true)
+      mount(desired_mount, [], []).should eq(true)
     end
     it 'should attempt to mount by systemd mount unit on systemd hosts' do
       desired_mount = {
@@ -1013,7 +1022,7 @@ describe 'FB::FstabProvider', :include_provider do
       Mixlib::ShellOut.should_receive(:new).with(
         '/bin/systemctl start thisisaunit',
       ).and_return(so2)
-      mount(desired_mount, []).should eq(true)
+      mount(desired_mount, [], []).should eq(true)
     end
     it 'should raise failures on mount failure' do
       desired_mount = {
@@ -1033,7 +1042,7 @@ describe 'FB::FstabProvider', :include_provider do
         "cd /dev/shm && /bin/mount #{desired_mount['mount_point']}",
       ).and_return(so)
       expect do
-        mount(desired_mount, [])
+        mount(desired_mount, [], [])
       end.to raise_error(Mixlib::ShellOut::ShellCommandFailed)
     end
     it 'should not raise failures on mount failure, if failure allowed' do
@@ -1053,7 +1062,7 @@ describe 'FB::FstabProvider', :include_provider do
       Mixlib::ShellOut.should_receive(:new).with(
         "cd /dev/shm && /bin/mount #{desired_mount['mount_point']}",
       ).and_return(so)
-      mount(desired_mount, []).should eq(true)
+      mount(desired_mount, [], []).should eq(true)
     end
     it 'should not try to mount in-maintenance disks' do
       desired_mount = {
@@ -1065,7 +1074,19 @@ describe 'FB::FstabProvider', :include_provider do
         'mp_owner' => 'nobody',
         'mp_group' => 'nobody',
       }
-      mount(desired_mount, ['/dev/sdd1']).should eq(true)
+      mount(desired_mount, ['/dev/sdd1'], []).should eq(true)
+    end
+    it 'should not try to mount in-maintenance mounts' do
+      desired_mount = {
+        'device' => '/dev/sdd1',
+        'mount_point' => '/mnt/d0',
+        'type' => 'xfs',
+        'opts' => 'rw,noatime',
+        'mp_perms' => '0700',
+        'mp_owner' => 'nobody',
+        'mp_group' => 'nobody',
+      }
+      mount(desired_mount, [], ['/mnt/d0']).should eq(true)
     end
     it 'should create the mountpoint for you' do
       desired_mount = {
@@ -1096,7 +1117,7 @@ describe 'FB::FstabProvider', :include_provider do
       Mixlib::ShellOut.should_receive(:new).with(
         "cd /dev/shm && /bin/mount #{desired_mount['mount_point']}",
       ).and_return(so)
-      mount(desired_mount, []).should eq(true)
+      mount(desired_mount, [], []).should eq(true)
     end
   end
 end

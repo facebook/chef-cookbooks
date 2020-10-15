@@ -18,7 +18,15 @@
 module FB
   # Module to be loaded into the provider namespace
   module FstabProvider
-    def mount(mount_data, in_maint_disks)
+    def mount(mount_data, in_maint_disks, in_maint_mounts)
+      if in_maint_mounts.include?(mount_data['mount_point'])
+        Chef::Log.warn(
+          "fb_fstab: Skipping mount of #{mount_data['mount_point']} because " +
+          'the mount is marked as in-maintenance',
+        )
+        return true
+      end
+
       relevant_disk = nil
       in_maint_disks.each do |disk|
         if mount_data['device'].start_with?(disk)
@@ -604,6 +612,7 @@ module FB
       # to mountpoint, but that won't work for things with a device of "none",
       # so build a reverse mapping too
       in_maint_disks = FB::Fstab.get_in_maint_disks
+      in_maint_mounts = FB::Fstab.get_in_maint_mounts
 
       # walk desired mounts, see if it's mounted, and mount/update
       # as appropriate.
@@ -650,7 +659,7 @@ module FB
           next
         when :missing
           converge_by "mount #{desired_data['mount_point']}" do
-            mount(desired_data, in_maint_disks)
+            mount(desired_data, in_maint_disks, in_maint_mounts)
           end
           # Device mounted, move on...
           next

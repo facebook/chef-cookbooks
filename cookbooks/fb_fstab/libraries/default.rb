@@ -21,6 +21,7 @@ module FB
     class Fstab
       BASE_FILENAME = '/etc/.fstab.chef'.freeze
       IN_MAINT_DISKS_FILENAME = '/var/chef/in_maintenance_disks'.freeze
+      IN_MAINT_MOUNTS_FILENAME = '/var/chef/in_maintenance_mounts'.freeze
       BTRFS_ROOTPARENT = '5'.freeze
 
       def self.determine_base_fstab_entries(full_fstab)
@@ -75,34 +76,52 @@ module FB
         node['fb_fstab']['_basefilecontents']
       end
 
-      # Returns an array of disks
-      def self.get_in_maint_disks
-        return [] unless File.exist?(IN_MAINT_DISKS_FILENAME)
+      # Returns an array of strings
+      def self.parse_in_maint_file(path)
+        return [] unless File.exist?(path)
 
         age = (
-          Time.now - File.stat(IN_MAINT_DISKS_FILENAME).mtime
+          Time.now - File.stat(path).mtime
         ).to_i
         if age > 60 * 60 * 24 * 7
           Chef::Log.warn(
-            "fb_fstab: Removing stale #{IN_MAINT_DISKS_FILENAME} " +
-            '- it is more than 1 week old.',
+            "fb_fstab: Removing stale #{path} - it is more than 1 week old.",
           )
-          File.unlink(IN_MAINT_DISKS_FILENAME)
+          File.unlink(path)
           return []
         end
-        disks = []
-        File.read(IN_MAINT_DISKS_FILENAME).each_line do |line|
+        entries = []
+        File.read(path).each_line do |line|
           next if line.start_with?('#')
           next if line.strip.empty?
 
-          disks << line.strip
+          entries << line.strip
         end
+        entries
+      end
+
+      # Returns an array of disks
+      def self.get_in_maint_disks
+        disks = self.parse_in_maint_file(IN_MAINT_DISKS_FILENAME)
         unless disks.empty?
           Chef::Log.warn(
             "fb_fstab: Will skip in-maintenance disks: #{disks.join(' ')}",
           )
         end
         disks
+      end
+
+      # Returns an array of mounts
+      def self.get_in_maint_mounts
+        mounts = self.parse_in_maint_file(IN_MAINT_MOUNTS_FILENAME)
+        # Canonicalize mount paths (e.g. removing trailing slashes)
+        mounts.map! { |m| Pathname.new(m).cleanpath.to_s }
+        unless mounts.empty?
+          Chef::Log.warn(
+            "fb_fstab: Will skip in-maintenance mounts: #{mounts.join(' ')}",
+          )
+        end
+        mounts
       end
 
       def self.get_autofs_points(node)
