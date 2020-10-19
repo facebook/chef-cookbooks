@@ -23,7 +23,9 @@ Slice=system-timers-<%= @conf['name'] %>.slice
 <% @conf['commands'].each do |command| %>
 ExecStart=<%= command %>
 <% end %>
+<% if @conf['timeout'] %>
 TimeoutStartSec=<%= @conf['timeout'] %>
+<% end %>
 TimeoutStopSec=<%= @conf['timeout_stop'] %>
 <% if @conf['syslog'] %>
 StandardOutput=syslog

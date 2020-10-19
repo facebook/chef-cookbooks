@@ -10,5 +10,4 @@ Type=oneshot
 Slice=system-timers-multiple.slice
 ExecStart=/usr/local/bin/foobar.sh one
 ExecStart=/usr/local/bin/foobar.sh two
-TimeoutStartSec=infinity
 TimeoutStopSec=90s

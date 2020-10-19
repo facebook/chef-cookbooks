@@ -38,7 +38,7 @@ module FB
       'splay' => '0s',
       'syslog' => false,
       'timeout_stop' => '90s',
-      'timeout' => 'infinity',
+      'timeout' => nil,
       'timer_options' => {},
       'timer_unit_options' => {},
     }.freeze

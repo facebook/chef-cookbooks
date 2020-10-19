@@ -13,7 +13,6 @@ barbaz=c
 Type=oneshot
 Slice=system-timers-params.slice
 ExecStart=/usr/local/bin/foobar.sh
-TimeoutStartSec=infinity
 TimeoutStopSec=90s
 asdf=7
 baz=11
