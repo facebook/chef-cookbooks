@@ -1,0 +1,26 @@
+# This file is maintained by Chef. Do not edit, all changes will be
+# overwritten. See fb_resolv/README.md
+<% if node['fb_resolv']['domain'] -%>
+
+domain <%= node['fb_resolv']['domain'] %>
+<% end -%>
+<% unless node['fb_resolv']['search'].empty? -%>
+
+search <%= node['fb_resolv']['search'].uniq.join(' ') %>
+<% end -%>
+<% unless node['fb_resolv']['sortlist'].empty? -%>
+
+sortlist <%= node['fb_resolv']['sortlist'].uniq.join(' ') %>
+<% end -%>
+<% node['fb_resolv']['nameservers'].each_with_index do |ns, i| -%>
+<% if i == 0 -%>
+
+<% end -%>
+nameserver <%= ns %>
+<% end -%>
+<% unless node['fb_resolv']['options'].empty? -%>
+
+<% end %>
+<% node['fb_resolv']['options'].to_hash.each do |k, v| -%>
+options <%= k %><% unless v.nil? %>:<%= v %><% end %>
+<% end -%>

@@ -1,0 +1,14 @@
+# This file is maintained by Chef. Do not edit, all changes will be
+# overwritten. See fb_resolv/README.md
+
+domain mydomain.doesnotexist
+
+search mydomain.doesnotexist myotherdomain.alsodoesnotexist
+
+sortlist 192.0.2.0/255.255.255.0 198.51.100.0
+
+nameserver 2001:DB8::1
+nameserver 2001:DB8::2
+
+options inet6
+options ndots:3
