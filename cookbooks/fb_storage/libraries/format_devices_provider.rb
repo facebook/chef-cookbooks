@@ -184,14 +184,14 @@ module FB
         all_storage = storage.all_storage
         # Stash these away for reporting purposes:
         stash_stats(needs_work)
-        Chef::Log.debug(
+        Chef::Log.info(
           "fb_storage: Out of spec storage: #{needs_work}",
         )
-        Chef::Log.debug(
+        Chef::Log.info(
           "fb_storage: All storage: #{all_storage}",
         )
         format_rules = node['fb_storage']['format'].to_hash
-        Chef::Log.debug(
+        Chef::Log.info(
           "fb_storage: Converge rules: #{format_rules}",
         )
         to_do = {
@@ -208,7 +208,7 @@ module FB
         # hotswap automation is orthogonal to normal "out of spec"-ness, so do
         # that no matter what if we're allowed to in addition to the rest.
         if format_rules['hotswap']
-          Chef::Log.debug(
+          Chef::Log.info(
             'fb_storage: Allowed to converge disks on this system ' +
             'that external automation has specified',
           )
@@ -231,7 +231,7 @@ module FB
           # if there are any RAID0 arrays that reference these partitions,
           # we'll need to rebuild those as well
           arrays = []
-          Chef::Log.debug(
+          Chef::Log.info(
             'fb_storage: Determining what RAID0 arrays or Hybrid ' +
             'XFS filesystems need rebuilding, and what arrays need to be ' +
             'filled to accommodate automation request...',
