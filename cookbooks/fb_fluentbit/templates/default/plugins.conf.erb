@@ -1,0 +1,8 @@
+# This file is maintained by Chef. Do not edit, all changes will be
+# overwritten. See fb_fluentbit/README.md
+
+[PLUGINS]
+<% plugins = node['fb_fluentbit']['plugins'].values -%>
+<% plugins.map{ |p| p['external_path'] }.compact.each do |p| -%>
+    Path <%=p%>
+<% end -%>
