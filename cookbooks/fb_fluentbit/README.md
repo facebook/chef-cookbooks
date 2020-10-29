@@ -6,6 +6,7 @@ Attributes
 ----------
 * node['fb_fluentbit']['service_config']
 * node['fb_fluentbit']['external_config_url']
+* node['fb_fluentbit']['parsers']
 * node['fb_fluentbit']['plugins']
 
 Usage
@@ -45,8 +46,30 @@ Please note that no plugins are configured by default.
 You are also responsible for giving a descriptive name for the key
 in the plugin map. This name is not used in the configuration,
 but it is needed to distinguish one plugin from another.
-We recommend the format `<cookbook_name_goal`. For example:
+We recommend the format `<cookbook_name_goal>`. For example:
 `fbinstance_scribe`.
 Important: by default, if you do not use fields `Tag` and `Match`,
 all data from input plugins will be sent to all output ones.
 Therefore, please use these fields whenever possible.
+
+### Customizing Parsers
+Parsers can be configured by setting their name and configuration in
+`node['fb_fluentbit']['parsers']` like so:
+
+```
+node.default['fb_fluentbit']['parsers']['some_parser'] = {
+  'format' => 'json',
+  'Time_Key' => 'time',
+  'Time_Format' => '%Y-%m-%dT%H:%M:%S %z',
+}
+```
+
+This will be rendered in parsers.conf as:
+
+```
+[PARSER]
+    Name some_parser
+    Format json
+    Time_Key time
+    Time_Format %Y-%m-%dT%H:%M:%S %z
+```

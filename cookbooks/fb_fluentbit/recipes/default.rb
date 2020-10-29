@@ -30,6 +30,10 @@ whyrun_safe_ruby_block 'validate fluentbit config' do
       node.default['fb_fluent']['plugins'][plugin]['plugin_config'] ||= {}
       FB::Fluentbit.valid_plugin?(node['fb_fluentbit']['plugins'][plugin])
     end
+
+    node['fb_fluentbit']['parsers'].each do |name, conf|
+      FB::Fluentbit.valid_parser?(name, conf)
+    end
   end
 end
 
@@ -47,6 +51,15 @@ end
 template '/etc/td-agent-bit/plugins.conf' do
   action :create
   source 'plugins.conf.erb'
+  owner 'root'
+  group 'root'
+  mode '0644'
+  notifies :restart, 'service[td-agent-bit]'
+end
+
+template '/etc/td-agent-bit/parsers.conf' do
+  action :create
+  source 'parsers.conf.erb'
   owner 'root'
   group 'root'
   mode '0644'

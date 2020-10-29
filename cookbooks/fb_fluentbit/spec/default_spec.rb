@@ -106,6 +106,18 @@ recipe('fb_fluentbit::default') do |tc|
     end.to raise_error(RuntimeError)
   end
 
+  it 'should raise error when parser has no format' do
+    expect do
+      tc.chef_run.converge(described_recipe) do |node|
+        node.default['fb_fluentbit']['plugins']['foo'] = input_plugin
+        node.default['fb_fluentbit']['plugins']['bar'] = output_plugin
+        node.default['fb_fluentbit']['parsers']['parser'] = {
+          'Time_Key' => 'time',
+        }
+      end
+    end.to raise_error(RuntimeError)
+  end
+
   context 'clean config setup' do
     cached(:chef_run) do
       tc.chef_run.converge(described_recipe) do |node|
@@ -138,6 +150,17 @@ recipe('fb_fluentbit::default') do |tc|
             'Category' => 'some_category',
           },
         }
+
+        # Add some parsers.
+        node.default['fb_fluentbit']['parsers']['my_parser'] = {
+          'format' => 'regex',
+          'Time_Key' => 'time',
+          'Regex' => '^some line here$',
+        }
+        node.default['fb_fluentbit']['parsers']['my_other_parser'] = {
+          'format' => 'json',
+          'Time_Key' => 'time',
+        }
       end
     end
 
@@ -148,6 +171,11 @@ recipe('fb_fluentbit::default') do |tc|
     it 'should install external plugin packages' do
       expect(chef_run).to upgrade_package('fluentbit external plugins').
         with_package_name(['fb-fluentbit-scribble-plugin'])
+    end
+
+    it 'should render parsers.conf' do
+      expect(chef_run).to render_file('/etc/td-agent-bit/parsers.conf').
+        with_content(tc.fixture('clean_config_parsers.conf'))
     end
 
     it 'should render plugins.conf' do

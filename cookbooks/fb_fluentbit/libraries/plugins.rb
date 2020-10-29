@@ -28,6 +28,14 @@ module FB
       end
     end
 
+    def self.valid_parser?(parser_name, parser_conf)
+      unless parser_conf.key?('format')
+        fail "fb_fluentbit: Found invalid fluentbit parser '#{parser_name}'" +
+          'with no \'format\' attribute'
+      end
+      true
+    end
+
     def self.valid_plugin?(plugin_conf)
       unless plugin_conf['name']
         fail 'fb_fluentbit: ' +

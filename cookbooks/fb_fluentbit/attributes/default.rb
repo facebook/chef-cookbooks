@@ -16,6 +16,7 @@
 #
 
 default['fb_fluentbit'] = {
+  'parsers' => {},
   'plugins' => {},
   'service_config' => {
     'Flush' => 5,
