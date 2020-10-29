@@ -25,6 +25,7 @@ this package will be installed. You also need to configure `external_path` prope
 for external plugins to specify path where plugin .so file can be found after
 package installation.
 
+### Customizing Plugins
 There is plugin structure to add in node['fb_fluentbit']['plugins']:
 
 ```ruby

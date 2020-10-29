@@ -29,12 +29,11 @@ whyrun_safe_ruby_block 'validate fluentbit config' do
     node['fb_fluentbit']['plugins'].keys.each do |plugin|
       node.default['fb_fluent']['plugins'][plugin]['plugin_config'] ||= {}
       FB::Fluentbit.valid_plugin?(node['fb_fluentbit']['plugins'][plugin])
-      node.default['fb_fluentbit']['plugins'][plugin]['type'].upcase!
     end
   end
 end
 
-package BASIC_PACKAGE_NAME do
+package 'td-agent-bit' do
   action :upgrade
 end
 
@@ -45,35 +44,37 @@ package 'fluentbit external plugins' do
   action :upgrade
 end
 
-template PLUGIN_FILE_NAME do # ~FB031
+template '/etc/td-agent-bit/plugins.conf' do
   action :create
   source 'plugins.conf.erb'
   owner 'root'
   group 'root'
   mode '0644'
-  notifies :restart, "service[#{SERVICE_NAME}]", :delayed
+  notifies :restart, 'service[td-agent-bit]'
 end
 
-remote_file CONF_FILE_NAME do
+remote_file 'remote config' do
   only_if { node['fb_fluentbit']['external_config_url'] }
   source lazy { node['fb_fluentbit']['external_config_url'] }
+  path '/etc/td-agent-bit/td-agent-bit.conf'
   action :create
   owner 'root'
   group 'root'
   mode '0600'
-  notifies :restart, "service[#{SERVICE_NAME}]", :delayed
+  notifies :restart, 'service[td-agent-bit]'
 end
 
-template CONF_FILE_NAME do # ~FB031
+template 'local config' do
   not_if { node['fb_fluentbit']['external_config_url'] }
   action :create
   source 'conf.erb'
+  path '/etc/td-agent-bit/td-agent-bit.conf'
   owner 'root'
   group 'root'
   mode '0600'
-  notifies :restart, "service[#{SERVICE_NAME}]", :delayed
+  notifies :restart, 'service[td-agent-bit]'
 end
 
-service SERVICE_NAME do
+service 'td-agent-bit' do
   action [:enable, :start]
 end

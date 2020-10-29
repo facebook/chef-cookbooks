@@ -9,9 +9,9 @@
 
 <% plugins = node['fb_fluentbit']['plugins'].values -%>
 <% plugins.each do |p| -%>
-[<%=  p["type"].upcase %>]
-    Name  <%=p["name"]%>
-    <% (p["plugin_config"] || {}).each do |k,v| -%>
+[<%=  p['type'].upcase %>]
+    Name  <%= p['name'] %>
+    <% (p['plugin_config'] || {}).each do |k,v| -%>
     <% v = v.call if v.respond_to?(:call) -%>
     <%= k %>  <%= v %>
     <% end -%>
