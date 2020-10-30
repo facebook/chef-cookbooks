@@ -25,14 +25,14 @@ SERVICE_NAME = 'td-agent-bit'.freeze
 
 whyrun_safe_ruby_block 'validate fluentbit config' do
   block do
-    FB::Fluentbit.valid_configuration?(node['fb_fluentbit']['plugins'])
-    node['fb_fluentbit']['plugins'].keys.each do |plugin|
-      node.default['fb_fluent']['plugins'][plugin]['plugin_config'] ||= {}
-      FB::Fluentbit.valid_plugin?(node['fb_fluentbit']['plugins'][plugin])
-    end
+    parsers = FB::Fluentbit.parsers_from_node(node)
+    parsers.each(&:validate)
 
-    node['fb_fluentbit']['parsers'].each do |name, conf|
-      FB::Fluentbit.valid_parser?(name, conf)
+    external_plugins = FB::Fluentbit.external_plugins_from_node(node)
+    external_plugins.each(&:validate)
+
+    FB::Fluentbit.plugins_from_node(node).each do |plugin|
+      plugin.validate(parsers)
     end
   end
 end
@@ -43,7 +43,7 @@ end
 
 package 'fluentbit external plugins' do
   package_name lazy {
-    node['fb_fluentbit']['plugins'].values.map { |p| p['package_name'] }.compact
+    FB::Fluentbit.external_plugins_from_node(node).map(&:package).sort.uniq
   }
   action :upgrade
 end

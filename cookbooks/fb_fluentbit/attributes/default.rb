@@ -16,8 +16,7 @@
 #
 
 default['fb_fluentbit'] = {
-  'parsers' => {},
-  'plugins' => {},
+  # Base service configuration.
   'service_config' => {
     'Flush' => 5,
     'Daemon' => 'Off',
@@ -28,5 +27,16 @@ default['fb_fluentbit'] = {
     'HTTP_Listen' =>  '0.0.0.0',
     'HTTP_Port' => '2020',
   },
+
+  # Set an external config URL to receive a config from somewhere else.
   'external_config_url' => nil,
+
+  # External plugin configuration.
+  'external' => {},
+
+  # Plugin and parser definitions.
+  'parser' => {},
+  'input' => {},
+  'filter' => {},
+  'output' => {},
 }

@@ -1,11 +1,10 @@
 # This file is maintained by Chef. Do not edit, all changes will be
 # overwritten. See fb_fluentbit/README.md
 
-<% node['fb_fluentbit']['parsers'].each do |name, config| -%>
+<% FB::Fluentbit.parsers_from_node(node).each do |parser| %>
 [PARSER]
-    Name <%= name %>
-    Format <%= config['format'] %>
-    <% config.reject { |k, _| k == 'format' }.each do |key, value| -%>
+    Name <%= parser.name %>
+    <% parser.config.each do |key, value| -%>
     <%= key %> <%= value %>
     <% end -%>
 

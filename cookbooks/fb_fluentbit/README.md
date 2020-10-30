@@ -1,63 +1,112 @@
 fb_fluentbit Cookbook
 ========================
-This cookbook installs the fluentbit daemon and optionally plugins for it.
+This cookbook installs the Fluent Bit daemon and optionally plugins for it.
 
 Attributes
 ----------
 * node['fb_fluentbit']['service_config']
-* node['fb_fluentbit']['external_config_url']
 * node['fb_fluentbit']['parsers']
-* node['fb_fluentbit']['plugins']
+* node['fb_fluentbit']['input']
+* node['fb_fluentbit']['filter']
+* node['fb_fluentbit']['output']
+* node['fb_fluentbit']['external']
+* node['fb_fluentbit']['external_config_url']
 
 Usage
 -----
-Include `fb_fluentbit::default` recipe to install fluentbit.
+Include `fb_fluentbit::default` recipe to install fluentbit. For more
+information about how to configure Fluent Bit, please refer to
+[the documentation](https://docs.fluentbit.io/manual/)
 
-Cookbook provides 2 options to create fluentbit config:
- - Configuration template
- - Fetching existing config from url
+This cookbook provides 2 options to create fluentbit config:
+* Fetching existing config from url
+* Configuration template
 
-Fluentbit allows you to have multiple instances of the same plugins,
-for example multiple tail plugin instances to get logs from multiple files.
-Fluentbit also supports built-in and external plugins.
-These theses are reflected in the plugin API.
-If you set `package_name` property of fb_fluentbit plugin map to plugin package name
-this package will be installed. You also need to configure `external_path` property
-for external plugins to specify path where plugin .so file can be found after
-package installation.
+Fluentbit allows you to have multiple instances of the same plugins, for example
+multiple tail plugin instances to get logs from multiple files.
 
-### Customizing Plugins
-There is plugin structure to add in node['fb_fluentbit']['plugins']:
+Fluentbit supports built-in and external plugins.
 
-```ruby
-{
-      'type' => 'INPUT|OUTPUT|FILTER - type of plugin, mandatory',
-      'name' => 'name of plugin, mandatory',
-      'package_name' => 'External plugin, shipped as rpm',
-      'external_path' => 'External plugin, path to .so binary',
-      'plugin_config' => {
-          'config_param1' => 'custom plugin config vars'
-      },
+### Fetching remote config
+This cookbook can configure fluentbit to fetch its config from a remote
+location. To do so, set `node['fb_fluentbit']['external_config_url']` to the
+address at which to receive a custom config.
+
+When operating in this mode, this completely bypasses any other node attributes
+set on this cookbook.
+
+### Configuring builtin plugins
+Fluentbit comes with a number of different builtin plugins that can be
+configured via the cookbook API. Each plugin is scoped by a key name (that is
+not used in the final config file).
+
+As an example, the following configures an input tailing a log file, filtering
+out certain lines based on grep, and ultimately logging to stdout.
+
+```
+# Read lines from /var/log/my_log.txt
+node.default['fb_fluentd']['input']['tail']['tail_myfile'] = {
+  'Path' => '/var/log/my_log.txt',
+  'Tag' => 'my_cool_log',
+}
+
+# Filter out lines that contain "badstuff"
+node.default['fb_fluentd']['filter']['grep']['filter_badstuff'] = {
+  'Match' => 'my_cool_log',
+  'Regex' => '^.+badstuff.+$',
+}
+
+# Finally, output to stdout
+node.default['fb_fluentd']['output']['stdout']['print_to_output'] = {
+  'Match' => 'my_cool_log',
 }
 ```
 
-To start correctly, at least one INPUT and OUTPUT plugin must be configured.
-Please note that no plugins are configured by default.
-You are also responsible for giving a descriptive name for the key
-in the plugin map. This name is not used in the configuration,
-but it is needed to distinguish one plugin from another.
-We recommend the format `<cookbook_name_goal>`. For example:
-`fbinstance_scribe`.
-Important: by default, if you do not use fields `Tag` and `Match`,
-all data from input plugins will be sent to all output ones.
-Therefore, please use these fields whenever possible.
-
-### Customizing Parsers
-Parsers can be configured by setting their name and configuration in
-`node['fb_fluentbit']['parsers']` like so:
+This will be rendered as:
 
 ```
-node.default['fb_fluentbit']['parsers']['some_parser'] = {
+[INPUT]
+    Name tail
+    Path /var/log/my_log.txt
+    Tag my_cool_log
+
+[FILTER]
+    Name grep
+    Match my_cool_tag
+    Regex ^.+badstuff.+$
+
+[OUTPUT]
+    Name stdout
+    Match my_cool_log
+```
+
+### External plugins
+Fluent Bit supports external/custom plugins. This cookbook API allows for
+providing a combination of RPM package name and plugin path like so:
+
+```
+# Tell fb_fluentbit where and how to configure your plugin.
+node.default['fb_fluentbit']['external']['my_plugin'] = {
+  'package' => 'my-rpm-package',
+  'path' => '/usr/local/lib/my_plugin/my_plugin.so',
+}
+```
+
+Then configure your plugin just like any other builtin plugin:
+
+```
+node.default['fb_fluentbit']['output']['my_plugin']['foo'] = {
+  'Match' => '*',
+  'Key_1' => 'Value_1',
+}
+```
+
+### Custom Parsers
+Parsers can be configured by setting their name and configuration in
+`node['fb_fluentbit']['parser']` like so:
+
+```
+node.default['fb_fluentbit']['parser']['some_parser'] = {
   'format' => 'json',
   'Time_Key' => 'time',
   'Time_Format' => '%Y-%m-%dT%H:%M:%S %z',
