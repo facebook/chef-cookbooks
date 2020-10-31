@@ -49,6 +49,24 @@ recipe('fb_fluentbit::default') do |tc|
     end.to raise_error(RuntimeError)
   end
 
+  it 'should raise error when using undefined parser with mutliple parsers' do
+    expect do
+      tc.chef_run.converge(described_recipe) do |node|
+        node.default['fb_fluentbit']['parser']['my_parser'] = {
+          'Format' => 'regex',
+          'Regex' => '^.+$',
+        }
+        node.default['fb_fluentbit']['filter']['parser']['parse_stuff'] = {
+          'Match' => '*',
+          'Parser' => [
+            'my_parser',
+            'nonexistent_parser',
+          ],
+        }
+      end
+    end.to raise_error(RuntimeError)
+  end
+
   context 'external plugin with bad config' do
     it 'should raise error when "package" is missing' do
       expect do

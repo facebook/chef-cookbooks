@@ -105,14 +105,18 @@ module FB
 
       def validate(parsers)
         if @type == 'filter' && @name == 'parser'
-          parser_name = if @config.key?('Parser')
-                          @config['Parser']
-                        elsif @config.key?('parser')
-                          @config['parser']
-                        end
-          unless parsers.map(&:name).include?(parser_name)
+          parser_names = if @config.key?('Parser')
+                           @config['Parser']
+                         elsif @config.key?('parser')
+                           @config['parser']
+                         end
+          if parser_names.is_a?(String)
+            parser_names = [parser_names]
+          end
+          unconfigured_parsers = parser_names - parsers.map(&:name)
+          unless unconfigured_parsers.empty?
             fail "fb_fluentbit: plugin '#{@human_name}' is using undefined " +
-              "parser #{parser_name}"
+              "parser(s): #{unconfigured_parsers}"
           end
         end
       end
