@@ -110,9 +110,9 @@ module FB
                         elsif @config.key?('parser')
                           @config['parser']
                         end
-          unless parsers.select(&:name).include?(parser_name)
+          unless parsers.map(&:name).include?(parser_name)
             fail "fb_fluentbit: plugin '#{@human_name}' is using undefined " +
-              'parser'
+              "parser #{parser_name}"
           end
         end
       end

@@ -159,8 +159,12 @@ recipe('fb_fluentbit::default') do |tc|
           'Match' => '*',
           'Regex' => 'log aa',
         }
+        node.default['fb_fluentbit']['filter']['parser']['parse_foo'] = {
+          'Match' => '*',
+          'Parser' => 'my_parser',
+        }
 
-        # Add n external plugin.
+        # Add an external plugin.
         node.default['fb_fluentbit']['external']['custom_plugin'] = {
           'package' => 'my-custom-rpm',
           'path' => '/usr/local/lib/custom_plugin/custom_plugin.so',
