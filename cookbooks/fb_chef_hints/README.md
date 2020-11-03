@@ -25,14 +25,14 @@ and anything else set during compile time beforehand. Hints can still be
 overridden however by anything happening later at runtime (e.g. writing in a
 `whyrun_safe_ruby_block`).
 
-### Hints at compile time in fb_init
+### Hints at compile time in `fb_init`
 This cookbook can also be included at the _end_ of `fb_init`:
 
 ```
 include_recipe 'fb_chef_hints::apply_at_compile'
 ```
 
-Included this way, `fb_chef_hints` will apply hints during compile at the end`
+Included this way, `fb_chef_hints` will apply hints during compile at the end
 of `fb_init`. Hints will take precendence over any attribute defaults, or
 anything set during `fb_init`, but could be overridden by anything happening
 later (e.g. tier-specific runs, or recipes writing to the node object at
@@ -113,14 +113,14 @@ constants, instead of in the node object. When deploying `fb_chef_hints`,
 create one (and only one) settings cookbook to define these constants.
 
 To define your override sources, re-open the `FB::ChefHintsSiteData` class and
-define `ALLOWED_HINTS` as a class constant:
+define `ALLOWED_SOURCES` as a class constant:
 
 ```
 module FB
   class ChefHintsSiteData
-    ALLOWED_HINTS = [
+    ALLOWED_SOURCES = [
       'host_agent',
-    ]
+    ].freeze
   end
 end
 ```
@@ -129,19 +129,15 @@ end
 Hints will only be applied if the relevant attributes have been allowed.
 Similar to hints sources (see above), allowed hints are considered consistent
 data. To define your allowed attributes, re-open the `FB::ChefHintsSiteData`
-class and define `ALLOWED_ATTRIBUTES` as a class constant:
+class and define `ALLOWED_HINTS` as a class constant:
 
 ```
 module FB
   class ChefHintsSiteData
-    ALLOWED_ATTRIBUTES = {
-      'fb_sysctl => nil,
-      'fb_network_scripts' => {
-        'ifup' => {
-          'ethtool' => nil,
-        },
-      },
-    }
+    ALLOWED_HINTS = [
+      'fb_sysctl,
+      'fb_network_scripts/ifup/ethtool',
+    ].freeze
   end
 end
 ```
