@@ -227,6 +227,10 @@ If the has is specified, it takes one or more of the following keys:
           else
             fail "fb_helpers: invalid filter passed to filter_hash: #{filter}"
           end
+        else
+          Chef::Log.debug(
+            "fb_helpers: skipping key #{k} as it is missing from the hash",
+          )
         end
       end
 
