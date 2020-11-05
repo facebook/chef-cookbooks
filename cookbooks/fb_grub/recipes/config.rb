@@ -242,7 +242,7 @@ end
     # No "mode" for EFI since mode is determined by mount options,
     # not files
     if type == 'bios'
-      if node.in_shard?(20)
+      if node.in_shard?(50)
         mode lazy {
           if node['fb_grub']['users'].empty?
             '0644'
