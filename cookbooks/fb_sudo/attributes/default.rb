@@ -54,5 +54,13 @@ default['fb_sudo'] = {
         'all' => 'ALL=(ALL) ALL',
       },
     },
+    'macos' => {
+      'root' => {
+        'all' => 'ALL=(ALL) ALL',
+      },
+      '%admin' => {
+        'all' => 'ALL=(ALL) ALL',
+      },
+    },
   ),
 }
