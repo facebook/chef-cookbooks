@@ -72,7 +72,10 @@ your node.
     Is Linux
 
 * `node.macos?`
-    Is Mac OS X
+    Is macOS (any version)
+
+* `node.macos11?`
+    Is macOS starting with Big Sur (macOS 11)
 
 * `node.windows?`
     Is Windows

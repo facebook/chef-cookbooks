@@ -125,6 +125,10 @@ class Chef
 
     alias macosx? macos?
 
+    def macos11?
+      macos? && node['platform_version'].start_with?('11.')
+    end
+
     def windows?
       self['os'] == 'windows'
     end
