@@ -16,9 +16,10 @@
 #
 
 resource_name :fb_powershell_apply_profiles
-provides :fb_powershell_apply_profiles, :platform_family => 'windows'
-provides :fb_powershell_apply_profiles, :platform_family => 'mac_os_x'
-provides :fb_powershell_apply_profiles, :platform_family => 'rhel'
+provides :fb_powershell_apply_profiles, :os => 'windows'
+provides :fb_powershell_apply_profiles, :os => 'darwin'
+provides :fb_powershell_apply_profiles, :os => 'linux'
+
 default_action :manage
 
 property :powershell_core, [true, false], :default => true

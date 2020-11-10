@@ -17,16 +17,16 @@
 module FB
   module PowerShell
     def install_pwsh_path_list
-      platform = node['platform']
-      case platform
+      os = node['os']
+      case os
       when 'windows'
         get_windows_pwsh_paths
-      when 'centos'
+      when 'linux'
         get_linux_pwsh_paths
-      when 'mac_os_x'
+      when 'darwin'
         get_darwin_pwsh_paths
       else
-        fail "fb_powershell: not supported #{platform} os"
+        fail "fb_powershell: not supported on #{os}"
       end
     end
 
