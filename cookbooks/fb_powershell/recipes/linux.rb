@@ -35,10 +35,8 @@ package 'pin powershell' do
   version lazy { node['fb_powershell']['pwsh']['version'] }
 end
 
-# https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-core-on-linux
 # Setup PowerShell-Config folder
-installs = Dir.glob('/usr/local/microsoft/powershell/[6789]*')
-installs.each do |install|
+FB::PowerShell.install_pwsh_path_list.each do |install|
   path = File.join(install, 'powershell.config.json')
   template path do # ~FB031
     only_if { node['fb_powershell']['manage_config'] }
@@ -48,4 +46,9 @@ installs.each do |install|
     mode '0744'
     action :create
   end
+end
+
+# Manage PowerShell Core profiles
+fb_powershell_apply_profiles 'Managing PowerShell profiles' do
+  powershell_core true
 end

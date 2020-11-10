@@ -9,6 +9,6 @@ long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
 # never EVER change this number, ever.
 version '0.1.0'
 supports 'mac_os_x'
-supports 'redhat'
+supports 'centos'
 supports 'windows'
 depends 'fb_helpers'

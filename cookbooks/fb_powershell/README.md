@@ -15,6 +15,11 @@ Attributes
 * node['fb_powershell']['powershell']['version']
 * node['fb_powershell']['pwsh']['manage']
 * node['fb_powershell']['pwsh']['version']
+* node['fb_powershell']['pwsh']['version']
+* node['fb_powershell']['profiles']['AllUsersAllHosts']
+* node['fb_powershell']['profiles']['AllUsersCurrentHost']
+* node['fb_powershell']['profiles']['CurrentUserAllHosts']
+* node['fb_powershell']['profiles']['CurrentUserCurrentHost']
 
 Usage
 -----
@@ -85,3 +90,24 @@ Because the recipe uses the `homebrew_cask` resource, it is only able to install
 the cask. You will need to run `brew` commands to upgrade the casks.
 
 See: https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-core-on-macos?view=powershell-7
+
+### Managing profiles
+Both versions of PowerShell support 4 types of profiles.
+
+* AllUsersAllHosts
+* AllUsersCurrentHost
+* CurrentUserAllHosts
+* CurrentUserCurrentHost
+
+Typically what is used is "AllUsersAllHosts" which is loaded by every user on a
+given machine, and CurrentUserCurrentHost for the current user.
+
+!WARNING: PLEASE NOTE THAT CURRENT USER WILL BE WHATEVER CHEF IS RUNNING AS.
+
+The attributes are nil by default which means the existing files will be left as
+is. Once you set the attributes that files will be created/updated to match.
+
+!NOTE: If you are running Windows PowerShell and PowerShell Core both profiles
+will be updated.
+
+You can read more about the profile nuances here: https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_profiles?view=powershell-7

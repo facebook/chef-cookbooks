@@ -29,4 +29,11 @@ default['fb_powershell'] = {
   # Manage the powershell.config.json used by PowerShell Core
   'manage_config' => false,
   'config' => {},
+  # Profiles
+  'profiles' => {
+    'AllUsersAllHosts' => nil,
+    'AllUsersCurrentHost' => nil,
+    'CurrentUserAllHosts' => nil,
+    'CurrentUserCurrentHost' => nil,
+  },
 }
