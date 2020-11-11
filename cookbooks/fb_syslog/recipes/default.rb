@@ -55,6 +55,7 @@ if node.centos?
     'files' => ['/var/log/rsyslog-stats.log'],
     'overrides' => {
       'missingok' => true,
+      'notifempty' => true,
     },
   }
   directory '/var/spool/rsyslog' do
