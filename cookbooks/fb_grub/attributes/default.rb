@@ -39,7 +39,7 @@ fb_grub = {
   '_grub2_module_path' => '/notdefined',
   '_rootflags' => nil,
   '_vendor' => vendor,
-  'enable_bls' => false,
+  'enable_bls' => node.centos? && node.major_platform_version.to_i >= 8,
   'kernel_cmdline_args' => [],
   'kernels' => {},
   'manage_packages' => true,
