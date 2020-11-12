@@ -44,6 +44,11 @@ compressext <%= node['fb_logrotate']['globals']['compressext'] %>
     if time == defaultrotation
       time = nil
     end
+    if block['overrides']['nocompress'] &&
+      node['fb_logrotate']['globals']['nocompress']
+      # redundant, remove.
+      block['overrides'].delete('nocompress')
+    end
   end -%>
 ## fb.fb_logrotate.configs.<%= name %>
 <%=  block['files'].join(' ') %> {
