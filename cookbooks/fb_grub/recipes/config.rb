@@ -64,6 +64,31 @@ whyrun_safe_ruby_block 'initialize_grub_locations' do
         node.default['fb_grub']['_module_uuid'] = slash_uuid
       end
     else
+      # We are apparently not using labels, so we have to do some detective
+      #  work. If something did put a .before_chef file in place, we will
+      # extract the root_device from it. If the file does not exist (e.g. on
+      # older existing systems), we will use our old heuristics.
+      original_grub_config = '/root/grub.before_chef'
+      if File.exist?(original_grub_config)
+        content = File.read(original_grub_config)
+        original_root_device = FB::Grub.extract_root_device(content)
+        original_device_hints = FB::Grub.extract_device_hints(content)
+        if original_root_device
+          node.default['fb_grub']['root_device'] = original_root_device
+          Chef::Log.debug(
+            "fb_grub: Re-using existing root device: #{original_root_device}",
+          )
+          node.default['fb_grub']['_device_hints'] = original_device_hints
+          Chef::Log.debug(
+            "fb_grub: Found #{original_device_hints.size} grub device hints.",
+          )
+        else
+          Chef::Log.warn(
+            "fb_grub: Can't parse grub config: #{original_grub_config}",
+          )
+        end
+      end
+
       # If nothing has set the root_device so far, fall back to the old logic
       # and set it by using the hardcoded boot_disk parameter
       unless node['fb_grub']['root_device']
