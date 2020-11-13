@@ -807,21 +807,24 @@ module FB
           # and this will require us to nuke the array, so we'll need to
           # make a filesystem too
           mismatched_filesystems << device
+          next
         elsif existing_members_set != desired_members_set
           # If the members are not the same, there's two options... we're
           # simply missing members (maybe a disk is in repair)...
           if existing_members_set < desired_members_set
             # Except if it's RAID0, we can't fix that...
             if [existing_array['level'], conf['raid_level']].include?(0)
-              Chef::Log.info(
+              Chef::Log.warn(
                 "fb_storage: Array #{device} is missing members, " +
                 'but is RAID0 or should be RAID0 so treating it as a ' +
-                'mismatched array.',
+                "mismatched array. Existing: #{existing_members_set.to_a} " +
+                "vs Desired: #{desired_members_set.to_a}",
               )
               mismatched_arrays << device
               # and this will require us to nuke the array, so we'll need to
               # make a filesystem too
               mismatched_filesystems << device
+              next
             else
               missing_members_set = desired_members_set - existing_members_set
               # if the disks are in maintenance, there's nothing to do.
@@ -833,8 +836,8 @@ module FB
                 incomplete_arrays[device] = missing_members_set.to_a
               end
             end
-          # or it's made of members we don't expect. In this case, we treat
-          # it like a full rebuild
+          # or it's entirely made of members we don't expect. In this case,
+          # we treat it like a full rebuild
           else
             Chef::Log.warn(
               "fb_storage: Array #{device} has incorrect members" +
@@ -844,6 +847,7 @@ module FB
             # and this will require us to nuke the array, so we'll need to
             # make a filesystem too
             mismatched_filesystems << device
+            next
           end
         end
 

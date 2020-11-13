@@ -1211,6 +1211,17 @@ describe FB::Storage do
       }
     end
 
+    let(:raid0_array) do
+      {
+        'type' => 'xfs',
+        'mount_point' => '/data/flash',
+        'opts' => 'default',
+        'pass' => 2,
+        'enable_remount' => true,
+        'raid_level' => 0,
+      }
+    end
+
     let(:array_member) do
       {
         'partitions' => [
@@ -1947,6 +1958,149 @@ describe FB::Storage do
             :missing_filesystems => ['/dev/sdb1', '/dev/sdc1'],
             :missing_arrays => [],
             :incomplete_arrays => { '/dev/md0' => ['/dev/sdc1'] },
+            :extra_arrays => [],
+          },
+        )
+      end
+
+      it 'should identify partial RAID0 as mismatched when md is broken' do
+        # When all of the storage devices are already set up, but something
+        # goes wrong with assembling the md device, we should report a mismatch
+        # For this case there's no functional fs on top of the md device
+        # because a missing or broken device breaks RAID0. We can have the right
+        # devices be visible, but md fail to assemble the device
+        node.default['fb_storage']['devices'] = [
+          array_member, array_member, array_member
+        ]
+        node.default['fb_storage']['arrays'] = [raid0_array]
+
+        node.automatic[attr_name]['by_device'] = {
+          '/dev/nbd0p1' => { :fs_type => 'linux_raid_member' },
+          '/dev/nbd1p1' => { :fs_type => 'linux_raid_member' },
+          '/dev/nbd2p1' => { :fs_type => 'linux_raid_member' },
+          # md0 exists, but is inactive, so no visible fs
+          '/dev/md0' => {},
+        }
+        node.automatic['mdadm']['md0'] = {
+          'level' => 0,
+          # inactive RAID0 has empty members
+          'members' => [],
+        }
+        expect(FB::Storage).to receive(:build_mapping).and_return(
+          {
+            :disks => {
+              '/dev/nbd0' => array_member,
+              '/dev/nbd1' => array_member,
+              '/dev/nbd2' => array_member,
+            },
+            :arrays => {
+              '/dev/md0' => raid0_array.merge(
+                { 'members' => ['/dev/nbd0p1', '/dev/nbd1p1', '/dev/nbd2p1'] },
+              ),
+            },
+          },
+        )
+        storage = FB::Storage.new(node)
+        expect(storage.out_of_spec).to eq(
+          {
+            :mismatched_partitions => [],
+            :mismatched_filesystems => ['/dev/md0'],
+            :mismatched_arrays => ['/dev/md0'],
+            :missing_partitions => [],
+            :missing_filesystems => [],
+            :missing_arrays => [],
+            :incomplete_arrays => {},
+            :extra_arrays => [],
+          },
+        )
+      end
+
+      it 'should identify mismatched raid levels' do
+        # If we want a stripe, but have a mirror, it's a mismatch
+        node.default['fb_storage']['devices'] = [
+          array_member, array_member, array_member
+        ]
+        node.default['fb_storage']['arrays'] = [raid0_array]
+
+        node.automatic[attr_name]['by_device'] = {
+          '/dev/nbd0p1' => { :fs_type => 'linux_raid_member' },
+          '/dev/nbd1p1' => { :fs_type => 'linux_raid_member' },
+          '/dev/nbd2p1' => { :fs_type => 'linux_raid_member' },
+          '/dev/md0' => { 'fs_type' => 'xfs' },
+        }
+        node.automatic['mdadm']['md0'] = {
+          'level' => 1,
+          'members' => ['nbd0p1', 'nbd1p1'],
+        }
+        expect(FB::Storage).to receive(:build_mapping).and_return(
+          {
+            :disks => {
+              '/dev/nbd0' => array_member,
+              '/dev/nbd1' => array_member,
+              '/dev/nbd2' => array_member,
+            },
+            :arrays => {
+              '/dev/md0' => raid0_array.merge(
+                { 'members' => ['/dev/nbd0p1', '/dev/nbd1p1', '/dev/nbd2p1'] },
+              ),
+            },
+          },
+        )
+        storage = FB::Storage.new(node)
+        expect(storage.out_of_spec).to eq(
+          {
+            :mismatched_partitions => [],
+            :mismatched_filesystems => ['/dev/md0'],
+            :mismatched_arrays => ['/dev/md0'],
+            :missing_partitions => [],
+            :missing_filesystems => [],
+            :missing_arrays => [],
+            :incomplete_arrays => {},
+            :extra_arrays => [],
+          },
+        )
+      end
+
+      it 'should identify arrays with entirely wrong members as a mismatch' do
+        # If we have an array with A,B,C, but it should be D,E,F => mismatch
+        node.default['fb_storage']['devices'] = [
+          array_member, array_member, array_member
+        ]
+        node.default['fb_storage']['arrays'] = [raid0_array]
+
+        node.automatic[attr_name]['by_device'] = {
+          '/dev/nbd0p1' => { :fs_type => 'linux_raid_member' },
+          '/dev/nbd1p1' => { :fs_type => 'linux_raid_member' },
+          '/dev/nbd2p1' => { :fs_type => 'linux_raid_member' },
+        }
+        node.automatic['mdadm']['md0'] = {
+          'level' => 0,
+          'members' => ['nbd3p1', 'nbd4p1', 'nbd5p1'],
+        }
+        expect(FB::Storage).to receive(:build_mapping).and_return(
+          {
+            :disks => {
+              '/dev/nbd0' => array_member,
+              '/dev/nbd1' => array_member,
+              '/dev/nbd2' => array_member,
+            },
+            :arrays => {
+              '/dev/md0' => raid0_array.merge(
+                { 'members' => ['/dev/nbd0p1', '/dev/nbd1p1', '/dev/nbd2p1'] },
+              ),
+            },
+          },
+        )
+        storage = FB::Storage.new(node)
+        expect(storage.out_of_spec).to eq(
+          {
+            :mismatched_partitions => [],
+            :mismatched_filesystems => ['/dev/md0'],
+            :mismatched_arrays => ['/dev/md0'],
+            :missing_partitions => [],
+            :missing_filesystems => [],
+            :missing_arrays => [],
+            :incomplete_arrays => {},
             :extra_arrays => [],
           },
         )
