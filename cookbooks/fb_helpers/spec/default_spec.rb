@@ -361,5 +361,41 @@ describe FB::Helpers do
                                     },
                                   })
     end
+
+    it 'does not clobber top-level Hashes when overwriting leaves' do
+      merge_ee_hash = {
+        'top_level_a' => {
+          '1_deep_a' => {
+            '2_deep_a' => {
+              '3_deep_a' => 'foo',
+            },
+          },
+          '1_deep_b' => 1,
+        },
+      }
+      merge_with_hash = {
+        'top_level_a' => {
+          '1_deep_a' => {
+            '2_deep_a' => {
+              '3_deep_b' => 'bar',
+            },
+          },
+        },
+      }
+
+      merged_result = FB::Helpers.merge_hash(merge_ee_hash, merge_with_hash,
+                                             true)
+
+      expect(merged_result).to eq({
+                                    'top_level_a' => {
+                                      '1_deep_a' => {
+                                        '2_deep_a' => {
+                                          '3_deep_b' => 'bar',
+                                        },
+                                      },
+                                      '1_deep_b' => 1,
+                                    },
+                                  })
+    end
   end
 end

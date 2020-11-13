@@ -313,13 +313,20 @@ If the has is specified, it takes one or more of the following keys:
               end
             end
           end
-          value =
-            if merge_onto.key?(key) && !is_leaf
-              self.merge_hash(merge_onto[key], merge_with_value,
-                              overwrite_leaves)
+
+          if merge_onto.key?(key)
+            if is_leaf
+              value = merge_onto[key]
+              merge_with_value.each do |k, _v|
+                value[k] = merge_with_value[k]
+              end
             else
-              merge_with_value
+              value = self.merge_hash(merge_onto[key], merge_with_value,
+                                      overwrite_leaves)
             end
+          else
+            value = merge_with_value
+          end
 
           merge_onto[key] = value
         end
