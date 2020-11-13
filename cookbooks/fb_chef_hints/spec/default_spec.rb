@@ -241,5 +241,70 @@ describe FB::ChefHints do
       FB::ChefHints.apply_hint(node, 'hint.json')
       expect(node['foo']['bar']['pie']['baz']).to eq(1)
     end
+
+    it 'does not clobber other attributes in the hash when setting a int' do
+      FB::ChefHintsSiteData::ALLOWED_SOURCES = ['chefspec'].freeze
+      FB::ChefHintsSiteData::ALLOWED_HINTS = ['foo/bar'].freeze
+      hint = {
+        'source' => 'chefspec',
+        'hint' => {
+          'foo' => {
+            'bar' => 1,
+          },
+        },
+      }
+
+      node = Chef::Node.new
+      node.default['foo']['cake'] = 2
+      allow(FB::Helpers).to receive(:parse_json_file).
+        with('hint.json', Hash, true).and_return(hint)
+      FB::ChefHints.apply_hint(node, 'hint.json')
+      expect(node['foo']['bar']).to eq(hint['hint']['foo']['bar'])
+      expect(node['foo']['cake']).to eq(2)
+    end
+
+    it 'does not clobber other attributes in the hash when setting an array' do
+      FB::ChefHintsSiteData::ALLOWED_SOURCES = ['chefspec'].freeze
+      FB::ChefHintsSiteData::ALLOWED_HINTS = ['foo/bar'].freeze
+      hint = {
+        'source' => 'chefspec',
+        'hint' => {
+          'foo' => {
+            'bar' => [1, 2, 3],
+          },
+        },
+      }
+
+      node = Chef::Node.new
+      node.default['foo']['cake'] = 2
+      allow(FB::Helpers).to receive(:parse_json_file).
+        with('hint.json', Hash, true).and_return(hint)
+      FB::ChefHints.apply_hint(node, 'hint.json')
+      expect(node['foo']['bar']).to eq(hint['hint']['foo']['bar'])
+      expect(node['foo']['cake']).to eq(2)
+    end
+
+    it 'does not clobber other attributes in the hash when setting a hash' do
+      FB::ChefHintsSiteData::ALLOWED_SOURCES = ['chefspec'].freeze
+      FB::ChefHintsSiteData::ALLOWED_HINTS = ['foo/bar'].freeze
+      hint = {
+        'source' => 'chefspec',
+        'hint' => {
+          'foo' => {
+            'bar' => {
+              'baz' => 1,
+            },
+          },
+        },
+      }
+
+      node = Chef::Node.new
+      node.default['foo']['cake'] = 2
+      allow(FB::Helpers).to receive(:parse_json_file).
+        with('hint.json', Hash, true).and_return(hint)
+      FB::ChefHints.apply_hint(node, 'hint.json')
+      expect(node['foo']['bar']).to eq(hint['hint']['foo']['bar'])
+      expect(node['foo']['cake']).to eq(2)
+    end
   end
 end
