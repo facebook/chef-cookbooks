@@ -145,6 +145,25 @@ describe FB::Helpers do
       filter = ['fb_network_scripts/ifup/extra_commands']
       expect(FB::Helpers.filter_hash(hash, filter)).to eq(hash)
     end
+
+    it 'handles multiple filters on the same hash' do
+      hash = {
+        'foo' => {
+          'bar' => 1,
+          'baz' => 2,
+        },
+      }
+      hash2 = {
+        'foo' => {
+          'bar' => 1,
+          'baz' => 2,
+          'boo' => 3,
+        },
+      }
+      filter = ['foo/bar', 'foo/baz']
+      expect(FB::Helpers.filter_hash(hash, filter)).to eq(hash)
+      expect(FB::Helpers.filter_hash(hash2, filter)).to eq(hash)
+    end
   end
 
   # These tests are based on spec/unit/mixin/deep_merge_spec.rb from

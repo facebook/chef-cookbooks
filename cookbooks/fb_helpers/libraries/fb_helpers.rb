@@ -179,7 +179,7 @@ If the has is specified, it takes one or more of the following keys:
         keys.reverse.each do |k|
           h = { k => h }
         end
-        hash_filter.merge!(h)
+        self.merge_hash!(hash_filter, h)
       end
       hash_filter
     end
