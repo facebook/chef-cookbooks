@@ -16,7 +16,7 @@
 
 module FB
   module PowerShell
-    def install_pwsh_path_list
+    def install_pwsh_path_list(node)
       os = node['os']
       case os
       when 'windows'

@@ -27,25 +27,6 @@ recipe 'fb_powershell::linux', :supported => [:centos7] do |tc|
     end
   end
 
-  it 'should render a json config file with the data passed in' do
-    chef_run.converge(described_recipe) do |node|
-      node.default['fb_powershell']['manage_config'] = true
-      node.default['fb_powershell']['config'] = {
-        'WindowsPowerShellCompatibilityModuleDenyList' =>  [
-          'PSScheduledJob',
-          'BestPractices',
-          'UpdateServices',
-        ],
-        'Microsoft.PowerShell:ExecutionPolicy' => 'RemoteSigned',
-      }
-    end
-    expect(chef_run).to render_file(
-      '/opt/microsoft/powershell/7/powershell.config.json',
-    ).with_content(
-      tc.fixture('powershell.config.json'),
-    )
-  end
-
   it 'should not install a package if attr is not set' do
     chef_run.converge(described_recipe)
     expect(chef_run).to nothing_package('upgrade powershell')

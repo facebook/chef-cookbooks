@@ -43,7 +43,7 @@ action :manage do
 
     if new_resource.powershell_core
       # Determine the appropriate paths
-      install_paths = install_pwsh_path_list
+      install_paths = install_pwsh_path_list(node)
       install_paths.each do |install_path|
         path = get_profile_path(
           profile,

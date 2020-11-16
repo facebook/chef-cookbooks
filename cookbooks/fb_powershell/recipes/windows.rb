@@ -58,22 +58,8 @@ chocolatey_package 'pin powershell-core' do
   version lazy { node['fb_powershell']['pwsh']['version'] }
 end
 
-# Setup PowerShell-Config folder
-# Use PathHelper since the ENV returns "C:\\" and this breaks with Dir.glob
-core_path = Chef::Util::PathHelper.escape_glob_dir(
-  File.join(ENV['ProgramFiles'], 'PowerShell'),
-)
-glob = Dir.glob(core_path + '/[6789]*')
-glob .each do |install|
-  path = File.join(install, 'powershell.config.json')
-  template path do # ~FB031
-    only_if { node['fb_powershell']['manage_config'] }
-    source 'powershell.config.json.erb'
-    rights :full_control, ['Administrators', 'SYSTEM']
-    rights :read, 'Users'
-    action :create
-  end
-end
+# Setup PowerShell Config
+fb_powershell_apply_config 'Managing the PowerShell Core config'
 
 # Manage PowerShell Core profiles
 fb_powershell_apply_profiles 'Managing the PowerShell Core profiles' do
