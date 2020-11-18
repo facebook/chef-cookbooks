@@ -62,7 +62,4 @@ file 'fb_timers readme' do
   group 'root'
 end
 
-fb_timers_setup 'fb_timers system setup' do
-  # Scheduled jobs aren't required for system setup, and can be deferred
-  not_if { node.firstboot_any_phase? }
-end
+fb_timers_setup 'fb_timers system setup'
