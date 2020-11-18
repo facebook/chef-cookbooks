@@ -451,33 +451,31 @@ If the has is specified, it takes one or more of the following keys:
       @arr
     end
 
-    def <=(other)
+    def compare(other)
       other ||= []
-      (@arr <=> other.to_a) <= 0
+      @arr <=> other.to_a
+    end
+
+    alias_method '<=>', :compare
+
+    def <=(other)
+      compare(other) <= 0
     end
 
     def >=(other)
-      other ||= []
-      (@arr <=> other.to_a) >= 0
+      compare(other) >= 0
     end
 
     def <(other)
-      other ||= []
-      (@arr <=> other.to_a).negative?
+      compare(other).negative?
     end
 
     def >(other)
-      other ||= []
-      (@arr <=> other.to_a).positive?
+      compare(other).positive?
     end
 
     def ==(other)
-      other ||= []
-      (@arr <=> other.to_a).zero?
-    end
-
-    def <=>(other)
-      @arr <=> other.to_a
+      compare(other).zero?
     end
 
     # Oh, come on rubocop...
