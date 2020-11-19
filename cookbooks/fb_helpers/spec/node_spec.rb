@@ -109,6 +109,38 @@ describe 'Chef::Node' do
     end
   end
 
+  context 'Chef::Node.timeshard_parsed_values' do
+    # for the purposes of this test we want a consistent shard_seed
+    # this will map to 51336 seconds into a 24h (86400 second) period.
+    before do
+      node.default['fb']['shard_seed'] = 31328136
+    end
+
+    {
+      '24h' => (24 * 60 * 60),
+      '1h' => (60 * 60),
+      '7d' => (7 * 24 * 60 * 60),
+    }.each do |duration, seconds|
+      it "should return the correct values for each duration - #{duration}" do
+        our_shard = node.get_flexible_shard(seconds)
+
+        start_time = Time.now - (our_shard - 1)
+
+        duration_value = seconds
+        time_threshold_value = our_shard + start_time.tv_sec
+
+        node.timeshard_parsed_values(
+          start_time.to_s,
+          duration,
+        ).should eq({
+                      'start_time' => start_time.tv_sec,
+                      'duration' => duration_value,
+                      'time_threshold' => time_threshold_value,
+                    })
+      end
+    end
+  end
+
   context 'Chef::Node.in_timeshard?' do
     # for the purposes of this test we want a consistent shard_seed
     # this will map to 51336 seconds into a 24h (86400 second) period.
@@ -149,15 +181,6 @@ describe 'Chef::Node' do
           (Time.now - 1).to_s,
           duration,
         ).should eq(false)
-      end
-
-      it "should fail if start_time is formatted wrong - #{duration}" do
-        expect do
-          node.in_timeshard?(
-            '2018-09-01i 09:00:00',
-            duration,
-          )
-        end.to raise_error(RuntimeError)
       end
 
       it "should fail if start_time is an invalid time - #{duration}" do

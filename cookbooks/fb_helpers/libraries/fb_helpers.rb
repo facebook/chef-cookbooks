@@ -415,6 +415,50 @@ If the has is specified, it takes one or more of the following keys:
 
       self.parse_json(content, top_level_class)
     end
+
+    # parse_timeshard_start() takes a time string and converts its contents to a
+    # unix timestamp, to be used in computing timeshard information
+    #
+    # Usage:
+    #   parse_timeshard_start(time)
+    #
+    # Arguments:
+    #   time: A valid time string
+    def self.parse_timeshard_start(time)
+      # Validate the time string matches our prescribed format.
+      begin
+        st = Time.parse(time).tv_sec
+      rescue ArgumentError
+        errmsg = "fb_helpers: Invalid start_time arg '#{time}' for " +
+                 'FB::Helpers.parse_timeshard_start'
+        raise errmsg
+      end
+      st
+    end
+
+    # parse_timeshard_duration() takes a duration string and converts
+    # its contents to a to an int to be used in computing timeshard information
+    #
+    # Usage:
+    #   parse_timeshard_duration(duration)
+    #
+    # Arguments:
+    #   duration: A valid duration string, in days or hours
+    def self.parse_timeshard_duration(duration)
+      # Multiply the number of days by 1440 min and 60 s to convert a day into
+      # seconds.
+      if duration.match('^[0-9]+[dD]$')
+        duration = duration.to_i * 1440 * 60
+      # Multiply the number of hours by 3600 s to convert hours into seconds.
+      elsif duration.match('^[0-9]+[hH]$')
+        duration = duration.to_i * 3600
+      else
+        errmsg = "fb_helpers: Invalid duration arg, '#{duration}' for " +
+                 'FB::Helpers.parse_timeshard_duration'
+        fail errmsg
+      end
+      duration
+    end
   end
 
   # Helper class to compare software versions.

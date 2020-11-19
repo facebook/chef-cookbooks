@@ -60,6 +60,40 @@ describe FB::Helpers do
     end
   end
 
+  context 'parse a time for timeshard computation' do
+    it 'should succeed with a valid timestamp - 2020-1-1 9:00:00' do
+      expect(FB::Helpers.parse_timeshard_start(
+               '2020-1-1 9:00:00',
+      )).to eq(1577898000)
+    end
+
+    it 'should fail if start_time is an invalid date - 2018-14-1 9:00:00' do
+      expect do
+        FB::Helpers.parse_timeshard_start('2018-14-1 9:00:00')
+      end.to raise_error(RuntimeError)
+    end
+  end
+
+  context 'parse a time for timeshard computation' do
+    {
+      '24h' => (24 * 60 * 60),
+      '1h' => (60 * 60),
+      '7d' => (7 * 24 * 60 * 60),
+    }.each do |duration, seconds|
+      it "should successfully parse #{duration}" do
+        expect(FB::Helpers.parse_timeshard_duration(
+                 duration,
+        )).to eq(seconds)
+      end
+    end
+
+    it 'should fail if duration is invalid - 43min' do
+      expect do
+        FB::Helpers.parse_timeshard_duration('43min')
+      end.to raise_error(RuntimeError)
+    end
+  end
+
   context 'filter_hash' do
     it 'returns a passing hash unchanged' do
       hash = {

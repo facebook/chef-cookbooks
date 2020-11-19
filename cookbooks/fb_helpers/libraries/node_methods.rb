@@ -428,31 +428,21 @@ class Chef
       self.in_flexible_shard?(shard_threshold, 100)
     end
 
-    def in_timeshard?(start_time, duration, stack_depth = 1)
-      # Validate the start_time string matches our prescribed format.
-      begin
-        st = Time.strptime(start_time, '%Y-%m-%d %H:%M:%S').tv_sec
-      rescue ArgumentError
-        errmsg = "fb_helpers: Invalid start_time arg '#{start_time}' for " +
-                 'node.in_timeshard?'
-        raise errmsg
-      end
-
-      # Multiply the number of days by 1440 min and 60 s to convert a day into
-      # seconds.
-      if duration.match('^[0-9]+[dD]$')
-        duration = duration.to_i * 1440 * 60
-      # Multiply the number of hours by 3600 s to convert hours into seconds.
-      elsif duration.match('^[0-9]+[hH]$')
-        duration = duration.to_i * 3600
-      else
-        errmsg = "fb_helpers: Invalid duration arg, '#{duration}' for " +
-                 'node.in_timeshard?'
-        fail errmsg
-      end
-      curtime = Time.now.tv_sec
+    def _timeshard_value(duration)
       # The timeshard will be the number of seconds into the duration.
-      time_shard = duration == 0 ? duration : self.get_flexible_shard(duration)
+      duration == 0 ? duration : self.get_flexible_shard(duration)
+    end
+
+    def timeshard_parsed_values(start_time, duration)
+      # Validate the start_time string matches our prescribed format.
+      st = FB::Helpers.parse_timeshard_start(start_time)
+
+      # Coerce duration into acceptable format
+      duration = FB::Helpers.parse_timeshard_duration(duration)
+
+      # The timeshard will be the number of seconds into the duration.
+      time_shard = self._timeshard_value(duration)
+
       # The time threshold is the sum of the start time and time shard.
       time_threshold = st + time_shard
       Chef::Log.debug(
@@ -460,9 +450,25 @@ class Chef
         "time threshold: #{Time.at(time_threshold)}",
       )
 
+      {
+        'start_time' => st,
+        'duration' => duration,
+        'time_threshold' => time_threshold,
+      }
+    end
+
+    def in_timeshard?(start_time, duration, stack_depth = 1)
+      # Parse all of our values and
+      vals = self.timeshard_parsed_values(start_time, duration)
+      st = vals['start_time']
+      duration = vals['duration']
+      time_threshold = vals['time_threshold']
+
       # If the current time is greater than the threshold then the node will be
       # within the threshold of time as defined by the start time and duration,
       # and will return true.
+      curtime = Time.now.tv_sec
+
       if curtime > st + duration
         stack = caller(stack_depth, 1)[0]
         parts = %r{^.*/cookbooks/([^/]*)/([^/]*)/(.*)\.rb:(\d+)}.match(stack)

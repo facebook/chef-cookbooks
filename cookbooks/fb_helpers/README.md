@@ -182,7 +182,18 @@ your node.
    Shards are 0-indexed, so the valid shards are 0-99. As such, shard `N` is
    approximately `(N+1)%`, so shard 0 is approximately 1%.
 
-* `node.in_timeshard?(start_time, duration)`
+* `node.timeshard_parsed_values(start_time, duration)`
+   Parse the start_time and duration values to determine the
+   start_time, duration, and time_threshold; fail on invalid values.
+   The timeshard value is `node.flexible_shard(duration)`.
+   We take the timeshard and add it to the start time to arrive at a threshold.
+   If the current system time is greater than the threshold then return true.
+   The `start_time` format is `YYYY-MM-DD hh:mm:ss`, e.g.
+   `2013-04-17 13:05:00`. The duration format is `Xd` or `Xh` where `d` and `h`
+   are days and hours respectively, and X is the number of days or hours.
+   The time threshold is the start time plus the timeshard.
+
+* `node.in_timeshard?(start_time, duration), stack_depth=1`
    NOTE!! IF YOU USE THIS, you MUST go and clean up your code after
    `start_time+duration`!
 
@@ -306,6 +317,14 @@ The following methods are available:
   Parse a JSON file and return the appropriate object, while validating that
   it matches what is expected. If `fallback` is true, return an empty object
   in case of errors.
+
+* `FB::Helpers.parse_timeshard_start(time)`
+   Takes a time string and converts its contents to a unix timestamp,
+   to be used in computing timeshard information.
+
+* `FB::Helpers.parse_timeshard_duration(duration)`
+   Takes a duration string and converts its contents to a to an int
+   to be used in computing timeshard information
 
 * `FB::Helpers.safe_dup(thing)`
   Wrapper around `dup` that always returns a valid object, even for things
