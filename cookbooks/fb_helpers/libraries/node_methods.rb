@@ -121,6 +121,8 @@ class Chef
 
     def macos?
       %w{mac_os_x macos}.include?(self['platform'])
+    rescue StandardError
+      RUBY_PLATFORM.include?('darwin')
     end
 
     alias macosx? macos?
@@ -489,7 +491,8 @@ class Chef
       # broken runs in handlers
       node['fb_init']['firstboot_os']
     rescue StandardError
-      File.exist?('/root/firstboot_os')
+      prefix = macos? ? '/var/root' : '/root'
+      File.exist?(File.join(prefix, 'firstboot_os'))
     end
 
     def firstboot_tier?
@@ -497,7 +500,8 @@ class Chef
       # broken runs in handlers
       node['fb_init']['firstboot_tier']
     rescue StandardError
-      File.exist?('/root/firstboot_tier')
+      prefix = macos? ? '/var/root' : '/root'
+      File.exist?(File.join(prefix, 'firstboot_tier'))
     end
 
     def firstboot_any_phase?

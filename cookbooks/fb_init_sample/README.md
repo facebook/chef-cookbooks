@@ -89,8 +89,10 @@ in two phases:
 On the Chef side, we then provide two attributes to expose the phase:
 * `node['fb_init']['firstboot_os']` is true on all runs before the first time
   successful *OS run* happens; this checks for `/root/firstboot_os`
+  (or `/var/root/firstboot_os` on macOS)
 * `node['fb_init']['firstboot_tier']` is true on all runs before the first time
-  successful *tier run* happens; this checks for `/root/firstboot_tier`.
+  successful *tier run* happens; this checks for `/root/firstboot_tier`
+  (or `/var/root/firstboot_os` on macOS).
 
 These attributes are also wrapped in `fb_helpers` by convenience node methods:
 * `node.fistboot_os?` for `node['fb_init']['firstboot_os']`
