@@ -459,6 +459,67 @@ If the has is specified, it takes one or more of the following keys:
       end
       duration
     end
+
+    def self.linux?
+      RUBY_PLATFORM.include?('linux')
+    end
+
+    def self.windows?
+      RUBY_PLATFORM =~ /mswin|mingw32|windows/
+    end
+
+    # mountpoint? determines if a path string represents a mountpoint
+    #
+    # Usage:
+    #   mountpoint?(path)
+    #
+    # Arguments:
+    #   path: A string-compatible object that represents a path to test
+    def self.mountpoint?(path)
+      Pathname.new(path.to_s).mountpoint?
+    end
+
+    # date_of_last() takes a day of the week and finds the most recent
+    # date this day fell on
+    #
+    # Usage:
+    #   date_of_last(day)
+    #
+    # Arguments:
+    #   day: A string representing a day of the week. Can be long-form
+    #        (e.g. "Monday") or abbreviate (e.g. "Wed")
+    def self.date_of_last(day)
+      # Gets you the date of the last day passed
+      date  = Date.parse(day)
+      delta = date < Date.today ? 0 : 7
+      (date - delta).to_s
+    end
+
+    # sysnative_path() determines the sysnative path on Windows
+    def self.sysnative_path
+      fail unless self.windows?
+
+      if RUBY_PLATFORM.include?('64')
+        "#{ENV['WINDIR']}\\system32\\"
+      else
+        "#{ENV['WINDIR']}\\sysnative\\"
+      end
+    end
+
+    # warn_to_remove() is used in sharding operations to help
+    # discover old sharding code
+    def self.warn_to_remove(stack_depth)
+      stack = caller(stack_depth, 1)[0]
+      parts = %r{^.*/cookbooks/([^/]*)/([^/]*)/(.*)\.rb:(\d+)}.match(stack)
+      if parts
+        where = "(#{parts[1]}::#{parts[3]} line #{parts[4]})"
+      else
+        where = stack
+      end
+      Chef::Log.warn(
+        "fb_helpers: Past time shard duration! Please cleanup! #{where}",
+      )
+    end
   end
 
   # Helper class to compare software versions.

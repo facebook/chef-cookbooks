@@ -63,6 +63,50 @@ class Chef
       self['platform'] == 'redhat'
     end
 
+    def redhat6?
+      self.redhat? && self['platform_version'].start_with?('6')
+    end
+
+    def redhat7?
+      self.redhat? && self['platform_version'].start_with?('7')
+    end
+
+    def redhat8?
+      self.redhat? && self['platform_version'].start_with?('8')
+    end
+
+    def rhel?
+      self['platform_family'] == 'rhel'
+    end
+
+    def rhel7?
+      self.rhel? && self['platform_version'].start_with?('7')
+    end
+
+    def rhel8?
+      self.rhel? && self['platform_version'].start_with?('8')
+    end
+
+    def oracle?
+      self['platform'] == 'oracle'
+    end
+
+    def oracle8?
+      self.oracle? && self['platform_version'].start_with?('8')
+    end
+
+    def oracle7?
+      self.oracle? && self['platform_version'].start_with?('7')
+    end
+
+    def oracle6?
+      self.oracle? && self['platform_version'].start_with?('6')
+    end
+
+    def oracle5?
+      self.oracle? && self['platform_version'].start_with?('5')
+    end
+
     def debian?
       self['platform'] == 'debian'
     end
@@ -73,6 +117,10 @@ class Chef
 
     def ubuntu?
       self['platform'] == 'ubuntu'
+    end
+
+    def ubuntu12?
+      ubuntu? && self['platform_version'].start_with?('12')
     end
 
     def ubuntu14?
@@ -87,8 +135,24 @@ class Chef
       ubuntu? && self['platform_version'].start_with?('16.')
     end
 
+    def ubuntu1610?
+      ubuntu? && self['platform_version'] == '16.10'
+    end
+
+    def ubuntu17?
+      ubuntu? && self['platform_version'].start_with?('17')
+    end
+
+    def ubuntu1704?
+      ubuntu? && self['platform_version'] == '17.04'
+    end
+
     def ubuntu18?
       ubuntu? && self['platform_version'].start_with?('18.')
+    end
+
+    def ubuntu1804?
+      ubuntu? && self['platform_version'] == '18.04'
     end
 
     def ubuntu20?
@@ -132,27 +196,47 @@ class Chef
     end
 
     def windows?
-      self['os'] == 'windows'
+      self['platform_family'] == 'windows'
     end
 
     def windows8?
-      windows? && node['platform_version'].start_with?('6.2')
+      windows? && self['platform_version'].start_with?('6.2')
     end
 
     def windows8_1?
-      windows? && node['platform_version'].start_with?('6.3')
+      windows? && self['platform_version'].start_with?('6.3')
     end
 
     def windows10?
-      windows? && node['platform_version'].start_with?('10.0')
+      windows? && self['platform_version'].start_with?('10.0')
+    end
+
+    def windows2008?
+      windows? && self['platform_version'] == '6.0'
+    end
+
+    def windows2008r2?
+      windows? && self['platform_version'] == '6.1.7600'
+    end
+
+    def windows2008r2sp1?
+      windows? && self['platform_version'] == '6.1.7601'
     end
 
     def windows2012?
-      windows? && node['platform_version'].start_with?('6.2')
+      windows? && self['platform_version'].start_with?('6.2')
     end
 
     def windows2012r2?
-      windows? && node['platform_version'].start_with?('6.3')
+      windows? && self['platform_version'].start_with?('6.3')
+    end
+
+    def windows2016?
+      windows? && self['platform_version'] == '10.0.14393'
+    end
+
+    def windows2019?
+      windows? && self['platform_version'] == '10.0.17763'
     end
 
     def aristaeos?
@@ -472,18 +556,79 @@ class Chef
       curtime = Time.now.tv_sec
 
       if curtime > st + duration
-        stack = caller(stack_depth, 1)[0]
-        parts = %r{^.*/cookbooks/([^/]*)/([^/]*)/(.*)\.rb:(\d+)}.match(stack)
-        if parts
-          where = "(#{parts[1]}::#{parts[3]} line #{parts[4]})"
-        else
-          where = stack
-        end
-        Chef::Log.warn(
-          "fb_helpers: Past time shard duration! Please cleanup! #{where}",
-        )
+        FB::Helpers.warn_to_remove(stack_depth)
       end
       curtime >= time_threshold
+    end
+
+    # This method allows you to conditionally shard chef resources
+    # @param threshold [Fixnum] An integer value that you are sharding up to.
+    # @yields The contents of the ruby block if the node is in the shard.
+    # @example
+    #  This will log 'hello' during the chef run for all nodes <= shard 5
+    #   node.shard_block(5) do
+    #     log 'hello' do
+    #       level :info
+    #     end
+    #   end
+    def shard_block(threshold, &block)
+      yield block if block_given? && in_shard?(threshold)
+    end
+
+    def shard_over_a_week_starting(start_date)
+      in_shard?(rollout_shard(start_date))
+    end
+
+    def shard_over_a_week_ending(end_date)
+      start_date = Date.parse(end_date) - 7
+      in_shard?(rollout_shard(start_date.to_s))
+    end
+
+    # Shard range is 0-99
+    def rollout_shard(start_date)
+      rollout_map = [
+        1,
+        10,
+        25,
+        50,
+        99,
+      ]
+      rd = Date.parse(start_date)
+
+      # Now we use today as an index into the rollout map, except we have to
+      # discount weekends
+      today = Date.today
+      numdays = (today - rd).to_i
+      num_weekend_days = 0
+      (0..numdays).each do |i|
+        t = rd + i
+        if t.saturday? || t.sunday?
+          num_weekend_days += 1
+        end
+      end
+
+      # Subtract that from how far into the index we go
+      numdays -= num_weekend_days
+
+      # Return -1 because in_shard?() does a >= comparison to shard number
+      if numdays < 0
+        return -1
+      end
+
+      Chef::Log.debug(
+        "fb_helpers: rollout_shard: days into rollout: #{numdays}",
+      )
+
+      if numdays >= rollout_map.size
+        FB::Helpers.warn_to_remove(3)
+        shard = 99
+      else
+        shard = rollout_map[numdays]
+      end
+      Chef::Log.debug(
+        "fb_helpers: rollout_shard: rollout_shard: #{shard}",
+      )
+      return shard
     end
 
     def firstboot_os?
@@ -623,6 +768,47 @@ class Chef
 
     def taste_tester_mode?
       Chef::Config[:mode] == 'taste-tester'
+    end
+
+    # Safely dig through the node's attributes based on the specified `path`,
+    # with the option to provide a default value
+    # in the event the key does not exist.
+    #
+    # @param path [required] [String] A string representing the path to search
+    # for the key.
+    # @param delim [opt] [String] A character that you will split the path on.
+    # @param default [opt] [Object] An object to return if the key is not found.
+    # @return [Object] Returns an arbitrary object in the event the key isn't
+    # there.
+    # @note Returns nil by default
+    # @note Returns the default value in the event of an exception
+    # @example
+    #  irb> node.default.awesome = 'yup'
+    #  => "yup"
+    #  irb> node.attr_lookup('awesome/not_there')
+    #  => nil
+    #  irb> node.attr_lookup('awesome')
+    #  => "yup"
+    #  irb> node.override.not_cool = 'but still functional'
+    #  => "but still functional"
+    #  irb> node.attr_lookup('not_cool')
+    #  => "but still functional"
+    #  irb> node.attr_lookup('default_val', default: 'I get this back anyway')
+    #  => "I get this back anyway"
+    #  irb> node.automatic.a.very.deeply.nested.value = ':)'
+    #  => ":)"
+    #  irb> node.attr_lookup('a/very/deeply/nested/value')
+    #  => ":)"
+    def attr_lookup(path, delim: '/', default: nil)
+      return default if path.nil?
+      node_path = path.split(delim)
+      node_path.inject(self) do |location, key|
+        begin
+          location.attribute?(key.to_s) ? location[key] : default
+        rescue NoMethodError
+          default
+        end
+      end
     end
   end
 end

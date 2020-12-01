@@ -47,11 +47,47 @@ your node.
 * `node.redhat?`
     Is Redhat Enterprise Linux
 
+* `node.redhat6?`
+    Is Redhat Enterprise Linux 6
+
+* `node.redhat7?`
+    Is Redhat Enterprise Linux 7
+
+* `node.redhat8?`
+    Is Redhat Enterprise Linux 8
+
+* `node.rhel?`
+    Is Redhat Enterprise Linux
+
+* `node.rhel7?`
+    Is Redhat Enterprise Linux 7
+
+* `node.rhel8?`
+    Is Redhat Enterprise Linux 8
+
+* `node.oracle?`
+    Is Oracle Enterprise Linux
+
+* `node.oracle5?`
+    Is Oracle Enterprise Linux 5
+
+* `node.oracle6?`
+    Is Oracle Enterprise Linux 6
+
+* `node.oracle7?`
+    Is Oracle Enterprise Linux 7
+
+* `node.oracle8?`
+    Is Oracle Enterprise Linux 8
+
 * `node.debian?`
     Is Debian
 
 * `node.ubuntu?`
     Is Ubuntu
+
+* `node.ubuntu12?`
+    Is Ubuntu14
 
 * `node.ubuntu14?`
     Is Ubuntu14
@@ -62,8 +98,20 @@ your node.
 * `node.ubuntu16?`
     Is Ubuntu16
 
+* `node.ubuntu1610?`
+    Is Ubuntu16.10
+
+* `node.ubuntu17?`
+    Is Ubuntu17
+
+* `node.ubuntu1704?`
+    Is Ubuntu17.04
+
 * `node.ubuntu18?`
     Is Ubuntu18
+
+* `node.ubuntu1804?`
+    Is Ubuntu18.04
 
 * `node.ubuntu20?`
     Is Ubuntu20
@@ -79,6 +127,27 @@ your node.
 
 * `node.windows?`
     Is Windows
+
+* `node.windows2008?`
+    Is Windows 2008
+
+* `node.windows2008r2?`
+    Is Windows 2008 R2
+
+* `node.windows2008r2sp1?`
+    Is Windows 2008 R2 SP1
+
+* `node.windows2012?`
+    Is Windows 2012
+
+* `node.windows2012r2?`
+    Is Windows 2012 R2
+
+* `node.windows2016?`
+    Is Windows 2016
+
+* `node.windows2019?`
+    Is Windows 2019
 
 * `node.aristaeos?`
     Is network switch running Arista EOS
@@ -205,6 +274,18 @@ your node.
    `2013-04-17 13:05:00`. The duration format is `Xd` or `Xh` where `d` and `h`
    are days and hours respectively, and X is the number of days or hours.
 
+* `node.shard_block?(threshold, &block)`
+    This method allows you to conditionally shard chef resources
+
+* `node.shard_over_a_week_starting(start_date)`
+    Compute a shard over a week given a start date
+
+* `node.shard_over_a_week_ending(end_date)`
+    Compute a shard over a week given an end date
+
+* `node.rollout_shard(start_date)`
+    Compute a shard over a set of weekdays given a start date
+
 * `node.firstboot_any_phase?`
    Returns `true` if we're in any of firstboot steps
 
@@ -265,6 +346,14 @@ your node.
    This should be used only under very special conditions; it makes testing
    less meaningful because it alters the outcome.
 
+* `node.attr_lookup(path, delim: '/', default: nil)`
+    Safely dig through the node's attributes based on the specified `path`,
+    with the option to provide a default value in the event the key does not exist.
+    Optionally a delimiter can be specified to indicate how keys are separated.
+    For example, you could get the value of `node['dmi']['system']['manufacturer']`
+    by calling `node.attr_lookup('dmi/system/manufacturer')`, which would return
+    the value or `nil` if the value does not exist.
+
 ### FB::Helpers
 The following methods are available:
 
@@ -319,16 +408,22 @@ The following methods are available:
   in case of errors.
 
 * `FB::Helpers.parse_timeshard_start(time)`
-   Takes a time string and converts its contents to a unix timestamp,
+  Takes a time string and converts its contents to a unix timestamp,
    to be used in computing timeshard information.
 
 * `FB::Helpers.parse_timeshard_duration(duration)`
-   Takes a duration string and converts its contents to a to an int
-   to be used in computing timeshard information
+  Takes a duration string and converts its contents to a to an int
+  to be used in computing timeshard information
 
 * `FB::Helpers.safe_dup(thing)`
   Wrapper around `dup` that always returns a valid object, even for things
   that do not support `dup`.
+
+* `FB::Helpers.sysnative_path`
+  Determines the sysnative path on Windows
+
+* `FB::Helpers.warn_to_remove(stack_depth)`
+  Used in sharding operations to discover old sharding code
 
 * `FB::Version.new(version)`
    Helper class to compare software versions. Sample usage:
