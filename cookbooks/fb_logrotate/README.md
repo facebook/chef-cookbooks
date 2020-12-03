@@ -135,6 +135,8 @@ additional overrides are accepted and require values:
 Please don't turn off compression unless you know what you are doing, and
 please specify only the minimum of overrides.
 
+You can only use one of `size` or `rotation`.
+
 IMPORTANT NOTE: No syntax checking is done for the logrotate configs.
 You are responsible for ensuring you are entering correct, typo-free
 data. Please make sure that you use a valid options from logrotate(8)
