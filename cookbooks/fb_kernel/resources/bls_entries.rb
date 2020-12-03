@@ -17,12 +17,12 @@
 #
 
 action :run do
-  bls_root = File.join(node['fb_kernel']['boot_path'], 'loader', 'entries')
+  bls_root = ::File.join(node['fb_kernel']['boot_path'], 'loader', 'entries')
   bls_entries = []
 
   node['fb_kernel']['kernels'].each do |name, data|
     bls_entry =
-      File.join(bls_root, "#{node['machine_id']}-#{data['version']}.conf")
+      ::File.join(bls_root, "#{node['machine_id']}-#{data['version']}.conf")
 
     template bls_entry do # ~FB031
       source 'bls-entry.conf.erb'

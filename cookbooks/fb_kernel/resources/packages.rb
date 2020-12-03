@@ -63,7 +63,7 @@ action :run do
     vmlinuz
     System.map
   }.each do |prefix|
-    Dir.glob(File.join(boot_path, "#{prefix}-[0-9]*")).each do |f|
+    Dir.glob(::File.join(boot_path, "#{prefix}-[0-9]*")).each do |f|
       v = f.match("#{prefix}-(?:kdump-)?(.*)")[1]
       # never remove the currently booted kernel
       next if v == node['kernel']['release']
