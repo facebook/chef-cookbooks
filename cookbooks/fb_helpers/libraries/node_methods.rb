@@ -689,7 +689,7 @@ class Chef
 
     def root_group
       value_for_platform(
-        %w{openbsd freebsd mac_os_x} => { 'default' => 'wheel' },
+        %w{openbsd freebsd mac_os_x macos} => { 'default' => 'wheel' },
         'windows' => { 'default' => 'Administrators' },
         'default' => 'root',
       )
