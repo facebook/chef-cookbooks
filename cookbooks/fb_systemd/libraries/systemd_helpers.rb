@@ -65,17 +65,15 @@ module FB
       end
       if systemd_overrides
         ['Service', 'Unit', 'Install'].each do |stanza|
-          if systemd_overrides[stanza]
-            systemd_overrides[stanza].each do |k, override|
-              default = merged[stanza][k]
-              # If either value is a list, append them together
-              list = override.is_a?(Array) || default.is_a?(Array)
-              if list
-                merged[stanza][k] = Array(default) + Array(override)
-              else
-                # Override
-                merged[stanza][k] = override
-              end
+          systemd_overrides[stanza]&.each do |k, override|
+            default = merged[stanza][k]
+            # If either value is a list, append them together
+            list = override.is_a?(Array) || default.is_a?(Array)
+            if list
+              merged[stanza][k] = Array(default) + Array(override)
+            else
+              # Override
+              merged[stanza][k] = override
             end
           end
         end
