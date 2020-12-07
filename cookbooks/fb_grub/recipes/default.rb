@@ -19,4 +19,5 @@
 #
 
 include_recipe 'fb_grub::packages'
+include_recipe 'fb_grub::validate'
 include_recipe 'fb_grub::config'
