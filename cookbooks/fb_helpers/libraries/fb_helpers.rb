@@ -508,7 +508,9 @@ If the has is specified, it takes one or more of the following keys:
 
     # warn_to_remove() is used in sharding operations to help
     # discover old sharding code
-    def self.warn_to_remove(stack_depth)
+    def self.warn_to_remove(
+      stack_depth, msg = 'fb_helpers: Past time shard duration! Please cleanup!'
+    )
       stack = caller(stack_depth, 1)[0]
       parts = %r{^.*/cookbooks/([^/]*)/([^/]*)/(.*)\.rb:(\d+)}.match(stack)
       if parts
@@ -516,9 +518,7 @@ If the has is specified, it takes one or more of the following keys:
       else
         where = stack
       end
-      Chef::Log.warn(
-        "fb_helpers: Past time shard duration! Please cleanup! #{where}",
-      )
+      Chef::Log.warn("#{msg} #{where}")
     end
   end
 
@@ -546,6 +546,7 @@ If the has is specified, it takes one or more of the following keys:
         return
       end
       @arr = s.split('.').map(&:to_i)
+      @newarr = s.split(/[._-]/).map(&:to_i)
     end
 
     def to_s
@@ -556,9 +557,25 @@ If the has is specified, it takes one or more of the following keys:
       @arr
     end
 
+    def to_new_a
+      @newarr
+    end
+
     def compare(other)
       other ||= []
-      @arr <=> other.to_a
+      old_value = @arr <=> other.to_a
+      if other.respond_to? 'to_new_a'
+        new_value = @newarr <=> other.to_new_a
+      else
+        new_value = @newarr <=> other.to_a
+      end
+      if old_value != new_value
+        FB::Helpers.warn_to_remove(
+          3, 'fb_helpers: FB::Version discrepancy: ' +
+          "#{@string_form} <=> #{other}: was #{old_value}, now #{new_value}"
+        )
+      end
+      old_value
     end
 
     alias_method '<=>', :compare

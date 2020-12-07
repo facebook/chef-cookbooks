@@ -556,7 +556,7 @@ class Chef
       curtime = Time.now.tv_sec
 
       if curtime > st + duration
-        FB::Helpers.warn_to_remove(stack_depth)
+        FB::Helpers.warn_to_remove(stack_depth + 1)
       end
       curtime >= time_threshold
     end

@@ -422,8 +422,9 @@ The following methods are available:
 * `FB::Helpers.sysnative_path`
   Determines the sysnative path on Windows
 
-* `FB::Helpers.warn_to_remove(stack_depth)`
-  Used in sharding operations to discover old sharding code
+* `FB::Helpers.warn_to_remove(stack_depth, message)`
+  Used to discover obsolete code. Defaults message to warning about time
+  sharding code
 
 * `FB::Version.new(version)`
    Helper class to compare software versions. Sample usage:
