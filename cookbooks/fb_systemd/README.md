@@ -114,6 +114,12 @@ The following methods are available:
 * a `fb_systemd_override` custom resource to manage systemd unit drop-in
   overrides, taking inspiration from the `systemd_unit` builtin resource
 
+This provider has two actions:
+
+* `:create` - Add parameters described below to create the override and
+  reload systemd [default]
+* `:delete` - Remove the override and reload systemd
+
 ```
 fb_systemd_override 'run-as-nobody' do
   unit_name 'foo.service'
