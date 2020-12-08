@@ -187,6 +187,7 @@ node['network']['interfaces'].to_hash.each_key do |iface|
       # network is only available on Linux
       node.linux? &&
       # make sure this is a physical interface in the up state
+      node['network']['interfaces'][iface] &&
       node['network']['interfaces'][iface]['flags'] &&
       node['network']['interfaces'][iface]['flags'].include?('UP') &&
       # only run if something needs to be changed
