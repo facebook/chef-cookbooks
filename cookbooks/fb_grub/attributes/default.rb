@@ -75,6 +75,7 @@ fb_grub = {
   'force_both_efi_and_bios' => true,
   'users' => {},
   'require_auth_on_boot' => false,
+  'environment' => {},
 }
 
 # Set the path to the grub config files

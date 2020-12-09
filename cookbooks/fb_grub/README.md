@@ -28,6 +28,7 @@ Attributes
 * node['fb_grub']['users'][$USER]['password']
 * node['fb_grub']['users'][$USER]['is_superuser']
 * node['fb_grub']['require_auth_on_boot']
+* node['fb_grub']['environment'][$KEY][$VAL]
 
 Usage
 -----
@@ -116,3 +117,17 @@ node.default['fb_grub']['users']['toor'] = {
 By default, if any users are defined authentication will only be required for
 editing menu entries. Set `node['fb_grub']['require_auth_on_boot']` to require
 authentication also for booting.
+
+### Environment
+On GRUB2, this cookbook can optionally manage the GRUB environment. Set your
+desired environment keys in `node['fb_grub']['environment']`; to unset a key,
+set it to `nil`. Example:
+
+```ruby
+node.default['fb_grub']['environment']['saved_entry'] = nil
+node.default['fb_grub']['environment']['kernelopts'] =
+  'root=UUID=6db0ffcd-70ec-4333-86c3-873a9e2a0d77 ro'
+```
+
+Because the environment is often used to store runtime data, additional
+unspecified entries will be left unmanaged.

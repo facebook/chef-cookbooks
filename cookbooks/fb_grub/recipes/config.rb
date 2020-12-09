@@ -168,3 +168,11 @@ link '/etc/grub.conf' do
     end
   }
 end
+
+fb_grub_environment 'manage GRUB2 environment' do
+  only_if do
+    node['fb_grub']['version'] == 2 &&
+      !node['fb_grub']['environment'].empty? &&
+      node['grub2']
+  end
+end
