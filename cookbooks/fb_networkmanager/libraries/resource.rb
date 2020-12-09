@@ -79,11 +79,18 @@ module FB
       # we add a test just to make sure no one ever reverses the arguments or
       # something weird
       def generate_config_hashes(from_file, desired_config)
+        defaults = {}
+        if desired_config['_defaults']
+          defaults = desired_config['_defaults'].dup
+          desired_config.delete('_defaults')
+        end
         current = {}
         if ::File.exist?(from_file)
           current = IniParse.parse(::File.read(from_file)).to_hash
         end
-        new_config = Chef::Mixin::DeepMerge.merge(current, desired_config)
+        interim_config = Chef::Mixin::DeepMerge.merge(defaults, current)
+        new_config =
+          Chef::Mixin::DeepMerge.merge(interim_config, desired_config)
 
         [current, new_config]
       end

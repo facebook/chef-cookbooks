@@ -120,6 +120,22 @@ describe FB::Networkmanager::Resource do
       }
     end
 
+    let(:config_with_default) do
+      {
+        '_defaults' => {
+          'section1' => {
+            'optionC' => 'default_value',
+          },
+        },
+        'section1' => {
+          'optionA' => 'first_value',
+        },
+        'section2' => {
+          'optionB' => 'second_value',
+        },
+      }
+    end
+
     let(:from_contents) do
       <<~EOS
       [oldsection]
@@ -128,6 +144,21 @@ describe FB::Networkmanager::Resource do
       [section1]
       existing=stuff
       optionA=previous_value
+
+      [section2]
+      blue=red
+      EOS
+    end
+
+    let(:from_contents_with_default_override) do
+      <<~EOS
+      [oldsection]
+      key=value
+
+      [section1]
+      existing=stuff
+      optionA=previous_value
+      optionC=user_value
 
       [section2]
       blue=red
@@ -149,12 +180,28 @@ describe FB::Networkmanager::Resource do
       }
     end
 
+    let(:from_hash_with_default_override) do
+      {
+        'oldsection' => {
+          'key' => 'value',
+        },
+        'section1' => {
+          'existing' => 'stuff',
+          'optionA' => 'previous_value',
+          'optionC' => 'user_value',
+        },
+        'section2' => {
+          'blue' => 'red',
+        },
+      }
+    end
+
     it 'returns the desired config with no source file' do
       expect(File).to receive(:exist?).with(from).and_return(false)
       expect(generate_config_hashes(from, config)).to eq([{}, config])
     end
 
-    it 'ensure new data wins when a source file exists' do
+    it 'lets new data wins when a source file exists' do
       expect(File).to receive(:exist?).with(from).and_return(true)
       expect(File).to receive(:read).with(from).and_return(from_contents)
       expected = {
@@ -176,6 +223,62 @@ describe FB::Networkmanager::Resource do
         },
       }
       expect(generate_config_hashes(from, config)).to eq([from_hash, expected])
+    end
+
+    it 'includes defaults that are not overwritten' do
+      expect(File).to receive(:exist?).with(from).and_return(true)
+      expect(File).to receive(:read).with(from).and_return(from_contents)
+      expected = {
+        # no conflict, comes from old file
+        'oldsection' => {
+          'key' => 'value',
+        },
+        'section1' => {
+          # no conflict, from old file
+          'existing' => 'stuff',
+          # conflict, new data wins
+          'optionA' => 'first_value',
+          # default
+          'optionC' => 'default_value',
+        },
+        'section2' => {
+          # no conflict, old file
+          'blue' => 'red',
+          # new data
+          'optionB' => 'second_value',
+        },
+      }
+      expect(generate_config_hashes(from, config_with_default)).
+        to eq([from_hash, expected])
+    end
+
+    it 'lets users overwrite default-only settings' do
+      expect(File).to receive(:exist?).with(from).and_return(true)
+      expect(File).to receive(:read).with(from).and_return(
+        from_contents_with_default_override,
+      )
+      expected = {
+        # no conflict, comes from old file
+        'oldsection' => {
+          'key' => 'value',
+        },
+        'section1' => {
+          # no conflict, from old file
+          'existing' => 'stuff',
+          # conflict, new data wins
+          'optionA' => 'first_value',
+          # default only, user did overwrite, should have user value
+          'optionC' => 'user_value',
+        },
+        'section2' => {
+          # no conflict, old file
+          'blue' => 'red',
+          # new data
+          'optionB' => 'second_value',
+        },
+      }
+      expect(generate_config_hashes(from, config_with_default)).
+        to eq([from_hash_with_default_override, expected])
     end
   end
 end

@@ -26,7 +26,6 @@ end
 action :manage do
   node['fb_networkmanager']['system_connections'].each do |name, userconfig|
     config = userconfig.to_hash.dup
-
     files = determine_files(name, config)
 
     current, new_config = generate_config_hashes(files['from'], config)

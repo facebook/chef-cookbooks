@@ -94,6 +94,7 @@ end
 service 'NetworkManager' do
   only_if { node['fb_networkmanager']['enable'] }
   action [:enable, :start]
+  subscribes :restart, 'service[systemd-resolved]', :immediately
 end
 
 service 'disable NetworkManager' do
@@ -103,8 +104,10 @@ end
 
 package 'remove network-manager' do
   only_if do
-    !node['fb_networkmanager']['enable'] &&
+    node['fb_networkmanager']['manage_packages'] &&
+      !node['fb_networkmanager']['enable'] &&
       FB::Networkmanager.active_connections.empty?
   end
+  package_name 'network-manager'
   action :remove
 end
