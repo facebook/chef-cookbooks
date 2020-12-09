@@ -10,6 +10,7 @@ Attributes
 * node['fb_networkmanager']['enable']
 * node['fb_networkmanager']['system_connections']
 * node['fb_networkmanager']['system_connections'][$NAME]['_migrate_from']
+* node['fb_networkmanager']['system_connections'][$NAME]['_defaults']
 * node['fb_networkmanager']['config']
 
 Usage
@@ -186,3 +187,39 @@ configuration.
 Note that if the original service file isn't there, Chef will just create a new
 connection file (though it will warn). Also note that once Chef has created one,
 it stop pulling in the old file (and will remove it).
+
+#### Providing defaults
+
+In general, the Chef config wins over the user config as described above.
+However it is often desirable to specify a default config in case the user does
+not specify anything. In that case you can use the `_defaults`. For example:
+
+```ruby
+node.default['fb_networkmanager']['system-connections']['our_corp_wifi'] = {
+  '_migrate_from' => 'OurCorpWifi',
+  '_defaults' => {
+    'connection' => {
+      'autoconnect-priority' => '100',
+    }
+  },
+  'connection' => {
+    'type' => 'wifi',
+    'id' => 'OurCorpWifi',
+  },
+  'wifi' => {
+    'mode' => 'infrastructure',
+    'ssid' => 'OurCorpWifi',
+  },
+  'wifi-security' => {
+    'auth-alg' => 'open',
+    'key-mgmt' => 'wpa-psk',
+    'psk' => 'SuperS3kr1t',
+  },
+}
+```
+
+The rendered config here will set `connection.autoconnect-priority` to 100
+if there is no value for it found in the existing file, but will use the value
+in the file if it exists. The logic here is quote simple:
+
+  defaults < user config < chef config
