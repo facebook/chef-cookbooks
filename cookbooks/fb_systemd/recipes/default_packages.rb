@@ -18,7 +18,7 @@
 # limitations under the License.
 #
 
-systemd_packages = ['systemd']
+systemd_packages = ['systemd', 'systemd-sysv']
 
 case node['platform_family']
 when 'rhel', 'fedora'
