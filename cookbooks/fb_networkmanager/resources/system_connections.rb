@@ -32,7 +32,7 @@ action :manage do
 
     template files['config'] do
       # we don't rely just on the idempotency of the template because
-      # there's no gaurantee that NM writes stuff in the same order we
+      # there's no guarantee that NM writes stuff in the same order we
       # would, so we compare the useful contents
       only_if { new_config != current }
       owner 'root'

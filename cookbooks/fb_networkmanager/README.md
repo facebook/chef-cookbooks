@@ -220,6 +220,6 @@ node.default['fb_networkmanager']['system-connections']['our_corp_wifi'] = {
 
 The rendered config here will set `connection.autoconnect-priority` to 100
 if there is no value for it found in the existing file, but will use the value
-in the file if it exists. The logic here is quote simple:
+in the file if it exists. The logic here is quite simple:
 
   defaults < user config < chef config
