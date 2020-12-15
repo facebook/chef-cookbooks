@@ -444,6 +444,11 @@ The following methods are available:
    => false
    ```
 
+* `FB::Helpers.user_exist?('someuser')`
+  Test if a user is defined on the system.  Usually this would be checked by
+  looking at `node['etc']['passwd']`, but if the user was added during the same
+  chef run then ohai won't have it.
+
 ### Custom resources
 The following custom resources are available
 

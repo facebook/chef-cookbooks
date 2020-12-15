@@ -520,6 +520,16 @@ If the has is specified, it takes one or more of the following keys:
       end
       Chef::Log.warn("#{msg} #{where}")
     end
+
+    # Normally preferred testing for existence of a user is via
+    # node['etc']['passwd'], but if the user was added in the same chef run
+    # then ohai won't have it.
+    def self.user_exist?(user_name)
+      Etc.getpwnam(user_name)
+      true
+    rescue ArgumentError
+      false
+    end
   end
 
   # Helper class to compare software versions.
