@@ -32,6 +32,8 @@ else
     'lost+found',
     'journal.dat',
     'quota.{user,group}',
+    '.com.google.Chrome.*',
+    '.org.chromium.Chromium.*',
   ]
 end
 
