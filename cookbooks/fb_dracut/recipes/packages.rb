@@ -18,6 +18,15 @@
 # limitations under the License.
 #
 
-package 'dracut' do
-  action :upgrade
+# temporary fix for https://fb.workplace.com/groups/prodos.users/permalink/4933371613378081/
+if node.centos8?
+  package 'dracut' do # ~FC009
+    version '049-70.git20200228.el8'
+    allow_downgrade true
+    action :install
+  end
+else
+  package 'dracut' do
+    action :upgrade
+  end
 end
