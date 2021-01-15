@@ -717,7 +717,7 @@ class Chef
 
     # returns the version of an rpm installed, or nil if not present
     def rpm_version(name)
-      if self.centos? && !self.centos7?
+      if (self.centos? && !self.centos7?) || self.fedora?
         Chef::Provider::Package::Dnf::PythonHelper.instance.
           package_query(:whatinstalled, name).version
       else
