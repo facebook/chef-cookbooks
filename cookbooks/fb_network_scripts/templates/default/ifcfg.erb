@@ -91,9 +91,9 @@ MTU=<%= @config['mtu'] %>
 <%   end %>
 <% end %>
 <% if @config.has_key?('dns') %>
-<% @config['dns'].each_with_index do |dns, idx| %>
+<%   @config['dns'].each_with_index do |dns, idx| %>
 DNS<%= idx %>=<%= dns %>
-<% end %>
+<%   end %>
 <% end %>
 <% if @routing_config.has_key?('default_metric') %>
 METRIC="<%= @routing_config['default_metric'].to_s %>"

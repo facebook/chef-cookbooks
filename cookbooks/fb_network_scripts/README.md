@@ -106,22 +106,6 @@ setup to accept IPv6 Router Advertisements (but not autoconfiguration). This
 can be changed by setting the relevant sysctl through the `fb_sysctl`
 interface.
 
-For the primary interface, you don't need to specify the IP or netmask, they'll
-be pulled from fbwhoami. This is the default entry for eth0:
-
-```ruby
-node.default['fb_network_scripts']['interfaces']['eth0'] = {
-  'bootproto' => 'static',
-  'onboot' => 'yes',
-}
-```
-
-Additional interfaces ("eth1" to "eth14") configured with IPv6 addresses in SeRF
-will be automatically configured from fbwhoami unless manually configured by
-adding `node.default['fb_network_scripts']['interfaces'][interface]`. This is
-incompatible with bridging or when `primary_interface != eth0` and will fail with
-an error. Talk to the OS Team if you have a use case that requires this.
-
 #### MTU
 MTU can be configured with the 'mtu' key, and MTU is a bit special in that you
 can set the MTU on the default interface, and if nothing else is set on it, then
