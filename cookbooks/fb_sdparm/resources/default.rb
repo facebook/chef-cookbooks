@@ -19,6 +19,7 @@
 
 default_action :set
 resource_name :fb_sdparm
+provides :fb_sdparm
 
 def whyrun_supported?
   true
