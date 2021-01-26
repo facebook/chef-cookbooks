@@ -555,8 +555,7 @@ If the has is specified, it takes one or more of the following keys:
         @arr = []
         return
       end
-      @arr = s.split('.').map(&:to_i)
-      @newarr = s.split(/[._-]/).map(&:to_i)
+      @arr = s.split(/[._-]/).map(&:to_i)
     end
 
     def to_s
@@ -567,25 +566,9 @@ If the has is specified, it takes one or more of the following keys:
       @arr
     end
 
-    def to_new_a
-      @newarr
-    end
-
     def compare(other)
       other ||= []
-      old_value = @arr <=> other.to_a
-      if other.respond_to? 'to_new_a'
-        new_value = @newarr <=> other.to_new_a
-      else
-        new_value = @newarr <=> other.to_a
-      end
-      if old_value != new_value
-        FB::Helpers.warn_to_remove(
-          3, 'fb_helpers: FB::Version discrepancy: ' +
-          "#{@string_form} <=> #{other}: was #{old_value}, now #{new_value}"
-        )
-      end
-      old_value
+      @arr <=> other.to_a
     end
 
     alias_method '<=>', :compare

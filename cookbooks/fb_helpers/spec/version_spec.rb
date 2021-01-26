@@ -60,13 +60,13 @@ describe FB::Version do
     context 'broken' do
       it 'ignores _' do
         # '1_2'.to_i == 12, as it's used for things like 1_000_000
-        expect(FB::Version.new('1_2.6') <=> FB::Version.new('1.2.7')).to eq(1)
+        expect(FB::Version.new('1_2.6') <=> FB::Version.new('1.2.7')).to eq(-1)
       end
       it 'ignores anything after -' do
-        expect(FB::Version.new('1-2.6') <=> FB::Version.new('1-1.6')).to eq(0)
+        expect(FB::Version.new('1-2.6') <=> FB::Version.new('1-1.6')).to eq(1)
         expect(
           FB::Version.new('5.6.9-90_fbk1') <=> FB::Version.new('5.6.9-91_fbk2'),
-        ).to eq(0)
+        ).to eq(-1)
       end
     end
     context 'actually OK' do
