@@ -1,0 +1,30 @@
+# This file is maintained by Chef. Do not edit, all changes will be
+# overwritten. See fb_readline/README.md
+
+<% config = node['fb_readline']['config'].to_hash %>
+<%= 
+   FB::Readline.render_config(
+     config['key_bindings'],
+     config['variables'],
+   ).join("\n")
+%>
+<% config['mode'].each do |mode, mode_config| %>
+
+<%=
+     FB::Readline.render_mode_config(
+       mode,
+       mode_config['key_bindings'],
+       mode_config['variables'],
+     ).join("\n")
+%>
+<% end %>
+<% config['term'].each do |term, term_config| %>
+
+<%= 
+     FB::Readline.render_term_config(
+       term,
+       term_config['key_bindings'], 
+       term_config['variables'],
+     ).join("\n")
+%>
+<% end %>
