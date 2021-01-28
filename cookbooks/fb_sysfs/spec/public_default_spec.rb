@@ -25,8 +25,10 @@ describe FB::Sysfs::Provider do
   context '#check' do
     it 'should handle lists' do
       expect(check("[one] two three\n", 'one', :list)).to eq(true)
+      expect(check("[one] two three\n", "one\n", :list)).to eq(true)
       expect(check("one [two] three\n", 'one', :list)).to eq(false)
       expect(check("one [two] three\n", 'two', :list)).to eq(true)
+      expect(check("one [two] three\n", "two\n", :list)).to eq(true)
       expect(check("one [two] three\n", 'three', :list)).to eq(false)
       expect(check("one [two] three\n", 'oogabooga', :list)).to eq(false)
     end

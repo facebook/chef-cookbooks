@@ -23,7 +23,7 @@ module FB
       def check(current, new, type)
         case type
         when :list
-          current.include?("[#{new}]")
+          current.include?("[#{new.chomp}]")
         when :int
           current.to_i == new.to_i
         else

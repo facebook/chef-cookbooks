@@ -34,7 +34,15 @@ check:
 * `:int` - Interpret the value is an integer and compare appropriately.
 
 ### Value
-Value, as you'd expect, is the value to be set.
+Value, as you'd expect, is the value to be set. Note that some `:list` sysfs
+files require a newline at the end of `value` to actually take effect. Example:
+
+```ruby
+fb_sysfs '/sys/kernel/mm/transparent_hugepage/defrag' do
+  type :list
+  value "defer\n"
+end
+```
 
 ### Path
 `path` is the name property, but you may specify it directly should you need to
