@@ -20,9 +20,13 @@ Attributes
 * node['fb_dracut']['conf']['lvmconf']
 * node['fb_dracut']['conf']['kernel_only']
 * node['fb_dracut']['conf']['no_kernel']
+* node['fb_dracut']['manage_packages']
 
 Usage
 -----
+By default `fb_dracut` will manage the dracut package; to disable this set
+`node['fb_dracut']['manage_packages']` to `false`.
+
 You can add any valid `dracut.conf` entry under `node['fb_dracut']['conf']`
 If an attribute is set to `nil` or an empty list, the `dracut.conf` entry
 for that attribute will not be written out. In this case the system

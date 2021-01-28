@@ -29,6 +29,7 @@ if node.virtual?
 end
 
 default['fb_dracut'] = {
+  'manage_packages' => true,
   'conf' => {
     'add_dracutmodules' => [],
     'drivers' => [],
