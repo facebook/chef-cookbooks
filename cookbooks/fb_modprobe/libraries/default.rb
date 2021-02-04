@@ -29,10 +29,21 @@ module FB
 
     def self.module_refcnt(loaded_mod)
       loaded_mod.tr!('-', '_')
-      version_file = "/sys/module/#{loaded_mod}/refcnt"
+      refcnt_file = "/sys/module/#{loaded_mod}/refcnt"
 
-      if File.exist?(version_file)
-        return IO.read(version_file).strip
+      if File.exist?(refcnt_file)
+        return IO.read(refcnt_file).strip
+      end
+
+      nil
+    end
+
+    def self.module_opt(loaded_mod, param)
+      loaded_mod.tr!('-', '_')
+      param_file = "/sys/module/#{loaded_mod}/parameters/#{param}"
+
+      if File.exist?(param_file)
+        return IO.read(param_file).strip
       end
 
       nil
