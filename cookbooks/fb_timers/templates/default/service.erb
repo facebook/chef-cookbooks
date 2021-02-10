@@ -3,7 +3,9 @@
 
 [Unit]
 Description=<%= @conf['description'] %>
+<% unless @conf['service_unit_options'].has_key?('After') %>
 After=network.target
+<% end %>
 <% @conf['service_unit_options'].each do |name, value|
      if value.is_a?(Array)
        value.each do |v|
