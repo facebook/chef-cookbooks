@@ -33,6 +33,7 @@ service 'nscd' do
   only_if { FB::Nscd.nscd_enabled?(node) }
   action [:enable, :start]
   subscribes :restart, 'template[/etc/ldap.conf]', :immediately
+  subscribes :restart, 'template[/etc/nsswitch.conf]', :immediately
 end
 
 service 'disable nscd' do
