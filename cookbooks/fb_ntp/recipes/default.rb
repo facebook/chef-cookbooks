@@ -24,14 +24,18 @@ service_name = value_for_platform(
   ['redhat', 'centos', 'fedora', 'suse', 'arista_eos'] =>
     { 'default' => 'ntpd' },
   ['mac_os_x'] => { 'default' => 'com.apple.timed' },
+  ['windows'] => { 'default' => 'W32Time' },
   'default' => 'ntpd',
 )
 
 if node.macos?
   include_recipe 'fb_ntp::macosx'
+elsif node.windows?
+  fb_ntp_windows_config 'doit'
 end
 
 whyrun_safe_ruby_block 'enforce ACL hardening' do
+  not_if { node.windows? }
   block do
     # Prepend this to whatever default the end-user overrode
     acl_entries = [
@@ -43,16 +47,14 @@ whyrun_safe_ruby_block 'enforce ACL hardening' do
 
     # Resolve chosen timesources and allow them
     node['fb_ntp']['servers'].each do |host|
-      begin
-        ips = Resolv.getaddresses(host)
-        ips.each do |ip|
-          dash6 = ''
-          dash6 = '-6 ' if IPAddr.new(ip).ipv6?
-          acl_entries << "restrict #{dash6}#{ip} ##{host}"
-        end
-      rescue Resolv::ResolvError
-        Chef::Log.warn("fb_ntp: failed to resolve #{host}, skipping")
+      ips = Resolv.getaddresses(host)
+      ips.each do |ip|
+        dash6 = ''
+        dash6 = '-6 ' if IPAddr.new(ip).ipv6?
+        acl_entries << "restrict #{dash6}#{ip} ##{host}"
       end
+    rescue Resolv::ResolvError
+      Chef::Log.warn("fb_ntp: failed to resolve #{host}, skipping")
     end
 
     node.default['fb_ntp']['acl_entries'] = acl_entries +
@@ -61,6 +63,7 @@ whyrun_safe_ruby_block 'enforce ACL hardening' do
 end
 
 template '/etc/ntp.conf' do
+  not_if { node.windows? }
   source 'ntp.conf.erb'
   owner 'root'
   group 'root'
