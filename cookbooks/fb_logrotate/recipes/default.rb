@@ -22,8 +22,8 @@ if node.macos?
   template '/etc/newsyslog.d/fb_bsd_newsyslog.conf' do
     source 'fb_bsd_newsyslog.conf.erb'
     mode '0644'
-    owner 'root'
-    group 'root'
+    owner node.root_user
+    group node.root_group
   end
   return
 end
