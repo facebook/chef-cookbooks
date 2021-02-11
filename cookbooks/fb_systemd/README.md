@@ -47,6 +47,29 @@ runlist to use it.
 ### FB::Systemd
 The following methods are available:
 
+* `FB::Systemd.condition_user_online(user)
+  Takes a username (as a string) or a uid (as an integer), and generates
+  a map containing attributes to add to a unit definition to make the service
+  start conditional on that user being logged in, and
+  `{After,Wants}=network-online.target` (so NetworkManager or some other utility
+  can use the user's credentials to start a network connection).
+
+```ruby
+ FB::Systemd.condition_user_online('johndoe')
+ => {"After"=>"network-online.target", "Wants"=>"network-online.target", "ConditionPathExists"=>"/run/user/1000/bus"}
+```
+
+* `FB::Systemd.condition_user_session(user)
+  Takes a username (as a string) or a uid (as an integer), and generates
+  a map containing `ConditionPathExists` with the path to that user's session bus,
+  which when added to a unit definition will make the service start conditional on
+  that user being logged in.
+
+```ruby
+ FB::Systemd.condition_user_session('johndoe')
+ => {"ConditionPathExists"=>"/run/user/1000/bus"}
+```
+
 * `FB::Systemd.path_to_unit(path, unit_type)`
   Convert a given `path` to a unit name of `unit_type` type.
 

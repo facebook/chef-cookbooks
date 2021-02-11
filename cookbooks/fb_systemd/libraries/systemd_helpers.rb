@@ -19,6 +19,28 @@ require 'shellwords'
 
 module FB
   class Systemd
+    def self.condition_user_online(user)
+      # see https://www.freedesktop.org/wiki/Software/systemd/NetworkTarget/
+      user_has_session = self.condition_user_session(user)
+      return {
+        'After' => 'network-online.target',
+        'Wants' => 'network-online.target',
+      }.merge(user_has_session)
+    end
+
+    def self.condition_user_session(user)
+      # this should hopefully be implemented upstream at some point, maybe as
+      # ConditionUserSession
+      if user.is_a?(Integer)
+        uid = user
+      else
+        # throws ArgumentError if the username is invalid
+        user_entry = ::Etc.getpwnam(user)
+        uid = user_entry.uid
+      end
+      return { 'ConditionPathExists' => "/run/user/#{uid}/bus" }
+    end
+
     def self.path_to_unit(path, unit_type)
       cmd = [
         '/bin/systemd-escape',
