@@ -34,7 +34,9 @@ module FB
       @boot_entries ||= {}
       @boot_entries[kernel_path] ||= begin
         res = shell_out("/usr/sbin/grubby --info=#{kernel_path}")
-        return {} if res.error?
+        if res.error?
+          fail ArgumentError, res.stderr
+        end
         res.stdout.lines.map(&:strip).
           map { |line| line.split('=', 2) }.to_h.
           map do |key, val|
