@@ -689,7 +689,7 @@ class Chef
 
     def root_group
       value_for_platform(
-        %w{openbsd freebsd mac_os_x macos} => { 'default' => 'wheel' },
+        %w{openbsd freebsd mac_os_x} => { 'default' => 'wheel' },
         'windows' => { 'default' => 'Administrators' },
         'default' => 'root',
       )
@@ -727,11 +727,7 @@ class Chef
     end
 
     def selinux_mode
-      if node['selinux']['status']['current_mode']
-        node['selinux']['status']['current_mode']
-      else
-        'unknown'
-      end
+      node['selinux']['status']['current_mode'] || 'unknown'
     end
 
     def selinux_policy
@@ -801,13 +797,12 @@ class Chef
     #  => ":)"
     def attr_lookup(path, delim: '/', default: nil)
       return default if path.nil?
+
       node_path = path.split(delim)
       node_path.inject(self) do |location, key|
-        begin
-          location.attribute?(key.to_s) ? location[key] : default
-        rescue NoMethodError
-          default
-        end
+        location.attribute?(key.to_s) ? location[key] : default
+      rescue NoMethodError
+        default
       end
     end
   end
