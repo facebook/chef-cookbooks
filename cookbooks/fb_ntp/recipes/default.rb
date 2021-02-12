@@ -30,8 +30,6 @@ service_name = value_for_platform(
 
 if node.macos?
   include_recipe 'fb_ntp::macosx'
-elsif node.windows?
-  fb_ntp_windows_config 'doit'
 end
 
 whyrun_safe_ruby_block 'enforce ACL hardening' do
@@ -88,16 +86,25 @@ end
 fb_systemd_override 'local' do
   only_if { node.systemd? }
   unit_name 'ntpd.service'
-  content({
-            'Service' => {
-              'Restart' => 'always',
-            },
-          })
+  content(
+    {
+      'Service' => {
+        'Restart' => 'always',
+      },
+    },
+  )
 end
 
 service service_name do
   not_if { node.macos11? }
   action [:enable, :start]
+end
+
+# You can't configure the service unless it's up, so this has to be
+# *after* the `service` call above. It does need to notify the service
+# as the commands make the change live and persistent.
+if node.windows?
+  fb_ntp_windows_config 'doit'
 end
 
 # ntpdate is a service that should only run at boot, as that is the only time

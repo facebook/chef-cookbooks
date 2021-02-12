@@ -29,11 +29,11 @@ action :config do
   have = config['TimeProviders']['NtpServer'].split(',')
   if Set.new(want) != Set.new(have)
     Chef::Log.info(
-      'fb_ntp_windows_config: Changing NTP servers from ' +
+      'fb_ntp[windows_config]: Changing NTP servers from ' +
       "#{have.join(', ')} to #{want.join(', ')}",
     )
     set_ntp_servers
   else
-    Chef::Log.debug('fb_ntp_windows_config: NTP servers are correct')
+    Chef::Log.debug('fb_ntp[windows_config]: NTP servers are correct')
   end
 end
