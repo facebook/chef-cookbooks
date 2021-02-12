@@ -688,11 +688,15 @@ class Chef
     end
 
     def root_group
+      # Chef moved from `macos` to `mac_os_x` between 14 and 15, so we need
+      # both, but Cookstyle will tell us `macos` isn't valid.
+      # rubocop:disable ChefCorrectness/InvalidPlatformValueForPlatformHelper
       value_for_platform(
-        %w{openbsd freebsd mac_os_x} => { 'default' => 'wheel' },
+        %w{openbsd freebsd mac_os_x macos} => { 'default' => 'wheel' },
         'windows' => { 'default' => 'Administrators' },
         'default' => 'root',
       )
+      # rubocop:enable ChefCorrectness/InvalidPlatformValueForPlatformHelper
     end
 
     def quiescent?
