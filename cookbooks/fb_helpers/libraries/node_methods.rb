@@ -803,11 +803,17 @@ class Chef
       return default if path.nil?
 
       node_path = path.split(delim)
+      # implicit-begin is a function of ruby2.5 and later, but we still
+      # support 2.4, so.... until then
+      # rubocop:disable Style/RedundantBegin
       node_path.inject(self) do |location, key|
-        location.attribute?(key.to_s) ? location[key] : default
-      rescue NoMethodError
-        default
+        begin
+          location.attribute?(key.to_s) ? location[key] : default
+        rescue NoMethodError
+          default
+        end
       end
+      # rubocop:enable Style/RedundantBegin
     end
   end
 end
