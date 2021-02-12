@@ -44,16 +44,23 @@ whyrun_safe_ruby_block 'enforce ACL hardening' do
     ]
 
     # Resolve chosen timesources and allow them
+    #
+    # implicit-begin is a function of ruby2.5 and later, but we still
+    # support 2.4, so.... until then
+    # rubocop:disable Style/RedundantBegin
     node['fb_ntp']['servers'].each do |host|
-      ips = Resolv.getaddresses(host)
-      ips.each do |ip|
-        dash6 = ''
-        dash6 = '-6 ' if IPAddr.new(ip).ipv6?
-        acl_entries << "restrict #{dash6}#{ip} ##{host}"
+      begin
+        ips = Resolv.getaddresses(host)
+        ips.each do |ip|
+          dash6 = ''
+          dash6 = '-6 ' if IPAddr.new(ip).ipv6?
+          acl_entries << "restrict #{dash6}#{ip} ##{host}"
+        end
+      rescue Resolv::ResolvError
+        Chef::Log.warn("fb_ntp: failed to resolve #{host}, skipping")
       end
-    rescue Resolv::ResolvError
-      Chef::Log.warn("fb_ntp: failed to resolve #{host}, skipping")
     end
+    # rubocop:enable Style/RedundantBegin
 
     node.default['fb_ntp']['acl_entries'] = acl_entries +
       node['fb_ntp']['acl_entries']
