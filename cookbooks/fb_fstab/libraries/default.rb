@@ -226,6 +226,18 @@ module FB
           )
       end
 
+      def self.get_base_mount_opts(node, mountpoint)
+        FB::Fstab.base_fstab_contents(node).each_line do |line|
+          next if line.strip.empty?
+          line_parts = line.strip.split
+          if line_parts[1] == mountpoint
+            return line_parts[3]
+          end
+        end
+
+        fail "Could not retrieve mount opts for '#{mountpoint}'"
+      end
+
       def self.get_unmasked_base_mounts(format, node, hash_by = 'device')
         res = case format
               when :hash
