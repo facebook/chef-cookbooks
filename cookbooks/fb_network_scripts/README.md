@@ -19,6 +19,7 @@ Attributes
 * node['fb_network_scripts']['linkdelay']
 * node['fb_network_scripts']['manage_packages']
 * node['fb_network_scripts']['network_changes_allowed_method']
+* node['fb_network_scripts']['pause']
 * node['fb_network_scripts']['primary_interface']
 * node['fb_network_scripts']['ring_params'][$INTERFACE]['max_rx']
 * node['fb_network_scripts']['ring_params'][$INTERFACE]['max_tx']
@@ -53,6 +54,10 @@ interface up during a network restart.
 
 ### `node['fb_network_scripts']['manage_packages']`
 Controls whether to manage packages for `network-scripts`; defaults to `true`.
+
+#### `node['fb_network_scripts']['pause']`
+Controls pause frame settings of the primary interface. Keys correspond to
+parameters of `ethtool -a/-A`, values: `nil` (don't care), `true`, `false`.
 
 ### Interface Configs
 This cookbook also provides interface configuration:

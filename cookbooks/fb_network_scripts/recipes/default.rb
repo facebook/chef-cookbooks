@@ -120,6 +120,33 @@ whyrun_safe_ruby_block 'setup ring params' do
   end
 end
 
+execute 'configure pause settings for primary interface' do
+  not_if do
+    FB::Hardware.primary_interface_pause_configured?(node)
+  end
+
+  command lazy {
+    cmd = "ethtool --pause #{node['fb_network_scripts']['primary_interface']}"
+    node['fb_network_scripts']['pause'].each do |pause_type, value|
+      next if value.nil?
+
+      s = nil
+      if value.is_a?(TrueClass)
+        s = 'on'
+      elsif value.is_a?(FalseClass)
+        s = 'off'
+      else
+        fail 'Invalid value'
+      end
+
+      cmd += " #{pause_type} #{s}"
+    end
+    cmd
+  }
+
+  action :run
+end
+
 if node.centos?
   %w{
     NetworkManager

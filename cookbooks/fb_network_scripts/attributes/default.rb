@@ -42,6 +42,11 @@ default['fb_network_scripts'] = {
     'extra_routes' => {},
   },
   'ring_params' => ring_params,
+  'pause' => {
+    'rx' => nil,
+    'tx' => nil,
+    'autonegotiate' => nil,
+  },
   'ifup' => {
     'ethtool' => [],
     'extra_commands' => [],
