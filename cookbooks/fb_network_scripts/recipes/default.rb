@@ -126,7 +126,10 @@ execute 'configure pause settings for primary interface' do
   end
 
   command lazy {
-    cmd = "ethtool --pause #{node['fb_network_scripts']['primary_interface']}"
+    interface = node['fb_network_scripts']['primary_interface']
+    interface = interface == 'br0' ? 'eth0' : interface
+
+    cmd = "ethtool --pause #{interface}"
     node['fb_network_scripts']['pause'].each do |pause_type, value|
       next if value.nil?
 
