@@ -460,7 +460,7 @@ hash to this (e.g. the whole node object), it will be a very expensive
 operation. To mitigate this the ability to filter Hash objects before writing
 is provided.
 
-```
+```ruby
 fb_helpers_serialize '/tmp/foo.json' do
   object foo
   filter foo_filter
