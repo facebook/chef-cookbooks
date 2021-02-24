@@ -80,8 +80,8 @@ action :manage do
     homedir = info['home'] || "/home/#{username}"
     # If `manage_homedir` isn't set, we'll use a user-specified default.
     # If *that* isn't set, then
-    manage_homedir = nil
-    unless info['manage_home']
+    manage_homedir = info['manage_home']
+    if manage_homedir.nil?
       if node['fb_users']['user_defaults']['manage_home']
         manage_homedir = node['fb_users']['user_defaults']['manage_home']
       else
