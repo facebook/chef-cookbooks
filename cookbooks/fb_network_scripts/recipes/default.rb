@@ -147,6 +147,11 @@ execute 'configure pause settings for primary interface' do
     cmd
   }
 
+  # ethtool returns 78 if there was nothing to change in pause params
+  # We did check the settings need changing but on Multi-Host NICs
+  # the link settings are global so we may race with another host.
+  returns [0, 78]
+
   action :run
 end
 
