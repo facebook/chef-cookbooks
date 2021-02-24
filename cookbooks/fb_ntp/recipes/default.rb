@@ -24,6 +24,7 @@ service_name = value_for_platform(
   ['redhat', 'centos', 'fedora', 'suse', 'arista_eos'] =>
     { 'default' => 'ntpd' },
   ['mac_os_x'] => { 'default' => 'com.apple.timed' },
+  ['windows'] => { 'default' => 'W32Time' },
   'default' => 'ntpd',
 )
 
@@ -32,6 +33,7 @@ if node.macos?
 end
 
 whyrun_safe_ruby_block 'enforce ACL hardening' do
+  not_if { node.windows? }
   block do
     # Prepend this to whatever default the end-user overrode
     acl_entries = [
@@ -42,6 +44,10 @@ whyrun_safe_ruby_block 'enforce ACL hardening' do
     ]
 
     # Resolve chosen timesources and allow them
+    #
+    # implicit-begin is a function of ruby2.5 and later, but we still
+    # support 2.4, so.... until then
+    # rubocop:disable Style/RedundantBegin
     node['fb_ntp']['servers'].each do |host|
       begin
         ips = Resolv.getaddresses(host)
@@ -54,6 +60,7 @@ whyrun_safe_ruby_block 'enforce ACL hardening' do
         Chef::Log.warn("fb_ntp: failed to resolve #{host}, skipping")
       end
     end
+    # rubocop:enable Style/RedundantBegin
 
     node.default['fb_ntp']['acl_entries'] = acl_entries +
       node['fb_ntp']['acl_entries']
@@ -61,6 +68,7 @@ whyrun_safe_ruby_block 'enforce ACL hardening' do
 end
 
 template '/etc/ntp.conf' do
+  not_if { node.windows? }
   source 'ntp.conf.erb'
   owner 'root'
   group 'root'
@@ -85,16 +93,25 @@ end
 fb_systemd_override 'local' do
   only_if { node.systemd? }
   unit_name 'ntpd.service'
-  content({
-            'Service' => {
-              'Restart' => 'always',
-            },
-          })
+  content(
+    {
+      'Service' => {
+        'Restart' => 'always',
+      },
+    },
+  )
 end
 
 service service_name do
   not_if { node.macos11? }
   action [:enable, :start]
+end
+
+# You can't configure the service unless it's up, so this has to be
+# *after* the `service` call above. It does need to notify the service
+# as the commands make the change live and persistent.
+if node.windows?
+  fb_ntp_windows_config 'doit'
 end
 
 # ntpdate is a service that should only run at boot, as that is the only time
