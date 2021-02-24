@@ -69,7 +69,14 @@ action :set do
     # We are using file to write content, not to manage the file itself,
     # so we exempt the internal foodcritic rule that requires owner/group/mode.
     file new_resource.path do # ~FB023
-      content new_resource.value.to_s
+      if new_resource.type == :list && node.in_shard?(0)
+        # Some :list sysfs require a newline at the end of the value to take
+        # effect. For others, the newline is ignored, so always write one (and
+        # only one) out regardless.
+        content "#{new_resource.value.to_s.chomp}\n"
+      else
+        content new_resource.value.to_s
+      end
     end
   end
 end
