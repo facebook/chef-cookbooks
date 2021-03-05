@@ -34,13 +34,16 @@ check:
 * `:int` - Interpret the value is an integer and compare appropriately.
 
 ### Value
-Value, as you'd expect, is the value to be set. Note that some `:list` sysfs
-files require a newline at the end of `value` to actually take effect. Example:
+Value, as you'd expect, is the value to be set. Note that because some `:list`
+sysfs files require a newline at the end of `value` to actually take effect,
+`fb_sysfs` will always append a newline to `value` if one isn't already
+present. Example:
 
 ```ruby
+# will write "defer\n" to the sysfs file
 fb_sysfs '/sys/kernel/mm/transparent_hugepage/defrag' do
   type :list
-  value "defer\n"
+  value "defer"
 end
 ```
 
