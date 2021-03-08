@@ -19,6 +19,9 @@ After=network.target
 
 [Service]
 Type=oneshot
+<% if @conf['envfile'] %>
+EnvironmentFile=<%= @conf['envfile'] %>
+<% end %>
 <% if node['fb_timers']['enable_named_slices'] %>
 Slice=system-timers-<%= @conf['name'] %>.slice
 <% end %>
