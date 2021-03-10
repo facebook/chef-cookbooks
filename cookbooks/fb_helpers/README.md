@@ -21,28 +21,46 @@ your node.
     Is CentOS
 
 * `node.centos5?`
-    Is CentOS5
+    Is CentOS Linux 5
 
 * `node.centos6?`
-    Is CentOS6
+    Is CentOS Linux 6
 
 * `node.centos7?`
-    Is CentOS7
+    Is CentOS Linux 7
 
 * `node.centos8?`
-    Is CentOS8
+    Is CentOS Linux 8 or CentOS Stream 8
 
 * `node.fedora?`
     Is Fedora
 
 * `node.fedora27?`
-    Is Fedora27
+    Is Fedora 27
 
 * `node.fedora28?`
-    Is Fedora28
+    Is Fedora 28
 
 * `node.fedora29?`
-    Is Fedora29
+    Is Fedora 29
+
+* `node.fedora30?`
+    Is Fedora 30
+
+* `node.fedora31?`
+    Is Fedora 31
+
+* `node.fedora32?`
+    Is Fedora 32
+
+* `node.fedora33?`
+    Is Fedora 33
+
+* `node.fedora34?`
+    Is Fedora 34
+
+* `node.fedora35?`
+    Is Fedora 35
 
 * `node.redhat?`
     Is Redhat Enterprise Linux
