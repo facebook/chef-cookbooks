@@ -29,9 +29,10 @@ per-system like if the user is on the system and what groups they are a part
 of.
 
 ### Pre-req: Initializing Consistent data with UID_MAP AND GID_MAP
-UIDs, GIDs, and (optional) user/group "comments" are considered consistent data
-by `fb_users`. These exist in a single map. They do *not* effect what users or
-groups are installed on a system are are just a source of data.
+UIDs, GIDs, and (optionally) user/group system flags or "comments" are
+considered consistent data by `fb_users`. These exist in a single map. They do
+*not* effect what users or groups are installed on a system and are just a
+source of data.
 
 In order to make it this data not modifiable through the run, we put it in
 class constants, instead of in the node object. This is not - and should not -
@@ -45,8 +46,10 @@ class constants like so:
 module FB
   class Users
     UID_MAP = {
+      # system
       'root' => {
         'uid' => 0,
+        'system' => true,
       },
 
       # staff...
@@ -73,6 +76,7 @@ module FB
     GID_MAP = {
       'root' => {
         'gid' => 0,
+        'system' => true,
       }
       'users' => {
         'gid' => 100,
@@ -91,7 +95,9 @@ The default recipe will validate there are no UID or GID conflicts for you,
 but you should keep users and groups in order of their UID/GID for your own
 sanity.
 
-You may specify a `comment` in addition to `uid`/`gid` for the entity.
+In addition to providing a integer to specify the `uid`/`gid` for each entity,
+you may optionally provide a boolean to specify if it is a `system` user or
+group, and provide a `comment`.
 
 All other values must be set in the node object.
 
@@ -178,15 +184,15 @@ set and the user will not be to authenticate via password.
 ### Defaults for users
 Values not specified for users will be handled as follows:
 
-* `home` - will default to `/home/$USER`
-* `shell` - will default to `node['fb_users']['user_defaults']['shell']`
 * `gid` - will default to `node['fb_users']['user_defaults']['gid']`
+* `home` - will default to `/home/$USER`
 * `manage_home` - this one is more complex:
   * if `node['fb_users']['user_defaults']['manage_home']` is specified, that
     value will be used
   * otherwise, if the `dirname` of the `home` value appears to be on NFS or
     `autofs`, the value will be set to `false`
   * otherwise the value will be set to `true`
+* `shell` - will default to `node['fb_users']['user_defaults']['shell']`
 
 `gid` is required and has no default. It must be set to a group name that appears
 in `GID_MAP`.

@@ -112,6 +112,7 @@ action :manage do
       # We explicityly pass in a GID here instead of a name to ensure that
       # as GIDs are moving, we get the intended outcome.
       gid ::FB::Users::GID_MAP[pgroup]['gid'].to_i
+      system mapinfo['system'] if mapinfo['system']
       shell info['shell'] || node['fb_users']['user_defaults']['shell']
       manage_home manage_homedir
       home homedir
@@ -133,6 +134,7 @@ action :manage do
     # is already guarded by a version 'if'
     group groupname do # ~FC009 ~FB015
       gid ::FB::Users::GID_MAP[groupname]['gid']
+      system info['system'] if info['system']
       members info['members'] if info['members']
       if FB::Version.new(Chef::VERSION) >= FB::Version.new('14.9')
         comment info['comment'] if info['comment']
