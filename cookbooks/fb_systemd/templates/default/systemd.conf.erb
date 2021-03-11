@@ -2,12 +2,22 @@
 <% # https://github.com/Foodcritic/foodcritic/issues/297 workaround for #54 %>
 # This file is maintained by Chef. Do not edit, all changes will be
 # overwritten. See fb_systemd/README.md
-
 <%
   if node['fb_systemd'][@config]['config']
     config = node['fb_systemd'][@config]['config'].to_hash
   else
     config = node['fb_systemd'][@config].to_hash
   end
+  if @section.is_a?(String)
+    sections = [@section]
+  else
+    sections = @section
+  end
+
+  sections.each do |section|
 %>
-<%=  FB::Systemd.to_ini({@section => Hash[config.sort]}) -%>
+
+<%=  FB::Systemd.to_ini({section => Hash[config.sort]}) -%>
+<%
+  end
+%>

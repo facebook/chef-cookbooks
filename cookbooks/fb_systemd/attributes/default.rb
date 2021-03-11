@@ -103,6 +103,7 @@ default['fb_systemd'] = {
   },
   'networkd' => {
     'enable' => enable_networkd,
+    'config' => {},
   },
   'resolved' => {
     'enable' => enable_resolved,

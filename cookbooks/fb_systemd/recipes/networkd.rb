@@ -17,6 +17,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+template '/etc/systemd/networkd.conf' do
+  source 'systemd.conf.erb'
+  owner 'root'
+  group 'root'
+  mode '0644'
+  variables(
+    :config => 'networkd',
+    :section => %w{Network DHCP},
+  )
+  notifies :restart, 'service[systemd-networkd.service]'
+end
+
 %w{
   systemd-networkd.socket
   systemd-networkd.service

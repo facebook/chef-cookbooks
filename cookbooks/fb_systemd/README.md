@@ -22,6 +22,7 @@ Attributes
 * node['fb_systemd']['logind']['enable']
 * node['fb_systemd']['logind']['config']
 * node['fb_systemd']['networkd']['enable']
+* node['fb_systemd']['networkd']['config']
 * node['fb_systemd']['resolved']['enable']
 * node['fb_systemd']['resolved']['enable_nss_resolve']
 * node['fb_systemd']['resolved']['config']
@@ -303,6 +304,9 @@ using the `node['fb_systemd']['logind']['config']` attribute, according to the
 ### networkd configuration
 You can choose whether or not to enable `systemd-networkd` with the
 `node['fb_systemd']['networkd']['enable']` attribute, which defaults to `false`.
+Global network parameters for networkd can be configured via the
+`node['fb_systemd']['networkd']['config']` attribute, as described in the
+[networkd documention](https://www.freedesktop.org/software/systemd/man/networkd.conf.html)
 
 Note that this cookbook does not manage network configuration profiles. If you
 drop `netdev`, `link`, `network` definitions under `/etc/systemd/network` from
