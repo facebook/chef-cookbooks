@@ -39,6 +39,18 @@ module FB
       [node['fb_rsync']['rsync_command'], src, rest].join(' ')
     end
 
+    def self.stunnel_path(node)
+      stunnel_binary =
+        case node['platform_family']
+        when 'rhel'
+          node['platform_version'].to_f >= 8 ? 'stunnel' : 'stunnel5'
+        else
+          fail 'fb_rsync: cannot determine stunnel_path!'
+        end
+
+      File.join('/usr', 'bin', stunnel_binary)
+    end
+
     # Custom error class for easier monitoring of delete failures
     class MaxDeleteLimit < RuntimeError; end
   end

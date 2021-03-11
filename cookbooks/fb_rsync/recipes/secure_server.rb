@@ -1,10 +1,10 @@
 #
-### Cookbook Name:: fb_rsync
-### Recipe:: client
-###
-### Copyright (c) 2019-present, Facebook, Inc.
-### All rights reserved.
-###
+# Cookbook Name:: fb_rsync
+# Recipe:: secure_server
+#
+# Copyright (c) 2019-present, Facebook, Inc.
+# All rights reserved.
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -16,14 +16,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-###
-##
 #
+
 include_recipe 'fb_systemd::reload'
 include_recipe 'fb_rsync::secure_client'
 include_recipe 'fb_rsync::server'
 
-fail 'fb_rsync::secure_server supports only systemd nodes' unless node.systemd?
+unless node.systemd?
+  fail 'fb_rsync: secure_server supports only systemd nodes'
+end
 
 systemd_unit 'stunnel_rsyncd.service' do
   # This will only start if the magical file exists
@@ -36,7 +37,7 @@ systemd_unit 'stunnel_rsyncd.service' do
     After=network-online.target
 
     [Service]
-    ExecStart=/usr/bin/#{node.centos8? ? 'stunnel' : 'stunnel5'} /etc/stunnel/stunnel_rsyncd.conf
+    ExecStart=#{FB::Rsync.stunnel_path(node)} /etc/stunnel/stunnel_rsyncd.conf
     TimeoutSec=60
     Restart=always
 

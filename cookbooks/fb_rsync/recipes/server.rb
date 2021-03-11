@@ -47,7 +47,7 @@ node.default['fb_logrotate']['configs']['rsyncd'] = {
 }
 
 systemd_unit 'rsyncd.service' do
-  only_if { node.centos8? }
+  only_if { node.systemd? && !node.centos7? }
   # This will only start if the magical file exists
   action [:create]
   content <<-EOU.gsub(/^\s+/, '')
