@@ -338,10 +338,12 @@ class Chef
         linux-vserver
         lxc
         openvz
+        nspawn
       }
-      self['virtualization'] &&
+      result = (self['virtualization'] &&
         self['virtualization']['role'] == 'guest' &&
-        container_systems.include?(self['virtualization']['system'])
+        container_systems.include?(self['virtualization']['system']))
+      result.nil? ? false : result
     end
 
     def vagrant?
