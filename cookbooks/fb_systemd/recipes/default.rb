@@ -32,6 +32,8 @@ when 'rhel', 'fedora'
   systemd_prefix = '/usr'
 when 'debian'
   systemd_prefix = ''
+when 'arch'
+  systemd_prefix = '/usr'
 else
   fail 'fb_systemd is not supported on this platform.'
 end
