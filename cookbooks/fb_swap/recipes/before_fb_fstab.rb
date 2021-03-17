@@ -124,5 +124,5 @@ template '/usr/local/libexec/manage-swap-file' do
   group 'root'
   # read/execute for root, read only for everyone else.
   mode '0544'
-  notifies :restart, 'service[manage-swap-file.service]'
+  notifies :restart, 'service[manage-swap-file.service]', :immediately
 end
