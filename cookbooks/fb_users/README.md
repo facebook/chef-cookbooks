@@ -9,9 +9,9 @@ Requirements
 Attributes
 ----------
 * node['fb_users']['user_defaults']
+* node['fb_users']['user_defaults']['gid']
 * node['fb_users']['user_defaults']['manage_home']
 * node['fb_users']['user_defaults']['shell']
-* node['fb_users']['user_defaults']['gid']
 * node['fb_users']['users']
 * node['fb_users']['users'][$USER]
 * node['fb_users']['groups']
@@ -20,6 +20,7 @@ Attributes
 Usage
 -----
 ### Consistent data vs dynamic data
+
 This cookbook draws a hard distinction between information that should not
 be changable across an organization and information that should.
 
@@ -29,6 +30,7 @@ per-system like if the user is on the system and what groups they are a part
 of.
 
 ### Pre-req: Initializing Consistent data with UID_MAP AND GID_MAP
+
 UIDs, GIDs, and (optionally) user/group system flags or "comments" are
 considered consistent data by `fb_users`. These exist in a single map. They do
 *not* effect what users or groups are installed on a system and are just a
@@ -101,7 +103,31 @@ group, and provide a `comment`.
 
 All other values must be set in the node object.
 
+### Reserved UID / GID ranges
+
+If you want to protect certain UID / GID ranges from being used across your
+managed system, you can add them to `RESERVED_UID_RANGES` and `RESERVED_GID_RANGES`.
+This can be useful if 3rd party software creates those users/groups.
+The key in the `Hash` will be a printable identifier, the value will be an object
+that responds to `.include?()`, so usually `Range` or `Array`.
+
+```
+module FB
+  class Users
+    RESERVED_UID_RANGES = {
+      'systemd dynamic users' => 61184..65519,
+      'project foo service users' => [52231, 52233],
+    }
+    RESERVED_GID_RANGES = {
+      'project x service groups' => 30100..30200
+      'acme corp service groups' => [30100, 30442]
+    }
+  end
+end
+```
+
 ### Users and Groups
+
 Users and groups are setup using the `users` and `groups` hashes and are
 straight forward:
 
@@ -124,6 +150,8 @@ before group membership is managed.
 By design, we do not accept all values. Here are the values we do accept:
 * `gid`
 * `home`
+* `homedir_group`
+* `homedir_mode`
 * `manage_home`
 * `password`
 * `shell`
@@ -138,27 +166,6 @@ and then if later recipes add them, they'll be added, otherwise they'll be
 automatically cleaned up.
 
 Also see `initialize_group` helper below.
-
-If you want to protect certain UID / GID ranges from being used across your
-managed system, you can add them to `RESERVED_UID_RANGES` and `RESERVED_GID_RANGES`.
-This can be useful if 3rd party software creates those users/groups.
-The key in the `Hash` will be a printable identifier, the value will be an object
-that responds to `.include?()`, so usually `Range` or `Array`.
-
-```
-module FB
-  class Users
-    RESERVED_UID_RANGES = {
-      'systemd dynamic users' => 61184..65519,
-      'project foo service users' => [52231, 52233],
-    }
-    RESERVED_GID_RANGES = {
-      'project x service groups' => 30100..30200
-      'acme corp service groups' => [30100,30442]
-    }
-  end
-end
-```
 
 ### Passwords in data_bags
 
@@ -182,10 +189,15 @@ If a password is not found in either the node or a data_bag, no password is
 set and the user will not be to authenticate via password.
 
 ### Defaults for users
+
 Values not specified for users will be handled as follows:
 
 * `gid` - will default to `node['fb_users']['user_defaults']['gid']`
 * `home` - will default to `/home/$USER`
+* `homedir_group` - will default to the user's GID. This will not be set
+   unless `manage_home` is `true`
+* `homedir_mode` - will default to the configured system defaults, for example
+  `/etc/login.defs`. This will not be set unless `manage_home` is `true`
 * `manage_home` - this one is more complex:
   * if `node['fb_users']['user_defaults']['manage_home']` is specified, that
     value will be used
@@ -199,6 +211,13 @@ in `GID_MAP`.
 
 For all other values we accept, they will only be passed to the resource if
 they exist in the user's hash.
+
+### Removing users or groups
+
+To remove a user or group, set the `action` to `:delete` and the user or group
+will be automatically cleaned up during the chef run. To automatically clean up
+a user's home directory while removing the user from the system, leave
+`manage_home` set to `true`.
 
 ### Helper methods
 
