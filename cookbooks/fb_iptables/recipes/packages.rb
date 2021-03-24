@@ -19,7 +19,11 @@
 # limitations under the License.
 #
 
-packages = ['iptables']
+if node.fedora34?
+  packages = ['iptables-compat']
+else
+  packages = ['iptables']
+end
 if node.centos6?
   packages << 'iptables-ipv6'
 elsif node.ubuntu?
