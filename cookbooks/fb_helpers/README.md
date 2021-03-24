@@ -583,4 +583,4 @@ that, assuming the OS run has succeeded, will be a Tier run.
 If you'd like to log whenever a reboot is triggered by `fb_helpers_reboot` you
 can set `node['fb_helpers']['reboot_logging_callback']` to perform the logging.
 This should be a proc or library taking `node` (the node object), `reasons` (an
-explanatory message), `action` (the actual action being taked, e.g. `reboot`).
+explanatory message), `action` (the actual action being taken, e.g. `reboot`).

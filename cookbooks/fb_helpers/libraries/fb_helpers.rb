@@ -27,7 +27,7 @@ module FB
     #   commentify(text, argHash)
     #
     # Arguments:
-    #   text:    Required string. The string to convert to a commnent
+    #   text:    Required string. The string to convert to a comment
     #   arghash: An optional hash with the following (optional) keys:
     #   arghash['start']:     String to use for starting comment char(s)
     #                         Defaults to '#'
@@ -278,7 +278,7 @@ If the has is specified, it takes one or more of the following keys:
     # Arguments:
     #   merge_onto: Required hash. The base hash that will be merged onto
     #   merge_with: Required hash. The hash that will be merged on merge_onto
-    #   overwrite_leaves: Optiona boolean. Whether to overwrite leaves or not
+    #   overwrite_leaves: Optional boolean. Whether to overwrite leaves or not
     def self.merge_hash(merge_onto, merge_with, overwrite_leaves = false)
       self.merge_hash!(safe_dup(merge_onto), safe_dup(merge_with),
                        overwrite_leaves)
