@@ -42,7 +42,6 @@ action :manage do
 
     # We may not have this group if it's a remote one, so check we do and
     # that it's set to create
-
     if node['fb_users']['groups'][grp] &&
         node['fb_users']['groups'][grp]['action'] &&
         node['fb_users']['groups'][grp]['action'] != :delete
@@ -69,15 +68,11 @@ action :manage do
 
   # Now we can add all the users
   node['fb_users']['users'].each do |username, info|
-    if info['action'] == :delete
-      user username do # ~FB014
-        action :remove
-      end
-      next
-    end
+    # helper variables
     mapinfo = ::FB::Users::UID_MAP[username]
     pgroup = info['gid'] || node['fb_users']['user_defaults']['gid']
     homedir = info['home'] || "/home/#{username}"
+    homedir_group = info['homedir_group'] || pgroup
     # If `manage_homedir` isn't set, we'll use a user-specified default.
     # If *that* isn't set, then
     manage_homedir = info['manage_home']
@@ -95,6 +90,16 @@ action :manage do
           end
         end
       end
+    end
+
+    # delete any users and optionally clean up home dirs if `manage_home true`
+    if info['action'] == :delete
+      user username do # ~FB014
+        uid mapinfo['uid']
+        manage_home manage_homedir
+        action :remove
+      end
+      next
     end
 
     pass = mapinfo['password']
@@ -119,6 +124,15 @@ action :manage do
       comment mapinfo['comment'] if mapinfo['comment']
       password pass if pass
       action :create
+    end
+
+    if manage_homedir
+      directory homedir do
+        owner mapinfo['uid']
+        group ::FB::Users::GID_MAP[homedir_group]['gid'].to_i
+        mode info['homedir_mode'] if info['homedir_mode']
+        action :create
+      end
     end
   end
 
