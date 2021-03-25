@@ -14,6 +14,7 @@ Attributes
 * node['fb_network_scripts']['ifup']['ethtool']
 * node['fb_network_scripts']['ifup']['extra_commands']
 * node['fb_network_scripts']['ifup']['sysctl']
+* node['fb_network_scripts']['ifup']['sysctl_skip_list']
 * node['fb_network_scripts']['interface_change_allowed_method']
 * node['fb_network_scripts']['interface_start_allowed_method']
 * node['fb_network_scripts']['linkdelay']
@@ -260,6 +261,9 @@ is loaded.
 ### ifup
 This cookbook will install a custom ifup script, which is run every time an
 interface is bounced.
+
+A list of sysctls that should not be set during a run of `ifup-local.erb` can be
+configured through `node['fb_network_scripts']['ifup']['sysctl_skip_list']`
 
 #### `node['fb_network_scripts']['ifup']['ethtool']`
 This is an array of hashes that allow you to specify ethtool commands to run at

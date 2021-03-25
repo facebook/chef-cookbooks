@@ -51,6 +51,7 @@ default['fb_network_scripts'] = {
     'ethtool' => [],
     'extra_commands' => [],
     'sysctl' => {},
+    'sysctl_skip_list' => [],
   },
   'allow_dynamic_addresses' => true,
   'enable_tun' => false,

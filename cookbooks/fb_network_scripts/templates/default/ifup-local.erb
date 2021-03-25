@@ -9,7 +9,11 @@ CONFIG="$1"
   # Apply sysctl overrides on interface restart
   node['fb_network_scripts']['ifup']['sysctl'].to_hash.each do |key, val|
     if node['fb_sysctl'][key]
-      Chef::Log.warn("Sysctl #{key} is already defined in fb_sysctl!")
+      Chef::Log.warn("fb_network_scripts: Sysctl #{key} is already defined in fb_sysctl!")
+      next
+    end
+    if node['fb_network_scripts']['ifup']['sysctl_skip_list'].include?(key)
+      Chef::Log.warn("fb_network_scripts: Sysctl #{key} is defined in the skip list!")
       next
     end
 -%>
