@@ -19,7 +19,7 @@ Usage
 -----
 Include this recipe and add any launchd items you want to setup to the
 `node['fb_launchd']['jobs']` attribute. Use the item label as key, and see
-the [launchd resource](https://docs.chef.io/resource_launchd.html) for supported
+the [launchd resource](https://docs.chef.io/resources/launchd/) for supported
 values; at a minimum, you'll want to set `program_arguments` to define what's
 going to be run. Note that the `label` and `key` properties are not supported by
 `fb_launchd`. Example:
