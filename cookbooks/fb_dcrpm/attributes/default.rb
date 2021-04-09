@@ -17,5 +17,6 @@
 #
 
 default['fb_dcrpm'] = {
+  'enable_periodic_task' => true,
   'manage_packages' => true,
 }

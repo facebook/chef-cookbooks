@@ -25,3 +25,20 @@ node.default['fb_logrotate']['configs']['dcpm'] = {
     '/var/log/dcrpm.log',
   ],
 }
+
+whyrun_safe_ruby_block 'dcrpm periodic task' do
+  only_if { node['fb_dcrpm']['enable_periodic_task'] }
+  block do
+    cmd = '/usr/bin/dcrpm --check-stuck-yum --verbose'
+    if node.centos7?
+      cmd += ' --clean-yum-transactions'
+    end
+
+    node.default['fb_timers']['jobs']['dcrpm'] = {
+      'calendar' => FB::Systemd::Calendar.every(1).hours,
+      'command' => cmd,
+      'accuracy' => '1s',
+      'splay' => '30',
+    }
+  end
+end
