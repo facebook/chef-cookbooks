@@ -468,7 +468,7 @@ module FB
         (node.firstboot_tier? || File.exist?(FORCE_WRITE_CUSTOM_DISK_ORDER))
         begin
           order = node['fb_storage'][
-            '_clowntown_device_order_method'].call
+            '_clowntown_device_order_method'].call(node)
           write_out_disk_order(order)
         ensure
           if File.exist?(FORCE_WRITE_CUSTOM_DISK_ORDER)
