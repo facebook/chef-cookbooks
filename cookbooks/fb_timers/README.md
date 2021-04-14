@@ -90,8 +90,10 @@ Optional fields:
   disables this behavior. Corresponds to the field `RandomizedDelaySec` in
   (defaults to `0s`)
 * `syslog`: Whether or not to enable syslog for this service. A value of true
-  sets `StandardOutput` to `syslog` and `SyslogIdentifier` to the name of your
-  job.
+  sets `StandardOutput` and `StandardError` to `syslog`, and `SyslogIdentifier`
+  to the name of your job. As of systemd 246, `StandardOutput` and
+  `StandardError` no longer support `syslog`. For these newer versions of
+  systemd, `StandardOutput` and `StandardError` will be omitted from the unit.
 * `only_if`: Specify a Proc which will be evaluated at runtime and used to gate
   whether the timer is setup.  Especially useful if you need to gate on a chef
   API value.  E.g.: `'only_if' => proc { conditional }`

@@ -33,8 +33,10 @@ TimeoutStartSec=<%= @conf['timeout'] %>
 <% end %>
 TimeoutStopSec=<%= @conf['timeout_stop'] %>
 <% if @conf['syslog'] %>
+<% if node['packages']['systemd']['version'].split('.').map(&:to_i)[0] < 246 %>
 StandardOutput=syslog
 StandardError=syslog
+<% end %>
 SyslogIdentifier=<%= @conf['name'] %>
 <% end %>
 <% @conf['service_options'].each do |name, value|
