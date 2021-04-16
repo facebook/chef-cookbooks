@@ -26,6 +26,7 @@ default['fb_choco'] = {
     'choco_download_url' => 'https://chocolatey.org/api/v2/Packages()?' +
       '$filter=((Id%20eq%20%27chocolatey%27)' +
       '%20and%20(not%20IsPrerelease))%20and%20IsLatestVersion',
+    'use_windows_compression' => false,
   },
   'source_blocklist' => [],
   'sources' => {

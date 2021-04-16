@@ -48,9 +48,11 @@ action :install do
   choco_install_ps1 = ::File.join(
     Chef::Config['file_cache_path'], 'choco_bootstrap.ps1'
   )
-  download_url = {
+  bootstrap_vars = {
     'chocolateyDownloadUrl' =>
       node['fb_choco']['bootstrap']['choco_download_url'],
+    'chocolateyUseWindowsCompression' =>
+      node['fb_choco']['bootstrap']['use_windows_compression'].to_s,
   }
 
   cookbook_file 'chocolatey_install script' do # ~FB031
@@ -64,7 +66,7 @@ action :install do
 
   powershell_script 'chocolatey_install' do
     code choco_install_ps1
-    environment download_url
+    environment bootstrap_vars
     action :run
   end
 end

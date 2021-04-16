@@ -47,6 +47,12 @@ node.default['fb_choco']['bootstrap'] = {
 }
 ```
 
+By default, the bootstrap script will download a copy of 7zip from
+chocolatey.org to unzip the chocolatey installation.  If you want
+to instead use the windows builtin compression method (Expand-Archive),
+set the
+`node['fb_choco']['bootstrap']['use_windows_compression']` attribute to `true`.
+
 ### Configuration
 To modify a config setting simply do:
 `node.default['fb_choco']['config'][$SETTING] = $VALUE`
