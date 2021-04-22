@@ -1,6 +1,8 @@
-# vim: syntax=ruby:expandtab:shiftwidth=2:softtabstop=2:tabstop=2
 #
-# Copyright (c) 2017-present, Facebook, Inc.
+# Cookbook Name:: fb_iproute::rt_protos
+# Recipe:: default
+#
+# Copyright (c) 2021-present, Facebook, Inc.
 # All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +17,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-default['fb_iproute'] = {
-  'manage_packages' => true,
-  'rt_protos_ids' => {},
-}
+rt_protos_d_dir = '/etc/iproute2/rt_protos.d'.freeze
+
+directory rt_protos_d_dir do
+  only_if { node['fb_iproute']['rt_protos_ids'] }
+  owner 'root'
+  group 'root'
+  mode '0755'
+  action :create
+end
+
+template "#{rt_protos_d_dir}/chef.conf" do
+  only_if { node['fb_iproute']['rt_protos_ids'] }
+  source 'rt_protos.erb'
+  owner 'root'
+  group 'root'
+  mode '0644'
+end

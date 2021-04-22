@@ -1,0 +1,9 @@
+# This file is maintained by Chef. Do not edit, all changes will be
+# overwritten. See fb_iproute/README.md
+<%
+  node['fb_iproute']['rt_protos_ids'].each_pair do |k, v|
+-%>
+<%= v %>  <%= k %>
+<%
+  end
+-%>
