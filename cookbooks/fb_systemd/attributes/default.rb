@@ -69,6 +69,14 @@ else
   enable_timesyncd = false
 end
 
+# This enables a workaround in Fedora systemd-nspawn containers
+# so that tmpfiles can be created
+# See https://bugzilla.redhat.com/show_bug.cgi?id=1945775
+need_nspawn_workaround = node.fedora? &&
+  node['virtualization'] &&
+  node['virtualization']['role'] == 'guest' &&
+  node['virtualization']['system'] == 'nspawn'
+
 default['fb_systemd'] = {
   'default_target' => 'multi-user.target',
   'modules' => [],
@@ -126,4 +134,5 @@ default['fb_systemd'] = {
     'entries' => {},
   },
   'ignore_targets' => [],
+  'fedora_nspawn_workaround' => need_nspawn_workaround,
 }

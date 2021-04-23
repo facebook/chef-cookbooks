@@ -38,6 +38,7 @@ Attributes
 * node['fb_systemd']['boot']['loader']
 * node['fb_systemd']['boot']['entries']
 * node['fb_systemd']['ignore_targets']
+* node['fb_systemd']['fedora_nspawn_workaround']
 
 Usage
 -----
@@ -375,6 +376,13 @@ systemd-tmpfiles will exclude.  For example:
 node.default['fb_systemd']['tmpfiles_excluded_prefixes'] << '/sys'
 ]
 ```
+
+Due to an issue with the default Fedora tmpfiles configuration
+(see https://bugzilla.redhat.com/show_bug.cgi?id=1945775), in order to create
+tmpfiles in a Fedora systemd-nspawn container this cookbook masks the problematic
+configuration by linking `/etc/tmpfiles.d/selinux-policy.conf` to `/dev/null`.
+You can toggle this behavior with the `node['fb_systemd']['fedora_nspawn_workaround']`
+attribute.
 
 ### Presets
 You can add preset settings to `node['fb_systemd']['preset']`. As an example to

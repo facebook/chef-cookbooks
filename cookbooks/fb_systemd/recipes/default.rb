@@ -88,6 +88,11 @@ include_recipe 'fb_systemd::resolved'
 include_recipe 'fb_systemd::timesyncd'
 include_recipe 'fb_systemd::boot'
 
+link '/etc/tmpfiles.d/selinux-policy.conf' do
+  only_if { node['fb_systemd']['fedora_nspawn_workaround'] }
+  to '/dev/null'
+end
+
 execute 'process tmpfiles' do
   command lazy {
     "#{systemd_prefix}/bin/systemd-tmpfiles --create" +
