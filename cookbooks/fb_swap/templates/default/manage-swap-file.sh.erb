@@ -30,7 +30,9 @@ if [ -f "${file}" ] ; then
         /usr/bin/rm --force "${file}"
     fi
 fi
-if [ ! -f "${file}" ] ; then
+if [ ! -f "${file}" -o -z "$(/usr/sbin/swapon | /bin/grep -o "^${file} ")" ] ; then
+    # delete in case volume full
+    /usr/bin/rm --force "${file}"
     # This is a multi-step process, so we use a different filename first
     # we never enable swap on this name so we can reliably clean up partial runs
     /usr/bin/rm --force "${unformatted}"
