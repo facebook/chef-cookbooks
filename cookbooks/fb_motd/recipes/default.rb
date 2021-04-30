@@ -19,9 +19,9 @@
 #
 
 template '/etc/motd' do
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
-  owner 'root'
   source 'motd.erb'
 end
 
@@ -36,8 +36,8 @@ end
 #   it-at-login. This can be disabled in /etc/default/motd-news
 if node.ubuntu?
   template '/etc/default/motd-news' do
-    owner 'root'
-    group 'root'
+    owner node.root_user
+    group node.root_group
     mode '0644'
   end
 
