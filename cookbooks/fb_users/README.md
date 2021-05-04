@@ -219,6 +219,12 @@ will be automatically cleaned up during the chef run. To automatically clean up
 a user's home directory while removing the user from the system, leave
 `manage_home` set to `true`.
 
+### Notifications for users or groups
+
+The `user` and `group` resources used within this cookbook's custom resource
+will run at the root `run_context` in order to allow other resources in the
+chef run to *subscribe* to a specific user or group being updated.
+
 ### Helper methods
 
 This cookbook provides a few helper methods for your convenience:

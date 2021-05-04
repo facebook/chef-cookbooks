@@ -94,10 +94,14 @@ action :manage do
 
     # delete any users and optionally clean up home dirs if `manage_home true`
     if info['action'] == :delete
-      user username do # ~FB014
-        uid mapinfo['uid']
-        manage_home manage_homedir
-        action :remove
+      # pushing this resource up to the root run_context in order to allow
+      # other resources to subscribe to the user resource being updated
+      with_run_context :root do
+        user username do # ~FB014
+          uid mapinfo['uid']
+          manage_home manage_homedir
+          action :remove
+        end
       end
       next
     end
@@ -108,30 +112,36 @@ action :manage do
       pass = data_bag_item('fb_users_auth', username)['password']
     end
 
-    user username do # ~FB014
-      uid mapinfo['uid']
-      # the .to_i here is important - if the usermap accidentally
-      # quotes the gid, then it will try to look up a group named "142"
-      # or whatever.
-      #
-      # We explicityly pass in a GID here instead of a name to ensure that
-      # as GIDs are moving, we get the intended outcome.
-      gid ::FB::Users::GID_MAP[pgroup]['gid'].to_i
-      system mapinfo['system'] if mapinfo['system']
-      shell info['shell'] || node['fb_users']['user_defaults']['shell']
-      manage_home manage_homedir
-      home homedir
-      comment mapinfo['comment'] if mapinfo['comment']
-      password pass if pass
-      action :create
+    # pushing this resource up to the root run_context in order to allow
+    # other resources to subscribe to the user resource being updated
+    with_run_context :root do
+      user username do # ~FB014
+        uid mapinfo['uid']
+        # the .to_i here is important - if the usermap accidentally
+        # quotes the gid, then it will try to look up a group named "142"
+        # or whatever.
+        #
+        # We explicityly pass in a GID here instead of a name to ensure that
+        # as GIDs are moving, we get the intended outcome.
+        gid ::FB::Users::GID_MAP[pgroup]['gid'].to_i
+        system mapinfo['system'] if mapinfo['system']
+        shell info['shell'] || node['fb_users']['user_defaults']['shell']
+        manage_home manage_homedir
+        home homedir
+        comment mapinfo['comment'] if mapinfo['comment']
+        password pass if pass
+        action :create
+      end
     end
 
     if manage_homedir
-      directory homedir do
-        owner mapinfo['uid']
-        group ::FB::Users::GID_MAP[homedir_group]['gid'].to_i
-        mode info['homedir_mode'] if info['homedir_mode']
-        action :create
+      with_run_context :root do
+        directory homedir do
+          owner mapinfo['uid']
+          group ::FB::Users::GID_MAP[homedir_group]['gid'].to_i
+          mode info['homedir_mode'] if info['homedir_mode']
+          action :create
+        end
       end
     end
   end
@@ -139,22 +149,30 @@ action :manage do
   # and then converge all groups
   node['fb_users']['groups'].each do |groupname, info|
     if info['action'] == :delete
-      group groupname do # ~FB015
-        action :remove
+      # pushing this resource up to the root run_context in order to allow
+      # other resources to subscribe to the group resource being updated
+      with_run_context :root do
+        group groupname do # ~FB015
+          action :remove
+        end
       end
       next
     end
-    # disableing fc009 becasue it triggers on 'comment' below which
+    # disabling fc009 becasue it triggers on 'comment' below which
     # is already guarded by a version 'if'
-    group groupname do # ~FC009 ~FB015
-      gid ::FB::Users::GID_MAP[groupname]['gid']
-      system info['system'] if info['system']
-      members info['members'] if info['members']
-      if FB::Version.new(Chef::VERSION) >= FB::Version.new('14.9')
-        comment info['comment'] if info['comment']
+    # pushing this resource up to the root run_context in order to allow
+    # other resources to subscribe to the group resource being updated
+    with_run_context :root do
+      group groupname do # ~FC009 ~FB015
+        gid ::FB::Users::GID_MAP[groupname]['gid']
+        system info['system'] if info['system']
+        members info['members'] if info['members']
+        if FB::Version.new(Chef::VERSION) >= FB::Version.new('14.9')
+          comment info['comment'] if info['comment']
+        end
+        append false
+        action :create
       end
-      append false
-      action :create
     end
   end
 end
