@@ -26,6 +26,7 @@ whyrun_safe_ruby_block 'validate users and groups' do
 end
 
 ohai 'fb_users reloading ohai->etc' do
+  plugin 'etc'
   action :nothing
 end
 
