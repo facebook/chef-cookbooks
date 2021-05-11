@@ -893,7 +893,7 @@ module FB
           next
         end
         devparts = @existing['by_device'].to_hash.keys.select do |x|
-          x.start_with?(device) && x != device
+          FB::Storage.device_name_from_partition(x) == device && x != device
         end
         # sort the partitions numerically by partition number
         devparts.sort_by! do |part|
