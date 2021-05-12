@@ -68,7 +68,7 @@ module FB
         @device = device
         @node = node
         @existing_partitions = nil
-        self.mkfs_timeout = 600
+        self.mkfs_timeout = 900
       end
 
       # Does the handler work for this device?

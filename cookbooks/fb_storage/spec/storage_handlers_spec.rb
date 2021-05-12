@@ -224,7 +224,7 @@ describe FB::Storage::Handler do
         it 'calls mkfs on the right partition with the right fs type' do
           expect(Mixlib::ShellOut).to receive(:new).with(
             %r{mkfs -t xfs .* /dev/sdzz1},
-            { :timeout => 600 },
+            { :timeout => 900 },
           ).and_return(mock_so)
           node.default['fb_storage'] = {}
           sh = TestHandler.new('/dev/sdzz', node)
@@ -238,7 +238,7 @@ describe FB::Storage::Handler do
         it 'truncates labels for XFS' do
           expect(Mixlib::ShellOut).to receive(:new).with(
             /-L "fooooooooooo"/,
-            { :timeout => 600 },
+            { :timeout => 900 },
           ).and_return(mock_so)
           node.default['fb_storage'] = {}
           sh = TestHandler.new('/dev/sdzz', node)
@@ -253,7 +253,7 @@ describe FB::Storage::Handler do
         it 'handles hybrid_xfs' do
           expect(Mixlib::ShellOut).to receive(:new).with(
             %r{-d rtinherit=1 -r rtdev=/dev/sdc1.* -L "/mnt/1" /dev/sdb1$},
-            { :timeout => 600 },
+            { :timeout => 900 },
           ).and_return(mock_so)
           node.default['fb_storage'] = {}
           sh = TestHandler.new('/dev/md0', node)
@@ -275,7 +275,7 @@ describe FB::Storage::Handler do
           limit_file = '/proc/sys/dev/raid/speed_limit_max'
           expect(Mixlib::ShellOut).to receive(:new).with(
             %r{mkfs -t xfs -f.*/dev/md0},
-            { :timeout => 600 },
+            { :timeout => 900 },
           ).and_return(mock_so)
           expect(File).to receive(:exist?).with(limit_file).
             and_return(true)
@@ -308,7 +308,7 @@ describe FB::Storage::Handler do
           limit_file = '/proc/sys/dev/raid/speed_limit_max'
           expect(Mixlib::ShellOut).to receive(:new).with(
             %r{mkfs -t xfs -f.*/dev/sdzz1},
-            { :timeout => 600 },
+            { :timeout => 900 },
           ).and_return(mock_so)
           expect(File).not_to receive(:exist?).with(limit_file)
           expect(File).not_to receive(:read).with(limit_file)
@@ -330,7 +330,7 @@ describe FB::Storage::Handler do
           limit_file = '/proc/sys/dev/raid/speed_limit_max'
           expect(Mixlib::ShellOut).to receive(:new).with(
             %r{mkfs -t xfs -f.*/dev/sdb1},
-            { :timeout => 600 },
+            { :timeout => 900 },
           ).and_return(mock_so)
           expect(File).not_to receive(:exist?).with(limit_file)
           expect(File).not_to receive(:read).with(limit_file)
@@ -354,7 +354,7 @@ describe FB::Storage::Handler do
         it 'accepts format_options as string' do
           expect(Mixlib::ShellOut).to receive(:new).with(
             %r{mkfs -t xfs -f blah -L \"foo\" /dev/sdzz1},
-            { :timeout => 600 },
+            { :timeout => 900 },
           ).and_return(mock_so)
           node.default['fb_storage'] = { 'format_options' => 'blah' }
           sh = TestHandler.new('/dev/sdzz', node)
@@ -370,11 +370,11 @@ describe FB::Storage::Handler do
         it 'accepts format_options as hash' do
           expect(Mixlib::ShellOut).to receive(:new).with(
             %r{mkfs.btrfs -f blah -L \"foo\" /dev/sdzz1},
-            { :timeout => 600 },
+            { :timeout => 900 },
           ).and_return(mock_so)
           expect(Mixlib::ShellOut).to receive(:new).with(
             %r{mkfs -t ext3 -F blah3 -L \"foo3\" /dev/sdzz2},
-            { :timeout => 600 },
+            { :timeout => 900 },
           ).and_return(mock_so)
           node.default['fb_storage'] = {
             'format_options' => { 'btrfs' => 'blah', 'ext3' => 'blah3' },
@@ -398,7 +398,7 @@ describe FB::Storage::Handler do
           expect(mock_so).to receive(:run_command).and_raise(StandardError)
           expect(Mixlib::ShellOut).to receive(:new).with(
             %r{mkfs -t xfs -f.*/dev/md0},
-            { :timeout => 600 },
+            { :timeout => 900 },
           ).and_return(mock_so)
           expect(File).to receive(:exist?).with(limit_file).
             and_return(true)
@@ -429,7 +429,7 @@ describe FB::Storage::Handler do
           expect(mock_so).to receive(:error!).and_raise(RuntimeError)
           expect(Mixlib::ShellOut).to receive(:new).with(
             %r{mkfs -t xfs -f.*/dev/md0},
-            { :timeout => 600 },
+            { :timeout => 900 },
           ).and_return(mock_so)
           expect(File).to receive(:exist?).with(limit_file).
             and_return(true)
