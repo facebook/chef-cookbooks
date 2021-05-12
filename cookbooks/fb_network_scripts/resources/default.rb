@@ -185,8 +185,7 @@ action :create do
     fb_network_scripts_redhat_interface iface do
       config config
       action iface_action
-      # S169223 - limiting this to provisioning for now, will roll back out
-      # to being enabled everywhere after some mitigations are enacted
+      # Restart only if interface change is allowed
       if node.interface_change_allowed?(iface)
         notifies :restart, "fb_network_scripts_redhat_interface[#{iface}]"
       end
