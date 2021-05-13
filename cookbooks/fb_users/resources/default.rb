@@ -97,8 +97,10 @@ action :manage do
       # pushing this resource up to the root run_context in order to allow
       # other resources to subscribe to the user resource being updated
       with_run_context :root do
+        # keep property list in sync with FB::Users._validate
         user username do # ~FB014
-          uid mapinfo['uid']
+          # allows users not in the UID map to be removed from the system
+          uid mapinfo['uid'] if mapinfo
           manage_home manage_homedir
           action :remove
         end
