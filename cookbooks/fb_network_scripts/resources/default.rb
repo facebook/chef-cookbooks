@@ -17,7 +17,6 @@
 #
 
 default_action :create
-property :interface, :is => String, :name_property => true
 
 action_class do
   def build_config
