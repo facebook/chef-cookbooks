@@ -64,9 +64,6 @@ def stop(interface)
   s.error!
 end
 
-# We must track our changes, which means we must run
-# things manually, which means we need the queue_restart() hack in
-# Fb::Networking::RHInterfaceHelpers.
 action :enable do # ~FC017
   requires_full_restart = false
   to_converge = []

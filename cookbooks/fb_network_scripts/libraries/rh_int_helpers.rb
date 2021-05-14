@@ -37,32 +37,6 @@ module FB
         false
       end
 
-      # Manually queue a restart. Used to manually do "notifies" since
-      # notifications don't fire for anything you call run_action() on manually.
-      #
-      # Also, ideally, we'd actually preserve the *real* caller, except that if
-      # the notifier isn't the LRWP, then Chef::Runner won't see it. So we just
-      # set it to ourselves.
-      #
-      # I even tried doing something really evil like:
-      #
-      #   run_context.delayed_notification_collection[@new_resource] <<
-      #     notification
-      #
-      # So that inside the notification the notifier was the template, but the
-      # name in the hash would be this resource... but it turns out that since
-      # the template is later called with :nothing, then updated_by_last_action?
-      # is false
-      #
-      def queue_restart(run_context, new_resource)
-        notification = Chef::Resource::Notification.new(
-          new_resource,
-          :restart,
-          new_resource,
-        )
-        run_context.root_run_context.add_delayed_action(notification)
-      end
-
       def queue_update_ips(run_context, new_resource)
         notification = Chef::Resource::Notification.new(
           new_resource,
