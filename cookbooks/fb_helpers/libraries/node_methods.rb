@@ -358,6 +358,15 @@ class Chef
       self.cloud? && self['cloud']['provider'] == 'ec2'
     end
 
+    # Takes one or more AWS account IDs as strings and return true if this node
+    # is in any of those accounts.
+    def in_aws_account?(*accts)
+      return false if self.quiescent?
+      return false unless self['ec2']
+      accts.flatten!
+      accts.include?(self['ec2']['account_id'])
+    end
+
     def ohai_fs_ver
       @ohai_fs_ver ||=
         node['filesystem2'] ? 'filesystem2' : 'filesystem'

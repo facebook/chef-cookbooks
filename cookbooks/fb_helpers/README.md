@@ -372,6 +372,13 @@ your node.
     by calling `node.attr_lookup('dmi/system/manufacturer')`, which would return
     the value or `nil` if the value does not exist.
 
+* `node.aws?`
+   True if running on AWS EC2.
+
+* `node.in_aws_account?(*accounts)`
+   True if this node is in AWS EC2 and in an account matching one of the passed
+   in account IDs.
+
 ### FB::Helpers
 The following methods are available:
 
