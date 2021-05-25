@@ -155,9 +155,12 @@ By design, we do not accept all values. Here are the values we do accept:
 * `manage_home`
 * `password`
 * `shell`
+* `secure_token`
 
 They are all optional, see the next section for how default values for these
 work.
+
+The `secure_token` property is used for the `mac_user` resource for Chef 15+
 
 Note that `action` may be `:add` or `:delete`. The default, if not set, is
 `:add`, but we highly recommend you be explicit. Doing so will make it really

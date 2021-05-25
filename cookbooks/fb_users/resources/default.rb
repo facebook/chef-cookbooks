@@ -114,10 +114,12 @@ action :manage do
       pass = data_bag_item('fb_users_auth', username)['password']
     end
 
+    # disabling fc009 because it triggers on 'secure_token' below which
+    # is already guarded by a version 'if'
     # pushing this resource up to the root run_context in order to allow
     # other resources to subscribe to the user resource being updated
     with_run_context :root do
-      user username do # ~FB014
+      user username do # ~FC009 ~FB014
         uid mapinfo['uid']
         # the .to_i here is important - if the usermap accidentally
         # quotes the gid, then it will try to look up a group named "142"
@@ -132,6 +134,9 @@ action :manage do
         home homedir
         comment mapinfo['comment'] if mapinfo['comment']
         password pass if pass
+        if FB::Version.new(Chef::VERSION) >= FB::Version.new('15')
+          secure_token mapinfo['secure_token'] if mapinfo['secure_token']
+        end
         action :create
       end
     end
