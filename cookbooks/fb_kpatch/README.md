@@ -1,5 +1,5 @@
 fb_kpatch Cookbook
-====================
+==================
 This cookbook installs and configures kpatch.
 
 Requirements

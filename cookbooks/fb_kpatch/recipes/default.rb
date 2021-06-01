@@ -33,5 +33,6 @@ end
 
 service 'disable kpatch' do
   not_if { node['fb_kpatch']['enable'] }
+  service_name 'kpatch'
   action [:stop, :disable]
 end
