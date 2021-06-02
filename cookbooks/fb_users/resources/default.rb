@@ -73,13 +73,11 @@ action :manage do
     pgroup = info['gid'] || node['fb_users']['user_defaults']['gid']
     homedir = info['home'] || "/home/#{username}"
     homedir_group = info['homedir_group'] || pgroup
-    # If `manage_homedir` isn't set, we'll use a user-specified default.
-    # If *that* isn't set, then
+    # If `manage_home` isn't set, we'll use a user-specified default.
+    # If *that* isn't set, use the filesystem type to determine
     manage_homedir = info['manage_home']
     if manage_homedir.nil?
-      if node['fb_users']['user_defaults']['manage_home']
-        manage_homedir = node['fb_users']['user_defaults']['manage_home']
-      else
+      if node['fb_users']['user_defaults']['manage_home'].nil?
         manage_homedir = true
         homebase = ::File.dirname(homedir)
         if node['filesystem']['by_mountpoint'][homebase]
@@ -89,6 +87,8 @@ action :manage do
             manage_homedir = false
           end
         end
+      else
+        manage_homedir = node['fb_users']['user_defaults']['manage_home']
       end
     end
 
@@ -108,7 +108,7 @@ action :manage do
       next
     end
 
-    pass = mapinfo['password']
+    pass = info['password']
     if !pass && data_bag_passwords.include?(username)
       Chef::Log.debug("fb_users[#{username}]: Using password from data_bag")
       pass = data_bag_item('fb_users_auth', username)['password']
@@ -128,14 +128,15 @@ action :manage do
         # We explicityly pass in a GID here instead of a name to ensure that
         # as GIDs are moving, we get the intended outcome.
         gid ::FB::Users::GID_MAP[pgroup]['gid'].to_i
-        system mapinfo['system'] if mapinfo['system']
+        system mapinfo['system'] unless mapinfo['system'].nil?
         shell info['shell'] || node['fb_users']['user_defaults']['shell']
         manage_home manage_homedir
         home homedir
         comment mapinfo['comment'] if mapinfo['comment']
         password pass if pass
-        if FB::Version.new(Chef::VERSION) >= FB::Version.new('15')
-          secure_token mapinfo['secure_token'] if mapinfo['secure_token']
+        if FB::Version.new(Chef::VERSION) >= FB::Version.new('15') &&
+            !mapinfo['secure_token'].nil?
+          secure_token mapinfo['secure_token']
         end
         action :create
       end
@@ -165,17 +166,19 @@ action :manage do
       end
       next
     end
+
+    mapinfo = ::FB::Users::GID_MAP[groupname]
     # disabling fc009 becasue it triggers on 'comment' below which
     # is already guarded by a version 'if'
     # pushing this resource up to the root run_context in order to allow
     # other resources to subscribe to the group resource being updated
     with_run_context :root do
       group groupname do # ~FC009 ~FB015
-        gid ::FB::Users::GID_MAP[groupname]['gid']
-        system info['system'] if info['system']
+        gid mapinfo['gid']
+        system mapinfo['system'] unless mapinfo['system'].nil?
         members info['members'] if info['members']
         if FB::Version.new(Chef::VERSION) >= FB::Version.new('14.9')
-          comment info['comment'] if info['comment']
+          comment mapinfo['comment'] if mapinfo['comment']
         end
         append false
         action :create
