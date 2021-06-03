@@ -14,7 +14,7 @@ platforms:
         # remove bogus entry to make fb_fstab happy
         - RUN sed -i '/UUID=/d' /etc/fstab
         # enable EPEL (for stuff like hddtemp)
-        - RUN rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
+        - RUN rpm -Uvh https://archives.fedoraproject.org/pub/archive/epel/6/x86_64/epel-release-6-8.noarch.rpm
   - name: centos-7
     driver:
       image: dokken/centos-7
