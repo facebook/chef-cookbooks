@@ -23,4 +23,5 @@ default['fb_users'] = {
   },
   'users' => {},
   'groups' => {},
+  'set_passwords_on_windows' => true,
 }

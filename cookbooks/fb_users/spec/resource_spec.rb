@@ -17,7 +17,7 @@
 #
 require './spec/spec_helper'
 require_relative '../libraries/default'
-require_relative '../../../core/fb_helpers/libraries/fb_helpers'
+require_relative '../../fb_helpers/libraries/fb_helpers'
 
 # rubocop:disable Style/MultilineBlockChain
 
