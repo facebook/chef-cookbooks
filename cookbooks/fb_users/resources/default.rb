@@ -18,46 +18,57 @@
 
 default_action [:manage]
 
-action :manage do
-  # You can't add users if their primary group doesn't exist. So, first
-  # we find all primary groups, and make sure they exist, or create them
-  if node['fb_users']['user_defaults']['gid']
-    pgroups = [node['fb_users']['user_defaults']['gid']]
-  end
-  pgroups += node['fb_users']['users'].map { |_, info| info['gid'] }
-  pgroups = pgroups.compact.sort.uniq
-  Chef::Log.debug(
-    'fb_users: the following groups are GIDs and may need bootstrapping: ' +
-    "#{pgroups.join(', ')}.",
-  )
-  pgroups.each do |grp|
-    if node['etc']['group'][grp] &&
-        node['etc']['group'][grp]['gid'] == ::FB::Users::GID_MAP[grp]['gid']
-      Chef::Log.debug(
-        "fb_users: Will not bootstrap group #{grp} since it exists, and has " +
-        'the right GID',
-      )
-      next
+action_class do
+  def bootstrap_pgroups
+    # You can't add users if their primary group doesn't exist. So, first
+    # we find all primary groups, and make sure they exist, or create them
+    if node['fb_users']['user_defaults']['gid']
+      pgroups = [node['fb_users']['user_defaults']['gid']]
     end
 
-    # We may not have this group if it's a remote one, so check we do and
-    # that it's set to create
-    if node['fb_users']['groups'][grp] &&
-        node['fb_users']['groups'][grp]['action'] &&
-        node['fb_users']['groups'][grp]['action'] != :delete
-
-      group "bootstrap #{grp}" do # ~FB015
-        group_name grp
-        gid ::FB::Users::GID_MAP[grp]['gid']
-        action :create
+    pgroups += node['fb_users']['users'].map { |_, info| info['gid'] }
+    pgroups = pgroups.compact.sort.uniq
+    Chef::Log.debug(
+      'fb_users: the following groups are GIDs and may need bootstrapping: ' +
+      "#{pgroups.join(', ')}.",
+    )
+    pgroups.each do |grp|
+      if node['etc']['group'][grp] &&
+          node['etc']['group'][grp]['gid'] == ::FB::Users::GID_MAP[grp]['gid']
+        Chef::Log.debug(
+          "fb_users: Will not bootstrap group #{grp} since it exists, and has" +
+          ' the right GID',
+        )
+        next
       end
-    else
-      Chef::Log.debug(
-        "fb_users: Will not bootstrap group #{grp} since it is marked for " +
-        'deletion',
-      )
-      next
+
+      # We may not have this group if it's a remote one, so check we do and
+      # that it's set to create
+      if node['fb_users']['groups'][grp] &&
+          node['fb_users']['groups'][grp]['action'] &&
+          node['fb_users']['groups'][grp]['action'] != :delete
+
+        group "bootstrap #{grp}" do # ~FB015
+          group_name grp
+          gid ::FB::Users::GID_MAP[grp]['gid']
+          action :create
+        end
+      else
+        Chef::Log.debug(
+          "fb_users: Will not bootstrap group #{grp} since it is marked for " +
+          'deletion',
+        )
+        next
+      end
     end
+  end
+end
+
+action :manage do
+  # The idea of primary groups doesn't exist on windows, so none of this
+  # is necessary
+  unless node.windows?
+    bootstrap_pgroups
   end
 
   begin
@@ -65,6 +76,8 @@ action :manage do
   rescue Net::HTTPServerException
     data_bag_passwords = {}
   end
+
+  set_passwords = !node.windows? || node['fb_users']['set_passwords_on_windows']
 
   # Now we can add all the users
   node['fb_users']['users'].each do |username, info|
@@ -79,12 +92,14 @@ action :manage do
     if manage_homedir.nil?
       if node['fb_users']['user_defaults']['manage_home'].nil?
         manage_homedir = true
-        homebase = ::File.dirname(homedir)
-        if node['filesystem']['by_mountpoint'][homebase]
-          homebase_type =
-            node['filesystem']['by_mountpoint'][homebase]['fs_type']
-          if homebase_type.start_with?('nfs', 'autofs')
-            manage_homedir = false
+        unless node.windows?
+          homebase = ::File.dirname(homedir)
+          if node['filesystem']['by_mountpoint'][homebase]
+            homebase_type =
+              node['filesystem']['by_mountpoint'][homebase]['fs_type']
+            if homebase_type.start_with?('nfs', 'autofs')
+              manage_homedir = false
+            end
           end
         end
       else
@@ -99,8 +114,6 @@ action :manage do
       with_run_context :root do
         # keep property list in sync with FB::Users._validate
         user username do # ~FB014
-          # allows users not in the UID map to be removed from the system
-          uid mapinfo['uid'] if mapinfo
           manage_home manage_homedir
           action :remove
         end
@@ -133,7 +146,9 @@ action :manage do
         manage_home manage_homedir
         home homedir
         comment mapinfo['comment'] if mapinfo['comment']
-        password pass if pass
+        if pass && set_passwords
+          password pass
+        end
         if FB::Version.new(Chef::VERSION) >= FB::Version.new('15') &&
             !mapinfo['secure_token'].nil?
           secure_token mapinfo['secure_token']

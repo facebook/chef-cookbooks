@@ -76,7 +76,7 @@ module FB
         if info['action'] == :delete
           # Most keys are not allowed to be passed during remove operations
           # Keep in sync with the properties on the internal user resource
-          allowed_remove_properties = %w{uid manage_home action}
+          allowed_remove_properties = %w{manage_home action}
           extra_keys = info.keys - allowed_remove_properties
           unless extra_keys.empty?
             fail "fb_users[user]: User #{user} has action :delete with " +
