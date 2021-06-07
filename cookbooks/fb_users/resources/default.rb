@@ -134,9 +134,8 @@ action :manage do
         home homedir
         comment mapinfo['comment'] if mapinfo['comment']
         password pass if pass
-        if FB::Version.new(Chef::VERSION) >= FB::Version.new('15') &&
-            !mapinfo['secure_token'].nil?
-          secure_token mapinfo['secure_token']
+        if FB::Version.new(Chef::VERSION) >= FB::Version.new('15')
+          secure_token info['secure_token'] unless info['secure_token'].nil?
         end
         action :create
       end
