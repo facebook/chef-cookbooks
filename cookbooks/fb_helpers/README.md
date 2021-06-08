@@ -140,8 +140,11 @@ your node.
 * `node.macos?`
     Is macOS (any version)
 
+* `node.macos10?`
+    Is macOS Catalina (macOS 10)
+
 * `node.macos11?`
-    Is macOS starting with Big Sur (macOS 11)
+    Is macOS Big Sur (macOS 11)
 
 * `node.windows?`
     Is Windows
