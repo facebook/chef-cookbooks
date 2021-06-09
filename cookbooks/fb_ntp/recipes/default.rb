@@ -103,7 +103,7 @@ fb_systemd_override 'local' do
 end
 
 service service_name do
-  not_if { node.macos11? }
+  not_if { node.macos? && !node.macos10? }
   action [:enable, :start]
 end
 
