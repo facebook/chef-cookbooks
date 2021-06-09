@@ -223,6 +223,10 @@ class Chef
       macos? && node['platform_version'].start_with?('11.')
     end
 
+    def macos12?
+      macos? && node['platform_version'].start_with?('12.')
+    end
+
     def windows?
       self['platform_family'] == 'windows'
     end
