@@ -387,7 +387,7 @@ If the has is specified, it takes one or more of the following keys:
     # expected.
     #
     # Usage:
-    #   parse_json_file(path, top_level_class)
+    #   parse_json_file(path, top_level_class, fallback)
     #
     # Arguments:
     #   path: Required string. Path to the file to parse.
@@ -413,7 +413,7 @@ If the has is specified, it takes one or more of the following keys:
         end
       end
 
-      self.parse_json(content, top_level_class)
+      self.parse_json(content, top_level_class, fallback)
     end
 
     # parse_timeshard_start() takes a time string and converts its contents to a

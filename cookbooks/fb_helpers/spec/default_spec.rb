@@ -58,6 +58,21 @@ describe FB::Helpers do
       allow(File).to receive(:read).with(PATH).and_return('{}')
       expect(FB::Helpers.parse_json_file(PATH)).to eq({})
     end
+
+    it 'parses a basic JSON file, and ignores empty JSON' do
+      allow(File).to receive(:read).with(PATH).and_return('')
+      expect(FB::Helpers.parse_json_file(PATH, Hash, true)).to eq({})
+    end
+
+    it 'parses a basic JSON file, and ignores invalid JSON' do
+      allow(File).to receive(:read).with(PATH).and_return('"foo"')
+      expect(FB::Helpers.parse_json_file(PATH, Hash, true)).to eq({})
+    end
+
+    it 'parses a basic JSON file, and ignores broken JSON' do
+      allow(File).to receive(:read).with(PATH).and_return('{bar}')
+      expect(FB::Helpers.parse_json_file(PATH, Hash, true)).to eq({})
+    end
   end
 
   context 'parse a time for timeshard computation' do
