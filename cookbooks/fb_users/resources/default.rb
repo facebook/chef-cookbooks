@@ -184,4 +184,25 @@ action :manage do
       end
     end
   end
+
+  # If any of the users or groups we wanted to delete are still present in ohai,
+  # reload.  Or if users or groups we wanted to add are not present, reload.
+  # NOTE: this only triggers when an addition or deletion is expected; other
+  # entry metadata changes won't trigger it
+  changed_groups = node['fb_users']['groups'].select do |groupname, info|
+    (info['action'] == :add && !node['etc']['group'][groupname]) ||
+      (info['action'] == :delete && node['etc']['group'][groupname])
+  end
+  changed_users = node['fb_users']['users'].select do |username, info|
+    (info['action'] == :add && !node['etc']['passwd'][username]) ||
+      (info['action'] == :delete && node['etc']['passwd'][username])
+  end
+  if !changed_groups.empty? || !changed_users.empty?
+    # This bubbles up a resource update to fb_users 'converge users and groups'
+    # which in turn reloads ohai's etc plugin
+    log 'trigger custom resource update for fb_users' do
+      message "fb_users: changed the following: users: #{changed_users.keys}," +
+        " groups: #{changed_groups.keys}"
+    end
+  end
 end
