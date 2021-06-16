@@ -454,6 +454,16 @@ The following methods are available:
   Used to discover obsolete code. Defaults message to warning about time
   sharding code
 
+* `FB::Helpers.user_exist?('someuser')`
+  Test if a user is defined on the system. Usually this would be checked by
+  looking at `node['etc']['passwd']` but if the user was added during the same
+  chef run then ohai won't have it, unless ohai was reloaded.
+
+* `FB::Helpers.group_exist?('groupname')`
+  Test if a group is defined on the system. Usually this would be checked by
+  looking at `node['etc']['group']` but if the group was added during the same
+  chef run then ohai won't have it, unless ohai was reloaded.
+
 * `FB::Version.new(version)`
    Helper class to compare software versions. Sample usage:
 
@@ -471,11 +481,6 @@ The following methods are available:
    FB::Version.new('3.3.4') <= FB::Version.new('3.3.02')
    => false
    ```
-
-* `FB::Helpers.user_exist?('someuser')`
-  Test if a user is defined on the system.  Usually this would be checked by
-  looking at `node['etc']['passwd']`, but if the user was added during the same
-  chef run then ohai won't have it.
 
 ### Custom resources
 The following custom resources are available

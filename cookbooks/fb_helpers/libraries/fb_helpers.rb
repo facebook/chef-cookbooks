@@ -530,6 +530,16 @@ If the has is specified, it takes one or more of the following keys:
     rescue ArgumentError
       false
     end
+
+    # Normally preferred testing for existence of a group is via
+    # node['etc']['group'], but if the group was added in the same chef run
+    # then ohai won't have it.
+    def self.group_exist?(group_name)
+      Etc.getgrnam(group_name)
+      true
+    rescue ArgumentError
+      false
+    end
   end
 
   # Helper class to compare software versions.
