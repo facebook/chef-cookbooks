@@ -8,6 +8,8 @@ Requirements
 Attributes
 ----------
 * node['fb_consul']['enable']
+* node['fb_consul']['manage_packages']
+* node['fb_consul']['version']
 * node['fb_consul']['config']
 * node['fb_consul']['services']
 * node['fb_consul']['checks']

@@ -35,9 +35,20 @@ node.default['fb_users']['users']['consul'] = {
   'shell' => '/usr/sbin/nologin',
 }
 
-package 'consul' do
+package 'upgrade consul' do
+  package_name 'consul'
   only_if { node['fb_consul']['manage_packages'] }
+  only_if { node['fb_consul']['version'].nil? }
   action :upgrade
+  notifies :restart, 'service[consul]'
+end
+
+package 'pin consul' do
+  package_name 'consul'
+  only_if { node['fb_consul']['manage_packages'] }
+  not_if { node['fb_consul']['version'].nil? }
+  action :install
+  version lazy { node['fb_consul']['version'] }
   notifies :restart, 'service[consul]'
 end
 
