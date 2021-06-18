@@ -40,16 +40,22 @@ action :manage do
       next
     end
 
+    info = node['fb_users']['groups'][grp]
+
     # We may not have this group if it's a remote one, so check we do and
     # that it's set to create
-    if node['fb_users']['groups'][grp] &&
-        node['fb_users']['groups'][grp]['action'] &&
-        node['fb_users']['groups'][grp]['action'] != :delete
-
+    if info && info['action'] && info['action'] != :delete
       group "bootstrap #{grp}" do # ~FB015
         group_name grp
         gid ::FB::Users::GID_MAP[grp]['gid']
         action :create
+        # we'll likely modify the group below, but if it has no members and no
+        # comment, then we won't, so lets hook up the notifies in both places
+        # just in case
+        info['notifies']&.each_value do |notif|
+          timing = notif['timing'] || 'delayed'
+          notifies notif['action'].to_sym, notif['resource'], timing.to_sym
+        end
       end
     else
       Chef::Log.debug(
@@ -96,6 +102,9 @@ action :manage do
     if info['action'] == :delete
       # pushing this resource up to the root run_context in order to allow
       # other resources to subscribe to the user resource being updated
+      #
+      # TODO: Put this back in the subresource run context, instead of the root
+      # context!
       with_run_context :root do
         # keep property list in sync with FB::Users._validate
         user username do # ~FB014
@@ -103,6 +112,10 @@ action :manage do
           uid mapinfo['uid'] if mapinfo
           manage_home manage_homedir
           action :remove
+          info['notifies']&.each_value do |notif|
+            timing = notif['timing'] || 'delayed'
+            notifies notif['action'].to_sym, notif['resource'], timing.to_sym
+          end
         end
       end
       next
@@ -118,6 +131,9 @@ action :manage do
     # is already guarded by a version 'if'
     # pushing this resource up to the root run_context in order to allow
     # other resources to subscribe to the user resource being updated
+    #
+    # TODO: Put this back in the subresource run context, instead of the root
+    # context!
     with_run_context :root do
       user username do # ~FC009 ~FB014
         uid mapinfo['uid']
@@ -137,11 +153,18 @@ action :manage do
         if FB::Version.new(Chef::VERSION) >= FB::Version.new('15')
           secure_token info['secure_token'] unless info['secure_token'].nil?
         end
+        info['notifies']&.each_value do |notif|
+          timing = notif['timing'] || 'delayed'
+          notifies notif['action'].to_sym, notif['resource'], timing.to_sym
+        end
         action :create
       end
     end
 
     if manage_homedir
+      #
+      # TODO: Put this back in the subresource run context, instead of the root
+      # context!
       with_run_context :root do
         directory homedir do
           owner mapinfo['uid']
@@ -158,9 +181,16 @@ action :manage do
     if info['action'] == :delete
       # pushing this resource up to the root run_context in order to allow
       # other resources to subscribe to the group resource being updated
+      #
+      # TODO: Put this back in the subresource run context, instead of the root
+      # context!
       with_run_context :root do
         group groupname do # ~FB015
           action :remove
+          info['notifies']&.each_value do |notif|
+            timing = notif['timing'] || 'delayed'
+            notifies notif['action'].to_sym, notif['resource'], timing.to_sym
+          end
         end
       end
       next
@@ -171,6 +201,9 @@ action :manage do
     # is already guarded by a version 'if'
     # pushing this resource up to the root run_context in order to allow
     # other resources to subscribe to the group resource being updated
+    #
+    # TODO: Put this back in the subresource run context, instead of the root
+    # context!
     with_run_context :root do
       group groupname do # ~FC009 ~FB015
         gid mapinfo['gid']
@@ -178,6 +211,10 @@ action :manage do
         members info['members'] if info['members']
         if FB::Version.new(Chef::VERSION) >= FB::Version.new('14.9')
           comment mapinfo['comment'] if mapinfo['comment']
+        end
+        info['notifies']&.each_value do |notif|
+          timing = notif['timing'] || 'delayed'
+          notifies notif['action'].to_sym, notif['resource'], timing.to_sym
         end
         append false
         action :create
