@@ -17,7 +17,7 @@
 #
 require './spec/spec_helper'
 require_relative '../libraries/default'
-require_relative '../../../core/fb_helpers/libraries/fb_helpers'
+require_relative '../../fb_helpers/libraries/fb_helpers'
 
 # rubocop:disable Style/MultilineBlockChain
 
@@ -141,6 +141,12 @@ recipe 'fb_users::default' do |tc|
               'password' => 'myfakepassword',
               'shell' => '/bin/bash',
               'action' => :add,
+              'notifies' => {
+                'test notif' => {
+                  'resource' => 'file[test resource]',
+                  'action' => 'create',
+                }
+              },
             },
             'cleanup' => {
               'action' => :delete,
@@ -166,6 +172,12 @@ recipe 'fb_users::default' do |tc|
             'testgroup' => {
               'members' => [],
               'action' => :add,
+              'notifies' => {
+                'test notif' => {
+                  'resource' => 'file[test resource]',
+                  'action' => 'delete',
+                },
+              },
             },
             'cleanup' => {
               'action' => :delete,
@@ -249,6 +261,11 @@ recipe 'fb_users::default' do |tc|
       it 'deletes the user' do
         expect(chef_run).to remove_user('cleanup')
       end
+
+      it 'notifies expected things' do
+        expect(chef_run.user('testuser')).to notify('file[test resource]').
+          to(:create)
+      end
     end
 
     context 'manage group' do
@@ -292,6 +309,11 @@ recipe 'fb_users::default' do |tc|
 
       it 'deletes the group' do
         expect(chef_run).to remove_group('cleanup')
+      end
+
+      it 'notifies expected things' do
+        expect(chef_run.group('testgroup')).to notify('file[test resource]').
+          to(:delete)
       end
     end
   end
