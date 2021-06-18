@@ -190,6 +190,7 @@ action :manage do
           info['notifies']&.each_value do |notif|
             timing = notif['timing'] || 'delayed'
             notifies notif['action'].to_sym, notif['resource'], timing.to_sym
+            notifies notif['action'], notif['resource']
           end
         end
       end
