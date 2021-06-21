@@ -70,8 +70,8 @@ end
 template '/etc/ntp.conf' do
   not_if { node.windows? }
   source 'ntp.conf.erb'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
   notifies :restart, "service[#{service_name}]"
 end
@@ -85,8 +85,8 @@ template '/etc/sysconfig/ntpd' do
   only_if { node.centos? }
   source 'ntpd.erb'
   mode '0644'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   notifies :restart, "service[#{service_name}]"
 end
 
@@ -122,8 +122,8 @@ template '/etc/sysconfig/ntpdate' do
   only_if { node.centos? }
   source 'ntpdate.erb'
   mode '0644'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
 end
 
 # note: on first boot from provisioning, ntpdate will have already run by (at

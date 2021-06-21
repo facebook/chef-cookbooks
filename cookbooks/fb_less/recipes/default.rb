@@ -26,14 +26,14 @@ end
 
 cookbook_file '/usr/local/bin/lesspipe.sh' do
   source 'lesspipe.sh'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0755'
 end
 
 cookbook_file '/etc/profile.d/fbless.sh' do
   source 'profile.d/fbless.sh'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
 end

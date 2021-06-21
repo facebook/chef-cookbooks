@@ -78,8 +78,8 @@ action_class do
     end
 
     file ::File.join(current_resource.prefix, REBOOT_OVERRIDE) do
-      owner 'root'
-      group 'root'
+      owner node.root_user
+      group node.root_group
       mode '0644'
       content "#{reboot_type} reboot '#{new_resource.name}' requested by " +
         "recipe #{cookbook_name}::#{new_resource.recipe_name}"
@@ -88,16 +88,16 @@ action_class do
 
   def set_reboot_trigger
     file ::File.join(current_resource.prefix, REBOOT_TRIGGER) do
-      owner 'root'
-      group 'root'
+      owner node.root_user
+      group node.root_group
       mode '0644'
     end
   end
 
   def set_reboot_required
     file ::File.join(current_resource.prefix, REBOOT_REQUIRED) do
-      owner 'root'
-      group 'root'
+      owner node.root_user
+      group node.root_group
       mode '0644'
     end
   end

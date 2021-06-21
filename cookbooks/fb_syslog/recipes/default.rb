@@ -37,8 +37,8 @@ else
   template sysconfig_path do
     not_if { node.systemd? }
     source 'rsyslog-sysconf.erb'
-    owner 'root'
-    group 'root'
+    owner node.root_user
+    group node.root_group
     mode '0644'
     notifies :restart, 'service[rsyslog]'
   end
@@ -58,8 +58,8 @@ if node.centos?
     },
   }
   directory '/var/spool/rsyslog' do
-    owner 'root'
-    group 'root'
+    owner node.root_user
+    group node.root_group
     mode '0700'
   end
 end
@@ -67,8 +67,8 @@ end
 include_recipe 'fb_syslog::packages'
 
 template config_file do
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
   notifies :restart, "service[#{service_name}]"
 end

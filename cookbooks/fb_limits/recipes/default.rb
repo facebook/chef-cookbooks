@@ -20,8 +20,8 @@
 
 template '/etc/security/limits.conf' do
   source 'limits.conf.erb'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
 end
 
@@ -34,8 +34,8 @@ Dir.glob '/etc/security/limits.d/*.conf' do |i|
   file "overwrite #{i} in /etc/security/limits.d" do
     path i
     content "# Disabled by Chef\n"
-    owner 'root'
-    group 'root'
+    owner node.root_user
+    group node.root_group
     mode '0644'
   end
 end
