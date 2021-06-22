@@ -284,7 +284,7 @@ action :enable do # ~FC017
         "fb_network_scripts[#{interface}]: full network interface restart " +
         'required',
       )
-      updated_by_last_action true
+      new_resource.updated_by_last_action true
     end
   end
 end
