@@ -762,12 +762,25 @@ class Chef
       self['filesystem2'] || self['filesystem']
     end
 
-    # returns the version of an rpm installed, or nil if not present
+    # returns the version-release of an rpm installed, or nil if not present
     def rpm_version(name)
       if (self.centos? && !self.centos7?) || self.fedora?
-        Chef::Provider::Package::Dnf::PythonHelper.instance.
-          package_query(:whatinstalled, name).version
+        # returns epoch.version
+        v = Chef::Provider::Package::Dnf::PythonHelper.instance.
+            package_query(:whatinstalled, name).version
+        unless v.nil?
+          v.split(':')[1]
+        end
+      elsif self.centos7? &&
+        (FB::Version.new(Chef::VERSION) > FB::Version.new('14'))
+        # returns epoch.version.arch
+        v = Chef::Provider::Package::Yum::PythonHelper.instance.
+            package_query(:whatinstalled, name).version
+        unless v.nil?
+          v.split(':')[1]
+        end
       else
+        # return version
         Chef::Provider::Package::Yum::YumCache.instance.
           installed_version(name)
       end
