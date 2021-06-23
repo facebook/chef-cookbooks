@@ -21,7 +21,7 @@ default_action :manage
 action :manage do
   node['fb_networksetup']['services'].each do |service, config|
     iface = config['interface']
-    unless iface
+    unless iface && node['network']['interfaces'][iface]
       fail "fb_networksetup: unknown interface for #{service}"
     end
 
