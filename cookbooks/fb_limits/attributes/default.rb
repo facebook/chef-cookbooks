@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-if node.in_shard?(14)
+if node.in_shard?(24)
   memlock_limit = node['memory']['total'].to_i / 1024
   default['fb_limits']['*'] = {
     'memlock' => {
