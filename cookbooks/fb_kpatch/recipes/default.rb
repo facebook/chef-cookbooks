@@ -23,16 +23,16 @@ if !node.centos? || node.centos7?
 end
 
 package 'kpatch' do
-  action :upgrade
+  action :remove
 end
 
-service 'kpatch' do
-  only_if { node['fb_kpatch']['enable'] }
-  action [:enable, :start]
-end
+# service 'kpatch' do
+#  only_if { node['fb_kpatch']['enable'] }
+#  action [:enable, :start]
+# end
 
-service 'disable kpatch' do
-  not_if { node['fb_kpatch']['enable'] }
-  service_name 'kpatch'
-  action [:stop, :disable]
-end
+# service 'disable kpatch' do
+#  not_if { node['fb_kpatch']['enable'] }
+#  service_name 'kpatch'
+#  action [:stop, :disable]
+# end
