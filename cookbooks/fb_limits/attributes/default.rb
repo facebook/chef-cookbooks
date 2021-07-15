@@ -16,15 +16,13 @@
 # limitations under the License.
 #
 
-if node.in_shard?(79)
-  memlock_limit = node['memory']['total'].to_i / 1024
-  default['fb_limits']['*'] = {
-    'memlock' => {
-      'soft' => memlock_limit,
-      'hard' => memlock_limit,
-    },
-  }
-end
+memlock_limit = node['memory']['total'].to_i / 1024
+default['fb_limits']['*'] = {
+  'memlock' => {
+    'soft' => memlock_limit,
+    'hard' => memlock_limit,
+  },
+}
 
 default['fb_limits']['root'] = {
   'nofile' => {
