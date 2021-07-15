@@ -24,9 +24,6 @@ $ActionFileDefaultTemplate RSYSLOG_TraditionalFileFormat
 # not useful and an extreme performance hit
 #$ActionFileEnableSync on
 
-#
-# Set the default permissions for all log files.
-#
 $FileOwner root
 $FileGroup root
 $FileCreateMode 0644
