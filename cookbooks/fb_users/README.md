@@ -156,6 +156,7 @@ By design, we do not accept all values. Here are the values we do accept:
 * `password`
 * `shell`
 * `secure_token`
+* `notifies`
 
 They are all optional, see the next section for how default values for these
 work.
@@ -169,6 +170,27 @@ and then if later recipes add them, they'll be added, otherwise they'll be
 automatically cleaned up.
 
 Also see `initialize_group` helper below.
+
+The `notifies` is a hash that looks like this:
+
+```ruby
+node.default['fb_users']['users']['zerocool'] = {
+  'restart foo if uid changes' => {
+    'resource' => 'service[foo]',
+    'action' => 'restart',
+  }
+}
+
+The name of the notifier is inconsequential, and is only there to make it
+easy to reach in and modify a notification later in your run list. The action
+can be a string or a symbol, we will do the right thing.
+
+When such a notification is setup, we will run it regardless of if the user or
+group is being added, modified, or removed. The only time we don't notify is
+if the homedir is being changed.
+
+Note that to enable subscribes, these sub-resources were added to the root
+run context, but will be moved back to the subresource run context shortly.
 
 ### Passwords in data_bags
 

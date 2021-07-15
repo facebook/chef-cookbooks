@@ -40,16 +40,21 @@ action :manage do
       next
     end
 
+    info = node['fb_users']['groups'][grp]
+
     # We may not have this group if it's a remote one, so check we do and
     # that it's set to create
-    if node['fb_users']['groups'][grp] &&
-        node['fb_users']['groups'][grp]['action'] &&
-        node['fb_users']['groups'][grp]['action'] != :delete
-
+    if info && info['action'] && info['action'] != :delete
       group "bootstrap #{grp}" do # ~FB015
         group_name grp
         gid ::FB::Users::GID_MAP[grp]['gid']
         action :create
+        # we'll likely modify the group below, but if it has no members and no
+        # comment, then we won't, so lets hook up the notifies in both places
+        # just in case
+        info['notifies']&.each_value do |notif|
+          notifies notif['action'], notif['resource']
+        end
       end
     else
       Chef::Log.debug(
@@ -94,15 +99,14 @@ action :manage do
 
     # delete any users and optionally clean up home dirs if `manage_home true`
     if info['action'] == :delete
-      # pushing this resource up to the root run_context in order to allow
-      # other resources to subscribe to the user resource being updated
-      with_run_context :root do
-        # keep property list in sync with FB::Users._validate
-        user username do # ~FB014
-          # allows users not in the UID map to be removed from the system
-          uid mapinfo['uid'] if mapinfo
-          manage_home manage_homedir
-          action :remove
+      # keep property list in sync with FB::Users._validate
+      user username do # ~FB014
+        # allows users not in the UID map to be removed from the system
+        uid mapinfo['uid'] if mapinfo
+        manage_home manage_homedir
+        action :remove
+        info['notifies']&.each_value do |notif|
+          notifies notif['action'], notif['resource']
         end
       end
       next
@@ -116,39 +120,36 @@ action :manage do
 
     # disabling fc009 because it triggers on 'secure_token' below which
     # is already guarded by a version 'if'
-    # pushing this resource up to the root run_context in order to allow
-    # other resources to subscribe to the user resource being updated
-    with_run_context :root do
-      user username do # ~FC009 ~FB014
-        uid mapinfo['uid']
-        # the .to_i here is important - if the usermap accidentally
-        # quotes the gid, then it will try to look up a group named "142"
-        # or whatever.
-        #
-        # We explicityly pass in a GID here instead of a name to ensure that
-        # as GIDs are moving, we get the intended outcome.
-        gid ::FB::Users::GID_MAP[pgroup]['gid'].to_i
-        system mapinfo['system'] unless mapinfo['system'].nil?
-        shell info['shell'] || node['fb_users']['user_defaults']['shell']
-        manage_home manage_homedir
-        home homedir
-        comment mapinfo['comment'] if mapinfo['comment']
-        password pass if pass
-        if FB::Version.new(Chef::VERSION) >= FB::Version.new('15')
-          secure_token info['secure_token'] unless info['secure_token'].nil?
-        end
-        action :create
+    user username do # ~FC009 ~FB014
+      uid mapinfo['uid']
+      # the .to_i here is important - if the usermap accidentally
+      # quotes the gid, then it will try to look up a group named "142"
+      # or whatever.
+      #
+      # We explicityly pass in a GID here instead of a name to ensure that
+      # as GIDs are moving, we get the intended outcome.
+      gid ::FB::Users::GID_MAP[pgroup]['gid'].to_i
+      system mapinfo['system'] unless mapinfo['system'].nil?
+      shell info['shell'] || node['fb_users']['user_defaults']['shell']
+      manage_home manage_homedir
+      home homedir
+      comment mapinfo['comment'] if mapinfo['comment']
+      password pass if pass
+      if FB::Version.new(Chef::VERSION) >= FB::Version.new('15')
+        secure_token info['secure_token'] unless info['secure_token'].nil?
       end
+      info['notifies']&.each_value do |notif|
+        notifies notif['action'], notif['resource']
+      end
+      action :create
     end
 
     if manage_homedir
-      with_run_context :root do
-        directory homedir do
-          owner mapinfo['uid']
-          group ::FB::Users::GID_MAP[homedir_group]['gid'].to_i
-          mode info['homedir_mode'] if info['homedir_mode']
-          action :create
-        end
+      directory homedir do
+        owner mapinfo['uid']
+        group ::FB::Users::GID_MAP[homedir_group]['gid'].to_i
+        mode info['homedir_mode'] if info['homedir_mode']
+        action :create
       end
     end
   end
@@ -156,11 +157,10 @@ action :manage do
   # and then converge all groups
   node['fb_users']['groups'].each do |groupname, info|
     if info['action'] == :delete
-      # pushing this resource up to the root run_context in order to allow
-      # other resources to subscribe to the group resource being updated
-      with_run_context :root do
-        group groupname do # ~FB015
-          action :remove
+      group groupname do # ~FB015
+        action :remove
+        info['notifies']&.each_value do |notif|
+          notifies notif['action'], notif['resource']
         end
       end
       next
@@ -169,40 +169,18 @@ action :manage do
     mapinfo = ::FB::Users::GID_MAP[groupname]
     # disabling fc009 becasue it triggers on 'comment' below which
     # is already guarded by a version 'if'
-    # pushing this resource up to the root run_context in order to allow
-    # other resources to subscribe to the group resource being updated
-    with_run_context :root do
-      group groupname do # ~FC009 ~FB015
-        gid mapinfo['gid']
-        system mapinfo['system'] unless mapinfo['system'].nil?
-        members info['members'] if info['members']
-        if FB::Version.new(Chef::VERSION) >= FB::Version.new('14.9')
-          comment mapinfo['comment'] if mapinfo['comment']
-        end
-        append false
-        action :create
+    group groupname do # ~FC009 ~FB015
+      gid mapinfo['gid']
+      system mapinfo['system'] unless mapinfo['system'].nil?
+      members info['members'] if info['members']
+      if FB::Version.new(Chef::VERSION) >= FB::Version.new('14.9')
+        comment mapinfo['comment'] if mapinfo['comment']
       end
-    end
-  end
-
-  # If any of the users or groups we wanted to delete are still present in ohai,
-  # reload.  Or if users or groups we wanted to add are not present, reload.
-  # NOTE: this only triggers when an addition or deletion is expected; other
-  # entry metadata changes won't trigger it
-  changed_groups = node['fb_users']['groups'].select do |groupname, info|
-    (info['action'] == :add && !node['etc']['group'][groupname]) ||
-      (info['action'] == :delete && node['etc']['group'][groupname])
-  end
-  changed_users = node['fb_users']['users'].select do |username, info|
-    (info['action'] == :add && !node['etc']['passwd'][username]) ||
-      (info['action'] == :delete && node['etc']['passwd'][username])
-  end
-  if !changed_groups.empty? || !changed_users.empty?
-    # This bubbles up a resource update to fb_users 'converge users and groups'
-    # which in turn reloads ohai's etc plugin
-    log 'trigger custom resource update for fb_users' do
-      message "fb_users: changed the following: users: #{changed_users.keys}," +
-        " groups: #{changed_groups.keys}"
+      info['notifies']&.each_value do |notif|
+        notifies notif['action'], notif['resource']
+      end
+      append false
+      action :create
     end
   end
 end

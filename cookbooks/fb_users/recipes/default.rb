@@ -19,6 +19,12 @@
 # limitations under the License.
 #
 
+if defined?(ChefSpec)
+  file 'test resource' do
+    action :nothing
+  end
+end
+
 whyrun_safe_ruby_block 'validate users and groups' do
   block do
     FB::Users._validate(node)
