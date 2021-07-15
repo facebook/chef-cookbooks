@@ -156,6 +156,7 @@ By design, we do not accept all values. Here are the values we do accept:
 * `password`
 * `shell`
 * `secure_token`
+* `notifies`
 
 They are all optional, see the next section for how default values for these
 work.
@@ -169,6 +170,33 @@ and then if later recipes add them, they'll be added, otherwise they'll be
 automatically cleaned up.
 
 Also see `initialize_group` helper below.
+
+The `notifies` is a hash with of notifies, where each notify is a hash with
+`resource`, `action`, and `timing`. It looks like this:
+
+```ruby
+node.default['fb_users']['users']['zerocool'] = {
+  ...
+  'notifies' => {
+    'restart foo if uid changes' => {
+      'resource' => 'service[foo]',
+      'action' => 'restart',
+      'timing' => 'delayed',
+    }
+  }
+}
+```
+
+The name of the notifier is inconsequential, and is only there to make it
+easy to reach in and modify a notification later in your run list. The action
+can be a string or a symbol, we will do the right thing.
+
+When such a notification is setup, we will run it regardless of if the user or
+group is being added, modified, or removed. The only time we don't notify is
+if the homedir is being changed.
+
+Note that to enable subscribes, these sub-resources were added to the root
+run context, but will be moved back to the subresource run context shortly.
 
 ### Passwords in data_bags
 
@@ -221,12 +249,6 @@ To remove a user or group, set the `action` to `:delete` and the user or group
 will be automatically cleaned up during the chef run. To automatically clean up
 a user's home directory while removing the user from the system, leave
 `manage_home` set to `true`.
-
-### Notifications for users or groups
-
-The `user` and `group` resources used within this cookbook's custom resource
-will run at the root `run_context` in order to allow other resources in the
-chef run to *subscribe* to a specific user or group being updated.
 
 ### Helper methods
 
