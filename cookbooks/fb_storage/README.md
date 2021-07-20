@@ -21,6 +21,7 @@ Attributes
 * node['fb_storage']['tuning']['max_sectors_kb']
 * node['fb_storage']['fstab_use_labels']
 * node['fb_storage']['manage_mdadm_conf']
+* node['fb_storage']['mdadm_conf_options']
 * node['fb_storage']['stop_and_zero_mdadm_for_format']
 * node['fb_storage']['hybrid_xfs_use_helper']
 * node['fb_storage']['format_options']
@@ -290,8 +291,11 @@ labels. The default is currently `true`.
 #### manage_mdadm_conf
 
 If you have specified arrays, then Storage will generate an `/etc/mdadm.conf`
-for you based on the output of `mdadm --detail --scan`. You can disable that by
-setting this option to `false`.
+for you based on the output of `mdadm --detail --scan` by default. You can
+disable that by setting this option to `false`. You can also customize the
+exact `mdadm` options used to generate `/etc/mdadm.conf` via the
+`node['fb_storage']['mdadm_conf_options']` attribute. Note that `mdadm` options
+are positional, so the ordering of this list is important.
 
 #### stop_and_zero_mdadm_for_format
 
