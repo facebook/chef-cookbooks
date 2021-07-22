@@ -146,6 +146,9 @@ your node.
 * `node.macos11?`
     Is macOS Big Sur (macOS 11)
 
+* `node.macos12?`
+    Is macOS Monterey (macOS 12)
+
 * `node.windows?`
     Is Windows
 
