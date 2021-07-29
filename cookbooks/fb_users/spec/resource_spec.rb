@@ -17,7 +17,7 @@
 #
 require './spec/spec_helper'
 require_relative '../libraries/default'
-require_relative '../../../core/fb_helpers/libraries/fb_helpers'
+require_relative '../../fb_helpers/libraries/fb_helpers'
 
 # rubocop:disable Style/MultilineBlockChain
 
@@ -59,7 +59,6 @@ recipe 'fb_users::default' do |tc|
       'new_basic' => {
         'gid' => 9999,
         'system' => true,
-        'comment' => 'fakegroup for testing',
       },
       'simple' => {
         'gid' => 8888,
@@ -103,7 +102,7 @@ recipe 'fb_users::default' do |tc|
             'fs_type' => 'foofs',
           },
         }
-      end.converge(described_recipe) do |node|
+      end.converge('fb_users::test', described_recipe) do |node|
         node.default['fb_users'] = {
           'user_defaults' => {
             'gid' => 'existing',
@@ -141,6 +140,12 @@ recipe 'fb_users::default' do |tc|
               'password' => 'myfakepassword',
               'shell' => '/bin/bash',
               'action' => :add,
+              'notifies' => {
+                'test notif' => {
+                  'resource' => 'file[test resource]',
+                  'action' => 'create',
+                }
+              },
             },
             'cleanup' => {
               'action' => :delete,
@@ -166,6 +171,12 @@ recipe 'fb_users::default' do |tc|
             'testgroup' => {
               'members' => [],
               'action' => :add,
+              'notifies' => {
+                'test notif' => {
+                  'resource' => 'file[test resource]',
+                  'action' => 'delete',
+                },
+              },
             },
             'cleanup' => {
               'action' => :delete,
@@ -249,6 +260,11 @@ recipe 'fb_users::default' do |tc|
       it 'deletes the user' do
         expect(chef_run).to remove_user('cleanup')
       end
+
+      it 'notifies expected things' do
+        expect(chef_run.user('testuser')).to notify('file[test resource]').
+          to(:create)
+      end
     end
 
     context 'manage group' do
@@ -272,7 +288,6 @@ recipe 'fb_users::default' do |tc|
           :gid => 9999,
           :system => true,
           :members => [],
-          :comment => 'fakegroup for testing',
           :append => false,
         )
       end
@@ -292,6 +307,11 @@ recipe 'fb_users::default' do |tc|
 
       it 'deletes the group' do
         expect(chef_run).to remove_group('cleanup')
+      end
+
+      it 'notifies expected things' do
+        expect(chef_run.group('testgroup')).to notify('file[test resource]').
+          to(:delete)
       end
     end
   end
