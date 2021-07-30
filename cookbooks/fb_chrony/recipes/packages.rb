@@ -19,15 +19,7 @@
 # limitations under the License.
 #
 
-if node.centos8?
-  # We don't have any rolloug phases yet.
-  node.default['fb_slowroll']['fb_chrony']['phases'] = []
-  fb_slowroll 'chrony' do
-    only_if { node['fb_chrony']['manage_packages'] }
-  end
-else
-  package 'chrony' do
-    only_if { node['fb_chrony']['manage_packages'] }
-    action :upgrade
-  end
+package 'chrony' do
+  only_if { node['fb_chrony']['manage_packages'] }
+  action :upgrade
 end
