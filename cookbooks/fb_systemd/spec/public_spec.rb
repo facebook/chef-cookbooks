@@ -104,6 +104,38 @@ describe FB::Systemd do
                                   "PrivateUsers = false\n",
                                 )
     end
+
+    it 'renders a unit with multiple sections of the same name' do
+      expect(FB::Systemd.to_ini({
+                                  'Network' => {
+                                    'Address' => [
+                                      '2001:db00::1/64',
+                                      '192.168.1.1/24',
+                                      '2401:db00::1/64',
+                                    ],
+                                    'IPv6AcceptRA' => true,
+                                  },
+                                  'Address' => [
+                                    {
+                                      'Address' => '2001:db00::1/64',
+                                      'PreferredLifetime' => 'infinity',
+                                    },
+                                    {
+                                      'Address' => '2401:db00::1/64',
+                                      'PreferredLifetime' => '0',
+                                    },
+                                  ],
+                                })).to eq(
+                                  "[Network]\nAddress = 2001:db00::1/64\n" +
+                                  "Address = 192.168.1.1/24\n" +
+                                  "Address = 2401:db00::1/64\n" +
+                                  "IPv6AcceptRA = true\n\n" +
+                                  "[Address]\nAddress = 2001:db00::1/64\n" +
+                                  "PreferredLifetime = infinity\n\n" +
+                                  "[Address]\nAddress = 2401:db00::1/64\n" +
+                                  "PreferredLifetime = 0\n",
+                                )
+    end
   end
 
   context 'merge systemd unit' do

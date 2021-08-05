@@ -37,11 +37,22 @@ node.default['fb_networkd']['networks']['eth0'] = {
   'priority' => 1,
   'config' => {
     'Network' => {
-      'Addresses' => [
+      'Address' => [
         '2001:db00::1/64',
         '192.168.1.1/24',
+        '2401:db00::1/64',
       ],
     },
+    'Address' => [
+      {
+        'Address' => '2001:db00::1/64',
+        'PreferredLifetime' => 'infinity',
+      },
+      {
+        'Address' => '2401:db00::1/64',
+        'PreferredLifetime' => '0',
+      },
+    ],
   }
 }
 ```

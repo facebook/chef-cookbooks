@@ -30,7 +30,7 @@ action :manage do
     unless conf['config'] &&
            conf['config']['Match'] &&
            conf['config']['Match']['Name']
-      conf['config'].merge!({ 'Match' => { 'Name' => conf['name'] } })
+      conf['config']['Match']['Name'] = conf['name']
     end
 
     conffile = ::File.join(

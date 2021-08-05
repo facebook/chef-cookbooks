@@ -58,19 +58,35 @@ module FB
     # this is based on
     # https://github.com/chef/chef/blob/61a8aa44ac33fc3bbeb21fa33acf919a97272eb7/lib/chef/resource/systemd_unit.rb#L66-L83
     def self.to_ini(content)
+      append_sections = ''
       case content
       when Hash
         IniParse.gen do |doc|
           content.each_pair do |sect, opts|
-            doc.section(sect) do |section|
-              opts.each_pair do |opt, val|
-                [val].flatten.each do |v|
-                  section.option(opt, v)
+            case opts
+            when Hash
+              doc.section(sect) do |section|
+                opts.each_pair do |opt, val|
+                  [val].flatten.each do |v|
+                    section.option(opt, v)
+                  end
                 end
+              end
+            when Array
+              opts.each do |o|
+                append_sections << "\n" << IniParse.gen do |d|
+                  d.section(sect) do |section|
+                    o.each_pair do |opt, val|
+                      [val].flatten.each do |v|
+                        section.option(opt, v)
+                      end
+                    end
+                  end
+                end.to_s
               end
             end
           end
-        end.to_s
+        end.to_s + append_sections
       else
         IniParse.parse(content.to_s).to_s
       end
