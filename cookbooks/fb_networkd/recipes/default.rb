@@ -25,3 +25,8 @@ end
 node.default['fb_systemd']['networkd']['enable'] = true
 
 fb_networkd 'manage configuration'
+
+execute 'networkctl reload' do
+  command '/bin/networkctl reload'
+  action :nothing
+end

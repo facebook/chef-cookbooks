@@ -19,6 +19,9 @@
 default_action :manage
 
 action :manage do
+  network_names = []
+  netdev_names = []
+
   node['fb_networkd']['networks'].each do |name, defconf|
     conf = defconf.dup
     unless conf['name']
@@ -33,10 +36,17 @@ action :manage do
       conf['config']['Match']['Name'] = conf['name']
     end
 
+    network_names << conf['name']
+
     conffile = ::File.join(
       FB::Networkd::BASE_CONFIG_PATH,
       "#{conf['priority']}-#{conf['name']}.network",
     )
+
+    execute "reconfigure #{conf['name']}.network" do
+      command "/bin/networkctl reconfigure #{conf['name']}"
+      action :nothing
+    end
 
     template conffile do # ~FB031
       source 'networkd.conf.erb'
@@ -46,9 +56,12 @@ action :manage do
       variables(
         :config => conf['config'],
       )
+      notifies :run, 'execute[networkctl reload]', :immediately
+      notifies :run, "execute[reconfigure #{conf['name']}.network]", :delayed
     end
   end
 
+  # TODO figure out the proper thing to restart/reload on link file changes
   node['fb_networkd']['links'].each do |name, defconf|
     conf = defconf.dup
     unless conf['name']
@@ -58,7 +71,7 @@ action :manage do
       conf['priority'] = FB::Networkd::DEFAULT_LINK_PRIORITY
     end
 
-    conffile = File.join(
+    conffile = ::File.join(
       FB::Networkd::BASE_CONFIG_PATH,
       "#{conf['priority']}-#{conf['name']}.link",
     )
@@ -83,10 +96,17 @@ action :manage do
       conf['priority'] = FB::Networkd::DEFAULT_DEVICE_PRIORITY
     end
 
-    conffile = File.join(
+    netdev_names << conf['name']
+
+    conffile = ::File.join(
       FB::Networkd::BASE_CONFIG_PATH,
       "#{conf['priority']}-#{conf['name']}.netdev",
     )
+
+    execute "reconfigure #{conf['name']}.netdev" do
+      command "/bin/networkctl reconfigure #{conf['name']}"
+      action :nothing
+    end
 
     template conffile do # ~FB031
       source 'networkd.conf.erb'
@@ -96,6 +116,15 @@ action :manage do
       variables(
         :config => conf['config'],
       )
+      notifies :run, 'execute[networkctl reload]', :immediately
+      notifies :run, "execute[reconfigure #{conf['name']}.netdev]", :delayed
     end
+  end
+
+  dup_names = network_names & netdev_names
+  if dup_names != []
+    Chef::Log.warn('Conflicting names in network and netdev configurations ' +
+                   'can lead to unexpected behavior. The follow names ' +
+                   "conflict: #{dup_names.join(', ')}")
   end
 end
