@@ -18,12 +18,39 @@
 # limitations under the License.
 #
 
+smartmon_version = '7.2'
+smartmon_hash = 'd11fk14ygy2cfyz4xijds2w4y0bx43s3'
+
+# Cleanup the old brew2rpm version
 package 'smartmontools' do
+  action :remove
+end
+
+# Install the nix2rpm version of smartmontools
+package "nix2rpm-smartmontools-#{smartmon_version}-#{smartmon_hash}" do
   action :upgrade
 end
 
-smartctl_path = '/opt/homebrew/bin/smartctl'
+smartctl_path = ::File.join(
+  '/opt/facebook/nix/store',
+  "#{smartmon_hash}-smartmontools-#{smartmon_version}",
+  'bin',
+  'smartctl',
+)
+
+# Backwards compatibility
+link '/opt/homebrew/bin/smartctl' do
+  to smartctl_path
+end
+
+# This is what tools SHOULD use
+link '/usr/local/bin/smartctl' do
+  to smartctl_path
+end
+
+# On 2014 Mac Minis, SMART has to be enabled
 execute 'enable smartctl' do
+  only_if { node.mac_mini_2014? }
   only_if do
     # So far this holds for OSX but the disk will probably be an attribute later
     s = Mixlib::ShellOut.new("#{smartctl_path} -a disk0")

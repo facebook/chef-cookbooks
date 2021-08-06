@@ -227,6 +227,18 @@ class Chef
       macos? && node['platform_version'].start_with?('12.')
     end
 
+    def mac_mini_2014?
+      macos? && node['hardware']['machine_model'] == 'Macmini7,1'
+    end
+
+    def mac_mini_2018?
+      macos? && node['hardware']['machine_model'] == 'Macmini8,1'
+    end
+
+    def mac_mini_2020?
+      macos? && node['hardware']['machine_model'] == 'Macmini9,1'
+    end
+
     def windows?
       self['platform_family'] == 'windows'
     end
