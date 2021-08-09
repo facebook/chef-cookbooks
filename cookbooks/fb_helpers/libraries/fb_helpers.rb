@@ -576,9 +576,17 @@ If the has is specified, it takes one or more of the following keys:
       @arr
     end
 
-    def compare(other)
-      other ||= []
-      @arr <=> other.to_a
+    def compare(other, exact = true)
+      other ||= new
+      unless other.is_a? FB::Version
+        other = FB::Version.new(other)
+      end
+      if exact
+        @arr <=> other.to_a
+      else
+        len = [@arr.length, other.to_a.length].min
+        @arr[0, len] <=> other[0, len]
+      end
     end
 
     alias_method '<=>', :compare
@@ -601,6 +609,15 @@ If the has is specified, it takes one or more of the following keys:
 
     def ==(other)
       compare(other).zero?
+    end
+
+    def [](*args)
+      @arr[*args]
+    end
+
+    def ===(other)
+      # Useful to use in case statements
+      compare(other, false).zero?
     end
 
     # Oh, come on rubocop...
