@@ -44,7 +44,7 @@ end
 action :config do
   config = get_current_config
   want = node['fb_ntp']['servers']
-  have = config['TimeProviders']['NtpServer'].split(',')
+  have = config['TimeProviders'].fetch('NtpServer', '').split(',')
   if Set.new(want) != Set.new(have)
     Chef::Log.info(
       'fb_ntp[windows_config]: Changing NTP servers from ' +
