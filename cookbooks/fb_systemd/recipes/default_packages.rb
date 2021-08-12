@@ -59,11 +59,16 @@ package 'systemd packages' do
        !['trusty', 'jessie'].include?(node['lsb']['codename'])
       systemd_packages << 'systemd-journal-remote'
     end
-    if node['fb_systemd']['networkd']['enable']
-      systemd_packages << 'systemd-networkd'
-    end
-    if node['fb_systemd']['resolved']['enable']
-      systemd_packages << 'systemd-resolved'
+    if node['packages'] && node['packages']['systemd']['version']
+      systemd_version = FB::Version.new(node['packages']['systemd']['version'])
+      has_split_rpms = node.debian? || ((node.fedora? || node.centos?) &&
+          systemd_version >= FB::Version.new('249'))
+      if node['fb_systemd']['networkd']['enable'] && has_split_rpms
+        systemd_packages << 'systemd-networkd'
+      end
+      if node['fb_systemd']['resolved']['enable'] && has_split_rpms
+        systemd_packages << 'systemd-resolved'
+      end
     end
     systemd_packages
   }
