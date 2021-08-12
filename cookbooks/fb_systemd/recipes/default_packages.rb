@@ -59,6 +59,12 @@ package 'systemd packages' do
        !['trusty', 'jessie'].include?(node['lsb']['codename'])
       systemd_packages << 'systemd-journal-remote'
     end
+    if node['fb_systemd']['networkd']['enable']
+      systemd_packages << 'systemd-networkd'
+    end
+    if node['fb_systemd']['resolved']['enable']
+      systemd_packages << 'systemd-resolved'
+    end
     systemd_packages
   }
   only_if { node['fb_systemd']['manage_systemd_packages'] }
