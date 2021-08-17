@@ -16,11 +16,13 @@
 # limitations under the License.
 #
 
-memlock_limit = node['memory']['total'].to_i / 1024
+# Allow locking 1/1024th of total system memory
+total_system_memory_kbytes = node['memory']['total'].to_i
+memlock_limit_kbytes = total_system_memory_kbytes / 1024
 default['fb_limits']['*'] = {
   'memlock' => {
-    'soft' => memlock_limit,
-    'hard' => memlock_limit,
+    'soft' => memlock_limit_kbytes,
+    'hard' => memlock_limit_kbytes,
   },
 }
 
