@@ -47,5 +47,6 @@ execute 'rebuild all initramfs' do
     subscribes :run, 'template[/etc/sysctl.conf]'
     subscribes :run, 'package[e2fsprogs]'
     subscribes :run, 'template[/etc/e2fsck.conf]'
+    subscribes :run, 'template[/etc/modprobe.d/fb_modprobe.conf]'
   end
 end
