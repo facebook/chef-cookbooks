@@ -22,7 +22,7 @@ if !node.centos? || node.centos7?
   fail 'fb_kpatch is only supported on CentOS 8 or later'
 end
 
-package 'kpatch' do
+package 'kpatch-runtime' do
   action :upgrade
 end
 
