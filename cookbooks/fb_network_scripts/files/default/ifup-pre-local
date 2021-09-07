@@ -1,10 +1,18 @@
 #!/bin/bash
 
+# shellcheck disable=SC1091
 . /etc/init.d/functions
 
-cd /etc/sysconfig/network-scripts
+die() {
+    echo "ERROR: $*"
+    exit 1
+}
+
+cd /etc/sysconfig/network-scripts || die "Failed to cd: $!"
+# shellcheck disable=SC1091
 . ./network-functions
 
+# shellcheck disable=SC1091
 [ -f ../network ] && . ../network
 
 CONFIG=${1}
@@ -14,6 +22,7 @@ need_config "${CONFIG}"
 source_config
 
 # If we're not setting up a bridge member interface, exit now
+# shellcheck disable=SC2166
 [ -z "${BRIDGE}" -a -z "${OVS_BRIDGE}" ] && exit 0
 
 # This will run ifup-eth, then ifup-local, but then /sbin/ifup (our caller)
@@ -23,14 +32,14 @@ source_config
 # preventing ifup-local from even being called.
 OTHERSCRIPT="/etc/sysconfig/network-scripts/ifup-${DEVICETYPE}"
 
-if [ ! -x ${OTHERSCRIPT} ]; then
+if [ ! -x "${OTHERSCRIPT}" ]; then
   OTHERSCRIPT="/etc/sysconfig/network-scripts/ifup-eth"
 fi
 
-${OTHERSCRIPT} ${CONFIG} $2
+${OTHERSCRIPT} "${CONFIG}" "$2"
 
 if [ -x /sbin/ifup-local ]; then
-  /sbin/ifup-local ${DEVICE}
+  /sbin/ifup-local "${DEVICE}"
 fi
 
 # give it some time to settle
