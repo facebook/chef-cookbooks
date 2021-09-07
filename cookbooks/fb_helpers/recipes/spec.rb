@@ -20,6 +20,11 @@
 
 # This recipe is only for running ChefSpec tests
 if defined?(ChefSpec)
+  # network scripts uses the fb_modprobe_module resource which depends
+  # on the execute[load modules] resource in systemd
+  include_recipe 'fb_systemd'
+  include_recipe 'fb_modprobe'
+  include_recipe 'fb_network_scripts'
   fb_helpers_gated_template '/tmp/testfile' do
     allow_changes node.nw_changes_allowed?
     # purposefully bogus, so we raise UserIDNotFound and catch in spec
