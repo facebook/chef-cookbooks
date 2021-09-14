@@ -53,11 +53,9 @@ action :manage do
             v4_config['gateway']
         end
       end
-    else
-      unless v4_addrs.empty?
-        execute "Disable IPv4 on #{service}" do
-          command "/usr/sbin/networksetup -setv4off #{service}"
-        end
+    elsif v4_config['manage'] && !v4_addrs.empty?
+      execute "Disable IPv4 on #{service}" do
+        command "/usr/sbin/networksetup -setv4off #{service}"
       end
     end
 
@@ -69,11 +67,9 @@ action :manage do
             v6_config['gateway']
         end
       end
-    else
-      unless v6_addrs.empty?
-        execute "Disable IPv6 on #{service}" do
-          command "/usr/sbin/networksetup -setv6off #{service}"
-        end
+    elsif v6_config['manage'] && !v6_addrs.empty?
+      execute "Disable IPv6 on #{service}" do
+        command "/usr/sbin/networksetup -setv6off #{service}"
       end
     end
   end

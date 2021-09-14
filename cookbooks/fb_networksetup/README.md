@@ -32,3 +32,36 @@ node.default['fb_networksetup']['services']['Ethernet'] = {
   },
 }
 ```
+
+By default, if an address type is not specified it will not be managed.
+The default behavior for a managed address type is to disable it if no
+address information is specified. For example, specifying
+
+```ruby
+node.default['fb_networksetup']['services']['Ethernet'] = {
+  'interface' => 'en0',
+  'ipv6' => {
+    'address' => 'face:b00c::12',
+    'netmask' => '64',
+    'gateway' => face:b00c::1',
+  },
+}
+```
+
+will not apply any `ipv4` settings. However,
+
+```ruby
+node.default['fb_networksetup']['services']['Ethernet'] = {
+  'interface' => 'en0',
+  'ipv4' => {
+    'manage' => true,
+  }
+  'ipv6' => {
+    'address' => 'face:b00c::12',
+    'netmask' => '64',
+    'gateway' => face:b00c::1',
+  },
+}
+```
+
+will disable ipv4 as no address is specified.
