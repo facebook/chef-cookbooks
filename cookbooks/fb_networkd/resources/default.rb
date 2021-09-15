@@ -67,7 +67,6 @@ action :manage do
     end
   end
 
-  # TODO figure out the proper thing to restart/reload on link file changes
   node['fb_networkd']['links'].each do |name, defconf|
     conf = defconf.dup
     unless conf['name']
@@ -82,6 +81,18 @@ action :manage do
       "#{conf['priority']}-#{conf['name']}.link",
     )
 
+    # Link configurations are configured by systemd-udevd (through the
+    # net_setup_link builtin as mentioned in the systemd.link man page).
+    # To re-apply link configurations, either an "add", "bind", or "move"
+    # action must be sent on the device.
+    # This should use `udevadm test-builtin` in the future but --action wasn't
+    # added to builtins until
+    # https://github.com/systemd/systemd/pull/20460.
+    execute "reapply #{conf['name']}.link" do
+      command "/bin/udevadm trigger --action=add /sys/class/net/#{conf['name']}"
+      action :nothing
+    end
+
     template conffile do # ~FB031
       source 'networkd.conf.erb'
       owner 'root'
@@ -90,6 +101,7 @@ action :manage do
       variables(
         :config => conf['config'],
       )
+      notifies :run, "execute[reapply #{conf['name']}.link]", :delayed
     end
   end
 
