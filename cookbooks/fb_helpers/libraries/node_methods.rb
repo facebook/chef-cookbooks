@@ -295,6 +295,10 @@ class Chef
       windows? && self['platform_version'] == '10.0.17763'
     end
 
+    def windows2022?
+      windows? && self['platform_version'] == '10.0.20348'
+    end
+
     def aristaeos?
       self['platform'] == 'arista_eos'
     end
