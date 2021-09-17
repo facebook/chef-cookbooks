@@ -32,6 +32,9 @@ your node.
 * `node.centos8?`
     Is CentOS Linux 8 or CentOS Stream 8
 
+* `node.centos9?`
+    Is CentOS Stream 9
+
 * `node.fedora?`
     Is Fedora
 
@@ -74,6 +77,9 @@ your node.
 * `node.redhat8?`
     Is Redhat Enterprise Linux 8
 
+* `node.redhat9?`
+    Is Redhat Enterprise Linux 9
+
 * `node.rhel?`
     Is Redhat Enterprise Linux
 
@@ -82,6 +88,9 @@ your node.
 
 * `node.rhel8?`
     Is Redhat Enterprise Linux 8
+
+* `node.rhel9?`
+    Is Redhat Enterprise Linux 9
 
 * `node.oracle?`
     Is Oracle Enterprise Linux

@@ -23,6 +23,10 @@ class Chef
       self['platform'] == 'centos'
     end
 
+    def centos9?
+      self.centos? && self['platform_version'].start_with?('9')
+    end
+
     def centos8?
       self.centos? && self['platform_version'].start_with?('8')
     end
@@ -99,6 +103,10 @@ class Chef
       self.redhat? && self['platform_version'].start_with?('8')
     end
 
+    def redhat9?
+      self.redhat? && self['platform_version'].start_with?('9')
+    end
+
     def rhel?
       self['platform_family'] == 'rhel'
     end
@@ -109,6 +117,10 @@ class Chef
 
     def rhel8?
       self.rhel? && self['platform_version'].start_with?('8')
+    end
+
+    def rhel9?
+      self.rhel? && self['platform_version'].start_with?('9')
     end
 
     def oracle?
