@@ -385,6 +385,12 @@ your node.
    True if this node is in AWS EC2 and in an account matching one of the passed
    in account IDs.
 
+* `node.default_package_manager`
+   Return the default package manager used on the system (e.g. `dnf`, `yum`,
+   `apt`, etc.) according to Chef; note that this is implemented by inspecting
+   the `Chef::Package` resource, and it might deviate from the actual package
+   manager used on the system in some cases.
+
 ### FB::Helpers
 The following methods are available:
 

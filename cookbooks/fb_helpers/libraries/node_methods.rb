@@ -883,5 +883,19 @@ class Chef
       end
       # rubocop:enable Style/RedundantBegin
     end
+
+    def default_package_manager
+      cls = Chef::ResourceResolver.resolve(:package, :node => node)
+      if cls
+        m = cls.to_s.match(/Chef::Resource::(\w+)Package/)
+        if m[1]
+          m[1].downcase
+        else
+          fail "fb_helpers: unknown package manager resource class: #{cls}"
+        end
+      else
+        fail 'fb_helpers: undefined package manager resource class!'
+      end
+    end
   end
 end
