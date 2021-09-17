@@ -1,6 +1,8 @@
 [Unit]
 Description=Manage swap file
 DefaultDependencies=no
+Requires=systemd-remount-fs.service
+After=systemd-remount-fs.service
 RequiresMountsFor=/usr/local/libexec/manage-swap-file <%= node['fb_swap']['filesystem'] %>
 
 [Service]
