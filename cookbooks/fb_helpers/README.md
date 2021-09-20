@@ -10,6 +10,7 @@ Attributes
 * node['fb_helpers']['managed_reboot_callback']
 * node['fb_helpers']['reboot_logging_callback']
 * node['fb_helpers']['reboot_allowed']
+* node['fb_helpers']['reboot_allowed_callback']
 
 Usage
 -----

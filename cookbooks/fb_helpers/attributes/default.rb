@@ -17,6 +17,7 @@
 
 default['fb_helpers'] = {
   'reboot_allowed' => false,
+  'reboot_allowed_callback' => nil,
   'managed_reboot_callback' => nil,
   'reboot_logging_callback' => nil,
 }

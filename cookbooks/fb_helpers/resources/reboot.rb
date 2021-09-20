@@ -55,7 +55,7 @@ REBOOT_TRIGGER = 'chef_reboot_trigger'.freeze
 REBOOT_REQUIRED = 'chef_reboot_required'.freeze
 
 NOT_ALLOWED_MSG = 'Was asked to reboot, but ' +
-                  "node['fb_helpers']['reboot_allowed'] is false!".freeze
+                  'reboot is not allowed!'.freeze
 
 load_current_value do
   # macOS doesn't have /dev/shm, so use /tmp instead which is wiped on boot.
@@ -119,12 +119,18 @@ action_class do
       notifies :run, 'ruby_block[Managed reboot]'
     end
   end
+
+  def reboot_allowed(node)
+    node['fb_helpers']['reboot_allowed_callback'].nil? ?
+       node['fb_helpers']['reboot_allowed'] :
+       node['fb_helpers']['reboot_allowed_callback']&.call(node)
+  end
 end
 
 action :now do
   # TODO (t15830562) - this action should observe required and override the
   # same way as the :deferred action
-  if node['fb_helpers']['reboot_allowed']
+  if reboot_allowed(node)
     if node.firstboot_any_phase?
       set_reboot_override('immediate')
       do_managed_reboot
@@ -169,8 +175,8 @@ action :deferred do
   end
 end
 
-# This is an internal action that's only used at the end of fb_init to collate
-# and synchronize all the reboot requests.
+# This is an internal action that's only used at the end of
+# fb_helpers to collate and synchronize all the reboot requests.
 action :process_deferred do
   unless new_resource.__fb_helpers_internal_allow_process_deferred
     fail 'You didn\'t say the magic word...'
@@ -182,7 +188,7 @@ action :process_deferred do
       set_reboot_override('process_deferred')
       do_managed_reboot
     elsif ::File.exist?(::File.join(current_resource.prefix, REBOOT_REQUIRED))
-      if node['fb_helpers']['reboot_allowed']
+      if reboot_allowed(node)
         node['fb_helpers']['reboot_logging_callback']&.call(
           node,
           load_reboot_reason,
@@ -222,7 +228,7 @@ action :rtc_wakeup do
 
   if node.firstboot_any_phase?
     Chef::Log.info('Not rebooting because we are in firstboot')
-  elsif node['fb_helpers']['reboot_allowed']
+  elsif reboot_allowed(node)
     set_reboot_override('rtc_wakeup')
 
     verify_rtc_cap.run_action(:run)
