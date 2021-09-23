@@ -55,17 +55,6 @@ module FB
         run_context.root_run_context.add_delayed_action(notification)
       end
 
-      def request_nw_changes_permission(run_context, new_resource)
-        run_context.node.default['fb_network_scripts']['_perm_requested'] = true
-        notification = Chef::Resource::Notification.new(
-          'fb_network_scripts_request_nw_changes[manage]',
-          :request_nw_changes,
-          new_resource,
-        )
-        notification.fix_resource_reference(run_context.resource_collection)
-        run_context.root_run_context.add_delayed_action(notification)
-      end
-
       def running?(interface, node)
         opfile = "/sys/class/net/#{interface}/operstate"
         if interface.include?(':')

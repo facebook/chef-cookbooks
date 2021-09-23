@@ -30,10 +30,6 @@ property :gated_action, :is => Symbol, :required => false, :default => :create
 default_action :manage
 
 action_class do
-  class Helpers
-    extend ::FB::NetworkScripts::RHInterfaceHelpers
-  end
-
   # Copied from lib/chef/runner.rb
   def forced_why_run
     saved = Chef::Config[:why_run]
@@ -59,16 +55,16 @@ action :manage do
   end
   if t.updated_by_last_action?
     if node.nw_changes_allowed?
-      Chef::Log.info('fb_network_scripts: changes are allowed - updating ' +
+      Chef::Log.info('fb_helpers: changes are allowed - updating ' +
                      new_resource.name.to_s)
       converge_by("Updating template #{new_resource.name}") do
         t.run_action(new_resource.gated_action)
       end
     else
-      Chef::Log.info('fb_network_scripts: not allowed to change configs for ' +
+      Chef::Log.info('fb_helpers: not allowed to change configs for ' +
                      new_resource.name.to_s)
-      Chef::Log.info('fb_network_scripts: requesting nw change permission')
-      Helpers.request_nw_changes_permission(run_context, new_resource)
+      Chef::Log.info('fb_helpers: requesting nw change permission')
+      FB::Helpers._request_nw_changes_permission(run_context, new_resource)
     end
   end
 end

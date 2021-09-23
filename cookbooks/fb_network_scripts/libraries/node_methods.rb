@@ -61,39 +61,6 @@ class Chef
       interface
     end
 
-    def nw_changes_allowed?
-      method = node['fb_network_scripts']['network_changes_allowed_method']
-      if method
-        return method.call(node)
-      else
-        return @nw_changes_allowed unless @nw_changes_allowed.nil?
-        @nw_changes_allowed = node.firstboot_any_phase? ||
-        ::File.exist?(::FB::NetworkScripts::NW_CHANGES_ALLOWED)
-      end
-    end
-
-    # We can change interface configs if nw_changes_allowed? or we are operating
-    # on a DSR VIP
-    def interface_change_allowed?(interface)
-      method = node['fb_network_scripts']['interface_change_allowed_method']
-      if method
-        return method.call(node, interface)
-      else
-        return self.nw_changes_allowed? ||
-          ['ip6tnl0', 'tunlany0', 'tunl0'].include?(interface) ||
-          interface.match(Regexp.new('^tunlany\d+:\d+'))
-      end
-    end
-
-    def interface_start_allowed?(interface)
-      method = node['fb_network_scripts']['interface_start_allowed_method']
-      if method
-        return method.call(node, interface)
-      else
-        return self.interface_change_allowed?(interface)
-      end
-    end
-
     def eth_is_affinitized?
       # we only care about ethernet MSI vectors
       # mlx is special cased because of their device naming convention

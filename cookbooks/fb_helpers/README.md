@@ -7,7 +7,10 @@ Requirements
 
 Attributes
 ----------
+* node['fb_helpers']['interface_change_allowed_method']
+* node['fb_helpers']['interface_start_allowed_method']
 * node['fb_helpers']['managed_reboot_callback']
+* node['fb_helpers']['network_changes_allowed_method']
 * node['fb_helpers']['reboot_logging_callback']
 * node['fb_helpers']['reboot_allowed']
 * node['fb_helpers']['reboot_allowed_callback']
@@ -401,7 +404,27 @@ your node.
    the `Chef::Package` resource, and it might deviate from the actual package
    manager used on the system in some cases.
 
+* `node.nw_changes_allowed?`
+   True if `node['fb_helpers']['network_changes_allowed_method']` is set and
+   returns true, or node is in firstboot or `FB::Helpers::NW_CHANGES_ALLOWED`
+   exists.
+
+* `node.interface_change_allowed?(interface)`
+   True if `node['fb_helpers']['interface_change_allowed_method']` is set and
+   returns true, or `node.nw_changes_allowed?` is true, or we're operating on
+   a tunnel interface.
+
+* `node.interface_start_allowed?(interface)`
+   True if `node['fb_helpers']['interface_start_allowed_method']` is set and
+   returns true, or if `node.interface_change_allowed?` is true.
+
 ### FB::Helpers
+The following constants are available:
+
+* `FB::Helpers::NW_CHANGES_ALLOWED` and `FB::Helpers::NW_CHANGES_NEEDED`
+   Defines paths used by networking related cookbooks to decide whether network
+   changes are allowed or need to be applied.
+
 The following methods are available:
 
 * `FB::Helpers.commentify(comment, arg)`

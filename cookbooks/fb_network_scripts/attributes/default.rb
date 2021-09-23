@@ -57,9 +57,6 @@ default['fb_network_scripts'] = {
   'enable_tun' => false,
   'enable_bridge_filter' => false,
   'linkdelay' => 0,
-  'network_changes_allowed_method' => nil,
-  'interface_change_allowed_method' => nil,
-  'interface_start_allowed_method' => nil,
 
   # Internal attributes, do not use
   '_rerun_ifup_local' => false,

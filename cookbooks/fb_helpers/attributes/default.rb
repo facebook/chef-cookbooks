@@ -20,4 +20,7 @@ default['fb_helpers'] = {
   'reboot_allowed_callback' => nil,
   'managed_reboot_callback' => nil,
   'reboot_logging_callback' => nil,
+  'network_changes_allowed_method' => nil,
+  'interface_change_allowed_method' => nil,
+  'interface_start_allowed_method' => nil,
 }

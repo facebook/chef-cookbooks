@@ -18,7 +18,7 @@
 
 require './spec/spec_helper'
 
-recipe 'fb_network_scripts::spec', :unsupported => [:mac_os_x] do |tc|
+recipe 'fb_helpers::spec', :unsupported => [:mac_os_x] do |tc|
 
   # hack for t70172554
   stubs_for_provider('template[/tmp/testfile]') do |provider|
@@ -26,14 +26,14 @@ recipe 'fb_network_scripts::spec', :unsupported => [:mac_os_x] do |tc|
       to receive_shell_out('/usr/sbin/selinuxenabled', { :returns => [0, 1] })
   end
 
-  # fb_network_scripts_gated_template internally inspects whether the resource
+  # fb_helpers_gated_template internally inspects whether the resource
   # actually ran, so we have to step in to it and the template resource.
   # Stepping into 'template' means the spec will actually change things
   # on the running system, which is very bad, so we cause that to fail
   # purposefully with a bad user id.
   it 'should try to update the template when nw changes are allowed' do
     chef_run = tc.chef_run(
-      :step_into => ['fb_network_scripts_gated_template', 'template'],
+      :step_into => ['fb_helpers_gated_template', 'template'],
     ) do |node|
       allow_any_instance_of(Chef::Node).to receive(:nw_changes_allowed?).
         and_return(true)
@@ -44,7 +44,7 @@ recipe 'fb_network_scripts::spec', :unsupported => [:mac_os_x] do |tc|
 
   it 'should not modify the template when nw changes are not allowed' do
     chef_run = tc.chef_run(
-      :step_into => ['fb_network_scripts_gated_template'],
+      :step_into => ['fb_helpers_gated_template'],
     ) do |node|
       allow_any_instance_of(Chef::Node).to receive(:nw_changes_allowed?).
         and_return(false)

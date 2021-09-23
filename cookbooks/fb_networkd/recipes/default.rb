@@ -30,3 +30,8 @@ execute 'networkctl reload' do
   command '/bin/networkctl reload'
   action :nothing
 end
+
+fb_helpers_request_nw_changes 'manage' do
+  action :nothing
+  delayed_action :cleanup_signal_files_when_no_change_required
+end

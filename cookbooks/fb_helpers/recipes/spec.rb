@@ -1,5 +1,5 @@
 #
-# Cookbook Name:: fb_network_scripts
+# Cookbook Name:: fb_helpers
 # Recipe:: spec
 #
 # Copyright (c) 2012-present, Facebook, Inc.
@@ -20,11 +20,11 @@
 
 # This recipe is only for running ChefSpec tests
 if defined?(ChefSpec)
-  fb_network_scripts_gated_template '/tmp/testfile' do
+  fb_helpers_gated_template '/tmp/testfile' do
     # purposefully bogus, so we raise UserIDNotFound and catch in spec
     owner 'bogususer123'
     group 'bogususer123'
     mode '0644'
-    source 'network.erb'
+    source 'spec_network.erb'
   end
 end

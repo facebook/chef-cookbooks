@@ -15,11 +15,8 @@ Attributes
 * node['fb_network_scripts']['ifup']['extra_commands']
 * node['fb_network_scripts']['ifup']['sysctl']
 * node['fb_network_scripts']['ifup']['sysctl_skip_list']
-* node['fb_network_scripts']['interface_change_allowed_method']
-* node['fb_network_scripts']['interface_start_allowed_method']
 * node['fb_network_scripts']['linkdelay']
 * node['fb_network_scripts']['manage_packages']
-* node['fb_network_scripts']['network_changes_allowed_method']
 * node['fb_network_scripts']['pause']
 * node['fb_network_scripts']['primary_interface']
 * node['fb_network_scripts']['ring_params'][$INTERFACE]['max_rx']
@@ -399,16 +396,16 @@ permission for the following cases:
 
 #### Using custom logic
 If you'd like to override the default logic for allowing network changes, you
-can set the `node['fb_network_scripts']['network_changes_allowed_method']`
+can set the `node['fb_helpers']['network_changes_allowed_method']`
 attribute to a method to be called, e.g.
 
 ```ruby
-node.default['fb_network_scripts']['network_changes_allowed_method'] =
-  FB::NetworkScriptsSettings.method('network_changes_allowed?')
+node.default['fb_helpers']['network_changes_allowed_method'] =
+  FB::Helpers.method('network_changes_allowed?')
 ```
 
-will use the `FB::NetworkScriptsSettings.network_changes_allowed?` method, which
+will use the `FB::Helpers.network_changes_allowed?` method, which
 should accept a single `node` argument and return a boolean. The attributes
-`node['fb_network_scripts']['interface_start_allowed_method']` and
-`node['fb_network_scripts']['interface_change_allowed_method']` work in the same
+`node['fb_helpers']['interface_start_allowed_method']` and
+`node['fb_helpers']['interface_change_allowed_method']` work in the same
 way, taking a `node` and an `interface` in and returning a boolean.

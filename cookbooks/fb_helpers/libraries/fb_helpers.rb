@@ -20,6 +20,9 @@ require 'chef/log'
 module FB
   # Various utility grab-bag.
   class Helpers
+    NW_CHANGES_ALLOWED = '/run/chef/chef_nw_changes_allowed'.freeze
+    NW_CHANGES_NEEDED = '/run/chef/chef_pending_nw_changes_needed'.freeze
+
     # commentify() takes a text string and converts it to a (possibly)
     # multi-line comment suitable for dropping into a config file.
     #
@@ -539,6 +542,17 @@ If the has is specified, it takes one or more of the following keys:
       true
     rescue ArgumentError
       false
+    end
+
+    def self._request_nw_changes_permission(run_context, new_resource)
+      run_context.node.default['fb_helpers']['_nw_perm_requested'] = true
+      notification = Chef::Resource::Notification.new(
+        'fb_helpers_request_nw_changes[manage]',
+        :request_nw_changes,
+        new_resource,
+      )
+      notification.fix_resource_reference(run_context.resource_collection)
+      run_context.root_run_context.add_delayed_action(notification)
     end
   end
 

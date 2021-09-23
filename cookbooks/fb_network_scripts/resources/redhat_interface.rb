@@ -193,7 +193,7 @@ action :enable do # ~FC017
       Chef::Log.info(
         "fb_network_scripts[#{interface}]: requesting nw change permission",
       )
-      Helpers.request_nw_changes_permission(run_context, new_resource)
+      FB::Helpers._request_nw_changes_permission(run_context, new_resource)
     end
   end
 
@@ -239,7 +239,7 @@ action :enable do # ~FC017
     route6_file = "/etc/sysconfig/network-scripts/route6-#{interface}"
     v4_routes = extra_routes.reject { |k, _v| k.include?(':') }
     v6_routes = extra_routes.select { |k, _v| k.include?(':') }
-    fb_network_scripts_gated_template route_file do
+    fb_helpers_gated_template route_file do
       owner 'root'
       group 'root'
       mode '0644'
@@ -251,7 +251,7 @@ action :enable do # ~FC017
       gated_action v4_routes.empty? ? :delete : :create
     end
 
-    fb_network_scripts_gated_template route6_file do
+    fb_helpers_gated_template route6_file do
       owner 'root'
       group 'root'
       mode '0644'
@@ -355,7 +355,7 @@ action :start do
     Chef::Log.info(
       "fb_network_scripts[#{interface}]: requesting nw change permission",
     )
-    Helpers.request_nw_changes_permission(run_context, new_resource)
+    FB::Helpers._request_nw_changes_permission(run_context, new_resource)
   end
 end
 
@@ -375,7 +375,7 @@ action :stop do
                       interface.to_s)
     Chef::Log.info("fb_network_scripts[#{interface}]: requesting nw change " +
                       'permission')
-    Helpers.request_nw_changes_permission(run_context, new_resource)
+    FB::Helpers._request_nw_changes_permission(run_context, new_resource)
   end
 end
 
@@ -412,6 +412,6 @@ action :disable do
     Chef::Log.info(
       "fb_network_scripts[#{interface}]: requesting nw change permission",
     )
-    Helpers.request_nw_changes_permission(run_context, new_resource)
+    FB::Helpers._request_nw_changes_permission(run_context, new_resource)
   end
 end

@@ -19,18 +19,18 @@
 default_action :request_nw_changes
 
 action :request_nw_changes do
-  file FB::NetworkScripts::NW_CHANGES_NEEDED do
+  file FB::Helpers::NW_CHANGES_NEEDED do
     action :touch
   end
 end
 
 all_signal_files = [
-  FB::NetworkScripts::NW_CHANGES_NEEDED,
-  FB::NetworkScripts::NW_CHANGES_ALLOWED,
+  FB::Helpers::NW_CHANGES_NEEDED,
+  FB::Helpers::NW_CHANGES_ALLOWED,
 ]
 
 action :cleanup_signal_files_when_no_change_required do
-  unless node['fb_network_scripts']['_perm_requested']
+  unless node['fb_helpers']['_nw_perm_requested']
     all_signal_files.each do |the_file|
       file "cleanup no longer required signal file #{the_file}" do
         path the_file

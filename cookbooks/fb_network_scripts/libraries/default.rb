@@ -18,9 +18,6 @@
 
 module FB
   class NetworkScripts
-    NW_CHANGES_ALLOWED = '/run/chef/chef_nw_changes_allowed'.freeze
-    NW_CHANGES_NEEDED = '/run/chef/chef_pending_nw_changes_needed'.freeze
-
     def self.len2mask(len)
       mask = ''
       4.times do
