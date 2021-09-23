@@ -38,9 +38,14 @@ action :manage do
     unless conf['priority']
       conf['priority'] = FB::Networkd::DEFAULT_NETWORK_PRIORITY
     end
-    unless conf['config'] &&
-           conf['config']['Match'] &&
-           conf['config']['Match']['Name']
+    unless conf['config']
+      fail "fb_networkd: Cannot set up network config on #{conf['name']} " +
+           "without the 'config' attribute"
+    end
+    unless conf['config']['Match']
+      conf['config']['Match'] = {}
+    end
+    unless conf['config']['Match']['Name']
       conf['config']['Match']['Name'] = conf['name']
     end
 
@@ -75,6 +80,16 @@ action :manage do
     end
     unless conf['priority']
       conf['priority'] = FB::Networkd::DEFAULT_LINK_PRIORITY
+    end
+    unless conf['config']
+      fail "fb_networkd: Cannot set up link config on #{conf['name']} " +
+           "without the 'config' attribute"
+    end
+    unless conf['config']['Match']
+      conf['config']['Match'] = {}
+    end
+    unless conf['config']['Match']['OriginalName']
+      conf['config']['Match']['OriginalName'] = conf['name']
     end
 
     conffile = ::File.join(
@@ -115,9 +130,17 @@ action :manage do
     unless conf['priority']
       conf['priority'] = FB::Networkd::DEFAULT_DEVICE_PRIORITY
     end
-    unless conf['config'] &&
-           conf['config']['NetDev'] &&
-           conf['config']['NetDev']['Name']
+    unless conf['config']
+      fail "fb_networkd: Cannot set up netdev config on #{conf['name']} " +
+           "without the 'config' attribute"
+    end
+    # Unlike network and link configurations which expect `[Match]` to be filled
+    # out, netdev configurations require the `[NetDev]` section's `Name`
+    # property.
+    unless conf['config']['NetDev']
+      conf['config']['NetDev'] = {}
+    end
+    unless conf['config']['NetDev']['Name']
       conf['config']['NetDev']['Name'] = conf['name']
     end
 
