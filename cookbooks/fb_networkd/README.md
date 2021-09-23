@@ -67,3 +67,11 @@ Refer to the upstream documentation for more details on how to configure
 [networks](https://www.freedesktop.org/software/systemd/man/systemd.network.html),
 [links](https://www.freedesktop.org/software/systemd/man/systemd.link.html) and
 [virtual network devices](https://www.freedesktop.org/software/systemd/man/systemd.netdev.html).
+
+### When can Chef make network changes
+Network changes can be disruptive and have potential for major impact. To
+mitigate this, `node.interface_change_allowed?(interface)` from `fb_helpers`
+is used to gate interface changes. When it returns true, the corresponding
+configuration files are allowed to be updated and systemd-networkd or
+systemd-udevd will update the network interface accordingly. If it returns
+false no configuration file or network changes will occur.

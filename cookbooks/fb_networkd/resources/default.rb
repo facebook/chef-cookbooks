@@ -54,10 +54,11 @@ action :manage do
       action :nothing
     end
 
-    template conffile do # ~FB031
+    fb_helpers_gated_template conffile do # ~FB031
+      allow_changes node.interface_change_allowed?(conf['name'])
       source 'networkd.conf.erb'
-      owner 'root'
-      group 'root'
+      owner node.root_user
+      group node.root_group
       mode '0644'
       variables(
         :config => conf['config'],
@@ -93,10 +94,11 @@ action :manage do
       action :nothing
     end
 
-    template conffile do # ~FB031
+    fb_helpers_gated_template conffile do # ~FB031
+      allow_changes node.interface_change_allowed?(conf['name'])
       source 'networkd.conf.erb'
-      owner 'root'
-      group 'root'
+      owner node.root_user
+      group node.root_group
       mode '0644'
       variables(
         :config => conf['config'],
@@ -129,10 +131,11 @@ action :manage do
       action :nothing
     end
 
-    template conffile do # ~FB031
+    fb_helpers_gated_template conffile do # ~FB031
+      allow_changes node.interface_change_allowed?(conf['name'])
       source 'networkd.conf.erb'
-      owner 'root'
-      group 'root'
+      owner node.root_user
+      group node.root_group
       mode '0644'
       variables(
         :config => conf['config'],

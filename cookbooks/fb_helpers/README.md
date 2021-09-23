@@ -622,6 +622,30 @@ if File.exist?('/dev/shm/chef_reboot_override')
 end
 ```
 
+#### fb_helpers_gated_template
+Use `fb_helpers_gated_template` for network configuration templates where you
+need to block changes unless certain conditions are met. In particular,
+`fb_helpers_gated_template` will put down the `FB::Helpers::NW_CHANGES_NEEDED`
+file when changes need to be applied but are not yet written, and remove the
+`FB::Helpers::NW_CHANGES_ALLOWED` and `FB::Helpers::NW_CHANGES_NEEDED` files
+when the changes are applied.
+
+The syntax mostly follows a regular template resource, with the addition of
+`allow_changes` which sets the conditions for which changes are allowed.
+
+```ruby
+fb_helpers_gated_template '/etc/foo.network' do
+  allow_changes true, false
+  path          String # defaults to template name
+  source        String
+  variables     Hash
+  owner         String
+  group         String
+  mode          String
+  gated_action  Symbol # same actions as regular templates
+end
+```
+
 ### Reboot control
 If it's safe for Chef to reboot your host, set `reboot_allowed` to true in
 your cookbook:

@@ -21,6 +21,7 @@
 # This recipe is only for running ChefSpec tests
 if defined?(ChefSpec)
   fb_helpers_gated_template '/tmp/testfile' do
+    allow_changes node.nw_changes_allowed?
     # purposefully bogus, so we raise UserIDNotFound and catch in spec
     owner 'bogususer123'
     group 'bogususer123'

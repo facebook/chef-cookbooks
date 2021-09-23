@@ -240,6 +240,7 @@ action :enable do # ~FC017
     v4_routes = extra_routes.reject { |k, _v| k.include?(':') }
     v6_routes = extra_routes.select { |k, _v| k.include?(':') }
     fb_helpers_gated_template route_file do
+      allow_changes node.nw_changes_allowed?
       owner 'root'
       group 'root'
       mode '0644'
@@ -252,6 +253,7 @@ action :enable do # ~FC017
     end
 
     fb_helpers_gated_template route6_file do
+      allow_changes node.nw_changes_allowed?
       owner 'root'
       group 'root'
       mode '0644'
