@@ -1,6 +1,4 @@
-#
-# Cookbook Name:: fb_jq
-# Recipe:: packages
+# vim: syntax=ruby:expandtab:shiftwidth=2:softtabstop=2:tabstop=2
 #
 # Copyright (c) 2014-present, Facebook, Inc.
 # All rights reserved.
@@ -18,11 +16,6 @@
 # limitations under the License.
 #
 
-unless node.centos?
-  fail 'fb_jq only supports CentOS'
-end
-
-package 'jq' do
-  only_if { node['fb_jq']['manage_packages'] }
-  action :upgrade
-end
+default['fb_jq'] = {
+  'manage_packages' => true,
+}
