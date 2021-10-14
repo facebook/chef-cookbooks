@@ -154,7 +154,10 @@ module FB
       true
     end
 
-    def remount(mount_point, with_umount, lock_file)
+    def remount(mount_data)
+      mount_point = mount_data['mount_point']
+      with_umount = mount_data['remount_with_umount']
+      lock_file = mount_data['lock_file']
       Chef::Log.info("fb_fstab: Remounting #{mount_point}")
       if with_umount
         Chef::Log.debug("fb_fstab: umount and mounting #{mount_point}")
@@ -165,7 +168,14 @@ module FB
       end
       s = Mixlib::ShellOut.new(cmd)
       _run_command_flocked(s, lock_file, mount_point)
-      s.error!
+      if s.error? && mount_data['allow_remount_failure']
+        Chef::Log.warn(
+          "fb_fstab: Remounting #{mount_point} failed, but " +
+          '"allow_remount_failure" was set, so moving on.',
+        )
+      else
+        s.error!
+      end
     end
 
     def get_unmasked_base_mounts(format)
@@ -682,9 +692,7 @@ module FB
              desired_data['enable_remount']
             Chef::Log.debug("fb_fstab: #{base_msg} - remounting")
             converge_by "remount #{desired_data['mount_point']}" do
-              remount(desired_data['mount_point'],
-                      desired_data['remount_with_umount'],
-                      desired_data['lock_file'])
+              remount(desired_data)
             end
             # There's nothing after us in the loop at this point, but I'm being
             # explicit with the 'next' here so that we never accidentally

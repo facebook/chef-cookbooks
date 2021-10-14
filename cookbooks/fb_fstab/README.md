@@ -32,6 +32,7 @@ Attributes
 * node['fb_fstab']['mounts'][$NAME]['remount_with_umount']
 * node['fb_fstab']['mounts'][$NAME]['enable_remount']
 * node['fb_fstab']['mounts'][$NAME]['allow_mount_failure']
+* node['fb_fstab']['mounts'][$NAME]['allow_remount_failure']
 * node['fb_fstab']['mounts'][$NAME]['lock_file']
 
 Usage
@@ -111,6 +112,7 @@ The following are additional per-mount flags to `fb_fstab`:
   show up in `/etc/fstab`, but Chef will not crash if mounting fails. This
   option is designed for teams who can handle data-disk failures gracefully
   and don't want it to bother Chef.
+* `allow_remount_failure` - As above but when remounting.
 
 The following are additional per-mount flags, which are only put into effect
 if the underlying mountpoint does not exist:

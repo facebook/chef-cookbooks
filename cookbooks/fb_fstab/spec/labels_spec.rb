@@ -62,6 +62,7 @@ recipe 'fb_fstab::default', :unsupported => [:mac_os_x] do |tc|
           'opts' => 'defaults,noatime',
           'pass' => 0,
           'allow_mount_failure' => true,
+          'allow_remount_failure' => true,
         }
       end
     end

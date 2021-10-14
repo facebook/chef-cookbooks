@@ -375,6 +375,7 @@ EOF
           'dump' => '1',
           'pass' => '1',
           'allow_mount_failure' => true,
+          'allow_remount_failure' => true,
         },
       }
       m = FB::Fstab.get_unmasked_base_mounts(:hash, node)
@@ -1052,6 +1053,7 @@ describe 'FB::FstabProvider', :include_provider do
         'type' => 'xfs',
         'opts' => 'rw,noatime',
         'allow_mount_failure' => true,
+        'allow_remount_failure' => true,
       }
       expect(node).to receive(:systemd?).and_return(false)
       File.should_receive(:exist?).with(desired_mount['mount_point']).
