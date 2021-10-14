@@ -45,8 +45,8 @@ jobs:
     - name: Install Chef
       uses: actionshub/chef-install@1.1.0
       with:
-        project: chefdk
-        version: 3.13.1
+        project: chef-workstation
+        version: 20.11.180
     - name: Run Kitchen
       uses: actionshub/test-kitchen@1.0.2
       with:
