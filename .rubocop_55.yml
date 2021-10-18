@@ -1,0 +1,220 @@
+AllCops:
+  TargetRubyVersion: 2.4
+  Exclude:
+    # template files named `rb` instead of `erb` are a sin against ruby-nature.
+    - '**/templates/**/*.rb'#
+
+Layout/DotPosition:
+  EnforcedStyle: trailing
+
+# enforce lf to avoid failures on Windows systems
+Layout/EndOfLine:
+  EnforcedStyle: lf
+
+Layout/IndentArray:
+  EnforcedStyle: consistent
+
+# This recommends using external gems to parse heredocs
+Layout/IndentHeredoc:
+  Enabled: false
+
+# disabling until corrected in core
+Layout/MultilineOperationIndentation:
+  Enabled: false
+  EnforcedStyle: indented
+
+# no, we're not putting parens around `lazy`
+Lint/AmbiguousBlockAssociation:
+  Enabled: false
+
+Metrics/AbcSize:
+  Enabled: false
+
+Metrics/BlockLength:
+  Enabled: false
+
+# Unrealistic
+Metrics/BlockNesting:
+  Enabled: false
+
+Metrics/ClassLength:
+  Enabled: false
+
+Metrics/CyclomaticComplexity:
+  Enabled: false
+
+Metrics/LineLength:
+  Max: 80
+
+Metrics/MethodLength:
+  Enabled: false
+
+Metrics/ModuleLength:
+  Enabled: false
+
+# I don't know what it's metric for "human complexity" is, but it's wrong.
+Metrics/PerceivedComplexity:
+  Enabled: false
+
+# this trips on *any* method called 'get_*' wtf.
+Naming/AccessorMethodName:
+  Enabled: false
+
+# This blows up on things like base_packages-redhat
+Naming/FileName:
+  Enabled: false
+
+# Heredocs are fine with "EOF"
+Naming/HeredocDelimiterNaming:
+  Enabled: false
+
+# re-evaluate after upgrade to chef workstation, is highly configurable
+# fires on methods with short args:  def foo(k, v, i)
+Naming/UncommunicativeMethodParamName:
+  Enabled: false
+
+# no autocorrection
+Naming/VariableNumber:
+  Enabled: false
+
+# This results in very confusing code to read with little perf benefit
+Performance/Casecmp:
+  Enabled: false
+
+# buggy: https://github.com/bbatsov/rubocop/issues/2639
+Performance/RedundantMatch:
+  Enabled: false
+
+# https://github.com/bbatsov/rubocop/issues/2676
+# appears to be fixed in v61: https://github.com/rubocop-hq/rubocop/pull/6547
+Performance/RedundantMerge:
+  Enabled: false
+
+# disable until we upgrade chef solo to chef 13. Otherwise people will be told
+# to use a method that doesn't exist in the verison of ruby in solo
+Performance/RegexpMatch:
+  Enabled: false
+
+# We'll .times.map all we want.
+Performance/TimesMap:
+  Enabled: false
+
+# Disabled because of the way 'variables' works.
+# removed in v80 https://github.com/rubocop-hq/rubocop/pull/7643
+Style/BracesAroundHashParameters:
+  Enabled: false
+
+Style/CommentAnnotation:
+  Enabled: false
+
+# Bug with constants? https://phabricator.fb.com/P56108678
+Style/ConditionalAssignment:
+  Enabled: false
+
+# this is disabled by default in v59 so am just disabling it now
+# https://github.com/rubocop-hq/rubocop/pull/6189
+Style/DateTime:
+  Enabled: false
+
+Style/Documentation:
+  Enabled: false
+
+Style/Encoding:
+  Enabled: false
+
+Style/FormatStringToken:
+  Enabled: false
+
+# This comes with changing the ruby target to 2.3+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+# guardclause sacrifices ease of readability for consistency at times
+Style/GuardClause:
+  Enabled: false
+
+Style/HashSyntax:
+  EnforcedStyle: hash_rockets
+
+# compact code is nice, but this is actually harder to read for new users
+Style/IfUnlessModifier:
+  Enabled: false
+
+# backslash is extra dumb in ruby, we want the OPPOSITE of this rule
+Style/LineEndConcatenation:
+  Enabled: false
+
+# autocorrection in v86 https://github.com/rubocop-hq/rubocop/pull/8148
+Style/MultilineTernaryOperator:
+  Enabled: false
+
+# So just keep iterating instead of breaking? wtf.
+Style/Next:
+  Enabled: false
+
+Style/NumericLiteralPrefix:
+  Enabled: false
+
+# Underscores in numbers are unnecessary, especially for port numbers where
+# they are unexpected
+Style/NumericLiterals:
+  Enabled: false
+
+# The autocorrect of this one isn't safe, and since using
+# numeric predicts may be more or less readable than comparisons
+# depending on the code, bugging people about this when we can't
+# autocorrect it doesn't seem worth the hassle for our customers
+Style/NumericPredicate:
+  Enabled: false
+
+Style/PercentLiteralDelimiters:
+  PreferredDelimiters:
+    '%':  '{}'
+    '%i': '{}'
+    '%I': '{}'
+    '%q': '{}'
+    '%Q': '{}'
+    '%r': '{}'
+    '%s': '{}'
+    '%w': '{}'
+    '%W': '{}'
+    '%x': '{}'
+
+# TODO: re-evaluate this for performance impacts
+Style/PerlBackrefs:
+  Enabled: false
+
+Style/RedundantReturn:
+  Enabled: false
+
+Style/RedundantSelf:
+  Enabled: false
+
+Style/RegexpLiteral:
+  EnforcedStyle: mixed
+
+# enable after v72 where many dangerous autocorrect bugs were corrected
+Style/SafeNavigation:
+  Enabled: false
+
+Style/SignalException:
+  EnforcedStyle: semantic
+
+# It would forbid action [:enable, :start]
+# in v66 we can specify brackets for enforced style with autocorrect
+# https://github.com/rubocop-hq/rubocop/pull/6802
+Style/SymbolArray:
+  Enabled: false
+
+Style/TrailingCommaInArguments:
+  EnforcedStyleForMultiline: comma
+
+Style/TrailingCommaInArrayLiteral:
+  EnforcedStyleForMultiline: comma
+
+Style/TrailingCommaInHashLiteral:
+  EnforcedStyleForMultiline: comma
+
+# TODO: convert the codebase to enable this
+Style/WordArray:
+  Enabled: false

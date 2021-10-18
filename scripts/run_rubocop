@@ -19,12 +19,14 @@
 
 set -eu
 
+default_config='.rubocop.yml'
 if bundle exec rubocop --version > /dev/null 2>&1; then
   RUBOCOP='bundle exec rubocop'
 elif [ -x /opt/chef-workstation/embedded/bin/rubocop ]; then
   RUBOCOP='/opt/chef-workstation/embedded/bin/rubocop'
 elif [ -x /opt/chefdk/embedded/bin/rubocop ]; then
   RUBOCOP='/opt/chefdk/embedded/bin/rubocop'
+  default_config='.rubocop_55.yml'
 elif [ -x /opt/chef/embedded/bin/rubocop ]; then
   RUBOCOP='/opt/chef/embedded/bin/rubocop'
 else
@@ -33,7 +35,7 @@ else
 fi
 
 if [ "$#" -eq 0 ]; then
-  config='.rubocop.yml'
+  config="$default_config"
 elif [ "$#" -eq 1 ]; then
   config="$1"
 else
