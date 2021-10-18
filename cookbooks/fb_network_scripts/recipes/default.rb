@@ -203,7 +203,8 @@ template '/sbin/ifup-local' do
   owner 'root'
   group 'root'
   mode '0755'
-  notifies :run, 'whyrun_safe_ruby_block[trigger re-run of ifup-local]', :immediately
+  notifies :run, 'whyrun_safe_ruby_block[trigger re-run of ifup-local]',
+           :immediately
 end
 
 execute 're-run ifup-local' do

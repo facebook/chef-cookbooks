@@ -761,13 +761,11 @@ class Chef
     def root_group
       # Chef moved from `macos` to `mac_os_x` between 14 and 15, so we need
       # both, but Cookstyle will tell us `macos` isn't valid.
-      # rubocop:disable ChefCorrectness/InvalidPlatformValueForPlatformHelper
       value_for_platform(
         %w{openbsd freebsd mac_os_x macos} => { 'default' => 'wheel' },
         'windows' => { 'default' => 'Administrators' },
         'default' => 'root',
       )
-      # rubocop:enable ChefCorrectness/InvalidPlatformValueForPlatformHelper
     end
 
     def quiescent?
@@ -889,7 +887,6 @@ class Chef
       node_path = path.split(delim)
       # implicit-begin is a function of ruby2.5 and later, but we still
       # support 2.4, so.... until then
-      # rubocop:disable Style/RedundantBegin
       node_path.inject(self) do |location, key|
         begin
           location.attribute?(key.to_s) ? location[key] : default
@@ -897,7 +894,6 @@ class Chef
           default
         end
       end
-      # rubocop:enable Style/RedundantBegin
     end
 
     def default_package_manager

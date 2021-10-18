@@ -79,7 +79,7 @@ describe FB::Helpers do
     it 'should succeed with a valid timestamp - 2020-1-1 9:00:00' do
       expect(FB::Helpers.parse_timeshard_start(
                '2020-1-1 9:00:00 PST',
-             )).to eq(1577898000)
+      )).to eq(1577898000)
     end
 
     it 'should fail if start_time is an invalid date - 2018-14-1 9:00:00' do
@@ -98,7 +98,7 @@ describe FB::Helpers do
       it "should successfully parse #{duration}" do
         expect(FB::Helpers.parse_timeshard_duration(
                  duration,
-               )).to eq(seconds)
+        )).to eq(seconds)
       end
     end
 

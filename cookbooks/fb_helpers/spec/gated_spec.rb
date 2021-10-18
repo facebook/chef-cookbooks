@@ -19,7 +19,6 @@
 require './spec/spec_helper'
 
 recipe 'fb_helpers::spec', :unsupported => [:mac_os_x] do |tc|
-
   # hack for t70172554
   stubs_for_provider('template[/tmp/testfile]') do |provider|
     allow(provider).
@@ -34,7 +33,7 @@ recipe 'fb_helpers::spec', :unsupported => [:mac_os_x] do |tc|
   it 'should try to update the template when nw changes are allowed' do
     chef_run = tc.chef_run(
       :step_into => ['fb_helpers_gated_template', 'template'],
-    ) do |node|
+    ) do |_|
       allow_any_instance_of(Chef::Node).to receive(:nw_changes_allowed?).
         and_return(true)
     end
@@ -45,7 +44,7 @@ recipe 'fb_helpers::spec', :unsupported => [:mac_os_x] do |tc|
   it 'should not modify the template when nw changes are not allowed' do
     chef_run = tc.chef_run(
       :step_into => ['fb_helpers_gated_template'],
-    ) do |node|
+    ) do |_|
       allow_any_instance_of(Chef::Node).to receive(:nw_changes_allowed?).
         and_return(false)
     end

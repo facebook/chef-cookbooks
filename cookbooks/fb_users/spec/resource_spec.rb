@@ -144,7 +144,7 @@ recipe 'fb_users::default' do |tc|
                 'test notif' => {
                   'resource' => 'file[test resource]',
                   'action' => 'create',
-                }
+                },
               },
             },
             'cleanup' => {
