@@ -11,11 +11,11 @@ Layout/DotPosition:
 Layout/EndOfLine:
   EnforcedStyle: lf
 
-Layout/IndentArray:
+Layout/FirstArrayElementIndentation:
   EnforcedStyle: consistent
 
 # This recommends using external gems to parse heredocs
-Layout/IndentHeredoc:
+Layout/HeredocIndentation:
   Enabled: false
 
 # disabling until corrected in core
@@ -43,7 +43,7 @@ Metrics/ClassLength:
 Metrics/CyclomaticComplexity:
   Enabled: false
 
-Metrics/LineLength:
+Layout/LineLength:
   Max: 80
 
 Metrics/MethodLength:
@@ -70,38 +70,11 @@ Naming/HeredocDelimiterNaming:
 
 # re-evaluate after upgrade to chef workstation, is highly configurable
 # fires on methods with short args:  def foo(k, v, i)
-Naming/UncommunicativeMethodParamName:
+Naming/MethodParameterName:
   Enabled: false
 
 # no autocorrection
 Naming/VariableNumber:
-  Enabled: false
-
-# This results in very confusing code to read with little perf benefit
-Performance/Casecmp:
-  Enabled: false
-
-# buggy: https://github.com/bbatsov/rubocop/issues/2639
-Performance/RedundantMatch:
-  Enabled: false
-
-# https://github.com/bbatsov/rubocop/issues/2676
-# appears to be fixed in v61: https://github.com/rubocop-hq/rubocop/pull/6547
-Performance/RedundantMerge:
-  Enabled: false
-
-# disable until we upgrade chef solo to chef 13. Otherwise people will be told
-# to use a method that doesn't exist in the verison of ruby in solo
-Performance/RegexpMatch:
-  Enabled: false
-
-# We'll .times.map all we want.
-Performance/TimesMap:
-  Enabled: false
-
-# Disabled because of the way 'variables' works.
-# removed in v80 https://github.com/rubocop-hq/rubocop/pull/7643
-Style/BracesAroundHashParameters:
   Enabled: false
 
 Style/CommentAnnotation:
