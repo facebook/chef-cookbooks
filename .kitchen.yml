@@ -6,15 +6,6 @@ driver:
   chef_version: <%= ENV['CHEF_VERSION'] || 'current' %>
 
 platforms:
-  - name: centos-6
-    driver:
-      image: dokken/centos-6
-      pid_one_command: /sbin/init
-      intermediate_instructions:
-        # remove bogus entry to make fb_fstab happy
-        - RUN sed -i '/UUID=/d' /etc/fstab
-        # enable EPEL (for stuff like hddtemp)
-        - RUN rpm -Uvh https://archives.fedoraproject.org/pub/archive/epel/6/x86_64/epel-release-6-8.noarch.rpm
   - name: centos-7
     driver:
       image: dokken/centos-7
@@ -24,17 +15,30 @@ platforms:
         - RUN touch /etc/fstab
         # enable EPEL (for stuff like hddtemp)
         - RUN rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-  - name: ubuntu-16.04
+  - name: centos-stream-8
     driver:
-      image: dokken/ubuntu-16.04
-      pid_one_command: /bin/systemd
+      image: dokken/centos-stream-8
+      pid_one_command: /usr/lib/systemd/systemd
+      intermediate_instructions:
+        # stub out /etc/fstab for fb_fstab
+        - RUN touch /etc/fstab
+        # enable EPEL (for stuff like hddtemp)
+        - RUN rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
   - name: ubuntu-18.04
     driver:
       image: dokken/ubuntu-18.04
       pid_one_command: /bin/systemd
+  - name: ubuntu-20.04
+    driver:
+      image: dokken/ubuntu-20.04
+      pid_one_command: /bin/systemd
   - name: debian-9
     driver:
       image: dokken/debian-9
+      pid_one_commmand: /bin/systemd
+  - name: debian-10
+    driver:
+      image: dokken/debian-10
       pid_one_commmand: /bin/systemd
 
 provisioner:
