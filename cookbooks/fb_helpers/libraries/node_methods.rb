@@ -910,6 +910,50 @@ class Chef
       end
     end
 
+    def eth_is_affinitized?
+      # we only care about ethernet MSI vectors
+      # mlx is special cased because of their device naming convention
+      r = /^(eth(.*[Rr]x|\d+-\d+)|mlx4-\d+@.*|mlx5_comp\d+@.*)/
+
+      irqs = node['interrupts']['irq'].select do |_irq, v|
+        v['device'] && r.match?(v['device']) &&
+          v['type'] && v['type'].end_with?('MSI')
+      end
+      if irqs.empty?
+        Chef::Log.debug(
+          'fb_helpers: no eth MSI vectors found, this host does ' +
+          'not need affinity',
+        )
+        return true
+      end
+      default_affinity = node['interrupts']['smp_affinity_by_cpu']
+      # When all interrupts are affinitized, smp_affinity will be different
+      # from the default one, and won't be global. Global technically says
+      # that interrupts can be processed on all CPUs, but in reality what's
+      # going to happen is that it'll *always* be processed by the lowest
+      # numbered CPU, which is a problem when you have multiple IRQs in play.
+      affinitized_irqs = irqs.reject do |_irq, v|
+        my_affinity = v['smp_affinity_by_cpu']
+        my_affinity == default_affinity ||
+          my_affinity == my_affinity.select do |_cpu, is_affinitized|
+            is_affinitized
+          end
+      end
+      if irqs == affinitized_irqs
+        Chef::Log.info(
+          "fb_helpers: all #{irqs.size} MSI eth rx IRQs are " +
+          'affinitized to CPUs.',
+        )
+        return true
+      else
+        Chef::Log.warn(
+          "fb_helpers: only #{affinitized_irqs.size}/#{irqs.size} " +
+          'MSI eth rx IRQs are affinitized to CPUs',
+        )
+        return false
+      end
+    end
+
     def nw_changes_allowed?
       method = node['fb_helpers']['network_changes_allowed_method']
       if method

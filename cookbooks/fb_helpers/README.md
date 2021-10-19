@@ -404,6 +404,10 @@ your node.
    the `Chef::Package` resource, and it might deviate from the actual package
    manager used on the system in some cases.
 
+* `node.eth_is_affinitized?`
+   Returns true if the eth MSI vectors are affinitized (i.e. they are spread
+   across all available CPUs).
+
 * `node.nw_changes_allowed?`
    True if `node['fb_helpers']['network_changes_allowed_method']` is set and
    returns true, or node is in firstboot or `FB::Helpers::NW_CHANGES_ALLOWED`

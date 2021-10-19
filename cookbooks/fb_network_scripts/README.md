@@ -30,10 +30,6 @@ Usage
 ### Node Methods
 This cookbook provides the following node methods:
 
-#### `node.eth_is_affinitized?`
-Returns true if the eth MSI vectors are affinitized (i.e. they are spread
-across all available CPUs).
-
 #### `node.ip?(string)`
 Returns true if the IP is configured in the host.
 
