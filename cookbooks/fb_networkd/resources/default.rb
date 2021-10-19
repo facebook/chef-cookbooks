@@ -54,11 +54,6 @@ action :manage do
       "#{conf['priority']}-#{conf['name']}.network",
     )
 
-    execute "reconfigure #{conf['name']}.network" do
-      command "/bin/networkctl reconfigure #{conf['name']}"
-      action :nothing
-    end
-
     fb_helpers_gated_template conffile do # ~FB031
       allow_changes node.interface_change_allowed?(conf['name'])
       source 'networkd.conf.erb'
@@ -69,7 +64,7 @@ action :manage do
         :config => conf['config'],
       )
       notifies :run, 'execute[networkctl reload]', :immediately
-      notifies :run, "execute[reconfigure #{conf['name']}.network]", :delayed
+      notifies :run, "execute[networkctl reconfigure #{conf['name']}]", :delayed
     end
   end
 
@@ -97,18 +92,6 @@ action :manage do
       "#{conf['priority']}-#{conf['name']}.link",
     )
 
-    # Link configurations are configured by systemd-udevd (through the
-    # net_setup_link builtin as mentioned in the systemd.link man page).
-    # To re-apply link configurations, either an "add", "bind", or "move"
-    # action must be sent on the device.
-    # This should use `udevadm test-builtin` in the future but --action wasn't
-    # added to builtins until
-    # https://github.com/systemd/systemd/pull/20460.
-    execute "reapply #{conf['name']}.link" do
-      command "/bin/udevadm trigger --action=add /sys/class/net/#{conf['name']}"
-      action :nothing
-    end
-
     fb_helpers_gated_template conffile do # ~FB031
       allow_changes node.interface_change_allowed?(conf['name'])
       source 'networkd.conf.erb'
@@ -118,7 +101,7 @@ action :manage do
       variables(
         :config => conf['config'],
       )
-      notifies :run, "execute[reapply #{conf['name']}.link]", :delayed
+      notifies :run, "execute[udevadm trigger #{conf['name']}]", :delayed
     end
   end
 
@@ -149,11 +132,6 @@ action :manage do
       "#{conf['priority']}-#{conf['name']}.netdev",
     )
 
-    execute "reconfigure #{conf['name']}.netdev" do
-      command "/bin/networkctl reconfigure #{conf['name']}"
-      action :nothing
-    end
-
     fb_helpers_gated_template conffile do # ~FB031
       allow_changes node.interface_change_allowed?(conf['name'])
       source 'networkd.conf.erb'
@@ -164,7 +142,7 @@ action :manage do
         :config => conf['config'],
       )
       notifies :run, 'execute[networkctl reload]', :immediately
-      notifies :run, "execute[reconfigure #{conf['name']}.netdev]", :delayed
+      notifies :run, "execute[networkctl reconfigure #{conf['name']}]", :delayed
     end
   end
 end

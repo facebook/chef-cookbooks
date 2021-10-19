@@ -35,3 +35,26 @@ fb_helpers_request_nw_changes 'manage' do
   action :nothing
   delayed_action :cleanup_signal_files_when_no_change_required
 end
+
+# Set up execute resources to reconfigure network settings so that they can be
+# notified by and subscribed to from other recipes.
+node['network']['interfaces'].to_hash.each_key do |iface|
+  next if iface == 'lo'
+
+  execute "networkctl reconfigure #{iface}" do
+    command "/bin/networkctl reconfigure #{iface}"
+    action :nothing
+  end
+
+  # Link configurations are configured by systemd-udevd (through the
+  # net_setup_link builtin as mentioned in the systemd.link man page).
+  # To re-apply link configurations, either an "add", "bind", or "move"
+  # action must be sent on the device.
+  # This should use `udevadm test-builtin` in the future but --action wasn't
+  # added to builtins until
+  # https://github.com/systemd/systemd/pull/20460.
+  execute "udevadm trigger #{iface}" do
+    command "/bin/udevadm trigger --action=add /sys/class/net/#{iface}"
+    action :nothing
+  end
+end
