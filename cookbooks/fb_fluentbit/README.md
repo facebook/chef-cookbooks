@@ -45,19 +45,19 @@ out certain lines based on grep, and ultimately logging to stdout.
 
 ```
 # Read lines from /var/log/my_log.txt
-node.default['fb_fluentd']['input']['tail']['tail_myfile'] = {
+node.default['fb_fluentbit']['input']['tail']['tail_myfile'] = {
   'Path' => '/var/log/my_log.txt',
   'Tag' => 'my_cool_log',
 }
 
 # Filter out lines that contain "badstuff"
-node.default['fb_fluentd']['filter']['grep']['filter_badstuff'] = {
+node.default['fb_fluentbit']['filter']['grep']['filter_badstuff'] = {
   'Match' => 'my_cool_log',
   'Regex' => '^.+badstuff.+$',
 }
 
 # Finally, output to stdout
-node.default['fb_fluentd']['output']['stdout']['print_to_output'] = {
+node.default['fb_fluentbit']['output']['stdout']['print_to_output'] = {
   'Match' => 'my_cool_log',
 }
 ```
@@ -72,7 +72,7 @@ This will be rendered as:
 
 [FILTER]
     Name grep
-    Match my_cool_tag
+    Match my_cool_log
     Regex ^.+badstuff.+$
 
 [OUTPUT]
