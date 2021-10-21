@@ -23,6 +23,42 @@ Layout/MultilineOperationIndentation:
   Enabled: false
   EnforcedStyle: indented
 
+Layout/EmptyLineAfterGuardClause:
+  Enabled: false
+
+# TODO re-evaluate after chef-workstation upgrade
+Layout/HashAlignment:
+  Enabled: false
+
+# TODO re-evaluate after chef-workstation upgrade
+Layout/ClosingParenthesisIndentation:
+  Enabled: false
+
+# TODO re-evaluate after chef-workstation upgrade
+Layout/ClosingHeredocIndentation:
+  Enabled: false
+
+# TODO re-evaluate after chef-workstation upgrade
+Lint/MissingCopEnableDirective:
+  Enabled: false
+
+# TODO re-evaluate after chef-workstation upgrade
+Lint/MissingSuper:
+  Enabled: false
+
+# TODO re-evaluate after chef-workstation upgrade
+Lint/RedundantCopDisableDirective:
+  Enabled: false
+
+# TODO re-evaluate after chef-workstation upgrade
+Lint/ConstantDefinitionInBlock:
+  Enabled: false
+
+# TODO move exception to file after chef-workstation upgrade
+Lint/BinaryOperatorWithIdenticalOperands:
+  Exclude:
+    - cookbooks/fb_helpers/spec/version_spec.rb
+
 # no, we're not putting parens around `lazy`
 Lint/AmbiguousBlockAssociation:
   Enabled: false
@@ -190,4 +226,46 @@ Style/TrailingCommaInHashLiteral:
 
 # TODO: convert the codebase to enable this
 Style/WordArray:
+  Enabled: false
+
+Style/StringConcatenation:
+  Enabled: false
+
+Style/CaseLikeIf:
+  Enabled: false
+
+# TODO re-evaluate after chef-workstation upgrade
+Style/OptionalBooleanParameter:
+  Enabled: false
+
+# TODO re-evaluate after chef-workstation upgrade
+Style/RedundantFileExtensionInRequire:
+  Enabled: false
+
+# TODO re-evaluate after chef-workstation upgrade
+Style/SoleNestedConditional:
+  Enabled: false
+
+# TODO re-evaluate after chef-workstation upgrade
+Style/ClassEqualityComparison:
+  Enabled: false
+
+# TODO re-evaluate after chef-workstation upgrade
+Style/RedundantRegexpEscape:
+  Enabled: false
+
+# TODO re-evaluate after chef-workstation upgrade
+Style/HashLikeCase:
+  Enabled: false
+
+# TODO re-evaluate after chef-workstation upgrade
+Style/AccessModifierDeclarations:
+  Enabled: false
+
+# TODO re-evaluate after chef-workstation upgrade
+Style/RedundantAssignment:
+  Enabled: false
+
+# TODO re-evaluate after chef-workstation upgrade
+Style/CombinableLoops:
   Enabled: false
