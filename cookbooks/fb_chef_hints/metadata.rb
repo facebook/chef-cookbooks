@@ -2,6 +2,7 @@
 name 'fb_chef_hints'
 maintainer 'Facebook'
 maintainer_email 'noreply@facebook.com'
+source_url 'https://github.com/facebook/chef-cookbooks/'
 license 'Apache-2.0'
 description 'Attribute hints logic implementation'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
