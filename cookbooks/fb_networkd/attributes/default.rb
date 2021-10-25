@@ -23,7 +23,6 @@ default['fb_networkd'] = {
 
   'networks' => {
     primary_int => {
-      'priority' => 10,
       'config' => {},
     },
   },

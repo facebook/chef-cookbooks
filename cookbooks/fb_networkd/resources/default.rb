@@ -36,7 +36,12 @@ action :manage do
       conf['name'] = name
     end
     unless conf['priority']
-      conf['priority'] = FB::Networkd::DEFAULT_NETWORK_PRIORITY
+      if conf['name'] == node['fb_networkd']['primary_interface']
+        conf['priority'] =
+          FB::Networkd::DEFAULT_PRIMARY_INTERFACE_NETWORK_PRIORITY
+      else
+        conf['priority'] = FB::Networkd::DEFAULT_NETWORK_PRIORITY
+      end
     end
     unless conf['config']
       fail "fb_networkd: Cannot set up network config on #{conf['name']} " +
@@ -74,7 +79,11 @@ action :manage do
       conf['name'] = name
     end
     unless conf['priority']
-      conf['priority'] = FB::Networkd::DEFAULT_LINK_PRIORITY
+      if conf['name'] == node['fb_networkd']['primary_interface']
+        conf['priority'] = FB::Networkd::DEFAULT_PRIMARY_INTERFACE_LINK_PRIORITY
+      else
+        conf['priority'] = FB::Networkd::DEFAULT_LINK_PRIORITY
+      end
     end
     unless conf['config']
       fail "fb_networkd: Cannot set up link config on #{conf['name']} " +
@@ -111,7 +120,12 @@ action :manage do
       conf['name'] = name
     end
     unless conf['priority']
-      conf['priority'] = FB::Networkd::DEFAULT_DEVICE_PRIORITY
+      if conf['name'] == node['fb_networkd']['primary_interface']
+        conf['priority'] =
+          FB::Networkd::DEFAULT_PRIMARY_INTERFACE_DEVICE_PRIORITY
+      else
+        conf['priority'] = FB::Networkd::DEFAULT_DEVICE_PRIORITY
+      end
     end
     unless conf['config']
       fail "fb_networkd: Cannot set up netdev config on #{conf['name']} " +

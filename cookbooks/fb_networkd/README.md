@@ -29,6 +29,14 @@ node.default['fb_networkd']['primary_interface'] = 'eth2'
 node.default['fb_networkd']['networks'].delete('eth0')
 ```
 
+The default priorities for a configuration are defined by the
+`DEFAULT_NETWORK_PRIORITY`, `DEFAULT_DEVICE_PRIORITY`, and
+`DEFAULT_LINK_PRIORITY` constants, except for the primary interface which
+defaults to priorities defined by `DEFAULT_PRIMARY_INTERFACE_NETWORK_PRIORITY`,
+`DEFAULT_PRIMARY_INTERFACE_DEVICE_PRIORITY`, and
+`DEFAULT_PRIMARY_INTERFACE_LINK_PRIORITY`. These can be overridden with their
+respective attributes.
+
 Add networks, links and virtual network devices configurations to the
 respective attributes, e.g.:
 
