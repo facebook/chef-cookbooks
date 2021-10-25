@@ -1,0 +1,12 @@
+# This file is maintained by Chef. Do not edit, all changes will be
+# overwritten. See fb_yum_repos/README.md
+<% @config.each do |section, section_config| %>
+
+[<%= section %>]
+<%   section_config.each do |key, val| %>
+<%=    key %>=<%= FB::YumRepos.gen_config_value(key, val) %>
+<%   end %>
+<% end %>
+<% @repos.each do |group, group_config| %>
+<%=  FB::YumRepos.gen_group_entry(node, group, group_config) %>
+<% end %>
