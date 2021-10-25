@@ -41,7 +41,11 @@ action_class do
 end
 
 load_current_value do |new_resource|
-  running Helpers.running?(new_resource.interface, node)
+  if node.in_shard?(0)
+    running Helpers.running2?(new_resource.interface, node)
+  else
+    running Helpers.running?(new_resource.interface, node)
+  end
 end
 
 # This can shellout because it's called within `converge_by`

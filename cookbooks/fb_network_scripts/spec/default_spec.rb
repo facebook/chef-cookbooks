@@ -89,6 +89,41 @@ describe FB::NetworkScripts::RHInterfaceHelpers do
     end
   end
 
+  context '#running2?' do
+    let(:node) { Chef::Node.new }
+    it 'should return true for interfaces that are up' do
+      int = 'oogabooga0'
+      f = "/sys/class/net/#{int}/flags"
+      File.should_receive(:exist?).with(f).and_return(true)
+      File.should_receive(:read).with(f).and_return("0x1003\n")
+      running2?(int, node).should eq(true)
+    end
+
+    # most virtual interfaces report '0x9' when up
+    it 'should return true for virtual interfaces up' do
+      int = 'oogabooga0'
+      f = "/sys/class/net/#{int}/flags"
+      File.should_receive(:exist?).with(f).and_return(true)
+      File.should_receive(:read).with(f).and_return("0x9\n")
+      running2?(int, node).should eq(true)
+    end
+
+    it 'should return false for interfaces that are down' do
+      int = 'oogabooga0'
+      f = "/sys/class/net/#{int}/flags"
+      File.should_receive(:exist?).with(f).and_return(true)
+      File.should_receive(:read).with(f).and_return("0x1002\n")
+      running2?(int, node).should eq(false)
+    end
+
+    it 'should return false for interfaces that are non-existent' do
+      int = 'oogabooga0'
+      f = "/sys/class/net/#{int}/flags"
+      File.should_receive(:exist?).with(f).and_return(false)
+      running2?(int, node).should eq(false)
+    end
+  end
+
   context '#read_ifcfg_file' do
     it 'should ignore comments' do
       f = '/tmp/foof'

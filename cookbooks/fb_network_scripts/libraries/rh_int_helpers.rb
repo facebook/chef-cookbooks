@@ -56,6 +56,9 @@ module FB
       end
 
       def running?(interface, node)
+        # This has been deprecated by `running2?`
+        # TODO: Remove & rename once `running2?` has been fully rolled-out
+
         opfile = "/sys/class/net/#{interface}/operstate"
         if interface.include?(':')
           # /sys does not have info on sub-interfaces.
@@ -79,6 +82,31 @@ module FB
         end
         state = ::File.read(opfile).strip
         ['up', 'unknown'].include?(state)
+      end
+
+      def running2?(interface, node)
+        # This deprecates `running?`
+        # This function uses the /sys/class/net/<interface>/flags to determine
+        # the state of the interface. An interface is considered DOWN
+        # only if it is administratively down and not operationally down.
+
+        flagfile = "/sys/class/net/#{interface}/flags"
+        if interface.include?(':')
+          # /sys does not have info on sub-interfaces.
+          #
+          # So, if we are a sub-interface, see if Ohai saw us, and then
+          # check our base interface is still up
+          unless node['network']['interfaces'][interface]
+            return false
+          end
+          flagfile = "/sys/class/net/#{interface.split(':')[0]}/flags"
+        end
+
+        return false unless ::File.exist?(flagfile)
+
+        flags = ::File.read(flagfile).strip
+        # last bit == "1" means UP, "0" means DOWN
+        return flags.hex & 0x1 == 1
       end
 
       def get_hwaddr(interface)
