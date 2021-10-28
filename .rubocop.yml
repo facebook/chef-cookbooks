@@ -39,7 +39,23 @@ Layout/ClosingHeredocIndentation:
   Enabled: false
 
 # TODO re-evaluate after chef-workstation upgrade
+Layout/EmptyLinesAroundBlockBody:
+  Enabled: false
+
+# TODO re-evaluate after chef-workstation upgrade
+Layout/EmptyLinesAroundClassBody:
+  Enabled: false
+
+# TODO re-evaluate after chef-workstation upgrade
+Layout/SpaceAroundOperators:
+  Enabled: false
+
+# TODO re-evaluate after chef-workstation upgrade
 Lint/MissingCopEnableDirective:
+  Enabled: false
+
+# TODO re-evaluate after chef-workstation upgrade
+Lint/BinaryOperatorWithIdenticalOperands:
   Enabled: false
 
 # TODO re-evaluate after chef-workstation upgrade
@@ -92,6 +108,10 @@ Metrics/ModuleLength:
 Metrics/PerceivedComplexity:
   Enabled: false
 
+# TODO re-evaluate after chef-workstation upgrade
+Migration/DepartmentName:
+  Enabled: false
+
 # this trips on *any* method called 'get_*' wtf.
 Naming/AccessorMethodName:
   Enabled: false
@@ -111,6 +131,10 @@ Naming/MethodParameterName:
 
 # no autocorrection
 Naming/VariableNumber:
+  Enabled: false
+
+# TODO re-evaluate after chef-workstation upgrade
+Naming/RescuedExceptionsVariableName:
   Enabled: false
 
 Style/CommentAnnotation:
@@ -268,4 +292,20 @@ Style/RedundantAssignment:
 
 # TODO re-evaluate after chef-workstation upgrade
 Style/CombinableLoops:
+  Enabled: false
+
+# TODO re-evaluate after chef-workstation upgrade
+Style/OrAssignment:
+  Enabled: false
+
+# TODO re-evaluate after chef-workstation upgrade
+Style/RedundantCondition:
+  Enabled: false
+
+# TODO re-evaluate after chef-workstation upgrade
+Style/HashEachMethods:
+  Enabled: false
+
+# TODO re-evaluate after chef-workstation upgrade
+Style/MultilineBlockChain:
   Enabled: false
