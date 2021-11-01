@@ -56,7 +56,7 @@ action :manage do
 
     conffile = ::File.join(
       FB::Networkd::BASE_CONFIG_PATH,
-      "#{conf['priority']}-#{conf['name']}.network",
+      "#{conf['priority']}-fb_networkd-#{conf['name']}.network",
     )
 
     fb_helpers_gated_template conffile do # ~FB031
@@ -98,7 +98,7 @@ action :manage do
 
     conffile = ::File.join(
       FB::Networkd::BASE_CONFIG_PATH,
-      "#{conf['priority']}-#{conf['name']}.link",
+      "#{conf['priority']}-fb_networkd-#{conf['name']}.link",
     )
 
     fb_helpers_gated_template conffile do # ~FB031
@@ -143,7 +143,7 @@ action :manage do
 
     conffile = ::File.join(
       FB::Networkd::BASE_CONFIG_PATH,
-      "#{conf['priority']}-#{conf['name']}.netdev",
+      "#{conf['priority']}-fb_networkd-#{conf['name']}.netdev",
     )
 
     fb_helpers_gated_template conffile do # ~FB031
