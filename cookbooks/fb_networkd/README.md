@@ -35,7 +35,7 @@ The default priorities for a configuration are defined by the
 defaults to priorities defined by `DEFAULT_PRIMARY_INTERFACE_NETWORK_PRIORITY`,
 `DEFAULT_PRIMARY_INTERFACE_DEVICE_PRIORITY`, and
 `DEFAULT_PRIMARY_INTERFACE_LINK_PRIORITY`. These can be overridden with their
-respective attributes.
+respective attributes (example below).
 
 Add networks, links and virtual network devices configurations to the
 respective attributes, e.g.:
@@ -63,6 +63,25 @@ node.default['fb_networkd']['networks']['eth0'] = {
     ],
   }
 }
+```
+
+To avoid situations where one configuration will match on all interfaces, the
+`[Match]` or `[NetDev]` section of each configuration will always be set to the
+name of the interface. For example, this is how an interface named `eth2`
+configured for the different network types might look like:
+
+```ruby
+$ cat 50-fb_networkd-eth2.network
+[Match]
+Name = eth2
+
+$ cat 50-fb_networkd-eth2.netdev
+[NetDev]
+Name = eth2
+
+$ cat 50-fb_networkd-eth2.link
+[Match]
+OriginalName = eth2
 ```
 
 According to the systemd.netdev man page, virtual network devices are created as

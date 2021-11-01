@@ -32,9 +32,8 @@ action :manage do
 
   node['fb_networkd']['networks'].each do |name, defconf|
     conf = defconf.dup
-    unless conf['name']
-      conf['name'] = name
-    end
+    conf['name'] = name
+
     unless conf['priority']
       if conf['name'] == node['fb_networkd']['primary_interface']
         conf['priority'] =
@@ -50,9 +49,7 @@ action :manage do
     unless conf['config']['Match']
       conf['config']['Match'] = {}
     end
-    unless conf['config']['Match']['Name']
-      conf['config']['Match']['Name'] = conf['name']
-    end
+    conf['config']['Match']['Name'] = conf['name']
 
     conffile = ::File.join(
       FB::Networkd::BASE_CONFIG_PATH,
@@ -75,9 +72,8 @@ action :manage do
 
   node['fb_networkd']['links'].each do |name, defconf|
     conf = defconf.dup
-    unless conf['name']
-      conf['name'] = name
-    end
+    conf['name'] = name
+
     unless conf['priority']
       if conf['name'] == node['fb_networkd']['primary_interface']
         conf['priority'] = FB::Networkd::DEFAULT_PRIMARY_INTERFACE_LINK_PRIORITY
@@ -92,9 +88,7 @@ action :manage do
     unless conf['config']['Match']
       conf['config']['Match'] = {}
     end
-    unless conf['config']['Match']['OriginalName']
-      conf['config']['Match']['OriginalName'] = conf['name']
-    end
+    conf['config']['Match']['OriginalName'] = conf['name']
 
     conffile = ::File.join(
       FB::Networkd::BASE_CONFIG_PATH,
@@ -116,9 +110,8 @@ action :manage do
 
   node['fb_networkd']['devices'].each do |name, defconf|
     conf = defconf.dup
-    unless conf['name']
-      conf['name'] = name
-    end
+    conf['name'] = name
+
     unless conf['priority']
       if conf['name'] == node['fb_networkd']['primary_interface']
         conf['priority'] =
@@ -137,9 +130,7 @@ action :manage do
     unless conf['config']['NetDev']
       conf['config']['NetDev'] = {}
     end
-    unless conf['config']['NetDev']['Name']
-      conf['config']['NetDev']['Name'] = conf['name']
-    end
+    conf['config']['NetDev']['Name'] = conf['name']
 
     conffile = ::File.join(
       FB::Networkd::BASE_CONFIG_PATH,
