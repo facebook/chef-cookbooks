@@ -19,7 +19,7 @@ module FB
     # By convention, some keys in the config use numbers instead of strings to
     # represent booleans; track these accordingly to minimize confusion.
     NUMBER_BOOLEAN_KEYS = [
-      'gpgkey',
+      'gpgcheck',
       'enabled',
       'countme',
       'repo_gpgcheck',
@@ -59,7 +59,10 @@ module FB
         config['enabled'] = true
       end
 
-      if config['gpgcheck'] && !config['gpgkey']
+      if (
+          config['gpgcheck'] == true ||
+          config['gpgcheck'] == '1'
+      ) && !config['gpgkey']
         config['gpgkey'] = self.get_default_gpg_key(node)
       end
 

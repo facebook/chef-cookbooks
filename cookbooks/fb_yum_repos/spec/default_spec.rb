@@ -33,11 +33,11 @@ describe FB::YumRepos do
     end
 
     it 'renders a numeric boolear as a number for a true value' do
-      expect(FB::YumRepos.gen_config_value('gpgkey', true)).to eq('1')
+      expect(FB::YumRepos.gen_config_value('gpgcheck', true)).to eq('1')
     end
 
     it 'renders a numeric boolear as a number for a false value' do
-      expect(FB::YumRepos.gen_config_value('gpgkey', false)).to eq('0')
+      expect(FB::YumRepos.gen_config_value('gpgcheck', false)).to eq('0')
     end
   end
 end
