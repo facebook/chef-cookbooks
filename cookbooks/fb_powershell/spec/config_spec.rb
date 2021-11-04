@@ -20,7 +20,7 @@ require_relative '../libraries/powershell'
 
 # rubocop:disable Style/MultilineBlockChain
 
-recipe 'fb_powershell::linux', :supported => [:centos7] do |tc|
+recipe 'fb_powershell::linux', :unsupported => [:mac_os_x] do |tc|
   let(:profile) { '/opt/microsoft/powershell/7/profile.ps1' }
 
   before do

@@ -18,7 +18,7 @@
 require './spec/spec_helper'
 require_relative '../libraries/powershell'
 
-recipe 'fb_powershell::linux', :supported => [:centos7] do |tc|
+recipe 'fb_powershell::linux', :unsupported => [:mac_os_x] do |tc|
   let(:chef_run) do
     tc.chef_run do
       allow(FB::PowerShell).to receive(:install_pwsh_path_list).and_return(

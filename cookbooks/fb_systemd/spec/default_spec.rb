@@ -17,7 +17,7 @@
 
 require './spec/spec_helper'
 
-recipe 'fb_systemd::default', :supported => [:centos7] do |tc|
+recipe 'fb_systemd::default', :unsupported => [:mac_os_x] do |tc|
   let(:chef_run) do
     tc.chef_run
   end

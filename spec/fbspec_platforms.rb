@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # vim: syntax=ruby:expandtab:shiftwidth=2:softtabstop=2:tabstop=2
 #
 # Copyright (c) 2016-present, Facebook, Inc.
@@ -15,17 +17,34 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-PLATFORMS = {
-  :centos7 => [
-    {
-      'platform' => 'centos',
-      'version' => '7.3.1611',
-    },
-  ],
-  :mac_os_x => [
-    {
-      'platform' => 'mac_os_x',
-      'version' => '10.12',
-    },
-  ],
-}.freeze
+PLATFORMS = if Fauxhai::VERSION.start_with?('6')
+              {
+                centos7: [
+                  {
+                    'platform' => 'centos',
+                    'version' => '7.3.1611'
+                  }
+                ],
+                mac_os_x: [
+                  {
+                    'platform' => 'mac_os_x',
+                    'version' => '10.12'
+                  }
+                ]
+              }.freeze
+            else
+              {
+                centos8: [
+                  {
+                    'platform' => 'centos',
+                    'version' => '8'
+                  }
+                ],
+                mac_os_x: [
+                  {
+                    'platform' => 'mac_os_x',
+                    'version' => '10.15'
+                  }
+                ]
+              }.freeze
+            end
