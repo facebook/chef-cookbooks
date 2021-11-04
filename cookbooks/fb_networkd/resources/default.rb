@@ -30,6 +30,15 @@ action :manage do
          'names conflict: ' + dup_names.join(', ').to_s
   end
 
+  config_glob = ::File.join(
+    FB::Networkd::BASE_CONFIG_PATH, '*.{network,netdev,link}'
+  )
+  Dir.glob(config_glob).each do |path|
+    unless ::File.basename(path).include?('-fb_networkd-')
+      Chef::Log.warn("fb_networkd: Unmanaged network config #{path} found")
+    end
+  end
+
   node['fb_networkd']['networks'].each do |name, defconf|
     conf = defconf.dup
     conf['name'] = name
