@@ -559,13 +559,16 @@ class Chef
     end
 
     def get_flexible_shard(shard_size)
-      if node['shard_seed']
-        node['shard_seed'] % shard_size
-      else
-        # backwards compat for Facebook until
-        # https://github.com/chef/ohai/pull/877 is out
-        node['fb']['shard_seed'] % shard_size
-      end
+      @flexible_shard_value ||= {}
+      @flexible_shard_value[shard_size] ||=
+        if node['shard_seed']
+          node['shard_seed'] % shard_size
+        else
+          # backwards compat for Facebook until
+          # https://github.com/chef/ohai/pull/877 is out
+          node['fb']['shard_seed'] % shard_size
+        end
+      @flexible_shard_value[shard_size]
     end
 
     def get_seeded_flexible_shard(shard_size, string_seed = '')
@@ -582,7 +585,8 @@ class Chef
     end
 
     def in_shard?(shard_threshold)
-      self.in_flexible_shard?(shard_threshold, 100)
+      @in_shard ||= self.get_flexible_shard(100)
+      @in_shard <= shard_threshold
     end
 
     def _timeshard_value(duration)

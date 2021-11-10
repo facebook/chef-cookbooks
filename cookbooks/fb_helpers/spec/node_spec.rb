@@ -97,15 +97,72 @@ describe 'Chef::Node' do
     end
     it 'should return true if we are in flexible_shard' do
       node.in_flexible_shard?(66, 100).should eq(true)
+      node.in_flexible_shard?(99, 100).should eq(true)
       node.in_flexible_shard?(466, 1000).should eq(true)
       node.in_flexible_shard?(116, 255).should eq(true)
       node.in_flexible_shard?(2, 12).should eq(true)
     end
     it 'should return false if we are not in flexible_shard' do
+      node.in_flexible_shard?(0, 100).should eq(false)
       node.in_flexible_shard?(65, 100).should eq(false)
       node.in_flexible_shard?(465, 1000).should eq(false)
       node.in_flexible_shard?(115, 255).should eq(false)
       node.in_flexible_shard?(1, 12).should eq(false)
+    end
+    it 'should have consistent overflow behaviour' do
+      node.in_flexible_shard?(100, 100).should eq(true)
+      node.in_flexible_shard?(199, 100).should eq(true)
+    end
+    it 'should have consistent underflow behaviour' do
+      node.in_flexible_shard?(-1, 100).should eq(false)
+      node.in_flexible_shard?(-99, 100).should eq(false)
+    end
+  end
+
+  context 'Chef::Node.get_flexible_shard' do
+    before do
+      # Taken from dev1020.prn2.facebook.com
+      # This will be shard 66 in 100
+      node.default['shard_seed'] = 244690466
+      node.default['fqdn'] = 'dev1020.prn2.facebook.com'
+    end
+    it 'should return correct shard on multiple calls' do
+      node.get_flexible_shard(100).should eq(66)
+      # Should remain 66 on second calling
+      node.get_flexible_shard(100).should eq(66)
+    end
+  end
+
+  context 'Chef::Node.in_shard?' do
+    before do
+      # Taken from dev1020.prn2.facebook.com
+      # This will be shard 66 in 100
+      node.default['shard_seed'] = 244690466
+      node.default['fqdn'] = 'dev1020.prn2.facebook.com'
+    end
+    it 'should return true if we are in shard' do
+      node.in_shard?(66).should eq(true)
+      # Should remain true on second calling
+      node.in_shard?(66).should eq(true)
+
+      node.in_shard?(67).should eq(true)
+    end
+    it 'should return false if we are not in shard' do
+      node.in_shard?(65).should eq(false)
+      # Should remain false on second calling
+      node.in_shard?(65).should eq(false)
+    end
+    it 'should retain legacy overflow behaviour' do
+      # avoid using literals so linters don't fire
+      [100, 199].each do |v|
+        node.in_shard?(v).should eq(true)
+      end
+    end
+    it 'should retain legacy underflow behaviour' do
+      # avoid using literals so linters don't fire
+      [-1, -99].each do |v|
+        node.in_shard?(v).should eq(false)
+      end
     end
   end
 
