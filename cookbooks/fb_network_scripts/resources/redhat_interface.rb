@@ -41,7 +41,7 @@ action_class do
 end
 
 load_current_value do |new_resource|
-  if node.in_shard?(4)
+  if node.in_shard?(14)
     running Helpers.running2?(new_resource.interface, node)
   else
     running Helpers.running?(new_resource.interface, node)
