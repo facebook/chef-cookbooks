@@ -2,11 +2,20 @@
 # Cookbook Name:: fb_dbus
 # Recipe:: default
 #
-# vim: syntax=ruby:expandtab:shiftwidth=2:softtabstop=2:tabstop=2
+# Copyright (c) 2018-present, Facebook, Inc.
+# All rights reserved.
 #
-# Copyright 2011-present, Facebook
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 #
-# All rights reserved - Do Not Redistribute
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 #
 
 unless node.centos?
@@ -44,20 +53,15 @@ cookbook_file '/usr/lib/systemd/scripts/dbus-restart-hack.sh' do
   mode '0755'
 end
 
-directory '/etc/systemd/system/dbus.service.d' do
+fb_systemd_override 'dbus' do
   only_if { node['fb_dbus']['implementation'] == 'dbus-daemon' }
-  owner 'root'
-  group 'root'
-  mode '0755'
-end
-
-cookbook_file '/etc/systemd/system/dbus.service.d/dbus.conf' do
-  only_if { node['fb_dbus']['implementation'] == 'dbus-daemon' }
-  source 'dbus.conf'
-  owner 'root'
-  group 'root'
-  mode '0644'
-  notifies :run, 'fb_systemd_reload[system instance]', :immediately
+  unit_name 'dbus.service'
+  content({
+            'Service' => {
+              'ExecStartPost' =>
+                '-/usr/lib/systemd/scripts/dbus-restart-hack.sh',
+            },
+          })
 end
 
 file '/usr/lib/systemd/scripts/dbus-restart-hack.sh' do
@@ -65,12 +69,11 @@ file '/usr/lib/systemd/scripts/dbus-restart-hack.sh' do
   action :delete
 end
 
-directory 'remove /etc/systemd/system/dbus.service.d' do
+fb_systemd_override 'remove dbus override' do
   only_if { node['fb_dbus']['implementation'] == 'dbus-broker' }
-  path '/etc/systemd/system/dbus.service.d'
-  recursive true
+  override_name 'dbus'
+  unit_name 'dbus.service'
   action :delete
-  notifies :run, 'fb_systemd_reload[system instance]', :immediately
 end
 
 fb_dbus_implementation 'setup dbus implementation' do

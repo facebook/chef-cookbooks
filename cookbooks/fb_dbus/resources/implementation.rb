@@ -1,4 +1,20 @@
 # vim: syntax=ruby:expandtab:shiftwidth=2:softtabstop=2:tabstop=2
+#
+# Copyright (c) 2018-present, Facebook, Inc.
+# All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
 
 property :implementation, ['dbus-daemon', 'dbus-broker']
 
@@ -22,12 +38,15 @@ action :setup do
   wanted_impl = new_resource.implementation
   current_impl = current_resource.implementation
 
-  # Both dbus-daemon and dbus-broker rely on the dbus unit being enabled. If
-  # we're currently running dbus-daemon and want to continue running it, also
-  # ensure it's started
-  dbus_action = [:enable]
-  if wanted_impl == 'dbus-daemon' && current_impl == 'dbus-daemon'
-    dbus_action << :start
+  # Only enable dbus-daemon if it's the wanted implementation; if it's also the
+  # current one, ensure it's started
+  if wanted_impl == 'dbus-daemon'
+    dbus_action = [:enable]
+    if current_impl == 'dbus-daemon'
+      dbus_action << :start
+    end
+  else
+    dbus_action = [:disable]
   end
 
   service 'dbus' do
@@ -59,10 +78,19 @@ action :setup do
     end
   end
 
-  # If we need to switch dbus implementation, request a reboot
-  fb_helpers_reboot 'switch dbus implementation' do
-    only_if { wanted_impl != current_impl }
-    required node['fb_dbus']['reboot_required']
-    action :deferred
+  # If we need to switch dbus implementation and we're allowed to, request a
+  # reboot
+  if wanted_impl != current_impl
+    if node['fb_dbus']['allow_implementation_switch']
+      fb_helpers_reboot 'switch dbus implementation' do
+        required node['fb_dbus']['reboot_required']
+        action :deferred
+      end
+    else
+      Chef::Log.warn(
+        "fb_dbus: current dbus implementation is #{current_impl} but" +
+        "#{wanted_impl} is desired; reboot to complete the switchover",
+      )
+    end
   end
 end

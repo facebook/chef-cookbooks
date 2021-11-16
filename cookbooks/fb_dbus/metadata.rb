@@ -1,9 +1,12 @@
-# vim: syntax=ruby:expandtab:shiftwidth=2:softtabstop=2:tabstop=2
+# Copyright (c) 2018-present, Facebook, Inc.
 name 'fb_dbus'
-maintainer 'hmdp'
-maintainer_email 'oncall+hm_data_plane@xmail.facebook.com'
-license 'All rights reserved'
-description 'Facebook dbus Cookbook'
+maintainer 'Facebook'
+maintainer_email 'noreply@facebook.com'
+license 'Apache-2.0'
+description 'Installs/Configures dbus'
+source_url 'https://github.com/facebook/chef-cookbooks/'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
 version '0.0.1'
-depends 'fb_util'
+supports 'centos'
+supports 'fedora'
+depends 'fb_helpers'
