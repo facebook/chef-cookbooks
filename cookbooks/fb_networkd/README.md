@@ -17,28 +17,67 @@ Attributes
 
 Usage
 -----
-Include `fb_networkd` to configure networkd on your system. This cookbook
+Include `fb_networkd` to configure systemd-networkd on your system. This cookbook
 leverages `fb_systemd` to install and enable the `systemd-networkd` service.
 
-By default, `fb_networkd` will define a stub config for the primary interface,
-which is denoted by `node['fb_networkd']['primary_interface']` and defaults to
-`eth0`. If this is changed, you may want to also remove the default config:
+### Configuration Overview
+
+#### `node['fb_networkd']['primary_interface']`
+Sets the primary interface to use on a host. By default, `fb_networkd` will
+define a stub configuration for the primary interface, which is denoted by
+`node['fb_networkd']['primary_interface']` and defaults to `eth0`. If this is
+changed, you may want to also remove the default configuration:
 
 ```ruby
 node.default['fb_networkd']['primary_interface'] = 'eth2'
 node.default['fb_networkd']['networks'].delete('eth0')
 ```
 
+#### node['fb_networkd']['networks'][$NETWORK]['priority']
+#### node['fb_networkd']['links'][$LINK]['priority']
+#### node['fb_networkd']['devices'][$DEVICE]['priority']
 The default priorities for a configuration are defined by the
 `DEFAULT_NETWORK_PRIORITY`, `DEFAULT_DEVICE_PRIORITY`, and
 `DEFAULT_LINK_PRIORITY` constants, except for the primary interface which
 defaults to priorities defined by `DEFAULT_PRIMARY_INTERFACE_NETWORK_PRIORITY`,
 `DEFAULT_PRIMARY_INTERFACE_DEVICE_PRIORITY`, and
 `DEFAULT_PRIMARY_INTERFACE_LINK_PRIORITY`. These can be overridden with their
-respective attributes (example below).
+respective attributes.
 
-Add networks, links and virtual network devices configurations to the
-respective attributes, e.g.:
+#### node['fb_networkd']['networks'][$NETWORK]['config']
+#### node['fb_networkd']['links'][$LINK]['config']
+#### node['fb_networkd']['devices'][$DEVICE]['config']
+The mapping of values to `systemd-networkd` properties. Each `config` is a Hash
+where each systemd-networkd configuration section is a key, and the value is
+another Hash of properties and values. See below for an example.
+
+To avoid situations where one configuration will match on all interfaces, the
+`[Match]` or `[NetDev]` section of each configuration will always be set to the
+name of the interface. So even if it is set in the attributes, `fb_networkd`
+will overwrite it when it creates the configuration.
+
+For example, these are the kind of configurations that would be generated for
+the different systemd-networkd configuration types, given an interface named
+`eth2`:
+
+```ruby
+$ cat 50-fb_networkd-eth2.network
+[Match]
+Name = eth2
+
+$ cat 50-fb_networkd-eth2.netdev
+[NetDev]
+Name = eth2
+
+$ cat 50-fb_networkd-eth2.link
+[Match]
+OriginalName = eth2
+```
+
+### Configuration Example
+
+The following is an example of how to add a networks configuration file to
+eth0:
 
 ```ruby
 node.default['fb_networkd']['networks']['eth0'] = {
@@ -65,25 +104,28 @@ node.default['fb_networkd']['networks']['eth0'] = {
 }
 ```
 
-To avoid situations where one configuration will match on all interfaces, the
-`[Match]` or `[NetDev]` section of each configuration will always be set to the
-name of the interface. For example, this is how an interface named `eth2`
-configured for the different network types might look like:
+This will generate the following configuration file:
 
 ```ruby
-$ cat 50-fb_networkd-eth2.network
+$ cat 1-fb_networkd-eth0.network
 [Match]
-Name = eth2
+Name = eth0
 
-$ cat 50-fb_networkd-eth2.netdev
-[NetDev]
-Name = eth2
+[Network]
+Address = 2001:db00::1/64
+Address = 192.168.1.1/24
+Address = 2401:db00::1/64
 
-$ cat 50-fb_networkd-eth2.link
-[Match]
-OriginalName = eth2
+[Address]
+Address = 2001:db00::1/64
+PreferredLifetime = infinity
+
+[Address]
+Address = 2401:db00::1/64
+PreferredLifetime = 0
 ```
 
+### Naming Interfaces
 According to the systemd.netdev man page, virtual network devices are created as
 soon as systemd-networkd is started. And if an existing network device with a
 specified name already exists, systemd-networkd will use it as-is rather than
