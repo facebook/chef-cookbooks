@@ -23,6 +23,7 @@ default_action :install
 property :version, :kind_of => String
 
 load_current_value do
+  extend Chef::Mixin::Which
   choco_exe = which('choco.exe')
   ver = Mixlib::ShellOut.new("#{choco_exe} --version")
   begin
