@@ -16,9 +16,11 @@
 
 module FB
   class SystemUpgrade
+    extend Chef::Mixin::Which
+
     def self.get_upgrade_command(node)
       package_manager = node.default_package_manager
-      unless package_manager.include?('yum', 'dnf')
+      unless ['yum', 'dnf'].include?(package_manager)
         fail "fb_system_upgrade: default package manager #{package_manager} " +
              'is not supported'
       end

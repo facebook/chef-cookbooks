@@ -42,7 +42,7 @@ action :run do
     end
   end
 
-  cmd = FB::SystemUpgrade.get_upgrade_cmd(node)
+  cmd = FB::SystemUpgrade.get_upgrade_command(node)
 
   ruby_block 'actual_dnf_upgrade' do # ~FC014
     block do
