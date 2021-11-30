@@ -16,6 +16,7 @@
 # limitations under the License.
 
 require './spec/spec_helper'
+require_relative '../libraries/fb_helpers'
 require_relative '../libraries/node_methods'
 
 describe 'Chef::Node' do
@@ -275,6 +276,42 @@ describe 'Chef::Node' do
       ::File.stub(:directory?).with('/run/systemd/system').
         and_return false
       node.systemd?.should eq(false)
+    end
+  end
+
+  context 'Chef::Node.validate_and_fail_on_dynamic_addresses' do
+    it 'no addresses; no failure' do
+      node.validate_and_fail_on_dynamic_addresses
+    end
+
+    before do
+      node.automatic['network']['interfaces']['eth0']['addresses'][
+        '2001:db8:3c4d:15::1a2f:1a2b']
+    end
+    it 'no address family; no failure' do
+      node.validate_and_fail_on_dynamic_addresses
+    end
+
+    before do
+      node.automatic['network']['interfaces']['eth0']['addresses'][
+        '2001:db8:3c4d:15::1a2f:1a2b']['family'] = 'inet6'
+    end
+    it 'no tags; no failure' do
+      node.validate_and_fail_on_dynamic_addresses
+    end
+
+    it 'no dynamic tags; no failure' do
+      node.automatic['network']['interfaces']['eth0']['addresses'][
+        '2001:db8:3c4d:15::1a2f:1a2b']['tags'] = ['scope', 'global']
+      node.validate_and_fail_on_dynamic_addresses
+    end
+
+    it 'should fail because of a dynamic address' do
+      node.automatic['network']['interfaces']['eth0']['addresses'][
+        '2001:db8:3c4d:15::1a2f:1a2b']['tags'] = ['scope', 'global', 'dynamic']
+      expect do
+        node.validate_and_fail_on_dynamic_addresses
+      end.to raise_error(RuntimeError)
     end
   end
 end
