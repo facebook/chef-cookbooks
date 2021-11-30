@@ -958,6 +958,19 @@ class Chef
       end
     end
 
+    def validate_and_fail_on_dynamic_addresses
+      node['network']['interfaces'].each do |if_str, if_data|
+        next unless if_data['addresses']
+        if_data['addresses'].each do |addr_str, addr_data|
+          next unless addr_data['family'] == 'inet6'
+          if Array(addr_data['tags']).include?('dynamic')
+            fail "fb_helpers: interface #{if_str} has a dynamic " +
+                 "address: #{addr_str}."
+          end
+        end
+      end
+    end
+
     def nw_changes_allowed?
       method = node['fb_helpers']['network_changes_allowed_method']
       if method

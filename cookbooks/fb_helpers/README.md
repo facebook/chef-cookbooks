@@ -408,6 +408,10 @@ your node.
    Returns true if the eth MSI vectors are affinitized (i.e. they are spread
    across all available CPUs).
 
+* `node.validate_and_fail_on_dynamic_addresses`
+   Fail a Chef run if a dynamic address is found on one of the network
+   interfaces. Examples of dynamic addresses include SLAAC or DHCP(v6).
+
 * `node.nw_changes_allowed?`
    True if `node['fb_helpers']['network_changes_allowed_method']` is set and
    returns true, or node is in firstboot or `FB::Helpers::NW_CHANGES_ALLOWED`

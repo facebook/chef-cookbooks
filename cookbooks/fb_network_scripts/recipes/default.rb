@@ -250,16 +250,5 @@ end
 # Examples of dynamic addresses include SLAAC or DHCP(v6).
 whyrun_safe_ruby_block 'validate dynamic address' do
   not_if { node['fb_network_scripts']['allow_dynamic_addresses'] }
-  block do
-    node['network']['interfaces'].each do |if_str, if_data|
-      next unless if_data['addresses']
-      if_data['addresses'].each do |addr_str, addr_data|
-        next unless addr_data['family'] == 'inet6'
-        if Array(addr_data['tags']).include?('dynamic')
-          fail "fb_network_scripts: interface #{if_str} has a dynamic " +
-               "address: #{addr_str}."
-        end
-      end
-    end
-  end
+  block { node.validate_and_fail_on_dynamic_addresses }
 end
