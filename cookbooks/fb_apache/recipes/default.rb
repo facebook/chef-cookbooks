@@ -47,34 +47,39 @@ apache_version =
     node['platform_version'].to_f >= 7.0 ? '2.4' : '2.2'
   end
 
+httpdir = value_for_platform_family(
+  'rhel' => '/etc/httpd',
+  'debian' => '/etc/apache2',
+)
+
 confdir =
   case node['platform_family']
   when 'rhel'
-    '/etc/httpd/conf.d'
+    "#{httpdir}/conf.d"
   when 'debian'
     case apache_version
     when '2.2'
-      '/etc/apache2/conf.d'
+      "#{httpdir}/conf.d"
     when '2.4'
-      '/etc/apache2/conf-enabled'
+      "#{httpdir}/conf-enabled"
     end
   end
 
 sitesdir = value_for_platform_family(
   'rhel' => confdir,
-  'debian' => '/etc/apache2/sites-enabled',
+  'debian' => "#{httpdir}/sites-enabled",
 )
 
 moddir =
   case node['platform_family']
   when 'rhel'
-    '/etc/httpd/conf.modules.d'
+    "#{httpdir}/conf.modules.d"
   when 'debian'
     case apache_version
     when '2.2'
-      '/etc/apache2/modules-enabled'
+      "#{httpdir}/modules-enabled"
     when '2.4'
-      '/etc/apache2/mods-enabled'
+      "#{httpdir}/mods-enabled"
     end
   end
 
@@ -146,6 +151,7 @@ template "#{moddir}/fb_modules.conf" do
   owner 'root'
   group 'root'
   mode '0644'
+  notifies :verify, 'fb_apache_verify_configs[doit]', :before
   notifies :restart, 'service[apache]'
 end
 
@@ -153,6 +159,7 @@ template "#{sitesdir}/fb_sites.conf" do
   owner 'root'
   group 'root'
   mode '0644'
+  notifies :verify, 'fb_apache_verify_configs[doit]', :before
   notifies :reload, 'service[apache]'
 end
 
@@ -160,6 +167,7 @@ template "#{confdir}/fb_apache.conf" do
   owner 'root'
   group 'root'
   mode '0644'
+  notifies :verify, 'fb_apache_verify_configs[doit]', :before
   notifies :reload, 'service[apache]'
 end
 
@@ -168,6 +176,7 @@ template "#{moddir}/00-mpm.conf" do
   group 'root'
   mode '0644'
   # MPM cannot be changed on reload, only restart
+  notifies :verify, 'fb_apache_verify_configs[doit]', :before
   notifies :restart, 'service[apache]'
 end
 
@@ -178,7 +187,20 @@ template "#{confdir}/status.conf" do
   group 'root'
   mode '0644'
   variables(:location => '/server-status')
+  notifies :verify, 'fb_apache_verify_configs[doit]', :before
   notifies :restart, 'service[apache]'
+end
+
+moddirbase = ::File.basename(moddir)
+sitesdirbase = ::File.basename(sitesdir)
+confdirbase = ::File.basename(confdir)
+fb_apache_verify_configs 'doit' do
+  only_if { node.in_shard?(0) }
+  httpdir httpdir
+  moddir moddirbase
+  sitesdir sitesdirbase
+  confdir confdirbase
+  action :nothing
 end
 
 if node['platform_family'] == 'debian'
