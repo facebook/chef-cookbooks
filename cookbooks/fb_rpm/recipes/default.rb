@@ -23,3 +23,17 @@ unless node.centos?
 end
 
 include_recipe 'fb_rpm::packages'
+
+directory '/etc/rpm' do
+  owner 'root'
+  group 'root'
+  mode '0755'
+end
+
+template '/etc/rpm/macros' do
+  source 'macros.erb'
+  variables :overrides => {}
+  owner 'root'
+  group 'root'
+  mode '0644'
+end
