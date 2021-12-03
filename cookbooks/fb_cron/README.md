@@ -19,6 +19,8 @@ Attributes
 * node['fb_cron']['jobs'][$NAME]['splaysecs']
 * node['fb_cron']['jobs'][$NAME]['exclusive']
 * node['fb_cron']['anacrontab']['environment']['$SETTING']
+* node['fb_cron']['cron_allow']
+* node['fb_cron']['cron_deny']
 
 Usage
 -----
@@ -117,3 +119,9 @@ node.default['fb_cron']['anacrontab']['environment']['start_hours_range'] = '6-8
 ```
 
 NOTE: This is currently only implemented on Redhat-like OSes.
+
+### configuring who can run crontab command
+Use the `node['fb_cron']['cron_allow']` and `node['fb_cron']['cron_deny']`
+attributes to control the content of the `/etc/cron.allow` and `/etc/cron.deny`
+files. If the attribute doesn't exist the file will be removed.
+This can be used for compliance with security benchmarks.

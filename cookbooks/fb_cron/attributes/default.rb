@@ -27,6 +27,8 @@ default['fb_cron'] = {
       'start_hours_range' => '3-22',
     },
   },
+  'cron_deny' => [],
+  'cron_allow' => [],
 
   # Path for the crontab that contains all the fb_cron job entries.
   # This is a hidden attribute because people shouldn't change this unless
