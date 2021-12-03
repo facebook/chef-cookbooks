@@ -25,6 +25,7 @@ action :manage do
   ]
   Dir.glob("#{new_resource.mod_dir}/*").each do |f|
     next if allowed.include?(f)
+
     if ::File.symlink?(f)
       link f do
         action :delete
