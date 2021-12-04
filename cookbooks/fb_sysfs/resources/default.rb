@@ -19,11 +19,10 @@
 
 default_action :set
 
-property :path, :name_property => true
-property :value, :is => [String, Integer, :EINVAL], :required => true
-property :type, :is => Symbol, :required => true, :default => :string
-property :ignore_einval, :is => [TrueClass, FalseClass], :required => true,
-                         :default => false
+property :path, String, :name_property => true
+property :value, [String, Integer, :EINVAL], :required => true
+property :type, Symbol, :required => true
+property :ignore_einval, [true, false], :default => false
 
 action_class do
   include FB::Sysfs::Provider
