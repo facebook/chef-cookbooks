@@ -26,7 +26,7 @@ action_class do
       when /^\[(.*)\]$/
         section = $1
         config[section] = {}
-      when /^(\w+)\s*:\s*([^\(]+) \(.*\)$/
+      when /^(\w+)\s*:\s*([^(]+) \(.*\)$/
         config[section][$1] = $2
       end
     end
@@ -45,13 +45,13 @@ action :config do
   config = get_current_config
   want = node['fb_ntp']['servers']
   have = config['TimeProviders'].fetch('NtpServer', '').split(',')
-  if Set.new(want) != Set.new(have)
+  if Set.new(want) == Set.new(have)
+    Chef::Log.debug('fb_ntp[windows_config]: NTP servers are correct')
+  else
     Chef::Log.info(
       'fb_ntp[windows_config]: Changing NTP servers from ' +
       "#{have.join(', ')} to #{want.join(', ')}",
     )
     set_ntp_servers
-  else
-    Chef::Log.debug('fb_ntp[windows_config]: NTP servers are correct')
   end
 end
