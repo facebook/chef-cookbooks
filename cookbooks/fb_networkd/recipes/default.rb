@@ -58,3 +58,10 @@ node['network']['interfaces'].to_hash.each_key do |iface|
     action :nothing
   end
 end
+
+# Conditionally fail if a dynamic address was found on one of the interfaces.
+# Examples of dynamic addresses include SLAAC or DHCP(v6).
+whyrun_safe_ruby_block 'validate dynamic address' do
+  not_if { node['fb_networkd']['allow_dynamic_addresses'] }
+  block { node.validate_and_fail_on_dynamic_addresses }
+end

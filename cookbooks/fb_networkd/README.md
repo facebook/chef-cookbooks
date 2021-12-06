@@ -8,6 +8,7 @@ Requirements
 Attributes
 ----------
 * node['fb_networkd']['primary_interface']
+* node['fb_networkd']['allow_dynamic_addresses']
 * node['fb_networkd']['networks'][$NETWORK]['priority']
 * node['fb_networkd']['networks'][$NETWORK]['config']
 * node['fb_networkd']['links'][$LINK]['priority']
@@ -32,6 +33,10 @@ changed, you may want to also remove the default configuration:
 node.default['fb_networkd']['primary_interface'] = 'eth2'
 node.default['fb_networkd']['networks'].delete('eth0')
 ```
+
+#### `node['fb_networkd']['allow_dynamic_addresses']`
+Controls whether to fail if a dynamic address is found on one of the
+interfaces. Examples of dynamic addresses include SLAAC or DHCP(v6).
 
 #### node['fb_networkd']['networks'][$NETWORK]['priority']
 #### node['fb_networkd']['links'][$LINK]['priority']
