@@ -22,7 +22,7 @@ describe FB::Version do
     expect(FB::Version.new('1.3').to_a).to eq([1, 3])
   end
 
-  # rubocop:disable Lint/UselessComparison,Style/CaseEquality,Metrics/LineLength
+  # rubocop:disable Lint/UselessComparison,Style/CaseEquality,Layout/LineLength
   context 'compares versions' do
     it 'less than' do
       expect(FB::Version.new('1.3') < FB::Version.new('1.21')).to eq(true)
@@ -65,7 +65,7 @@ describe FB::Version do
       expect(FB::Version.new('1.2.36') === FB::Version.new('1.4.35')).to eq(false)
     end
   end
-  # rubocop:enable Lint/UselessComparison,Style/CaseEquality,Metrics/LineLength
+  # rubocop:enable Lint/UselessComparison,Style/CaseEquality,Layout/LineLength
   context 'old behavior' do
     context 'broken' do
       it 'ignores _' do

@@ -892,11 +892,11 @@ class Chef
       # implicit-begin is a function of ruby2.5 and later, but we still
       # support 2.4, so.... until then
       node_path.inject(self) do |location, key|
-        begin
-          location.attribute?(key.to_s) ? location[key] : default
-        rescue NoMethodError
-          default
-        end
+
+        location.attribute?(key.to_s) ? location[key] : default
+      rescue NoMethodError
+        default
+
       end
     end
 

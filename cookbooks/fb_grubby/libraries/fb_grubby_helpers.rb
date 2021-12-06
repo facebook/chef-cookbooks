@@ -25,9 +25,7 @@ module FB
     end
 
     def self.kernels
-      @kernels ||= begin
-        ::Dir.glob('/boot/vmlinuz-*-*.*.*').sort
-      end
+      @kernels ||= ::Dir.glob('/boot/vmlinuz-*-*.*.*').sort
     end
 
     def get_boot_entry(kernel_path)

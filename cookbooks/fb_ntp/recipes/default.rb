@@ -48,16 +48,16 @@ whyrun_safe_ruby_block 'enforce ACL hardening' do
     # implicit-begin is a function of ruby2.5 and later, but we still
     # support 2.4, so.... until then
     node['fb_ntp']['servers'].each do |host|
-      begin
-        ips = Resolv.getaddresses(host)
-        ips.each do |ip|
-          dash6 = ''
-          dash6 = '-6 ' if IPAddr.new(ip).ipv6?
-          acl_entries << "restrict #{dash6}#{ip} ##{host}"
-        end
-      rescue Resolv::ResolvError
-        Chef::Log.warn("fb_ntp: failed to resolve #{host}, skipping")
+
+      ips = Resolv.getaddresses(host)
+      ips.each do |ip|
+        dash6 = ''
+        dash6 = '-6 ' if IPAddr.new(ip).ipv6?
+        acl_entries << "restrict #{dash6}#{ip} ##{host}"
       end
+    rescue Resolv::ResolvError
+      Chef::Log.warn("fb_ntp: failed to resolve #{host}, skipping")
+
     end
 
     node.default['fb_ntp']['acl_entries'] = acl_entries +
