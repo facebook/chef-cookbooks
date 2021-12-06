@@ -179,7 +179,7 @@ If the has is specified, it takes one or more of the following keys:
       array_filter.each do |f|
         keys = f.split('/')
         h = nil
-        keys.reverse.each do |k|
+        keys.reverse_each do |k|
           h = { k => h }
         end
         self.merge_hash!(hash_filter, h)
