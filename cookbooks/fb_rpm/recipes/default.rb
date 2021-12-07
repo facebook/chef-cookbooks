@@ -30,10 +30,45 @@ directory '/etc/rpm' do
   mode '0755'
 end
 
+whyrun_safe_ruby_block 'set database backend' do
+  block do
+    node.default['fb_rpm']['macros']['%_db_backend'] =
+      node['fb_rpm']['db_backend']
+  end
+end
+
 template '/etc/rpm/macros' do
   source 'macros.erb'
   variables :overrides => {}
   owner 'root'
   group 'root'
   mode '0644'
+end
+
+execute 'convert database format' do
+  only_if do
+    allow_db_conversion = node['fb_rpm']['allow_db_conversion']
+    wanted_backend = node['fb_rpm']['db_backend']
+    Chef::Log.debug("fb_rpm: allow_db_conversion is #{allow_db_conversion}")
+    if node['rpm'] && node['rpm']['macros'] &&
+        !node['rpm']['macros']['_db_backend'].nil?
+      current_backend = node['rpm']['macros']['_db_backend']
+      Chef::Log.debug("fb_rpm: current backend is #{current_backend}")
+      Chef::Log.debug("fb_rpm: wanted backend is #{wanted_backend}")
+    elsif allow_db_conversion
+      Chef::Log.warn(
+        'fb_rpm: cannot find db_backed in ohai, disabling database conversion',
+      )
+      allow_db_conversion = false
+    end
+
+    # Convert if conversion is allowed in the first place
+    allow_db_conversion &&
+      # Convert if the requested db backend doesn't match the current one,
+      # assuming the ohai plugin is available
+      ((wanted_backend != current_backend) ||
+       # Convert if we want sqlite but there's an ndb package db on disk
+       (wanted_backend == 'sqlite' && File.exist?('/var/lib/rpm/Packages.db')))
+  end
+  command '/bin/rpm --rebuilddb'
 end

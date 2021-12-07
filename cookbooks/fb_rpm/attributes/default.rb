@@ -15,8 +15,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+if (node.fedora? && node['platform_version'].to_i < 33) ||
+   (node.centos? && node['platform_version'].to_i < 9)
+  db_backend = 'bdb'
+else
+  db_backend = 'sqlite'
+end
+
 default['fb_rpm'] = {
   'macros' => {},
   'manage_packages' => true,
   'rpmbuild' => false,
+  'db_backend' => db_backend,
+  'allow_db_conversion' => false,
 }
