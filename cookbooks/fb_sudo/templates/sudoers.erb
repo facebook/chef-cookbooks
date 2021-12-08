@@ -42,6 +42,17 @@ Cmnd_Alias <%= name.upcase -%> = <%= list %>
 <% sudo['users'].sort.each do |user, specs| %>
 <%   specs.each do |sname, spec| %>
 ## <%= sname %>
-<%=    user -%> <%= spec %>
+<%     if spec.is_a?(String) %>
+<%=        user -%> <%= spec %>
+<%     elsif spec.is_a?(Hash) %>
+<%         spec.each do |oncall, value| %>
+### Oncall <%=         oncall %>
+<%              oncall_commands = [] %>
+<%              value.each do |comment, commands| %>
+<%                  oncall_commands +=  commands%>
+<%              end -%>
+<%=            user -%> <%= "ALL=(root) NOPASSWD: #{oncall_commands.join(', ')}" %>
+<%         end -%>
+<%     end -%>
 <%   end -%>
 <% end -%>

@@ -89,6 +89,41 @@ node.default['fb_sudo']['users']['johnsmith'] = {
 }
 ```
 
+To have a better management on sudo commands, command should be added with
+the maintain oncall team and the reason why you need add this command to sudoers.
+
+Usage
+node.default['fb_sudo']['users'][$USER][description][oncall_team][reason] = (
+  [list of commands]
+)
+
+The commands will be added in the /etc/sudoers as following.
+
+```
+# User
+## <description>
+### Oncall <oncall_team1>
+$USER ALL=ALL NOPASSWD: <your lists of commands>
+### Oncall <oncall_team2>
+$USER ALL=ALL NOPASSWD: <your lists of commands>
+```
+
+```ruby
+node.default['fb_sudo']['users']['oliviajindi']['test sudo']['ssh_infra'] = {
+  'reboot service' => ['/sbin/reboot'],
+  'reason for adding new commands'] => ['command1', 'command2']
+}
+```
+
+For this example, the commands will be added as
+
+```
+# User
+## test sudo
+### Oncall ssh_infra
+oliviajindi ALL=ALL NOPASSWD: '/sbin/reboot', command1, command2
+```
+
 ### Packages
 By default this cookbook keeps the sudo package up-to-date, but if you
 want to manage them locally, simply set
