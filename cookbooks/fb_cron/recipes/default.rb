@@ -160,7 +160,7 @@ if node.macos?
   end
 end
 
-if node.in_shard?(0) # __BUMP__
+if node.in_shard?(4)
   { 'cron_deny' => '/etc/cron.deny',
     'cron_allow' => '/etc/cron.allow' }.each do |key, cronfile|
     file cronfile do # this is an absolute path: ~FB031
