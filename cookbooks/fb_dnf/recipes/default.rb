@@ -26,7 +26,6 @@ if node.centos? && node['platform_version'].to_i < 8
   fail 'fb_dnf: DNF is only supported from CentOS 8 onwards'
 end
 
-include_recipe 'fb_dnf::packages'
 include_recipe 'fb_yum_repos'
 
 directory '/etc/dnf' do
@@ -43,3 +42,5 @@ fb_yum_repos_config '/etc/dnf/dnf.conf' do
 end
 
 fb_dnf_modularity 'manage modularity'
+
+include_recipe 'fb_dnf::packages'
