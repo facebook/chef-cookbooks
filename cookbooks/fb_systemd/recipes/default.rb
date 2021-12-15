@@ -49,7 +49,7 @@ template '/etc/systemd/system.conf' do
     :config => 'system',
     :section => 'Manager',
   )
-  notifies :run, 'fb_systemd_reload[system instance]', :immediately
+  notifies :reexec, 'fb_systemd_reload[system instance]', :immediately
 end
 
 template '/etc/systemd/user.conf' do
