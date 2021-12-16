@@ -56,36 +56,6 @@ module FB
       end
 
       def running?(interface, node)
-        # This has been deprecated by `running2?`
-        # TODO: Remove & rename once `running2?` has been fully rolled-out
-
-        opfile = "/sys/class/net/#{interface}/operstate"
-        if interface.include?(':')
-          # /sys does not have info on sub-interfaces.
-          #
-          # So, if we are a sub-interface, see if Ohai saw us, and then
-          # check our base interface is still up
-          unless node['network']['interfaces'][interface]
-            return false
-          end
-          opfile = "/sys/class/net/#{interface.split(':')[0]}/operstate"
-        end
-        return false unless ::File.exist?(opfile)
-        # tap interfaces must be attached to a process before they are
-        # considered "fully up", but chef can't do that.  We look at 'up'
-        # per the flags which are expressed as hex for these interfaces
-        if interface.start_with?('tap', 'tunSVC')
-          flagfile = "/sys/class/net/#{interface}/flags"
-          flags = ::File.read(flagfile).strip
-          # last bit == "1" means UP, "0" means DOWN
-          return flags.hex.to_s(2)[-1] == '1'
-        end
-        state = ::File.read(opfile).strip
-        ['up', 'unknown'].include?(state)
-      end
-
-      def running2?(interface, node)
-        # This deprecates `running?`
         # This function uses the /sys/class/net/<interface>/flags to determine
         # the state of the interface. An interface is considered DOWN
         # only if it is administratively down and not operationally down.
