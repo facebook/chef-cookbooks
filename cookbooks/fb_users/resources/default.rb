@@ -176,7 +176,13 @@ action :manage do
     group groupname do # ~FC009 ~FB015
       gid mapinfo['gid']
       system mapinfo['system'] unless mapinfo['system'].nil?
-      members info['members'] if info['members']
+      if info['members']
+        if info['members'].class == Proc
+          members lazy { info['members'].call }
+        else
+          members info['members']
+        end
+      end
       if FB::Version.new(Chef::VERSION) >= FB::Version.new('14.9')
         comment mapinfo['comment'] if mapinfo['comment']
       end

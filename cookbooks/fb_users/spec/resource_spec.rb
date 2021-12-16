@@ -72,6 +72,9 @@ recipe 'fb_users::default' do |tc|
       'testgroup' => {
         'gid' => 5555,
       },
+      'lazygroup' => {
+        'gid' => 5757,
+      },
       'users' => {
         'gid' => 100,
         'system' => true,
@@ -166,6 +169,10 @@ recipe 'fb_users::default' do |tc|
             },
             'complex' => {
               'members' => ['testuser'],
+              'action' => :add,
+            },
+            'lazygroup' => {
+              'members' => proc { ['testuser'] },
               'action' => :add,
             },
             'testgroup' => {
@@ -300,6 +307,11 @@ recipe 'fb_users::default' do |tc|
         )
         expect(chef_run).to create_group('complex').with(
           :gid => 7777,
+          :members => ['testuser'],
+          :append => false,
+        )
+        expect(chef_run).to create_group('lazygroup').with(
+          :gid => 5757,
           :members => ['testuser'],
           :append => false,
         )
