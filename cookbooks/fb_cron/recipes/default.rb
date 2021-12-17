@@ -160,24 +160,22 @@ if node.macos?
   end
 end
 
-if node.in_shard?(60)
-  { 'cron_deny' => '/etc/cron.deny',
-    'cron_allow' => '/etc/cron.allow' }.each do |key, cronfile|
-    file cronfile do # this is an absolute path: ~FB031
-      only_if { node['fb_cron'][key].to_a.empty? }
-      action :delete
-    end
+{ 'cron_deny' => '/etc/cron.deny',
+  'cron_allow' => '/etc/cron.allow' }.each do |key, cronfile|
+  file cronfile do # this is an absolute path: ~FB031
+    only_if { node['fb_cron'][key].to_a.empty? }
+    action :delete
+  end
 
-    template cronfile do # this is an absolute path: ~FB031
-      not_if { node['fb_cron'][key].to_a.empty? }
-      source 'fb_cron_allow_deny.erb'
-      owner node.root_user
-      group node.root_group
-      mode '0600'
-      variables(
-        :config => key,
-      )
-      action :create
-    end
+  template cronfile do # this is an absolute path: ~FB031
+    not_if { node['fb_cron'][key].to_a.empty? }
+    source 'fb_cron_allow_deny.erb'
+    owner node.root_user
+    group node.root_group
+    mode '0600'
+    variables(
+      :config => key,
+    )
+    action :create
   end
 end
