@@ -17,10 +17,6 @@
 # limitations under the License.
 #
 
-def whyrun_supported?
-  true
-end
-
 def get_hdparm_value(param, device)
   cmd = Mixlib::ShellOut.new("hdparm #{param} #{device}").run_command
   cmd.error!

@@ -25,10 +25,6 @@ property :type, :is => Symbol, :required => true, :default => :string
 property :ignore_einval, :is => [TrueClass, FalseClass], :required => true,
                          :default => false
 
-def whyrun_supported?
-  true
-end
-
 action_class do
   include FB::Sysfs::Provider
 end

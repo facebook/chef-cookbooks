@@ -16,10 +16,6 @@
 # limitations under the License.
 #
 
-def whyrun_supported?
-  true
-end
-
 action :remove do
   unless node['ipc']
     fail 'Unable to find IPC information from ohai, skipping remove'

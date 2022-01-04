@@ -24,10 +24,6 @@ property :config, :kind_of => Hash
 property :running, :kind_of => [TrueClass, FalseClass]
 property :path, :kind_of => String
 
-def whyrun_supported?
-  true
-end
-
 # This one is here for `load_current_value`
 class Helpers
   extend ::FB::NetworkScripts::RHInterfaceHelpers

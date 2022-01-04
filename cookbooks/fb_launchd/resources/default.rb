@@ -20,10 +20,6 @@ provides :fb_launchd, :os => 'darwin'
 
 default_action :run
 
-def whyrun_supported?
-  true
-end
-
 # Attributes that circumvent or defeat the purpose of using launchd as a node
 # API. Blacklist them so that this blows up when they're used. If you really
 # want to use these, just make a launchd resource instead.
