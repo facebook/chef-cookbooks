@@ -19,32 +19,32 @@
 
 PLATFORMS = if Fauxhai::VERSION.start_with?('6')
               {
-                centos7: [
+                :centos7 => [
                   {
                     'platform' => 'centos',
-                    'version' => '7.3.1611'
-                  }
+                    'version' => '7.3.1611',
+                  },
                 ],
-                mac_os_x: [
+                :mac_os_x => [
                   {
                     'platform' => 'mac_os_x',
-                    'version' => '10.12'
-                  }
-                ]
+                    'version' => '10.12',
+                  },
+                ],
               }.freeze
             else
               {
-                centos8: [
+                :centos8 => [
                   {
                     'platform' => 'centos',
-                    'version' => '8'
-                  }
+                    'version' => '8',
+                  },
                 ],
-                mac_os_x: [
+                :mac_os_x => [
                   {
                     'platform' => 'mac_os_x',
-                    'version' => '10.15'
-                  }
-                ]
+                    'version' => '10.15',
+                  },
+                ],
               }.freeze
             end
