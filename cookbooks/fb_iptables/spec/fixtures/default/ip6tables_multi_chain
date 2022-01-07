@@ -8,10 +8,10 @@
 COMMIT
 
 *filter
+-N LOG_DB
 :INPUT ACCEPT [0:0]
 :OUTPUT ACCEPT [0:0]
 :FORWARD ACCEPT [0:0]
-:LOG_DB  [0:0]
 # test_1
 -A INPUT -p udp -j REJECT
 # test_3
