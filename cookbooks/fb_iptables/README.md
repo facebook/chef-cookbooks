@@ -121,19 +121,19 @@ translated to key-value pairs in the config file. The keys will automatically be
 upper-cased and prefixed with `IPTABLES_` or `IP6TABLES_` as necessary. For
 example:
 
-```
+```ruby
 node.default['fb_iptables']['sysconfig']['modules'] = 'nat'
 ```
 
 would translate to:
 
-```
+```bash
 IPTABLES_MODULES="nat"
 ```
 
 and:
 
-```
+```bash
 IP6TABLES_MODULES="nat"
 ```
 
@@ -143,5 +143,8 @@ if you need to trigger on rules reloading.
 
 ### Unsupported features
 The `nat` and `security` tables are not currently supported.
+
+However, you can call `FB::Iptables.enable_nat(node)` to safely initialize
+the `nat` structures for use.
 
 User defined table are not supported.
