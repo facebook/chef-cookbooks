@@ -71,17 +71,7 @@ $AddUnixListenSocket <%= sock %>
 # not useful and an extreme performance hit
 #$ActionFileEnableSync on
 
-#
-# Set the default permissions for all log files.
-#
-$FileOwner root
-$FileGroup root
-$FileCreateMode 0644
-$DirCreateMode 0755
-$Umask 0002
-
 <% unless node['fb_syslog']['rsyslog_early_lines'].empty? %>
-# rsyslog magic that should (be able to) win over standard syslog stuff
 <%   node['fb_syslog']['rsyslog_early_lines'].each do |line| %>
 <%=    line %>
 <%   end %>
