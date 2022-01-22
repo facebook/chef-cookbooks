@@ -47,6 +47,7 @@ whyrun_safe_ruby_block 'enforce ACL hardening' do
     #
     # implicit-begin is a function of ruby2.5 and later, but we still
     # support 2.4, so.... until then
+    # rubocop:disable Style/RedundantBegin
     node['fb_ntp']['servers'].each do |host|
       begin
         ips = Resolv.getaddresses(host)
@@ -59,6 +60,7 @@ whyrun_safe_ruby_block 'enforce ACL hardening' do
         Chef::Log.warn("fb_ntp: failed to resolve #{host}, skipping")
       end
     end
+    # rubocop:enable Style/RedundantBegin
 
     node.default['fb_ntp']['acl_entries'] = acl_entries +
       node['fb_ntp']['acl_entries']
