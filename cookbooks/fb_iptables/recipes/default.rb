@@ -113,9 +113,7 @@ template iptables_rules do
     # moving from "no rules" to any rules; otherwise we still verify
     # every time).
     if FB::Iptables.iptables_active?(4)
-      Mixlib::ShellOut.new(
-        "/sbin/iptables-restore --test #{path}",
-      ).run_command.exitstatus.zero?
+      shell_out("/sbin/iptables-restore --test #{path}").exitstatus.zero?
     else
       true
     end
@@ -140,9 +138,7 @@ template ip6tables_rules do
   verify do |path|
     # See comment ip iptables_rules
     if FB::Iptables.iptables_active?(6)
-      Mixlib::ShellOut.new(
-        "/sbin/ip6tables-restore --test #{path}",
-      ).run_command.exitstatus.zero?
+      shell_out("/sbin/ip6tables-restore --test #{path}").exitstatus.zero?
     else
       true
     end
