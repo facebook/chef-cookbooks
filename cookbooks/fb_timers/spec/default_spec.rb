@@ -270,21 +270,21 @@ recipe 'fb_timers::default', :unsupported => [:mac_os_x] do |tc|
       end
     end
 
-    it 'should disable the old service units' do
-      unit_types.each do |type|
-        expect(chef_run).to disable_service("old.#{type}")
-        expect(chef_run).to disable_service("only_if_disabled.#{type}")
-        expect(chef_run).to_not disable_service("current.#{type}")
-        expect(chef_run).to_not disable_service("only_if_enabled.#{type}")
-      end
-    end
-
     it 'should stop the old service units' do
       unit_types.each do |type|
         expect(chef_run).to stop_service("old.#{type}")
         expect(chef_run).to stop_service("only_if_disabled.#{type}")
         expect(chef_run).to_not stop_service("current.#{type}")
         expect(chef_run).to_not stop_service("only_if_enabled.#{type}")
+      end
+    end
+
+    it 'should disable the old service units' do
+      unit_types.each do |type|
+        expect(chef_run).to disable_service("old.#{type}")
+        expect(chef_run).to disable_service("only_if_disabled.#{type}")
+        expect(chef_run).to_not disable_service("current.#{type}")
+        expect(chef_run).to_not disable_service("only_if_enabled.#{type}")
       end
     end
 

@@ -57,11 +57,11 @@ action :run do
       # systemd can get confused if you delete the file without disabling
       # the unit first. Disabling a linked unit removes the symlink anyway.
       service fname do
-        action [:disable, :stop]
+        action [:stop, :disable]
       end
     end
 
-    Chef::Log.warn("fb_timers: Removing unknown #{type} file #{path}")
+    Chef::Log.info("fb_timers: Removing unknown #{type} file #{path}")
     file path do
       action :delete
     end
@@ -223,7 +223,7 @@ action :run do
       !::File.exist?(::File.readlink(unit))
   end
   dead_links.each do |unit|
-    Chef::Log.warn("fb_timers: Removing dead link #{unit}")
+    Chef::Log.info("fb_timers: Removing dead link #{unit}")
     # we can't use systemctl disable here because it's already deleted
     link unit do
       action :delete
