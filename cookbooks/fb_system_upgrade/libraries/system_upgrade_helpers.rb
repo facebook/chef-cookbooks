@@ -44,7 +44,12 @@ module FB
         exclude_cmd << "-x #{exclude_pkgs.join(' -x ')}"
       end
 
-      upgrade_cmd = "#{bin} #{repos_cmd} upgrade -y #{exclude_cmd}"
+      if node['fb_system_upgrade']['allow_downgrades']
+        dnf_cmd = 'distro-sync --allowerasing'
+      else
+        dnf_cmd = 'upgrade'
+      end
+      upgrade_cmd = "#{bin} #{repos_cmd} #{dnf_cmd} -y #{exclude_cmd}"
       log = node['fb_system_upgrade']['log']
       cmd = "date &>> #{log}; #{upgrade_cmd} &>> #{log}"
 

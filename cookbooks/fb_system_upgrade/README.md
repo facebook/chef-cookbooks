@@ -6,6 +6,7 @@ Requirements
 
 Attributes
 ----------
+* node['fb_system_upgrade']['allow_downgrades']
 * node['fb_system_upgrade']['early_upgrade_packages']
 * node['fb_system_upgrade']['early_remove_packages']
 * node['fb_system_upgrade']['exclude_packages']
@@ -43,6 +44,11 @@ attributes:
   are disabled except for the ones in this list during the upgrade
 * `node['fb_system_upgrade']['exclude_packages']` is a set of packages that
   should be excluded from being upgraded
+* `node['fb_system_upgrade']['allow_downgrades']` controls whether the upgrade
+  should just go forward (the default) or also allow downgrading and erasing
+  packages; this can be useful when switching between major releases, but
+  depending on the state of the repos it could also easily result in a broken
+  system, so care is recommended
 
 ### System upgrade flow
 The upgrade itself is handled by the `fb_system_upgrade` custom resource, which
