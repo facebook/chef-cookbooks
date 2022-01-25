@@ -18,6 +18,7 @@
 
 default['fb_system_upgrade'] = {
   'allow_downgrades' => false,
+  'config' => nil,
   'early_upgrade_packages' => [],
   'early_remove_packages' => [],
   'exclude_packages' => [],

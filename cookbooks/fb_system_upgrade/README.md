@@ -7,6 +7,7 @@ Requirements
 Attributes
 ----------
 * node['fb_system_upgrade']['allow_downgrades']
+* node['fb_system_upgrade']['config']
 * node['fb_system_upgrade']['early_upgrade_packages']
 * node['fb_system_upgrade']['early_remove_packages']
 * node['fb_system_upgrade']['exclude_packages']
@@ -49,6 +50,8 @@ attributes:
   packages; this can be useful when switching between major releases, but
   depending on the state of the repos it could also easily result in a broken
   system, so care is recommended
+* `node['fb_system_upgrade']['config']` is a path to a custom DNF config file
+  to use for the upgrade
 
 ### System upgrade flow
 The upgrade itself is handled by the `fb_system_upgrade` custom resource, which

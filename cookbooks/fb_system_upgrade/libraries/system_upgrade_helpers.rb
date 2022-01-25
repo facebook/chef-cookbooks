@@ -30,6 +30,10 @@ module FB
       if wrapper
         bin = "#{wrapper} #{bin}"
       end
+      config = node['fb_system_upgrade']['config']
+      if config
+        bin = "#{bin} -c #{config}"
+      end
 
       repos_cmd = ''
       repos = node['fb_system_upgrade']['repos']
