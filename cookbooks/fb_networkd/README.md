@@ -9,6 +9,7 @@ Attributes
 ----------
 * node['fb_networkd']['primary_interface']
 * node['fb_networkd']['allow_dynamic_addresses']
+* node['fb_networkd']['enable_tun']
 * node['fb_networkd']['networks'][$NETWORK]['priority']
 * node['fb_networkd']['networks'][$NETWORK]['config']
 * node['fb_networkd']['links'][$LINK]['priority']
@@ -37,6 +38,9 @@ node.default['fb_networkd']['networks'].delete('eth0')
 #### `node['fb_networkd']['allow_dynamic_addresses']`
 Controls whether to fail if a dynamic address is found on one of the
 interfaces. Examples of dynamic addresses include SLAAC or DHCP(v6).
+
+#### `node['fb_networkd']['enable_tun']`
+This boolean enables you to create TUN/TAP interfaces. Must be set explicitly.
 
 #### node['fb_networkd']['networks'][$NETWORK]['priority']
 #### node['fb_networkd']['links'][$LINK]['priority']

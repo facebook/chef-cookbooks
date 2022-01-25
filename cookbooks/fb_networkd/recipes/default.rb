@@ -36,6 +36,29 @@ fb_helpers_request_nw_changes 'manage' do
   delayed_action :cleanup_signal_files_when_no_change_required
 end
 
+if node.centos?
+  directory '/dev/net' do
+    only_if { node['fb_networkd']['enable_tun'] }
+    owner 'root'
+    group 'root'
+    mode '0755'
+  end
+
+  execute 'create_dev_net_tun' do
+    only_if { node['fb_networkd']['enable_tun'] }
+    not_if { File.chardev?('/dev/net/tun') }
+    creates '/dev/net/tun'
+    command 'mknod /dev/net/tun c 10 200'
+  end
+else # Not a centos box
+  whyrun_safe_ruby_block 'test tun sanity' do
+    only_if { node['fb_networkd']['enable_tun'] }
+    block do
+      fail 'fb_networkd: Tunneling is only supported on CentOS'
+    end
+  end
+end
+
 # Set up execute resources to reconfigure network settings so that they can be
 # notified by and subscribed to from other recipes.
 node['network']['interfaces'].to_hash.each_key do |iface|

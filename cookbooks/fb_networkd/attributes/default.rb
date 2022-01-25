@@ -21,6 +21,7 @@ primary_int = 'eth0'
 default['fb_networkd'] = {
   'allow_dynamic_addresses' => true,
   'primary_interface' => primary_int,
+  'enable_tun' => false,
 
   'networks' => {
     primary_int => {
