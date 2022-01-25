@@ -39,4 +39,8 @@ default['fb_fluentbit'] = {
   'input' => {},
   'filter' => {},
   'output' => {},
+
+  # Handle package install
+  'manage_packages' => true,
+  'plugin_manage_packages' => true,
 }

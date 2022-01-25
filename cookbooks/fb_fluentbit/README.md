@@ -5,16 +5,18 @@ This cookbook installs the Fluent Bit daemon and optionally plugins for it.
 Attributes
 ----------
 * node['fb_fluentbit']['service_config']
-* node['fb_fluentbit']['parsers']
+* node['fb_fluentbit']['parser']
 * node['fb_fluentbit']['input']
 * node['fb_fluentbit']['filter']
 * node['fb_fluentbit']['output']
 * node['fb_fluentbit']['external']
 * node['fb_fluentbit']['external_config_url']
+* node['fb_fluentbit']['manage_packages']
+* node['fb_fluentbit']['plugin_manage_packages']
 
 Usage
 -----
-Include `fb_fluentbit::default` recipe to install fluentbit. For more
+Include `fb_fluentbit::default` recipe to setup fluentbit. For more
 information about how to configure Fluent Bit, please refer to
 [the documentation](https://docs.fluentbit.io/manual/)
 
@@ -26,6 +28,13 @@ Fluentbit allows you to have multiple instances of the same plugins, for example
 multiple tail plugin instances to get logs from multiple files.
 
 Fluentbit supports built-in and external plugins.
+
+### Install FluentBit
+The package installation of `td-agent-bit` is managed through defining:
+`node.default['fb_fluentbit']['manage_packages'] = true`
+
+The purpose of this variable is to allow consumers to install their specific
+package on their own cookbook if they want to bypass the default version.
 
 ### Fetching remote config
 This cookbook can configure fluentbit to fetch its config from a remote
@@ -91,6 +100,12 @@ node.default['fb_fluentbit']['external']['my_plugin'] = {
   'path' => '/usr/local/lib/my_plugin/my_plugin.so',
 }
 ```
+
+You must include the package name as shown here and by default that package
+will be installed and upgraded to the latest available version. If you need
+to control the version explicitly, you can disable package installation by
+setting `node.default['fb_fluentbit']['manage_packages'] = false` and
+installing the package yourself, but the package name is still required.
 
 Then configure your plugin just like any other builtin plugin:
 

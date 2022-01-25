@@ -159,6 +159,10 @@ recipe('fb_fluentbit::default') do |tc|
   context 'clean config setup' do
     cached(:chef_run) do
       tc.chef_run.converge(described_recipe) do |node|
+
+        # turn on automatic upgrades
+        node.default['fb_fluentbit']['manage_packages'] = true
+
         # Modify some service settings
         node.default['fb_fluentbit']['service_config']['Log_Level'] = 'debug'
         node.default['fb_fluentbit']['service_config']['HTTP_Server'] = 'On'
@@ -232,6 +236,33 @@ recipe('fb_fluentbit::default') do |tc|
     it 'should start the service' do
       expect(chef_run).to enable_service('td-agent-bit')
       expect(chef_run).to start_service('td-agent-bit')
+    end
+  end
+
+  context 'not installing packages' do
+    cached(:chef_run) do
+      tc.chef_run.converge(described_recipe) do |node|
+        # Add a external plugin
+        node.default['fb_fluentbit']['external']['custom_plugin'] = {
+          'package' => 'my-custom-rpm',
+          'path' => '/usr/local/lib/custom_plugin/custom_plugin.so',
+        }
+
+        # turn off automatic fluentbit upgrades
+        node.default['fb_fluentbit']['manage_packages'] = false
+
+        # turn off external plugin upgrades
+        node.default['fb_fluentbit']['plugin_manage_packages'] = false
+      end
+    end
+
+    it 'should not upgrade the fluentbit package' do
+      expect(chef_run).to_not upgrade_package('td-agent-bit')
+    end
+
+    it 'should not install external plugin packages' do
+      expect(chef_run).to_not upgrade_package('fluentbit external plugins').
+        with_package_name(['my-custom-rpm'])
     end
   end
 

@@ -38,10 +38,12 @@ whyrun_safe_ruby_block 'validate fluentbit config' do
 end
 
 package 'td-agent-bit' do
+  only_if { node['fb_fluentbit']['manage_packages'] }
   action :upgrade
 end
 
 package 'fluentbit external plugins' do
+  only_if { node['fb_fluentbit']['plugin_manage_packages'] }
   package_name lazy {
     FB::Fluentbit.external_plugins_from_node(node).map(&:package).sort.uniq
   }
