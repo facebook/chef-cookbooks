@@ -22,6 +22,7 @@ end
 
 fb_choco_bootstrap 'Install Chocolatey if needed' do
   only_if { node['fb_choco']['enabled']['bootstrap'] }
+  version lazy { node['fb_choco']['bootstrap']['version'] }
 end
 
 fb_choco_configure 'configuring chocolatey client' do
