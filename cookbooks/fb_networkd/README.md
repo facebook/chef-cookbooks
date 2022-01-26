@@ -134,13 +134,6 @@ Address = 2401:db00::1/64
 PreferredLifetime = 0
 ```
 
-### Naming Interfaces
-According to the systemd.netdev man page, virtual network devices are created as
-soon as systemd-networkd is started. And if an existing network device with a
-specified name already exists, systemd-networkd will use it as-is rather than
-create its own. Thus, we advise against creating networks and devices with the
-same name.
-
 Refer to the upstream documentation for more details on how to configure
 [networks](https://www.freedesktop.org/software/systemd/man/systemd.network.html),
 [links](https://www.freedesktop.org/software/systemd/man/systemd.link.html) and

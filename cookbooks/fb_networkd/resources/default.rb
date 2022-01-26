@@ -19,17 +19,6 @@
 default_action :manage
 
 action :manage do
-  network_names = node['fb_networkd']['networks'] ?
-    node['fb_networkd']['networks'].keys : []
-  netdev_names = node['fb_networkd']['devices'] ?
-    node['fb_networkd']['devices'].keys : []
-  dup_names = network_names & netdev_names
-  if dup_names != []
-    fail 'fb_networkd: Conflicting names in network and netdev ' +
-         'configurations can lead to unexpected behavior. The following ' +
-         'names conflict: ' + dup_names.join(', ').to_s
-  end
-
   managed_networks = []
   managed_links = []
   managed_netdevs = []

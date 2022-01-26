@@ -61,7 +61,10 @@ end
 
 # Set up execute resources to reconfigure network settings so that they can be
 # notified by and subscribed to from other recipes.
-node['network']['interfaces'].to_hash.each_key do |iface|
+interfaces = (node['fb_networkd']['networks'].keys +
+              node['fb_networkd']['devices'].keys +
+              node['fb_networkd']['links'].keys).uniq
+interfaces.each do |iface|
   next if iface == 'lo'
 
   execute "networkctl reconfigure #{iface}" do
