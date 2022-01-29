@@ -49,7 +49,17 @@ action :setup do
     dbus_action = [:disable]
   end
 
-  service 'dbus' do
+  if node.centos7? || node.centos8?
+    dbus_daemon_svc = 'dbus'
+  else
+    service 'dbus' do
+      action [:enable, :start]
+    end
+
+    dbus_daemon_svc = 'dbus-daemon'
+  end
+
+  service dbus_daemon_svc do
     action dbus_action
   end
 
