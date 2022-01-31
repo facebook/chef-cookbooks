@@ -68,7 +68,7 @@ action :install do
   end
 
   converge_by("Installing chocolatey v#{desired_version}") do
-    if current_version.to_s.eql?('0')
+    if current_version == FB::Version.new('0.0.0')
       # If chocolatey doesn't exist, use the script
       run_bootstrap_script
     else
