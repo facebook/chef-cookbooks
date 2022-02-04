@@ -28,7 +28,7 @@ action :run do
     # Don't delete any directories
     next if ::File.directory?(path)
 
-    exp = /^([\w:\-.\\]+)\.(service|timer)$/
+    exp = /^([\w:\-.\\@]+)\.(service|timer)$/
     m = exp.match(fname)
     if m
       name = m[1]
