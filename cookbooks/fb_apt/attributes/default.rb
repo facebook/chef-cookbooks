@@ -40,5 +40,5 @@ default['fb_apt'] = {
   'allow_modified_pkg_keyrings' => false,
 }
 # fb_apt must be defined for this to work...
-keys = Hash[FB::Apt.get_official_keyids(node).map { |id| [id, nil] }]
+keys = FB::Apt.get_official_keyids(node).map { |id| [id, nil] }.to_h
 default['fb_apt']['keys'] = keys
