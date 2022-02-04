@@ -81,6 +81,7 @@ cookbook_file '/etc/consul/consul-agent-ca.pem' do # ~FB032
   owner 'root'
   group 'root'
   mode '0644'
+  notifies :restart, 'service[consul]'
 end
 
 cookbook_file '/etc/consul/consul-agent-ca-key.pem' do # ~FB032
@@ -92,6 +93,7 @@ cookbook_file '/etc/consul/consul-agent-ca-key.pem' do # ~FB032
   owner 'consul'
   group 'root'
   mode '0600'
+  notifies :restart, 'service[consul]'
 end
 
 cookbook_file '/etc/consul/consul-server.pem' do # ~FB032
@@ -104,6 +106,7 @@ cookbook_file '/etc/consul/consul-server.pem' do # ~FB032
   owner 'root'
   group 'root'
   mode '0644'
+  notifies :restart, 'service[consul]'
 end
 
 cookbook_file '/etc/consul/consul-server-key.pem' do # ~FB032
@@ -116,6 +119,7 @@ cookbook_file '/etc/consul/consul-server-key.pem' do # ~FB032
   owner 'consul'
   group 'root'
   mode '0600'
+  notifies :restart, 'service[consul]'
 end
 
 whyrun_safe_ruby_block 'add crypto options' do
