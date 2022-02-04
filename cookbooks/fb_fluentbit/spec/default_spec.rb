@@ -267,8 +267,10 @@ recipe('fb_fluentbit::default') do |tc|
   end
 
   context 'when defining plugins with multiple types' do
-    cached(:chef_run) do
-      tc.chef_run.converge(described_recipe) do |node|
+    let(:chef_run) { tc.chef_run }
+
+    it 'should render key/value pairs properly' do
+      chef_run.converge(described_recipe) do |node|
         node.default['fb_fluentbit']['input']['systemd']['tail_journal'] = {
           'Tag' => 'my_journal_logs',
           'Systemd_Filter' => {
@@ -277,9 +279,7 @@ recipe('fb_fluentbit::default') do |tc|
           },
         }
       end
-    end
 
-    it 'should render key/value pairs properly' do
       expect(chef_run).to render_file('/etc/td-agent-bit/td-agent-bit.conf').
         with_content(tc.fixture('systemd_duplicate_keys_service.conf'))
     end
