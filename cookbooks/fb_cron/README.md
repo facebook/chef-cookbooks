@@ -28,7 +28,7 @@ Usage
 ### Adding Jobs
 `node['fb_cron']['jobs']` is a hash of crons. To add a job, simply do:
 
-```
+```ruby
 node.default['fb_cron']['jobs']['do_this_thing'] = {
   'time' => '4 5 * * *',
   'user' => 'apache',
@@ -53,7 +53,7 @@ Any cron entry can include an `only_if` that *must* be a `proc`. It will
 be evaluated at runtime and the job will not be included if the only_if does
 not evaluate to true. For example:
 
-```
+```ruby
 node.default['fb_cron']['jobs']['do_this_thing'] = {
   'only_if' => proc { node['fb_bla']['enabled'] }
   'time' => '4 5 * * *',
@@ -83,7 +83,7 @@ job, it'll be removed from any systems it was on.
 A bunch of default crons we want everywhere are set in the attributes file, if
 you need to exempt yourself from one, you can simply remove it from the hash:
 
-```
+```ruby
 node.default['fb_cron']['jobs'].delete('do_this_thing')
 ```
 
@@ -99,7 +99,7 @@ affect the environment of the init script. On Redhat-like systems these
 variables go into `/etc/sysconfig/crond`, on Debian-like systems these go to
 `/etc/default/cron`. For example:
 
-```
+```ruby
 # For RH
 node.default['fb_cron']['environment']['CRONDARGS'] = "-s"
 # For Debian
@@ -114,7 +114,7 @@ execution. This can be configured using the
 to modify the start time of anacron jobs from the default 3-22 o'clock to 6-8
 o'clock (server time):
 
-```
+```ruby
 node.default['fb_cron']['anacrontab']['environment']['start_hours_range'] = '6-8'
 ```
 
@@ -123,5 +123,11 @@ NOTE: This is currently only implemented on Redhat-like OSes.
 ### configuring who can run crontab command
 Use the `node['fb_cron']['cron_allow']` and `node['fb_cron']['cron_deny']`
 attributes to control the content of the `/etc/cron.allow` and `/etc/cron.deny`
-files. If the attribute doesn't exist the file will be removed.
+files. The attributes default to empty arrays, and the files will be removed if
+they remain empty arrays. Simply append to them:
+
+```ruby
+node.default['fb_cron']['cron_allow'] << 'user1'
+```
+
 This can be used for compliance with security benchmarks.

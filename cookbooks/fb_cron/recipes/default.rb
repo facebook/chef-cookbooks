@@ -39,7 +39,7 @@ whyrun_safe_ruby_block 'validate_data' do
   block do
     node['fb_cron']['jobs'].to_hash.each do |name, data|
       if data['only_if']
-        unless data['only_if'].class == Proc
+        unless data['only_if'].instance_of?(Proc)
           fail 'fb_cron\'s only_if requires a Proc'
         end
 
@@ -160,15 +160,17 @@ if node.macos?
   end
 end
 
-{ 'cron_deny' => '/etc/cron.deny',
-  'cron_allow' => '/etc/cron.allow' }.each do |key, cronfile|
+{
+  'cron_deny' => '/etc/cron.deny',
+  'cron_allow' => '/etc/cron.allow',
+}.each do |key, cronfile|
   file cronfile do # this is an absolute path: ~FB031
-    only_if { node['fb_cron'][key].to_a.empty? }
+    only_if { node['fb_cron'][key].empty? }
     action :delete
   end
 
   template cronfile do # this is an absolute path: ~FB031
-    not_if { node['fb_cron'][key].to_a.empty? }
+    not_if { node['fb_cron'][key].empty? }
     source 'fb_cron_allow_deny.erb'
     owner node.root_user
     group node.root_group
