@@ -215,6 +215,9 @@ though by default it will always label the filesystem with its mountpoint.
 You can also add `part_name` to any partition hash to add a name to the partition
 created via parted; default is not named.
 
+You can also add `part_type` to add a GPT GUID type to the partition via
+sfdisk --part-type; default is no type.
+
 ### Ordering
 
 We assemble the list, and it is sorted as follows:

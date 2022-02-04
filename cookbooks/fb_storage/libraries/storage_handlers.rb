@@ -112,6 +112,7 @@ module FB
         return if device_config['whole_device']
 
         parted_commands = []
+        sfdisk_commands = []
         device_config['partitions'].each_with_index do |partinfo, partindex|
           partnum = partindex + 1
 
@@ -128,6 +129,11 @@ module FB
           end
           if partinfo['part_name']
             parted_commands << "name #{partnum} #{partinfo['part_name']}"
+          end
+          if partinfo['part_type']
+            sfdisk_commands <<
+              "sfdisk #{@device} #{partnum} " +
+                "--part-type #{partinfo['part_type']}"
           end
         end
 
@@ -149,6 +155,11 @@ module FB
           )
           sleep(1)
           max_seconds_to_wait -= 1
+        end
+
+        sfdisk_commands.each do |sfdisk_cmd|
+          Chef::Log.debug("fb_storage: Running #{sfdisk_cmd}")
+          Mixlib::ShellOut.new(sfdisk_cmd).run_command.error!
         end
       end
 
