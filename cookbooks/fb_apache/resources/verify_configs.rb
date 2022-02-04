@@ -8,7 +8,6 @@ property :confdir, String
 default_action :verify
 
 action :verify do
-
   # Verify configurations of interest using apache syntax checker `httpd -t`.
   # By default, this command run ondisc files which is too late for Chef to
   # catch anything invalid. To catch bad configs ahead of time, we copy the
@@ -86,10 +85,9 @@ action :verify do
     verify_cmd = value_for_platform_family(
       'rhel' => "httpd -t -d #{tdir}",
       'debian' => "apachectl -t -d #{tdir}",
-      )
+    )
     Chef::Log.debug("fb_apache: verify using #{verify_cmd}")
-    s = Mixlib::ShellOut.new(verify_cmd).run_command
+    s = shell_out(verify_cmd)
     s.error!
   end
-
 end

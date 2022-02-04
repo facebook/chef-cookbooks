@@ -50,7 +50,8 @@ sysconfig = {
   '_extra_lines' => [],
 }
 
-if node['platform_family'] == 'rhel'
+case node['platform_family']
+when 'rhel'
   modules += [
     'log_config',
     'logio',
@@ -71,7 +72,7 @@ if node['platform_family'] == 'rhel'
   }.each do |k, v|
     sysconfig[k] = v
   end
-elsif node['platform_family'] == 'debian'
+when 'debian'
   {
     'htcacheclean_run' => 'auto',
     'htcacheclean_mode' => 'daeon',

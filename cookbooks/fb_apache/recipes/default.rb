@@ -22,8 +22,14 @@ node.default['fb_apache']['module_packages']['wsgi'] =
   case node['platform_family']
   when 'rhel'
     node['platform_version'].to_f >= 8 ? 'python3-mod_wsgi' : 'mod_wsgi'
+  when 'debian'
+    'libapache2-mod-wsgi-py3'
+  else
+    'mod_wsgi'
   end
 
+# Case makes sense in every other case, so lets keep it here for consistency
+# rubocop:disable Chef/Style/UnnecessaryPlatformCaseStatement
 node.default['fb_apache']['modules_mapping']['wsgi'] =
   case node['platform_family']
   when 'rhel'
@@ -31,6 +37,7 @@ node.default['fb_apache']['modules_mapping']['wsgi'] =
   else
     'mod_wsgi.so'
   end
+# rubocop:enable Chef/Style/UnnecessaryPlatformCaseStatement
 
 apache_version =
   case node['platform_family']
