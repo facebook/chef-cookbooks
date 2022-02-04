@@ -51,7 +51,7 @@ end
 `path` is the name property, but you may specify it directly should you need to
 evaluate it lazily:
 
-```
+```ruby
 fb_sysfs "Set some stuff" do
   path lazy { node['fb_foo']['bar'] }
   value 'food'
