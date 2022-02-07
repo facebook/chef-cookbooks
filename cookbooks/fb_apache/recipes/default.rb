@@ -202,7 +202,6 @@ moddirbase = ::File.basename(moddir)
 sitesdirbase = ::File.basename(sitesdir)
 confdirbase = ::File.basename(confdir)
 fb_apache_verify_configs 'doit' do
-  only_if { node.in_shard?(59) }
   httpdir httpdir
   moddir moddirbase
   sitesdir sitesdirbase
