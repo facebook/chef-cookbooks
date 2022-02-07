@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require './spec/spec_helper.rb'
+require './spec/spec_helper'
 
 recipe 'fb_cron::default' do |tc|
   let(:chef_run) { tc.chef_run }
