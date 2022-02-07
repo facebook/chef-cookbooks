@@ -203,7 +203,7 @@ module FB
 
         subvolume_data.stdout.each_line do |line|
           # eg. ID 260 gen 49 top level 5 path cache
-          fields = line.split(' ')
+          fields = line.split
 
           if fields[8] == value
             return fields[1]
@@ -229,6 +229,7 @@ module FB
       def self.get_base_mount_opts(node, mountpoint)
         FB::Fstab.base_fstab_contents(node).each_line do |line|
           next if line.strip.empty?
+
           line_parts = line.strip.split
           if line_parts[1] == mountpoint
             return line_parts[3]
@@ -249,6 +250,7 @@ module FB
         unless hash_by_values.include?(hash_by)
           fail "fb_fstab: Invalid hash_by value, allowed are: #{hash_by_values}"
         end
+
         desired_mounts = node['fb_fstab']['mounts'].to_hash
         FB::Fstab.base_fstab_contents(node).each_line do |line|
           next if line.strip.empty?
