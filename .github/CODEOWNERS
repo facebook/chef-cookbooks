@@ -1,0 +1,4 @@
+# Make sure PRs get reviewers auto-added. Approve/merging
+# won't actually be affected as this repo uses ImportIt and ShipIt
+# to do the actual work internally and then have it pushed back to GH
+* @jaymzh @NaomiReeves @joshuamiller01 @davide125
