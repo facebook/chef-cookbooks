@@ -16,6 +16,7 @@ Attributes
 * node['fb_users']['users'][$USER]
 * node['fb_users']['groups']
 * node['fb_users']['groups'][$GROUP]
+* node['fb_users']['set_passwords_on_windows']
 
 Usage
 -----
@@ -44,7 +45,7 @@ singley-definable.
 In a cookbook of your choice, simply re-open the `FB::Users` class, and define
 class constants like so:
 
-```
+```ruby
 module FB
   class Users
     UID_MAP = {
@@ -111,7 +112,7 @@ This can be useful if 3rd party software creates those users/groups.
 The key in the `Hash` will be a printable identifier, the value will be an object
 that responds to `.include?()`, so usually `Range` or `Array`.
 
-```
+```ruby
 module FB
   class Users
     RESERVED_UID_RANGES = {
@@ -131,7 +132,7 @@ end
 Users and groups are setup using the `users` and `groups` hashes and are
 straight forward:
 
-```
+```ruby
 node.default['fb_users']['users']['john'] = {
   'shell' => '/bin/zsh',
   'gid' => 'users',
@@ -249,6 +250,38 @@ To remove a user or group, set the `action` to `:delete` and the user or group
 will be automatically cleaned up during the chef run. To automatically clean up
 a user's home directory while removing the user from the system, leave
 `manage_home` set to `true`.
+
+### Notifications for users or groups
+
+The `user` and `group` resources used within this cookbook's custom resource
+will run at the root `run_context` in order to allow other resources in the
+chef run to *subscribe* to a specific user or group being updated.
+
+### Windows Support
+
+This cookbook does support Windows, but there are limitations. The greatest
+one is that passwords don't really work. We will set them if they are there,
+but the `windows_user` resource in Chef requires plain-text passwords, so the
+hashed passwords provided for other platforms will set garbage as the password
+for Windows. See this bug for details:
+
+https://github.com/chef/chef/issues/10455
+
+In addition, we always ignore UID and GID since the provider crashes on those.
+See this bug for details:
+
+https://github.com/chef/chef/issues/10454
+
+This makes sense for local users as Windows does not use UID or GID.
+
+The attribute `set_passwords_on_windows` controls whether or not fb\_users will
+even attempt to set passwords for users on Windows, if we have one. It defaults
+to `true`, but many users will want to turn this off in a hybrid environment.
+As it stands the underlying `windows_user` resource we use can only set
+passwords if the plain-text password is passed in, which is suboptimal. So if
+you have password-hashes for users for other platforms, you'll likely just want
+to set this to `false`. See https://github.com/chef/chef/issues/10455 for more
+information.
 
 ### Helper methods
 
