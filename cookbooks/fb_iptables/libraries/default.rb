@@ -28,6 +28,35 @@ module FB
     }
     # rubocop:enable Style/MutableConstant
 
+    # Facebook, like others does not have NAT in their kernels. However many
+    # people do, so provide an easy way to initialize the various structures
+    # with NAT entries.
+    #
+    # Note this is idempotent - you can call it many times, it will not
+    # overwrite user rules
+    def self.enable_nat(node)
+      TABLES_AND_CHAINS['nat'] ||= %w{PREROUTING INPUT OUTPUT POSTROUTING}
+
+      # normally this would be auto-vivified, but since we want to check
+      # fb_iptables.nat.$chain below, this has to exist
+      unless node['fb_iptables']['nat']
+        node.default['fb_iptables']['nat'] = {}
+      end
+
+      TABLES_AND_CHAINS['nat'].each do |chain|
+        next if node['fb_iptables']['nat'][chain]
+
+        node.default['fb_iptables']['nat'][chain] = {
+          'policy' => 'ACCEPT',
+          'rules' => {},
+        }
+      end
+
+      unless node['fb_iptables']['dynamic_chains']['nat']
+        node.default['fb_iptables']['dynamic_chains']['nat'] = {}
+      end
+    end
+
     # Is the given rule valid for the give ip version
     def self.rule_supports_ip_version?(rule, version)
       return true unless rule['ip']
