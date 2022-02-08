@@ -42,6 +42,7 @@ whyrun_safe_ruby_block 'initialize_grub_locations' do
       if node['fb_grub']['version'] < 2
         fail 'fb_grub: Booting by label requires grub2.'
       end
+
       node.default['fb_grub']['_root_label'] = boot_label
 
       # For tboot, we have to specify the full path to the modules.
@@ -54,6 +55,7 @@ whyrun_safe_ruby_block 'initialize_grub_locations' do
       if node['fb_grub']['version'] < 2
         fail 'fb_grub: Booting by label requires grub2.'
       end
+
       node.default['fb_grub']['_root_uuid'] = boot_uuid
 
       slash_uuid = node.filesystem_data['by_mountpoint']['/']['uuid']
@@ -171,6 +173,9 @@ end
 
 if node.root_btrfs?
   mount_opts = FB::Fstab.get_base_mount_opts(node, '/')
+  # in this case we'd be &.'ing all the way down, so the unless is actually
+  # cleaner
+  # rubocop:disable Style/SafeNavigation
   unless mount_opts.nil?
     mount_opts.split(',').each do |opt|
       if opt.include?('subvolid=') || opt.include?('subvol=')
@@ -178,4 +183,5 @@ if node.root_btrfs?
       end
     end
   end
+  # rubocop:enable Style/SafeNavigation
 end
