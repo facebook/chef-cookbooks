@@ -20,13 +20,13 @@
 # are allowed.  If it is not allowed, it will request permission to make
 # network changes.
 property :allow_changes, :kind_of => [TrueClass, FalseClass], :required => true
-property :path, :is => [String, nil], :required => false, :default => nil
-property :source, :is => String, :required => true
-property :variables, :is => [Hash, nil], :required => false, :default => nil
-property :owner, :is => String, :required => true
-property :group, :is => String, :required => true
-property :mode, :is => String, :required => true
-property :gated_action, :is => Symbol, :required => false, :default => :create
+property :path, [String, nil], :required => false
+property :source, String, :required => true
+property :variables, [Hash, nil], :required => false, :default => nil
+property :owner, String, :required => true
+property :group, String, :required => true
+property :mode, String, :required => true
+property :gated_action, Symbol, :required => false, :default => :create
 
 default_action :manage
 

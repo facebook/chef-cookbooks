@@ -92,14 +92,14 @@ If the has is specified, it takes one or more of the following keys:
       curr_line = start
 
       # For multi-line comments, line-break right after initial start tag
-      if finish != ''
-        final_comment += "#{curr_line}\n"
-        curr_line = ''
-        prefix = ''
-      else
+      if finish == ''
         # For single-line comments, just pad and keep going w/ first line
         curr_line += ' ' * single_line_pad
         prefix = start + ' ' * single_line_pad
+      else
+        final_comment += "#{curr_line}\n"
+        curr_line = ''
+        prefix = ''
       end
 
       # Split on whitespace into an array
@@ -573,6 +573,8 @@ If the has is specified, it takes one or more of the following keys:
 
   # Our version comparison class
   class Version < Array
+    # This is intentional.
+    # rubocop:disable Lint/MissingSuper
     def initialize(s)
       @string_form = s
       if s.nil?
@@ -581,6 +583,7 @@ If the has is specified, it takes one or more of the following keys:
       end
       @arr = s.split(/[._-]/).map(&:to_i)
     end
+    # rubocop:enable Lint/MissingSuper
 
     def to_s
       @string_form
@@ -592,7 +595,7 @@ If the has is specified, it takes one or more of the following keys:
 
     def compare(other, exact = true)
       other ||= new
-      unless other.is_a? FB::Version
+      unless other.is_a?(FB::Version)
         other = FB::Version.new(other)
       end
       if exact

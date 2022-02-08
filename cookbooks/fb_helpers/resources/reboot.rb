@@ -54,8 +54,7 @@ REBOOT_TRIGGER = 'chef_reboot_trigger'.freeze
 # Signals :process_deferred that it should fail the run if it can't reboot
 REBOOT_REQUIRED = 'chef_reboot_required'.freeze
 
-NOT_ALLOWED_MSG = 'Was asked to reboot, but ' +
-                  'reboot is not allowed!'.freeze
+NOT_ALLOWED_MSG = 'Was asked to reboot, but reboot is not allowed!'.freeze
 
 load_current_value do
   # macOS doesn't have /dev/shm, so use /tmp instead which is wiped on boot.
@@ -115,7 +114,9 @@ action_class do
     end
 
     ruby_block 'Schedule failure for reboot' do
+      # rubocop:disable Lint/EmptyBlock
       block {}
+      # rubocop:enable Lint/EmptyBlock
       notifies :run, 'ruby_block[Managed reboot]'
     end
   end
