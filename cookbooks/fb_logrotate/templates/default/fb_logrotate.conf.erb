@@ -25,42 +25,11 @@ size  <%= node['fb_logrotate']['globals']['size'] %>
 compressext <%= node['fb_logrotate']['globals']['compressext'] %>
 <% end -%>
 
-<% node['fb_logrotate']['configs'].to_hash.each do |name, block|
-  time = nil
-  if block['overrides']
-    rotation = block['overrides']['rotation']
-    size = block['overrides']['size']
-    if rotation
-      if size
-        fail "fb_logrotate:[#{name}]: you can only use size or rotation not both"
-      end
-      if rotation == 'weekly' && !block['overrides']['rotate']
-         block['overrides']['rotate'] = '4'
-      end
-      if %w{hourly daily weekly monthly yearly}.include?(rotation)
-        time = rotation
-        block['overrides'].delete('rotation')
-      else
-        fail "fb_logrotate:[#{name}]: rotation #{rotation} invalid"
-      end
-    end
-    if size
-      time = "size #{size}"
-      block['overrides'].delete('size')
-    end      
-    if time == defaultrotation
-      time = nil
-    end
-    if block['overrides']['nocompress'] &&
-      node['fb_logrotate']['globals']['nocompress']
-      # redundant, remove.
-      block['overrides'].delete('nocompress')
-    end
-  end -%>
+<% node['fb_logrotate']['configs'].to_hash.each do |name, block| %>
 ## fb.fb_logrotate.configs.<%= name %>
 <%=  block['files'].join(' ') %> {
-<%   if time -%>
-  <%= time %>
+<%   if block['time'] -%>
+  <%=  block['time'] %>
 <%   end -%>
 <%   if block['overrides'] -%>
 <%     block['overrides'].keys.sort.each do |k| -%>

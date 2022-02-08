@@ -32,7 +32,7 @@ per logrotate configuration block.
 
 To rotate a new set of logs, add a new entry to this hash, like so:
 
-```
+```ruby
 node.default['fb_logrotate']['configs']['myapp'] = {
   'files' => ['/var/log/myapp.log'],
   'overrides' => {
@@ -145,7 +145,7 @@ otherwise warning message will be issued.
 Let's go ahead and now take a look at a full sample structure, and
 the resulting config file it would generate:
 
-```
+```ruby
 node.default['fb_logrotate']['configs']['mcproxy'] = {
   'files' => [
     "/var/log/mcproxy-tao.log",
@@ -170,7 +170,7 @@ node.default['fb_logrotate']['configs']['mcproxy'] = {
 
 From the above structure, the following config file is generated:
 
-```
+```text
 /var/log/mcproxy-tao.log /var/log/mcproxy-tao2.log /var/log/mcproxy.init.log /var/log/mcproxy.tao.log /var/log/mcproxy.tao2.log /var/log/mcproxy2.tao.log /var/log/mcproxy.log.global /var/log/mcproxy.log /var/log/mcproxy.global /var/log/mcproxy.regional.log {
   size 50M
   copytruncate
@@ -182,7 +182,7 @@ From the above structure, the following config file is generated:
 Another example that shows the newsyslog.d conf file as generated on a MAC
 machine using the following sample strucutre:
 
-```
+```ruby
 node.default['fb_logrotate']['configs']['mylogfile'] = {
   'files' => ['/var/log/mylogfile'],
   'overrides' => {
@@ -194,7 +194,7 @@ node.default['fb_logrotate']['configs']['mylogfile'] = {
 From the above structure, the a config file
 (/etc/newsyslog.d/fb_bsd_newsyslog.conf) is generated with output:
 
-```
+```text
 # logfilename                       [owner:group]        mode count size     when  flags [/pid_file] [sig_num]
 /var/log/messages                                        644  5     1024     24    J
 /var/log/mylogfile                                       644  14    1048576  *     J

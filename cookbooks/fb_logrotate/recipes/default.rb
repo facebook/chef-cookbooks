@@ -32,6 +32,37 @@ end
 
 include_recipe 'fb_logrotate::packages'
 
+whyrun_safe_ruby_block 'munge logrotate configs' do
+  block do
+    node['fb_logrotate']['configs'].to_hash.each do |name, block|
+      time = nil
+      if block['overrides']
+        # if someone wants to override weekly but didn't specify
+        # how many to keep, we default to 4
+        if block['overrides']['rotation'] == 'weekly' &&
+           !block['overrides']['rotate']
+          node.default['fb_logrotate']['configs'][name][
+            'overrides']['rotate'] = '4'
+        end
+
+        if block['overrides']['size']
+          time = "size #{block['overrides']['size']}"
+          node.rm(:fb_logrotate, :configs, name, :overrides, :size)
+        elsif %w{hourly weekly monthly yearly}.include?(
+          block['overrides']['rotation'],
+        )
+          time = block['overrides']['rotation']
+          node.rm(:fb_logrotate, :configs, name, :overrides, :rotation)
+        end
+        time = nil if time == 'daily'
+      end
+      if time
+        node.default['fb_logrotate']['configs'][name]['time'] = time
+      end
+    end
+  end
+end
+
 whyrun_safe_ruby_block 'validate logrotate configs' do
   block do
     files = []
