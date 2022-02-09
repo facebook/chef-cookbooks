@@ -42,6 +42,7 @@ end
 # we use these to disable things while setuping up storage so make
 # sure the directories exist
 %w{
+  /run/udev
   /run/udev/rules.d
   /run/systemd/system-generators
 }.each do |dir|
@@ -110,7 +111,7 @@ whyrun_safe_ruby_block 'validate storage options' do
                  'It must be a number with an optional suffix of %%kmgt'
           %w{start end}.each do |disp|
             unless partition["partition_#{disp}"].match(
-              /^\d+(\.\d+)?([KkMmGgTt\%](iB)?)?$/,
+              /^\d+(\.\d+)?([KkMmGgTt%](iB)?)?$/,
             )
               fail format(pmsg, partition["partition_#{disp}"])
             end
@@ -206,6 +207,19 @@ fb_storage_format_devices 'go' do
   do_reprobe lazy { node['fb_storage']['format']['reprobe_before_repartition'] }
   # fb_fstab won't mount properly if we don't update data.
   notifies :reload, 'ohai[filesystem]', :immediately
+end
+
+package 'mdadm' do
+  only_if do
+    # we are enabled...
+    !node['fb_storage']['devices'].empty? &&
+      # and we are supposed to manage packages
+      node['fb_storage']['manage_packages'] &&
+      # and we manage arrays
+      node['fb_storage']['arrays'] &&
+      !node['fb_storage']['arrays'].empty?
+  end
+  action :upgrade
 end
 
 template '/etc/mdadm.conf' do

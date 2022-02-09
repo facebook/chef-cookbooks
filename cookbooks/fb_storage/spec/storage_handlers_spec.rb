@@ -353,7 +353,7 @@ describe FB::Storage::Handler do
 
         it 'accepts format_options as string' do
           expect(Mixlib::ShellOut).to receive(:new).with(
-            %r{mkfs -t xfs -f blah -L \"foo\" /dev/sdzz1},
+            %r{mkfs -t xfs -f blah -L "foo" /dev/sdzz1},
             { :timeout => 900 },
           ).and_return(mock_so)
           node.default['fb_storage'] = { 'format_options' => 'blah' }
@@ -369,11 +369,11 @@ describe FB::Storage::Handler do
       context 'with more than one mkfs' do
         it 'accepts format_options as hash' do
           expect(Mixlib::ShellOut).to receive(:new).with(
-            %r{mkfs.btrfs -f blah -L \"foo\" /dev/sdzz1},
+            %r{mkfs.btrfs -f blah -L "foo" /dev/sdzz1},
             { :timeout => 900 },
           ).and_return(mock_so)
           expect(Mixlib::ShellOut).to receive(:new).with(
-            %r{mkfs -t ext3 -F blah3 -L \"foo3\" /dev/sdzz2},
+            %r{mkfs -t ext3 -F blah3 -L "foo3" /dev/sdzz2},
             { :timeout => 900 },
           ).and_return(mock_so)
           node.default['fb_storage'] = {

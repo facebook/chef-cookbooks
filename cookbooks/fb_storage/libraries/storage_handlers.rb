@@ -23,8 +23,10 @@ module FB
     # classes will want to use. It also has a class method to build the right
     # object for a given device.
     class Handler
-      NO_BASE_CLASS_MSG = 'FB::Storage::Handler is not intended ' +
-          'to be instantiated directly, please use a subclass'.freeze
+      NO_BASE_CLASS_MSG = (
+        'FB::Storage::Handler is not intended ' +
+        'to be instantiated directly, please use a subclass'
+      ).freeze
       MDADM = '/sbin/mdadm'.freeze
 
       # rubocop:disable Style/ClassVars
@@ -61,7 +63,7 @@ module FB
       attr_accessor :mkfs_timeout
 
       def initialize(device, node)
-        if self.class == FB::Storage::Handler
+        if self.instance_of?(FB::Storage::Handler)
           fail NO_BASE_CLASS_MSG
         end
 
@@ -187,10 +189,11 @@ module FB
         end
         format_options = default_format_options(config['type'])
         if @node['fb_storage']['format_options']
-          if @node['fb_storage']['format_options'].is_a?(String)
+          case @node['fb_storage']['format_options']
+          when String
             format_options =
               @node['fb_storage']['format_options'].dup
-          elsif @node['fb_storage']['format_options'].is_a?(Hash)
+          when Hash
             format_options =
               @node['fb_storage']['format_options'][config['type']]
           else
@@ -488,6 +491,7 @@ module FB
       end
 
       def default_format_options(type)
+        # rubocop:disable Style/HashLikeCase
         case type
         when 'xfs'
           '-i size=2048'
@@ -496,6 +500,7 @@ module FB
         when 'ext4'
           ''
         end
+        # rubocop:enable Style/HashLikeCase
       end
 
       class FioHandler < FB::Storage::Handler

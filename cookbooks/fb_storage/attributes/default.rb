@@ -17,6 +17,7 @@
 
 default['fb_storage'] = {
   'manage_mdadm_conf' => true,
+  'manage_packages' => true,
   'mdadm_conf_options' => ['--detail', '--scan'],
   'stop_and_zero_mdadm_for_format' => false,
   'hybrid_xfs_use_helper' => true,
