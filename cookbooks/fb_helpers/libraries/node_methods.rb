@@ -220,6 +220,13 @@ class Chef
     end
 
     def macos?
+      # rubocop:disable Chef/Correctness/InvalidPlatformValueForPlatformHelper
+      #
+      # Almost certainly `macos` was never a platform from Ohai, but it seems
+      # to be showing up in FB datasets, so for now, we'll just keep both,
+      # but it's likely a handler doing some munging. Once that gets sorted,
+      # this should get fixed.
+      # rubocop:enable Chef/Correctness/InvalidPlatformValueForPlatformHelper
       %w{mac_os_x macos}.include?(self['platform'])
     rescue StandardError
       RUBY_PLATFORM.include?('darwin')
@@ -399,6 +406,7 @@ class Chef
     def in_aws_account?(*accts)
       return false if self.quiescent?
       return false unless self['ec2']
+
       accts.flatten!
       accts.include?(self['ec2']['account_id'])
     end
@@ -763,13 +771,14 @@ class Chef
     end
 
     def root_group
-      # Chef moved from `macos` to `mac_os_x` between 14 and 15, so we need
-      # both, but Cookstyle will tell us `macos` isn't valid.
+      # rubocop:disable Chef/Correctness/InvalidPlatformValueForPlatformHelper
+      # See the `macos?` method above
       value_for_platform(
         %w{openbsd freebsd mac_os_x macos} => { 'default' => 'wheel' },
         'windows' => { 'default' => 'Administrators' },
         'default' => 'root',
       )
+      # rubocop:enable Chef/Correctness/InvalidPlatformValueForPlatformHelper
     end
 
     def quiescent?
@@ -961,8 +970,10 @@ class Chef
     def validate_and_fail_on_dynamic_addresses
       node['network']['interfaces'].each do |if_str, if_data|
         next unless if_data['addresses']
+
         if_data['addresses'].each do |addr_str, addr_data|
           next unless addr_data['family'] == 'inet6'
+
           if Array(addr_data['tags']).include?('dynamic')
             fail "fb_helpers: interface #{if_str} has a dynamic " +
                  "address: #{addr_str}."
@@ -977,6 +988,7 @@ class Chef
         return method.call(node)
       else
         return @nw_changes_allowed unless @nw_changes_allowed.nil?
+
         @nw_changes_allowed = node.firstboot_any_phase? ||
         ::File.exist?(::FB::Helpers::NW_CHANGES_ALLOWED)
       end
