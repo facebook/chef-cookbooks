@@ -84,7 +84,7 @@ on unmounting, even if unmounting is enabled. A list of defaults is in
 attributes, you may add or remove from this as you see fit. For example, you
 may want:
 
-```
+```ruby
 node.default['fb_fstab']['umount_ignores']['devices'] << '/dev/sdb'
 ```
 
@@ -123,7 +123,7 @@ if the underlying mountpoint does not exist:
 
 Example:
 
-```
+```ruby
 node.default['fb_fstab']['mounts']['foobar'] = {
   'device' => 'foobar-tmpfs',
   'type' => 'tmpfs',
@@ -144,7 +144,7 @@ need to create the directory for you, we make it the way you want.
 
 Using `only_if` is slightly different than with resources, and looks like this:
 
-```
+```ruby
 node.default['fb_fstab']['mounts']['foobar'] = {
   'only_if' => proc { foo == bar },
   'device' => 'foobar-tmpfs',
@@ -164,7 +164,7 @@ add other normalizations into this map. They are exact-string matches. Do not
 overwrite the hash or you will lose the pre-populated entries, instead
 add/modify:
 
-```
+```ruby
 node.default['fb_fstab']['fs_type_normalization_map']['fuse.gluster'] = 'gluster'
 ```
 
@@ -175,7 +175,7 @@ equality. For example we drop 'nofail' because while we may want to set that in
 options for a mounted filesystem. The entries can either be strings or regexes.
 Add to this list like so:
 
-```
+```ruby
 node.default['fb_fstab']['ignorable_opts'] << 'ignore_me'
 ```
 
@@ -185,7 +185,7 @@ come from the original installation from `/etc/.fstab.chef`. It is recommended
 you have your installation system create this file (e.g in an Anaconda
 post-script) with something like:
 
-```
+```text
 grep -v '^#' /etc/fstab > /etc/.fstab.chef
 chmod 444 /etc/.fstab.chef
 ```
@@ -207,7 +207,7 @@ If you want to not include swap devices from base mounts, you can set
 `fb_swap`, or just want to remove swap altogether on a system which was
 provisioned with swap.
 
-```
+```ruby
 node.default['fb_fstab']['exclude_base_swap'] = true
 ```
 
