@@ -70,6 +70,9 @@ describe FB::Storage do
         allow(node).to receive(:device_of_mount).with('/').and_return(
           "/dev/#{partition}",
         )
+        allow(File).to receive(:realpath).with("/dev/#{partition}").and_return(
+          "/dev/#{partition}",
+        )
         expect(FB::Storage.root_device_name(node)).to eq(device)
       end
     end
@@ -81,6 +84,9 @@ describe FB::Storage do
       }.each do |device|
         node.automatic['block_device'][device] = {}
         allow(node).to receive(:device_of_mount).with('/').and_return(
+          "/dev/#{device}",
+        )
+        allow(File).to receive(:realpath).with("/dev/#{device}").and_return(
           "/dev/#{device}",
         )
         expect(FB::Storage.root_device_name(node)).to eq(device)

@@ -94,7 +94,7 @@ module FB
     # not to be confused with '/dev/sda' or '/dev/sda3'
     def self.root_device_name(node)
       # This could be a bare device (/dev/md0) or a partition (/dev/sda1)
-      device_or_partition = node.device_of_mount('/')
+      device_or_partition = File.realpath(node.device_of_mount('/'))
       device_or_partition_base = File.basename(device_or_partition)
 
       if node['block_device'][device_or_partition_base]
