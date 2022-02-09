@@ -1,8 +1,5 @@
 #
-# Cookbook Name:: test_services
-# Recipe:: default
-#
-# Copyright (c) 2019-present, Facebook, Inc.
+# Copyright (c) 2021-present, Vicarious, Inc.
 # All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,19 +15,16 @@
 # limitations under the License.
 #
 
-# Currently fb_vsftpd is broken on debian
-# https://github.com/facebook/chef-cookbooks/issues/149
-unless node.debian?
-  include_recipe 'fb_vsftpd'
-end
-
-include_recipe 'fb_apache'
-if node.debian? || (node.ubuntu? && !node.ubuntu16?)
-  include_recipe 'fb_apt_cacher'
-  include_recipe 'fb_smokeping'
-end
-
-
-# Currently fb_reprepro is broken
-# https://github.com/facebook/chef-cookbooks/issues/78
-# include_recipe 'fb_reprepro'
+name 'fb_smokeping'
+maintainer 'Facebook'
+maintainer_email 'noreply@facebook.com'
+license 'Apache-2.0'
+source_url 'https://github.com/facebook/chef-cookbooks'
+description 'Installs/Configures Smokeping'
+long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
+# never EVER change this number, ever.
+version '0.1.0'
+supports 'debian'
+supports 'ubuntu'
+depends 'fb_apache'
+depends 'fb_users'
