@@ -72,6 +72,22 @@ To ensure that empty directories get removed, we still force tmpreaper to use
 mtime on directories even when using atime for files, since directories' atime
 get updated when their contents get tested.
 
+#### timestamptype per directory (Linux)
+
+On Linux the risk of trusting on `node['fb_tmpclean']['timestamptype']` is at
+the cost of impacting other cookbooks. If during your chef run multiple
+cookbooks setup the value it will impact others, the last to set value in the
+order will be the final config. Meaning if you set `atime` but someones changes
+to `mtime` your cookbook might not run as expected.
+
+This previous constrain raises the issue where impacting dependencies. A good
+practice to follow is to set the timestamptype per directory level, meaning you
+only modify yours.
+
+To set the timestamp type for specific directory follow next example:
+`node['fb_tmpclean']['directories']['/the/directory']['timestamptype'] = 'mtime'`
+`node['fb_tmpclean']['directories']['/the/directory']['interval'] = '3d'`
+
 ### extra_lines
 
 An array of extra lines that will be put, verbatim, into the config file.

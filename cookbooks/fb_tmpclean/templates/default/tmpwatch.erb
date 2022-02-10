@@ -21,7 +21,21 @@ done
 <%   tmpclean['excludes'].each do |exclude| %>
 <%     excludes << "-X '#{dir}/#{exclude}'" %>
 <%   end %>
-<%   opts = "#{topt} #{time} #{remove_special_files} #{dir}" %>
+<%   if time.is_a?(Hash) %>
+<%     unless time['timestamptype'] && time['interval'] %>
+<%       fail 'fb_tmpclean: timestamptype and interval are required keys' %>
+<%     end %>
+<%     timestamptype = time['timestamptype'].downcase %>
+<%     valid_timestamptypes = ['atime', 'ctime', 'mtime'] %>
+<%     unless valid_timestamptypes.include?(timestamptype) %>
+<%       fail "fb_tmpclean: timestamptype must be one of #{valid_timestamptypes}" %>
+<%     end %>
+<%     time_type = timestamptype == 'atime' ? '-u' : '-m' %>
+<%     time = time['interval'] %>
+<%   else %>
+<%     time_type = topt %>
+<%   end %>
+<%   opts = "#{time_type} #{time} #{remove_special_files} #{dir}" %>
 /usr/sbin/tmpwatch <%= excludes.join(' ') %> -f <%= opts %>
 <% end %>
 
