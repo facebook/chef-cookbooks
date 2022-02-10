@@ -99,7 +99,7 @@ node.default['fb_sudo']['users'][$USER][description][oncall_team][reason] = (
 
 The commands will be added in the /etc/sudoers as following.
 
-```
+```text
 # User
 ## <description>
 ### Oncall <oncall_team1>
@@ -117,7 +117,7 @@ node.default['fb_sudo']['users']['oliviajindi']['test sudo']['ssh_infra'] = {
 
 For this example, the commands will be added as
 
-```
+```text
 # User
 ## test sudo
 ### Oncall ssh_infra
