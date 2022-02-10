@@ -31,8 +31,10 @@ recipe 'fb_systemd::default', :unsupported => [:mac_os_x] do |tc|
       :run_command => ml,
       :stdout => "multi-user.target\n",
     )
-    allow(Mixlib::ShellOut).to receive(:new).with('systemctl get-default').
-      and_return(ml)
+    stubs_for_resource('execute[set default target]') do |resource|
+      allow(resource).to receive_shell_out('systemctl get-default').
+        and_return(ml)
+    end
   end
 
   it 'should render empty config' do
