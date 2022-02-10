@@ -20,7 +20,7 @@ Specify your timer jobs by adding a hash object under `node['fb_timers']['jobs']
 
 For example:
 
-```
+```ruby
 # Run a command every 15 minutes
 node.default['fb_timers']['jobs']['my_custom_job'] = {
     'calendar' => FB::Systemd::Calendar.every(15).minutes,
@@ -135,7 +135,7 @@ Each of these methods returns a string representation of a systemd calendar spec
 
 For example, this usage, which runs a shell script every 15 minutes:
 
-```
+```ruby
 node.default['fb_timers']['jobs']['my_custom_job'] = {
     'calendar' => FB::Systemd::Calendar.every(15).minutes,
     'command' => '/usr/local/bin/foobar.sh',
@@ -144,7 +144,7 @@ node.default['fb_timers']['jobs']['my_custom_job'] = {
 
 is equivalent to this config, which uses the systemd calendar spec directly:
 
-```
+```ruby
 node.default['fb_timers']['jobs']['my_custom_job'] = {
     'calendar' => '*:0/15:0',
     'command' => '/usr/local/bin/foobar.sh',
@@ -158,7 +158,7 @@ You can indicate to fb_timers that a key is expected, even when that key may
 not be natively understood by systemd (and thereby suppress
 chef warning logs), by adding to `node['fb_timers']['optional_keys']`:
 
-```
+```ruby
 node.default['fb_timers']['optional_keys'] << 'oncall'
 ```
 
