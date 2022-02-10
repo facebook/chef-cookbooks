@@ -11,7 +11,7 @@ $PreserveFQDN on
 
 #### MODULES ####
 # Provides support for local system logging (e.g. via logger command)
-$ModLoad imuxsock
+module(load="imuxsock")
 <% if node.centos? && !node.centos6? -%>
 $OmitLocalLogging off
 <% end -%>
@@ -27,8 +27,12 @@ module(load="omprog")
 <% end -%>
 <% if node['fb_syslog']['rsyslog_server'] -%>
 # UDP / TCP reception
-$ModLoad imudp
-$ModLoad imtcp
+module(load="imtcp")
+module(load="imudp")
+<% unless node['fb_syslog']['rsyslog_server_force_no_listen'] %>
+input(type="imtcp" port="514")
+input(type="imudp" port="514")
+<% end %>
 
 <% if node['fb_syslog']['rsyslog_server_address'] -%>
 $UDPServerAddress <%= node['fb_syslog']['rsyslog_server_address'] %>

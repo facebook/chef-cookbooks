@@ -11,6 +11,7 @@ Attributes
 * node['fb_syslog']['enable_imklog_permitnonkernelfacility']
 * node['fb_syslog']['syslog-entries']
 * node['fb_syslog']['rsyslog_server']
+* node['fb_syslog']['rsyslog_server_force_no_listen']
 * node['fb_syslog']['rsyslog_server_address']
 * node['fb_syslog']['rsyslog_upstream']
 * node['fb_syslog']['rsyslog_port']
@@ -27,6 +28,7 @@ Attributes
 * node['fb_syslog']['rsyslog_use_omprog_force']
 * node['fb_syslog']['rsyslog_stats_logging']
 * node['fb_syslog']['rsyslog_report_suspension']
+* node['fb_syslog']['rsyslog_d_preserve']
 * node['fb_syslog']['sysconfig']['vars'][$KEY][$VAL]
 * node['fb_syslog']['sysconfig']['extra_lines']
 
@@ -165,6 +167,11 @@ By default, rsyslog listens on the wildcard address. If you want to listen on
 another address (e.g. localhost), you can set the
 `node['fb_syslog']['rsyslog_server_address']` attribute.
 
+There's a special setting `node['fb_syslog']['rsyslog_server_force_no_listen']`
+which is mostly for internal backwards compatibility within meta, which will
+load the tcp and udp modules without actually wiring up the listeners. You
+probably do not want this option.
+
 ### Escaping control characters in messages
 If messages entering the syslog system contain control characters and it's
 causing you problems, you can enable escaping of non-printable characters by
@@ -243,6 +250,11 @@ support it).
 Set `node['fb_syslog']['rsyslog_stats_logging']` to true to enable periodic
 output of rsyslog internal counters. These will be logged using the `impstats`
 module to `/var/log/rsyslog-stats.log`.
+
+### Controlling the syslog.d directory
+By default, we will delete everything in the `/etc/rsyslog.d`, as all rsyslog
+configuration should be controlled by users of this API. However, if you need
+to preserve such files, set `node['fb_syslog']['rsyslog_d_preserve']` to `true`.
 
 ### sysconfig settings
 On non-systemd systems, `node['fb_syslog']['sysconfig']` can be used
