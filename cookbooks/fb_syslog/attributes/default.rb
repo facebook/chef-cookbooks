@@ -43,8 +43,13 @@ default['fb_syslog'] = {
       'comment' => 'Log anything info level or higher. A lot ' +
                    'of things go into their own file.',
       'selector' => '*.info;mail,authpriv,cron,' +
-        'local0,local1,local2,local3,local5,local6,local7.none',
+        'local0,local1,local2,local3,local4,local5,local6,local7.none',
       'action' => "-#{syslog_file}",
+    },
+    'authlog' => {
+      'comment' => 'Log all auth stuff',
+      'selector' => 'auth,authpriv.*',
+      'action' => '/var/log/auth.log',
     },
     'mail' => {
       'comment' => 'Log all the mail messages in one place.',
@@ -88,6 +93,7 @@ default['fb_syslog'] = {
     '$DirCreateMode 0755',
     '$Umask 0002',
   ],
+  'rsyslog_d_preserve' => false,
   'rsyslog_late_lines' => [],
   'rsyslog_additional_sockets' => [],
   'rsyslog_facilities_sent_to_remote' => [],
