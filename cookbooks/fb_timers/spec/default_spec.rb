@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require './spec/spec_helper.rb'
+require './spec/spec_helper'
 
 # rubocop:disable Style/MultilineBlockChain
 
@@ -42,8 +42,10 @@ recipe 'fb_timers::default', :unsupported => [:mac_os_x] do |tc|
       :run_command => ml,
       :stdout => "multi-user.target\n",
     )
-    allow(Mixlib::ShellOut).to receive(:new).with('systemctl get-default').
-      and_return(ml)
+    stubs_for_resource('execute[set default target]') do |resource|
+      allow(resource).to receive_shell_out('systemctl get-default').
+        and_return(ml)
+    end
   end
 
   context 'not managed by systemd' do

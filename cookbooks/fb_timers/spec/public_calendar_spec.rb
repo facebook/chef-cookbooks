@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require_relative '../libraries/timers.rb'
+require_relative '../libraries/timers'
 
 describe FB::Systemd::Calendar::Every do
   it 'generates hours' do

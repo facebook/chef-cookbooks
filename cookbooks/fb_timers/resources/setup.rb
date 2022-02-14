@@ -39,7 +39,7 @@ action :run do
         if conf['only_if'].nil?
           next
         else
-          unless conf['only_if'].class == Proc
+          unless conf['only_if'].instance_of?(Proc)
             fail "fb_timers's only_if requires a Proc for #{name}"
           end
 
@@ -100,19 +100,19 @@ action :run do
     end
 
     missing_keys = FB::Systemd::REQUIRED_TIMER_KEYS - conf.keys
-    if missing_keys.include?('calendar')
-      # calendar is not entirely mandatory, one can use On...
-      unless (conf['timer_options'].keys &
-        FB::Systemd::ALTERNATE_CALENDAR_KEYS).empty?
-        missing_keys.delete('calendar')
-      end
+    # calendar is not entirely mandatory, one can use On...
+    if missing_keys.include?('calendar') &&
+       !(
+         conf['timer_options'].keys & FB::Systemd::ALTERNATE_CALENDAR_KEYS
+       ).empty?
+      missing_keys.delete('calendar')
     end
     if missing_keys.any?
       fail "fb_timers: Missing required key for timer #{name}: #{missing_keys}"
     end
 
     unless conf['only_if'].nil?
-      unless conf['only_if'].class == Proc
+      unless conf['only_if'].instance_of?(Proc)
         fail "fb_timers's only_if requires a Proc for #{name}"
       end
 
