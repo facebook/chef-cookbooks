@@ -8,6 +8,7 @@ Requirements
 Attributes
 ----------
 * node['fb_consul']['enable']
+* node['fb_consul']['manage_packages']
 * node['fb_consul']['config']
 * node['fb_consul']['services']
 * node['fb_consul']['checks']
@@ -116,3 +117,12 @@ but named with the hostname in them (`consul-server-key-<HOSTNAME>.pem`).
 
 You will then want to make sure you set your `auto_encrypt` settings along
 with any `verify_*` settings you wish.
+
+If you want to encrypted the gossip traffic as well you will need to generate
+an approptiate key and popualte it in `node['fb_consul']['config']['encrypt']`.
+
+You can generate that with:
+
+```shell
+consul keygen
+```
