@@ -36,6 +36,8 @@ default['fb_sudo'] = {
     'secure_path' => '/sbin:/bin:/usr/sbin:/usr/bin',
   },
   'default_overrides' => {},
+  # rubocop:disable Chef/Correctness/InvalidPlatformValueForPlatformFamilyHelper
+  # drop 'macos' once that's sorted
   'users' => value_for_platform_family(
     :default => {
       '%sudo' => {
@@ -46,15 +48,8 @@ default['fb_sudo'] = {
       #   'all' => 'ALL=(ALL) NOPASSWD: ALL',
       # },
     },
-    'mac_os_x' => {
-      'root' => {
-        'all' => 'ALL=(ALL) ALL',
-      },
-      '%admin' => {
-        'all' => 'ALL=(ALL) ALL',
-      },
-    },
-    'macos' => {
+
+    ['mac_os_x', 'macos'] => {
       'root' => {
         'all' => 'ALL=(ALL) ALL',
       },
@@ -63,4 +58,5 @@ default['fb_sudo'] = {
       },
     },
   ),
+  # rubocop:enable Chef/Correctness/InvalidPlatformValueForPlatformFamilyHelper
 }
