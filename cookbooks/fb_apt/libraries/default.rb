@@ -22,22 +22,23 @@ module FB
     # Internal helper function to generate /etc/apt.conf entries
     def self._gen_apt_conf_entry(k, v, i = 0)
       indent = ' ' * i
-      if v.is_a?(Hash)
+      case v
+      when Hash
         s = "\n#{indent}#{k} {"
         v.each do |kk, vv|
           s += self._gen_apt_conf_entry(kk, vv, i + 2)
         end
         s += "\n#{indent}};"
         return s
-      elsif v.is_a?(Array)
+      when Array
         s = ''
         v.each do |vv|
           s += self._gen_apt_conf_entry(k, vv, i)
         end
         return s
-      elsif v.is_a?(TrueClass)
+      when TrueClass
         return "\n#{indent}#{k} \"true\";"
-      elsif v.is_a?(FalseClass)
+      when FalseClass
         return "\n#{indent}#{k} \"false\";"
       else
         return "\n#{indent}#{k} \"#{v}\";"
@@ -74,13 +75,13 @@ module FB
             Chef::Log.warn(
               'fb_apt[keys]: The following keys have been modified but we ' +
               'are still trusting it, due to ' +
-              'node["fb_apt"]["allow_modified_pkg_keyrings"]: ',
-              modified_keys.to_a.join(', ').to_s,
+              'node["fb_apt"]["allow_modified_pkg_keyrings"]: ' +
+              modified_keys.to_a.join(', '),
             )
           else
             fail 'fb_apt[keys]: The following keyrings would be trusted, but ' +
               "has been modified since package (#{pkg}) was installed: " +
-              modified_keys.to_a.join(', ').to_s
+              modified_keys.to_a.join(', ')
           end
         end
       end
