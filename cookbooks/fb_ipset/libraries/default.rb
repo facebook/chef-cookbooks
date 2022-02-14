@@ -26,14 +26,14 @@ module FB
       existing_sets = {}
 
       save.stdout.split("\n").each do |line|
-        words = line.split(' ')
+        words = line.split
 
         case words[0]
         # create name-of-set hash:net family inet hashsize 64 maxelem 4
         when 'create'
           set_name = words[1]
           set_type = words[2]
-          set_parameters = Hash[words[3..-1].each_slice(2).to_a]
+          set_parameters = words[3..-1].each_slice(2).to_a.to_h
 
           existing_sets[set_name] = set_parameters
           existing_sets[set_name]['type'] = set_type

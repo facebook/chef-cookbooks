@@ -39,6 +39,10 @@ action :update do
 
   # all ipsets should contain those keys for the comparison to be correct
   required_keys = ['type', 'family', 'hashsize', 'maxelem', 'members'].to_set
+
+  # rubocop:disable Style/CombinableLoops
+  # We do not want to combine this loop with the identical loop below because
+  # we want to check all ipsets before acting on any of them
   expected_ipsets.each do |name, attributes|
     if attributes.keys.to_set != required_keys
       fail "Set #{name} should contain #{required_keys.to_a} keys"
@@ -51,7 +55,7 @@ action :update do
 
       converge_by "Creating set #{setname}" do
         FB::IPset.ipset_to_cmds(setname, expected_set).each do |cmd|
-          Mixlib::ShellOut.new(cmd).run_command.error!
+          shell_out(cmd).error!
         end
       end
 
@@ -95,10 +99,11 @@ action :update do
     # run the actual commands
     converge_by "Create and swap #{setname}" do
       cmds.each do |cmd|
-        Mixlib::ShellOut.new(cmd).run_command.error!
+        shell_out(cmd).error!
       end
     end
   end
+  # rubocop:enable Style/CombinableLoops
 
   ipset_save new_resource.state_file || node['fb_ipset']['state_file']
 end
@@ -112,7 +117,7 @@ action :cleanup do
     cmd = "ipset destroy #{setname}"
 
     converge_by "Delete #{setname}" do
-      r = Mixlib::ShellOut.new(cmd).run_command
+      r = shell_out(cmd)
       r.error!
     end
   end
