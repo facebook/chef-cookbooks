@@ -28,12 +28,10 @@ unless node.systemd?
 end
 
 case node['platform_family']
-when 'rhel', 'fedora'
+when 'rhel', 'fedora', 'arch'
   systemd_prefix = '/usr'
 when 'debian'
   systemd_prefix = ''
-when 'arch'
-  systemd_prefix = '/usr'
 else
   fail 'fb_systemd is not supported on this platform.'
 end
@@ -142,8 +140,7 @@ end
 
 execute 'set default target' do
   only_if do
-    current = Mixlib::ShellOut.new('systemctl get-default').run_command.
-              stdout.strip
+    current = shell_out('systemctl get-default').stdout.strip
     is_ignored = node['fb_systemd']['ignore_targets'].include?(current)
     is_supported = FB::Version.new(node['packages']['systemd'][
       'version']) >= FB::Version.new('205')

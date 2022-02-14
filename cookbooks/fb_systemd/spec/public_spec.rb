@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require_relative '../libraries/systemd_helpers.rb'
+require_relative '../libraries/systemd_helpers'
 
 default_systemd = {
   'Service' => {
