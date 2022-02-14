@@ -1,7 +1,7 @@
 # Copyright (c) 2018-present, Facebook, Inc.
 
 require 'chef/node'
-require_relative '../libraries/sync.rb'
+require_relative '../libraries/sync'
 
 describe FB::Sysctl do
   context '#incorrect_settings' do

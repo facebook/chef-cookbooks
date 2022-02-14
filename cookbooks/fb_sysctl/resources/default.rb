@@ -3,7 +3,7 @@
 default_action :apply
 
 def set_sysctl(name, val)
-  s = Mixlib::ShellOut.new("/sbin/sysctl -w #{name}=\"#{val}\"").run_command
+  s = shell_out("/sbin/sysctl -w #{name}=\"#{val}\"")
   s.error!
 end
 
