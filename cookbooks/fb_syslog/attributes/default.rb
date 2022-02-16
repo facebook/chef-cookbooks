@@ -35,6 +35,11 @@ syslog_file = value_for_platform_family(
   'debian' => '/var/log/syslog',
 )
 
+authlog = value_for_platform_family(
+  ['rhel', 'fedora'] => '/var/log/secure',
+  'default' => '/var/log/auth.log',
+)
+
 # Add in some reasonable defaults for all syslog.confs
 default['fb_syslog'] = {
   'syslog-entries' => {
@@ -49,7 +54,7 @@ default['fb_syslog'] = {
     'authlog' => {
       'comment' => 'Log all auth stuff',
       'selector' => 'auth,authpriv.*',
-      'action' => '/var/log/auth.log',
+      'action' => authlog,
     },
     'mail' => {
       'comment' => 'Log all the mail messages in one place.',
