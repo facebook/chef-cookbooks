@@ -153,8 +153,7 @@ module FB
       end
       unless result.empty?
         Chef::Log.info(
-          'fb_storage: Disks automation requested converging of: ' +
-          result.to_s,
+          "fb_storage: Disks automation requested converging of: #{result}",
         )
       end
       result
@@ -213,12 +212,7 @@ module FB
     def self.block_device_sort(a, b, disk_to_scsi_mapping)
       (atype, ainstance) = block_device_split(File.basename(a))
       (btype, binstance) = block_device_split(File.basename(b))
-      if atype != btype
-        Chef::Log.debug(
-          'fb_storage: Types not same sorting by type',
-        )
-        length_alpha(atype, btype)
-      else
+      if atype == btype
         if atype == 'nvme' && btype == 'nvme'
           Chef::Log.debug(
             'fb_storage: Special nvme sorting',
@@ -243,6 +237,11 @@ module FB
         else
           return r
         end
+      else
+        Chef::Log.debug(
+          'fb_storage: Types not same sorting by type',
+        )
+        length_alpha(atype, btype)
       end
     end
 
@@ -261,10 +260,10 @@ module FB
 
     # sorts disks in disk shelves
     def self.sort_disk_shelves(a, b)
-      if a['shelf'] != b['shelf']
-        sort_shelves(a['shelf'], b['shelf'])
-      else
+      if a['shelf'] == b['shelf']
         a['disk'] <=> b['disk']
+      else
+        sort_shelves(a['shelf'], b['shelf'])
       end
     end
 
@@ -282,10 +281,11 @@ module FB
       if File.size?(PREVIOUS_DISK_ORDER)
         f = JSON.parse(File.read(PREVIOUS_DISK_ORDER))
         # v1 of the file was just an array of disks
-        if f.is_a?(Array)
+        case f
+        when Array
           version = 1
           disks = f.empty? ? nil : f
-        elsif f.is_a?(Hash)
+        when Hash
           unless f['version'] == 2
             fail 'fb_storage: Unknown format of persistent-order ' +
               'cache file!'
@@ -491,18 +491,17 @@ module FB
       prev = load_previous_disk_order
 
       disk_to_slot_mapping = {}
-      if node['fb'] && node['fb']['fbjbod']
-        unless node['fb']['fbjbod']['shelves'].keys.length.zero?
-          shelves = node['fb']['fbjbod']['shelves'].keys.sort
-          shelves.each do |shelf|
-            node['fb']['fbjbod']['shelves'][shelf].
-              each_with_index do |drive, drive_index|
-                disk_to_slot_mapping[drive] = {
-                  'disk' => drive_index,
-                  'shelf' => shelf,
-                }
-              end
-          end
+      if node['fb'] && node['fb']['fbjbod'] &&
+          !node['fb']['fbjbod']['shelves'].keys.length.zero?
+        shelves = node['fb']['fbjbod']['shelves'].keys.sort
+        shelves.each do |shelf|
+          node['fb']['fbjbod']['shelves'][shelf].
+            each_with_index do |drive, drive_index|
+              disk_to_slot_mapping[drive] = {
+                'disk' => drive_index,
+                'shelf' => shelf,
+              }
+            end
         end
       end
       disk_to_scsi_mapping = {}

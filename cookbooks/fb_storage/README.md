@@ -20,6 +20,7 @@ Attributes
 * node['fb_storage']['tuning']['over_provisioning_mapping']
 * node['fb_storage']['tuning']['max_sectors_kb']
 * node['fb_storage']['fstab_use_labels']
+* node['fb_storage']['manage_packages']
 * node['fb_storage']['manage_mdadm_conf']
 * node['fb_storage']['mdadm_conf_options']
 * node['fb_storage']['stop_and_zero_mdadm_for_format']
@@ -60,7 +61,7 @@ is allowed to converge storage. To that end, this API provides the following
 
 To change one, simply:
 
-```
+```ruby
 node.default['fb_storage']['format']['firstboot_eraseall'] = true
 ```
 
@@ -114,7 +115,7 @@ arrays, but that's the extent of its ability.
 
 The `devices` array is mapped to a list of devices like so:
 
-```
+```ruby
 node.default['fb_storage']['devices'] = [
   # fioa or sdb
   {
@@ -165,7 +166,7 @@ exported over a block protocol such as `NBD`.
 Multiple partitions can be defined by specifying a `partition_start` and
 `partition_end` in each:
 
-```
+```ruby
 node.default['fb_storage']['devices'] = [
   # fioa or sdb
   {
@@ -239,7 +240,7 @@ entry in `devices` while `/dev/fioa` maps to the second.
 
 To make the ordering clear, here's an visual:
 
-```
+```text
 --------------
        |------
        | | sdb (6:0:0:0)  \
@@ -291,6 +292,10 @@ The `node['fb_storage']['fstab_use_labels']` option will control
 whether or not `fb_fstab`'s information is populated with device names or
 labels. The default is currently `true`.
 
+#### manage_packages
+
+Whether or not to manage packages, at this point only `mdadm`.
+
 #### manage_mdadm_conf
 
 If you have specified arrays, then Storage will generate an `/etc/mdadm.conf`
@@ -333,7 +338,7 @@ want to build and then use the `devices` structure from above simply to tie
 physical devices to an array. For example, let's say you want to stripe two
 flash cards:
 
-```
+```ruby
 node.default['fb_storage']['arrays'] = [
   {
     'type' => 'xfs',
@@ -379,7 +384,7 @@ The `_no_mount` option also works here. In addition you can specify
 You may also specify additional options to be passed to the 'mdadm create'
 command using the 'create_options' option, e.g.
 
-```
+```ruby
     'create_options' => '--assume-clean --bitmap=none --layout=o2',
 ```
 
@@ -433,7 +438,7 @@ A helper function `FB::Storage.hybrid_xfs_md_size` is available to
 help you. Here's an example usage for setting up 8 Hybrid XFS filesystems on a
 machine with 1 flash card and 8 data disks:
 
-```
+```ruby
 # Setup our extra XFS options
 node.default['fb_storage']['format_options'] =
   '-i size=2048 -s size=4096'
@@ -521,7 +526,7 @@ By default Chef will format Hybrid XFS arrays with a 256k (262144 byte) extent
 size. This can be overriden by setting the 'extsize' value within the array.
 For example:
 
-```
+```ruby
 node.default['fb_storage']['arrays'] = [
   {
     'mount_point' => "/mnt/d#{i}",

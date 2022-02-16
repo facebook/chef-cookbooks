@@ -1036,7 +1036,7 @@ describe FB::Storage do
     end
 
     context 'hybrid_xfs arrays' do
-      let('device1'.to_sym) do
+      let(:device1) do
         {
           'partitions' => 3.times.map do |i|
             {
