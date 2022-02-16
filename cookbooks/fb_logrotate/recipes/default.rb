@@ -37,24 +37,40 @@ whyrun_safe_ruby_block 'munge logrotate configs' do
     node['fb_logrotate']['configs'].to_hash.each do |name, block|
       time = nil
       if block['overrides']
-        # if someone wants to override weekly but didn't specify
-        # how many to keep, we default to 4
-        if block['overrides']['rotation'] == 'weekly' &&
-           !block['overrides']['rotate']
-          node.default['fb_logrotate']['configs'][name][
-            'overrides']['rotate'] = '4'
+        rotation = block['overrides']['rotation']
+        size = block['overrides']['size']
+
+        if rotation && size
+          fail "fb_logrotate:[#{name}]: you can only use size or rotation " +
+            'not both'
+        end
+        
+        if rotation
+          # if someone wants to override weekly but didn't specify
+          # how many to keep, we default to 4
+          if rotation == 'weekly' && !block['overrides']['rotate']
+            node.default['fb_logrotate']['configs'][name][
+              'overrides']['rotate'] = '4'
+          end
+
+          if %w{hourly daily weekly monthly yearly}.include?(rotation)
+            time = rotation
+            node.rm(:fb_logrotate, :configs, name, :overrides, :rotation)
+          else
+            fail "fb_logrotate:[#{name}]: rotation #{rotation} invalid"
+          end
         end
 
-        if block['overrides']['size']
-          time = "size #{block['overrides']['size']}"
+        if size
+          time = "size #{size}"
           node.rm(:fb_logrotate, :configs, name, :overrides, :size)
-        elsif %w{hourly weekly monthly yearly}.include?(
-          block['overrides']['rotation'],
-        )
-          time = block['overrides']['rotation']
-          node.rm(:fb_logrotate, :configs, name, :overrides, :rotation)
         end
-        time = nil if time == 'daily'
+
+        if block['overrides']['nocompress'] &&
+           node['fb_logrotate']['globals']['nocompress']
+          # redundant, remove
+          node.rm(:fb_logrotate, :configs, name, :overrides, :nocompress)
+        end
       end
       if time
         node.default['fb_logrotate']['configs'][name]['time'] = time
