@@ -10,6 +10,7 @@ Attributes
 ----------
 * node['fb_dnsmasq']['config']
 * node['fb_dnsmasq']['enable']
+* node['fb_dnsmasq']['systemd_overrides']
 
 Usage
 -----
@@ -20,7 +21,7 @@ to the [upstream
 documentation](http://www.thekelleys.org.uk/dnsmasq/docs/dnsmasq-man.html).
 Example:
 
-```
+```ruby
 node.default['fb_dnsmasq']['config'] = {
   'dhcp-authoritative' => nil,
   'dhcp-range' => [
@@ -44,3 +45,14 @@ the `fb_hosts` cookbook.
 If the `read-ethers` config option is set, dnsmasq will read mac address to
 hostname mappings from `/etc/ethers`. This can be customized using the API
 provided by the `fb_ethers` cookbook.
+
+### systemd_overrides
+You can set any systemd_overrides in `node['fb_dnsmasq']['systemd_overrides']`,
+and they will use the `fb_systemd_override` resource to create a drop-in file
+for systemd. The default in this cookbook turns Restart=always on for the
+service since some packages don't set it at all. Here's how you would set that
+same thing explicitly:
+
+```ruby
+node.default['fb_dnsmasq']['systemd_overrides']['Service']['Restart'] = 'always'
+```

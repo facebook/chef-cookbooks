@@ -19,4 +19,9 @@
 default['fb_dnsmasq'] = {
   'config' => {},
   'enable' => true,
+  'systemd_overrides' => {
+    'Service' => {
+      'Restart' => 'always',
+    },
+  },
 }

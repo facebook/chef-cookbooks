@@ -35,6 +35,13 @@ template '/etc/dnsmasq.conf' do
   notifies :restart, 'service[dnsmasq]'
 end
 
+fb_systemd_override 'fb_dnsmasq' do
+  not_if { node['fb_dnsmasq']['systemd_overrides'].empty? }
+  unit_name 'dnsmasq.service'
+  content lazy { node['fb_dnsmasq']['systemd_overrides'] }
+  notifies :restart, 'service[dnsmasq]'
+end
+
 service 'dnsmasq' do
   only_if { node['fb_dnsmasq']['enable'] }
   action [:enable, :start]
