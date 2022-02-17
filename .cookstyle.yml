@@ -1,0 +1,396 @@
+# This file is the open-source configuration that we ship with
+# https://github.com/facebook/chef-cookbooks
+AllCops:
+  # We ship with an allowlist-based rule approach, allowing us to ratchet in
+  # new cops and make upgrades easier (ie not dealing with a bunch of noise
+  # each Cookstyle update)
+  DisabledByDefault: true
+  TargetChefVersion: 13.10.0
+
+Chef/Correctness/BlockGuardWithOnlyString:
+  Enabled: true
+Chef/Correctness/ChefApplicationFatal:
+  Enabled: true
+Chef/Correctness/ConditionalRubyShellout:
+  Enabled: true
+Chef/Correctness/CookbookUsesNodeSave:
+  Enabled: true
+Chef/Correctness/DnfPackageAllowDowngrades:
+  Enabled: true
+Chef/Correctness/IncorrectLibraryInjection:
+  Enabled: true
+Chef/Correctness/InvalidDefaultAction:
+  Enabled: true
+Chef/Correctness/InvalidNotificationTiming:
+  Enabled: true
+Chef/Correctness/InvalidPlatformFamilyHelper:
+  Enabled: true
+Chef/Correctness/InvalidPlatformFamilyInCase:
+  Enabled: true
+Chef/Correctness/InvalidPlatformHelper:
+  Enabled: true
+Chef/Correctness/InvalidPlatformInCase:
+  Enabled: true
+Chef/Correctness/InvalidPlatformMetadata:
+  Enabled: true
+Chef/Correctness/InvalidVersionMetadata:
+  Enabled: true
+Chef/Correctness/LazyEvalNodeAttributeDefaults:
+  Enabled: true
+Chef/Correctness/LazyInResourceGuard:
+  Enabled: true
+Chef/Correctness/MacosUserdefaultsInvalidType:
+  Enabled: true
+Chef/Correctness/MalformedPlatformValueForPlatformHelper:
+  Enabled: true
+Chef/Correctness/MetadataMissingName:
+  Enabled: true
+Chef/Correctness/NodeNormal:
+  Enabled: true
+Chef/Correctness/NodeNormalUnless:
+  Enabled: true
+Chef/Correctness/NotifiesActionNotSymbol:
+  Enabled: true
+Chef/Correctness/OctalModeAsString:
+  Enabled: true
+Chef/Correctness/OpenSSLPasswordHelpers:
+  Enabled: true
+Chef/Correctness/PowershellScriptDeleteFile:
+  Enabled: true
+Chef/Correctness/ResourceSetsInternalProperties:
+  Enabled: true
+Chef/Correctness/ResourceSetsNameProperty:
+  Enabled: true
+Chef/Correctness/ResourceWithNoneAction:
+  Enabled: true
+Chef/Correctness/ScopedFileExist:
+  Enabled: true
+Chef/Correctness/ServiceResource:
+  Enabled: true
+Chef/Correctness/SupportsMustBeFloat:
+  Enabled: true
+Chef/Correctness/TmpPath:
+  Enabled: true
+
+Chef/Deprecations/ChefDKGenerators:
+  Enabled: true
+Chef/Deprecations/ChefHandlerRecipe:
+  Enabled: true
+Chef/Deprecations/ChefHandlerUsesSupports:
+  Enabled: true
+Chef/Deprecations/ChefRewind:
+  Enabled: true
+Chef/Deprecations/ChefShellout:
+  Enabled: true
+Chef/Deprecations/ChefSpecCoverageReport:
+  Enabled: true
+Chef/Deprecations/ChefSpecLegacyRunner:
+  Enabled: true
+Chef/Deprecations/ChefWindowsPlatformHelper:
+  Enabled: true
+Chef/Deprecations/Cheffile:
+  Enabled: true
+Chef/Deprecations/ChocolateyPackageUninstallAction:
+  Enabled: true
+Chef/Deprecations/CookbookDependsOnCompatResource:
+  Enabled: true
+Chef/Deprecations/CookbookDependsOnPartialSearch:
+  Enabled: true
+Chef/Deprecations/CookbookDependsOnPoise:
+  Enabled: true
+Chef/Deprecations/CookbooksDependsOnSelf:
+  Enabled: true
+Chef/Deprecations/DeprecatedPlatformMethods:
+  Enabled: true
+Chef/Deprecations/DeprecatedShelloutMethods:
+  Enabled: true
+Chef/Deprecations/DeprecatedWindowsVersionCheck:
+  Enabled: true
+Chef/Deprecations/DeprecatedYumRepositoryProperties:
+  Enabled: true
+Chef/Deprecations/EOLAuditModeUsage:
+  Enabled: true
+Chef/Deprecations/EasyInstallResource:
+  Enabled: true
+Chef/Deprecations/EpicFail:
+  Enabled: true
+Chef/Deprecations/ErlCallResource:
+  Enabled: true
+Chef/Deprecations/ExecutePathProperty:
+  Enabled: true
+Chef/Deprecations/ExecuteRelativeCreatesWithoutCwd:
+  Enabled: true
+Chef/Deprecations/HWRPWithoutProvides:
+  Enabled: true
+Chef/Deprecations/IncludingXMLRubyRecipe:
+  Enabled: true
+Chef/Deprecations/IncludingYumDNFCompatRecipe:
+  Enabled: true
+Chef/Deprecations/LaunchdDeprecatedHashProperty:
+  Enabled: true
+Chef/Deprecations/LegacyNotifySyntax:
+  Enabled: true
+Chef/Deprecations/LegacyYumCookbookRecipes:
+  Enabled: true
+Chef/Deprecations/LibrarianChefSpec:
+  Enabled: true
+Chef/Deprecations/LocaleDeprecatedLcAllProperty:
+  Enabled: true
+Chef/Deprecations/LogResourceNotifications:
+  Enabled: true
+Chef/Deprecations/MacosUserdefaultsGlobalProperty:
+  Enabled: true
+Chef/Deprecations/NamePropertyWithDefaultValue:
+  Enabled: true
+Chef/Deprecations/NodeDeepFetch:
+  Enabled: true
+Chef/Deprecations/NodeSet:
+  Enabled: true
+Chef/Deprecations/NodeSetUnless:
+  Enabled: true
+Chef/Deprecations/NodeSetWithoutLevel:
+  Enabled: true
+Chef/Deprecations/PartialSearchClassUsage:
+  Enabled: true
+Chef/Deprecations/PartialSearchHelperUsage:
+  Enabled: true
+Chef/Deprecations/PoiseArchiveUsage:
+  Enabled: true
+Chef/Deprecations/PowershellCookbookHelpers:
+  Enabled: true
+Chef/Deprecations/RequireRecipe:
+  Enabled: true
+Chef/Deprecations/ResourceInheritsFromCompatResource:
+  Enabled: true
+Chef/Deprecations/ResourceOverridesProvidesMethod:
+  Enabled: true
+Chef/Deprecations/ResourceUsesDslNameMethod:
+  Enabled: true
+Chef/Deprecations/ResourceUsesOnlyResourceName:
+  Enabled: true
+Chef/Deprecations/ResourceUsesProviderBaseMethod:
+  Enabled: true
+Chef/Deprecations/ResourceUsesUpdatedMethod:
+  Enabled: true
+Chef/Deprecations/Ruby27KeywordArgumentWarnings:
+  Enabled: true
+Chef/Deprecations/RubyBlockCreateAction:
+  Enabled: true
+Chef/Deprecations/SearchUsesPositionalParameters:
+  Enabled: true
+Chef/Deprecations/UseAutomaticResourceName:
+  Enabled: true
+Chef/Deprecations/UseInlineResourcesDefined:
+  Enabled: true
+Chef/Deprecations/UserDeprecatedSupportsProperty:
+  Enabled: true
+Chef/Deprecations/UsesChefRESTHelpers:
+  Enabled: true
+Chef/Deprecations/UsesDeprecatedMixins:
+  Enabled: true
+Chef/Deprecations/UsesRunCommandHelper:
+  Enabled: true
+Chef/Deprecations/VerifyPropertyUsesFileExpansion:
+  Enabled: true
+Chef/Deprecations/WindowsFeatureServermanagercmd:
+  Enabled: true
+Chef/Deprecations/WindowsPackageInstallerTypeString:
+  Enabled: true
+Chef/Deprecations/WindowsTaskChangeAction:
+  Enabled: true
+Chef/Deprecations/WindowsVersionHelpers:
+  Enabled: true
+
+Chef/Modernize/ActionMethodInResource:
+  Enabled: true
+Chef/Modernize/AllowedActionsFromInitialize:
+  Enabled: true
+Chef/Modernize/ChefGemNokogiri:
+  Enabled: true
+Chef/Modernize/ConditionalUsingTest:
+  Enabled: true
+Chef/Modernize/CronDFileOrTemplate:
+  Enabled: true
+Chef/Modernize/CronManageResource:
+  Enabled: true
+Chef/Modernize/CustomResourceWithAttributes:
+  Enabled: true
+Chef/Modernize/DatabagHelpers:
+  Enabled: true
+Chef/Modernize/DefaultActionFromInitialize:
+  Enabled: true
+Chef/Modernize/Definitions:
+  Enabled: true
+Chef/Modernize/DependsOnZypperCookbook:
+  Enabled: true
+Chef/Modernize/DslIncludeInResource:
+  Enabled: true
+Chef/Modernize/EmptyResourceInitializeMethod:
+  Enabled: true
+Chef/Modernize/ExecuteAptUpdate:
+  Enabled: true
+Chef/Modernize/ExecuteScExe:
+  Enabled: true
+Chef/Modernize/ExecuteSleep:
+  Enabled: true
+Chef/Modernize/ExecuteSysctl:
+  Enabled: true
+Chef/Modernize/ExecuteTzUtil:
+  Enabled: true
+Chef/Modernize/IfProvidesDefaultAction:
+  Enabled: true
+Chef/Modernize/IncludingAptDefaultRecipe:
+  Enabled: true
+Chef/Modernize/IncludingMixinShelloutInResources:
+  Enabled: true
+Chef/Modernize/IncludingOhaiDefaultRecipe:
+  Enabled: true
+Chef/Modernize/IncludingWindowsDefaultRecipe:
+  Enabled: true
+Chef/Modernize/LibarchiveFileResource:
+  Enabled: true
+Chef/Modernize/MacOsXUserdefaults:
+  Enabled: true
+Chef/Modernize/MinitestHandlerUsage:
+  Enabled: true
+Chef/Modernize/NodeInitPackage:
+  Enabled: true
+Chef/Modernize/NodeRolesInclude:
+  Enabled: true
+Chef/Modernize/OpensslRsaKeyResource:
+  Enabled: true
+Chef/Modernize/OpensslX509Resource:
+  Enabled: true
+Chef/Modernize/OsxConfigProfileResource:
+  Enabled: true
+Chef/Modernize/PowerShellGuardInterpreter:
+  Enabled: true
+Chef/Modernize/PowershellInstallPackage:
+  Enabled: true
+Chef/Modernize/PowershellInstallWindowsFeature:
+  Enabled: true
+Chef/Modernize/PowershellScriptExpandArchive:
+  Enabled: true
+Chef/Modernize/ProvidesFromInitialize:
+  Enabled: true
+Chef/Modernize/ResourceForcingCompileTime:
+  Enabled: true
+Chef/Modernize/ResourceNameFromInitialize:
+  Enabled: true
+Chef/Modernize/RespondToCompileTime:
+  Enabled: true
+Chef/Modernize/RespondToInMetadata:
+  Enabled: true
+Chef/Modernize/RespondToProvides:
+  Enabled: true
+Chef/Modernize/RespondToResourceName:
+  Enabled: true
+Chef/Modernize/SevenZipArchiveResource:
+  Enabled: true
+Chef/Modernize/ShellOutToChocolatey:
+  Enabled: true
+Chef/Modernize/SimplifyAptPpaSetup:
+  Enabled: true
+Chef/Modernize/SysctlParamResource:
+  Enabled: true
+Chef/Modernize/UnnecessaryDependsChef14:
+  Enabled: true
+Chef/Modernize/UnnecessaryMixlibShelloutRequire:
+  Enabled: true
+Chef/Modernize/UseBuildEssentialResource:
+  Enabled: true
+Chef/Modernize/UseMultipackageInstalls:
+  Enabled: true
+Chef/Modernize/UseRequireRelative:
+  Enabled: true
+Chef/Modernize/UsesZypperRepo:
+  Enabled: true
+Chef/Modernize/WhyRunSupportedTrue:
+  Enabled: true
+Chef/Modernize/WindowsRegistryUAC:
+  Enabled: true
+Chef/Modernize/WindowsScResource:
+  Enabled: true
+Chef/Modernize/WindowsZipfileUsage:
+  Enabled: true
+Chef/Modernize/ZipfileResource:
+  Enabled: true
+
+Chef/RedundantCode/AptRepositoryDistributionDefault:
+  Enabled: true
+Chef/RedundantCode/AptRepositoryNotifiesAptUpdate:
+  Enabled: true
+Chef/RedundantCode/AttributeMetadata:
+  Enabled: true
+Chef/RedundantCode/ConflictsMetadata:
+  Enabled: true
+Chef/RedundantCode/CustomResourceWithAllowedActions:
+  Enabled: true
+Chef/RedundantCode/DoubleCompileTime:
+  Enabled: true
+Chef/RedundantCode/GroupingMetadata:
+  Enabled: true
+Chef/RedundantCode/MultiplePlatformChecks:
+  Enabled: true
+Chef/RedundantCode/OhaiAttributeToString:
+  Enabled: true
+Chef/RedundantCode/PropertySplatRegex:
+  Enabled: true
+Chef/RedundantCode/PropertyWithRequiredAndDefault:
+  Enabled: true
+Chef/RedundantCode/ProvidesMetadata:
+  Enabled: true
+Chef/RedundantCode/RecipeMetadata:
+  Enabled: true
+Chef/RedundantCode/ReplacesMetadata:
+  Enabled: true
+Chef/RedundantCode/ResourceWithNothingAction:
+  Enabled: true
+Chef/RedundantCode/SensitivePropertyInResource:
+  Enabled: true
+Chef/RedundantCode/StringPropertyWithNilDefault:
+  Enabled: true
+Chef/RedundantCode/SuggestsMetadata:
+  Enabled: true
+Chef/RedundantCode/UnnecessaryDesiredState:
+  Enabled: true
+Chef/RedundantCode/UnnecessaryNameProperty:
+  Enabled: true
+Chef/RedundantCode/UseCreateIfMissing:
+  Enabled: true
+
+Chef/Sharing/DefaultMetadataMaintainer:
+  Enabled: true
+Chef/Sharing/EmptyMetadataField:
+  Enabled: true
+Chef/Sharing/IncludePropertyDescriptions:
+  Enabled: true
+Chef/Sharing/IncludeResourceDescriptions:
+  Enabled: true
+Chef/Sharing/IncludeResourceExamples:
+  Enabled: true
+Chef/Sharing/InsecureCookbookURL:
+  Enabled: true
+Chef/Sharing/InvalidLicenseString:
+  Enabled: true
+
+Chef/Style/AttributeKeys:
+  Enabled: true
+Chef/Style/CommentSentenceSpacing:
+  Enabled: true
+Chef/Style/DefaultCopyrightComments:
+  Enabled: true
+Chef/Style/FileMode:
+  Enabled: true
+Chef/Style/ImmediateNotificationTiming:
+  Enabled: true
+Chef/Style/IncludeRecipeWithParentheses:
+  Enabled: true
+Chef/Style/NegatingOnlyIf:
+  Enabled: true
+Chef/Style/OverlyComplexSupportsDependsMetadata:
+  Enabled: true
+Chef/Style/SimplifyPlatformMajorVersionCheck:
+  Enabled: true
+Chef/Style/UnnecessaryOSCheck:
+  Enabled: true
