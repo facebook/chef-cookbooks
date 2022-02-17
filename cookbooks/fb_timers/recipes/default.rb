@@ -23,10 +23,6 @@ unless node.systemd?
   fail 'fb_timers is only available for use on systemd-managed machines.'
 end
 
-# This is not necessary for prod chef, but is necessary for the unit tests
-# of this cookbook, since they don't run fb_systemd in any other way.
-include_recipe 'fb_systemd::default'
-
 # The default timer location
 directory '/etc/systemd/timers' do
   owner 'root'

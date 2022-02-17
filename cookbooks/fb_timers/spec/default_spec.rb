@@ -57,7 +57,8 @@ recipe 'fb_timers::default', :unsupported => [:mac_os_x] do |tc|
 
     it 'should raise an error' do
       expect { chef_run.converge(described_recipe) }.
-        to raise_error(RuntimeError)
+        to raise_error(RuntimeError,
+                       /only available for use on systemd-managed machines/)
     end
   end
 
@@ -76,7 +77,7 @@ recipe 'fb_timers::default', :unsupported => [:mac_os_x] do |tc|
 
     it 'should raise an error' do
       expect { chef_run.converge(described_recipe) }.
-        to raise_error(RuntimeError)
+        to raise_error(RuntimeError, /fb_timers: Missing required key/)
     end
   end
 
@@ -86,7 +87,7 @@ recipe 'fb_timers::default', :unsupported => [:mac_os_x] do |tc|
         :step_into => ['fb_timers_setup'],
       ) do |node|
         allow(node).to receive(:systemd?).and_return(true)
-      end.converge(described_recipe) do |node|
+      end.converge('fb_systemd::reload', described_recipe) do |node|
         node.default['fb_timers']['jobs'] = {
           'simple' => {
             'calendar' => '*:0/15:0',
@@ -213,7 +214,7 @@ recipe 'fb_timers::default', :unsupported => [:mac_os_x] do |tc|
     cached(:chef_run) do
       tc.chef_run(:step_into => ['fb_timers_setup']) do |node|
         allow(node).to receive(:systemd?).and_return(true)
-      end.converge(described_recipe) do |node|
+      end.converge('fb_systemd::reload', described_recipe) do |node|
         node.stub(:systemd?).and_return(true)
         node.default['fb_timers']['jobs'] = {
           'bad_keys' => {
@@ -250,7 +251,7 @@ recipe 'fb_timers::default', :unsupported => [:mac_os_x] do |tc|
     cached(:chef_run) do
       tc.chef_run(:step_into => ['fb_timers_setup']) do |node|
         allow(node).to receive(:systemd?).and_return(true)
-      end.converge(described_recipe) do |node|
+      end.converge('fb_systemd::reload', described_recipe) do |node|
         node.stub(:systemd?).and_return(true)
         node.default['fb_timers']['jobs'] = {
           'current' => {
