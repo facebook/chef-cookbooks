@@ -1,0 +1,46 @@
+#!/bin/sh
+#
+# vim: syntax=ruby:expandtab:shiftwidth=2:softtabstop=2:tabstop=2
+#
+# Copyright (c) 2016-present, Facebook, Inc.
+# All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+set -eu
+
+default_config='.cookstyle.yml'
+if bundle exec cookstyle --version > /dev/null 2>&1; then
+  COOKSTYLE='bundle exec cookstyle'
+elif [ -x /opt/chef-workstation/embedded/bin/cookstyle ]; then
+  COOKSTYLE='/opt/chef-workstation/embedded/bin/cookstyle'
+else
+  echo 'Cannot find cookstyle!'
+  exit 1
+fi
+
+if [ "$#" -eq 0 ]; then
+  config="$default_config"
+elif [ "$#" -eq 1 ]; then
+  config="$1"
+else
+  echo "Usage: $0 [config]"
+  exit 1
+fi
+
+if [ ! -r "$config" ]; then
+  echo "Cannot read config config: $config"
+  exit 1
+fi
+
+exec $COOKSTYLE --display-cop-names -c "$config"
