@@ -32,3 +32,17 @@ fb_choco_configure 'configuring chocolatey client' do
   only_if { node['fb_choco']['enabled']['manage'] }
   action :change
 end
+
+# Empty nupkg and nuspec can cause installs to fail and are typically a result
+# of failed installed/network timeouts/etc.
+# We only want to run this if we have chocolatey is installed.
+unless ENV['ChocolateyInstall'].nil?
+  ruby_friendly = ENV['ChocolateyInstall'].gsub(/\\+/, '/')
+  ::Dir.glob("#{ruby_friendly}/lib/**/*.nu*").select do |file|
+    ::File.zero?(file)
+  end.each do |empty_file|
+    file empty_file do
+      action :delete
+    end
+  end
+end
