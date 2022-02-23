@@ -271,13 +271,13 @@ module FB
         end
 
         if format_rules['mismatched_filesystem_or_partition']
-          Chef::Log.debug(
+          Chef::Log.warn(
             'fb_storage: Allowed to converge disks incorrect ' +
             'partitions or filesystems on this system',
           )
           to_do = merge_work(to_do, filter_work(needs_work, :all, storage))
         elsif format_rules['mismatched_filesystem_only']
-          Chef::Log.debug(
+          Chef::Log.warn(
             'fb_storage: Allowed to converge disks incorrect ' +
             'filesystems on this system',
           )
