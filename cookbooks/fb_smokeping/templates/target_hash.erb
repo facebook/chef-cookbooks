@@ -1,0 +1,11 @@
+<% @indent = 1 if not @indent %>
+<% ind = '+' * @indent %>
+<% @config.each do |key, val| %>
+<%   if val.is_a?(Hash) %>
+<%=    ind %> <%= key %>
+<%=     render 'target_hash.erb',
+         :variables => { :config => val, :indent => @indent + 1} -%>
+ <% else %>
+  <%= key %> = <%= val %>
+ <% end %>
+ <% end %>

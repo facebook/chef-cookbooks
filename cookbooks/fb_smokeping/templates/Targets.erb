@@ -1,0 +1,16 @@
+#
+# This file is managed by Chef.
+#
+
+*** Targets ***
+
+<% node['fb_smokeping']['targets'].each do |key, val| %>
+<%   if val.is_a?(Hash) %>
+<%     indent = 1 %>
+<%=     render 'target_hash.erb',
+    :variables => { :config => {key => val}, :indent => indent} -%>
+
+<%   else %>
+<%= key %> = <%= val %>
+<%   end %>
+<% end %>

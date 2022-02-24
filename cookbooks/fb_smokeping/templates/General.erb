@@ -1,0 +1,9 @@
+#
+# This file is managed by Chef.
+#
+*** General ***
+<% node['fb_smokeping']['general'].each do |k,v| %>
+<%= k %> = <%= v %>
+<% end %>
+
+@include /etc/smokeping/config.d/pathnames

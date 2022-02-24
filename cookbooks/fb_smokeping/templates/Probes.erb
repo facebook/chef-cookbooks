@@ -1,0 +1,12 @@
+#
+# This file is managed by Chef.
+#
+
+*** Probes ***
+<% node['fb_smokeping']['probes'].sort.each do |probe, values| %>
++ <%= probe %>
+<%   values.each do |k, v| %>
+    <%= k %> = <%= v %>
+<%   end %>
+<% end %>
+
