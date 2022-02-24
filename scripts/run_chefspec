@@ -26,8 +26,6 @@ if bundle exec rspec --version > /dev/null 2>&1; then
   RSPEC='bundle exec rspec'
 elif [ -x /opt/chef-workstation/embedded/bin/rspec ]; then
   RSPEC='/opt/chef-workstation/embedded/bin/rspec'
-elif [ -x /opt/chefdk/embedded/bin/rspec ]; then
-  RSPEC='/opt/chefdk/embedded/bin/rspec'
 elif [ -x /opt/chef/embedded/bin/rspec ]; then
   RSPEC='/opt/chef/embedded/bin/rspec'
 else

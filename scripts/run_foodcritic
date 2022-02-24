@@ -40,9 +40,6 @@ if bundle exec foodcritic --version > /dev/null 2>&1; then
 elif [ -x /opt/chef-workstation/embedded/bin/foodcritic ]; then
   echo 'Falling back to chef-workstation foodcritic'
   FOODCRITIC='/opt/chef-workstation/embedded/bin/foodcritic'
-elif [ -x /opt/chefdk/embedded/bin/foodcritic ]; then
-  echo 'Falling back to chefdk foodcritic'
-  FOODCRITIC='/opt/chefdk/embedded/bin/foodcritic'
 elif [ -x /opt/chef/embedded/bin/foodcritic ]; then
   echo 'Falling back to chef foodcritic'
   FOODCRITIC='/opt/chef/embedded/bin/foodcritic'
