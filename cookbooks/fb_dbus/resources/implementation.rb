@@ -52,7 +52,9 @@ action :setup do
   if node.centos7? || node.centos8?
     dbus_daemon_svc = 'dbus'
   else
-    service 'dbus' do
+    # On CentOS Stream 9, this socket needs to be explicitly enabled for
+    # dbus-broker to work properly
+    systemd_unit 'dbus.socket' do
       action [:enable, :start]
     end
 
