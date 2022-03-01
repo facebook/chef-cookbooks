@@ -74,28 +74,53 @@ module FB
       true
     end
 
-    # List of devices eligble for managing by the fb_storage storage system,
-    # i.e., non-root devices
-    def self.eligible_devices(node)
-      root_dev = node.device_of_mount('/')
+    # List of devices the storage API shouldn't touch, so the ones holding
+    # / and /boot as touching those could result in tears
+    def self.devices_to_skip(node)
+      # If / or /boot is mounted in a RAID array, exclude all the members
+      root_dev = self.root_device_name(node)
       return [] unless root_dev
+      boot_dev = self.boot_device_name(node)
 
-      if root_dev
-        root_dev = root_dev.split('/').last
+      to_skip = Set.new([root_dev, boot_dev])
+      to_skip.dup.each do |oot_dev|
+        if oot_dev&.start_with?('md')
+          Dir.glob("/sys/block/#{oot_dev}/slaves/*").each do |x|
+            to_skip << ::File.basename(x)
+          end
+        end
       end
+      to_skip
+    end
+
+    # List of devices eligble for managing by the fb_storage storage system,
+    # i.e., non-root & boot devices
+    def self.eligible_devices(node)
+      devices_to_skip = self.devices_to_skip(node)
+      # Legacy. We should probably fail hard here
+      return [] if devices_to_skip.length.zero?
+
       node['block_device'].to_hash.reject do |x, _y|
-        ['ram', 'loop', 'dm-', 'sr'].include?(x.delete('0-9')) ||
-          root_dev&.start_with?(x) ||
-          x.start_with?('md')
+        ['ram', 'loop', 'dm-', 'sr', 'md'].include?(x.delete('0-9')) ||
+        devices_to_skip.include?(x)
       end.keys
     end
 
-    # Return the short device name of the physical root device, i.e. 'sda',
-    # not to be confused with '/dev/sda' or '/dev/sda3'
     def self.root_device_name(node)
+      self.get_device_name(node, '/')
+    end
+
+    def self.boot_device_name(node)
+      self.get_device_name(node, '/boot') if Pathname.new('/boot').mountpoint?
+    end
+
+    # Return the short device name of the physical device for a given mount,
+    # i.e. 'sda', not to be confused with '/dev/sda' or '/dev/sda3'
+    def self.get_device_name(node, mount_point)
       # This could be a bare device (/dev/md0) or a partition (/dev/sda1)
-      device_or_partition = node.device_of_mount('/')
-      if File.exist?(device_or_partition)
+      # or a symbolic link since 5.12 (/dev/mapper/transient)
+      device_or_partition = node.device_of_mount(mount_point)
+      if File.symlink?(device_or_partition)
         device_or_partition = File.realpath(device_or_partition)
       end
       device_or_partition_base = File.basename(device_or_partition)
@@ -290,8 +315,7 @@ module FB
           disks = f.empty? ? nil : f
         when Hash
           unless f['version'] == 2
-            fail 'fb_storage: Unknown format of persistent-order ' +
-              'cache file!'
+            fail 'fb_storage: Unknown format of persistent-order cache file!'
           end
           version = f['version']
           disklist = []
@@ -517,6 +541,19 @@ module FB
         maintenance_disks.map { |x| ::File.basename(x) },
       )
 
+      # We might have been running an older version which did not account
+      # for RAID or /boot being on another disk, so ensure we skip those
+      devices_to_skip = self.devices_to_skip(node)
+      prev&.keep_if do |disk|
+        if devices_to_skip.include?(disk)
+          Chef::Log.warn('fb_storage: previous ordering includes now skipped ' +
+            " disk: #{disk}")
+          false
+        else
+          true
+        end
+      end
+
       # If the set of disks have not changed since last time, use the old
       # order.
       if prev && unsorted_devs == Set.new(prev)
@@ -606,6 +643,20 @@ module FB
       node['fb_storage']['arrays']&.each_with_index do |cfg, idx|
         desired_arrays["/dev/md#{idx}"] = cfg.to_hash
         desired_arrays["/dev/md#{idx}"]['members'] = []
+      end
+
+      # If / or /boot is mounted in a software RAID array, make sure to skip it
+      { '/' => self.root_device_name(node),
+       '/boot' => self.boot_device_name(node) }.each do |fs, dev|
+        next unless dev && dev.start_with?('md')
+        dev_path = "/dev/#{dev}"
+        if desired_arrays[dev_path]
+          unless desired_arrays[dev_path]['_skip']
+            fail "fb_storage: Asked to configure #{dev} but that is `#{fs}`!"
+          end
+        else
+          desired_arrays[dev_path] = { 'members' => [], '_skip' => true }
+        end
       end
 
       desired_disks = {}

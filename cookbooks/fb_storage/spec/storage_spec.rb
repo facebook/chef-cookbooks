@@ -35,14 +35,28 @@ describe FB::Storage do
   end
 
   context '#eligble_devices' do
-    it 'should not include root drives' do
+    before do
+      {
+        '/' => '/dev/sda',
+        '/boot' => '/dev/sdb',
+      }.each do |mp, device|
+        allow(node).to receive(:device_of_mount).with(mp).and_return(device)
+        allow(File).to receive(:realpath).with(device).and_return(device)
+        if mp == '/boot'
+          boot_mock = double
+          allow(Pathname).to receive(:new).with(mp).and_return(boot_mock)
+          allow(boot_mock).to receive(:mountpoint?).and_return(device)
+        end
+      end
+    end
+    it 'should not include root nor boot drives' do
       node.automatic['block_device'] = {
         'sda' => {},
         'sdb' => {},
+        'sdc' => {},
       }
-      allow(node).to receive(:device_of_mount).with('/').and_return('/dev/sda')
 
-      expect(FB::Storage.eligible_devices(node)).to eq(['sdb'])
+      expect(FB::Storage.eligible_devices(node)).to eq(['sdc'])
     end
 
     it 'should skip ram, loop, and md devices' do
@@ -52,12 +66,23 @@ describe FB::Storage do
         'loop0' => {},
         'ram0' => {},
         'md0' => {},
+        'dm-0' => {},
+        'sr0' => {},
       }
-
-      allow(node).to receive(:device_of_mount).with('/').and_return('/dev/sda')
 
       expect(FB::Storage.eligible_devices(node)).to eq(['fioa'])
     end
+
+    # This isn't actually handled yet, so comment it out until we fix the code
+    # it 'should skip when we cannot find root\'s device' do
+    #   node.automatic['block_device'] = {
+    #     'sda' => {},
+    #     'sdb' => {},
+    #     'sdc' => {},
+    #   }
+    #   allow(node).to receive(:device_of_mount).with('/').and_return(nil)
+    #   expect(FB::Storage.eligible_devices(node)).to eq([])
+    # end
   end
 
   context '#root_device_name' do
@@ -172,7 +197,10 @@ describe FB::Storage do
       ].each do |badinput|
         expect do
           FB::Storage.block_device_split(badinput)
-        end.to raise_error(RuntimeError)
+        end.to raise_error(
+          RuntimeError,
+          /fb_storage: Cannot parse #{badinput} for sorting/,
+        )
       end
     end
   end
@@ -424,7 +452,10 @@ describe FB::Storage do
       )
       expect do
         FB::Storage.load_previous_disk_order
-      end.to raise_error(RuntimeError)
+      end.to raise_error(
+        RuntimeError,
+        'fb_storage: Unknown format of persistent-order cache file!',
+      )
     end
   end
 
@@ -507,7 +538,10 @@ describe FB::Storage do
       disks = ['b', 'a', 'd', 'e', 'c']
       expect do
         FB::Storage.calculate_updated_order(disks, disks.sort)
-      end.to raise_error(RuntimeError)
+      end.to raise_error(
+        RuntimeError,
+        /fb_storage: Found no difference between old and new disks/,
+      )
     end
   end
 
@@ -517,6 +551,8 @@ describe FB::Storage do
       allow(node).to receive(:virtual?).and_return(false)
       allow(FB::Storage).to receive(:write_out_disk_order).
         and_return(nil)
+      allow(FB::Storage).to receive(:devices_to_skip).with(node).
+        and_return(['sda'])
     end
     before(:each) do
       node.default['fb_storage']['_ordered_disks'] = nil
@@ -663,7 +699,13 @@ describe FB::Storage do
 
   context '#build_mapping' do
     before do
-      allow(node).to receive(:device_of_mount).and_return('/dev/sda')
+      allow(node).to receive(:device_of_mount).with('/').and_return('/dev/sda')
+      allow(node).to receive(:device_of_mount).with('/boot').
+        and_return('/dev/sda')
+      boot_mock = double
+      allow(Pathname).to receive(:new).with('/boot').and_return(boot_mock)
+      allow(boot_mock).to receive(:mountpoint?).and_return('/dev/sda')
+      allow(File).to receive(:realpath).with('/dev/sda').and_return('/dev/sda')
       allow(node).to receive(:virtual?).and_return(false)
       allow(FB::Storage).to receive(:load_previous_disk_order).
         and_return(nil)
@@ -1027,6 +1069,171 @@ describe FB::Storage do
         expected = { :disks => expected_disks, :arrays => expected_arrays }
         expect(FB::Storage.build_mapping(node, [])).to eq(expected)
       end
+
+      it 'should build a config with multiple array mapping, ' +
+         'and / and /boot on their own RAID devices' do
+        node.default['fb_storage']['devices'] = [
+          device6, device7, device8, device9, device10,
+          device11, device12, device13, device14, device15
+        ]
+        node.default['fb_storage']['arrays'] = [
+          # / is md0, need to skip it
+          { '_skip' => true }, array2, array3
+        ]
+        expected_disks = {
+          '/dev/sdg' => device6,
+          '/dev/sdh' => device7,
+          '/dev/sdi' => device8,
+          '/dev/sdj' => device9,
+          '/dev/sdk' => device10,
+          '/dev/sdl' => device11,
+          '/dev/sdm' => device12,
+          '/dev/sdn' => device13,
+          '/dev/sdo' => device15,
+          '/dev/sdp' => device15,
+        }
+        ('sda'..'sdp').each do |d|
+          node.automatic['block_device'][d] = {}
+        end
+        node.automatic['block_device']['md0'] = {}
+        node.automatic['block_device']['md21'] = {}
+        {
+          '/' => '/dev/md0',
+          '/boot' => '/dev/md21',
+        }.each do |mp, device|
+          allow(node).to receive(:device_of_mount).with(mp).and_return(device)
+          allow(File).to receive(:symlink?).with(device).and_return(false)
+          if mp == '/boot'
+            boot_mock = double
+            allow(Pathname).to receive(:new).with(mp).and_return(boot_mock)
+            allow(boot_mock).to receive(:mountpoint?).and_return(device)
+          end
+        end
+        allow(Dir).to receive(:glob).with('/sys/block/md0/slaves/*').and_return(
+          ('sdc'..'sdf').map { |disk| "/sys/block/md0/slaves/#{disk}" },
+        )
+        allow(Dir).to receive(:glob).with('/sys/block/md21/slaves/*').
+          and_return(
+            %w{sda sdb}.map { |disk| "/sys/block/md21/slaves/#{disk}" },
+        )
+        expected_arrays = {
+          '/dev/md0' => { '_skip' => true, 'members' => [] },
+          '/dev/md1' => array2.merge(
+            { 'members' => expected_disks.keys[0..4].map { |x| "#{x}1" } },
+          ),
+          '/dev/md21' => { '_skip' => true, 'members' => [] },
+          '/dev/md2' => array3.merge(
+            { 'members' => expected_disks.keys[5..9].map { |x| "#{x}1" } },
+          ),
+        }
+        expected = { :disks => expected_disks, :arrays => expected_arrays }
+        expect(FB::Storage.build_mapping(node, [])).to eq(expected)
+      end
+
+      it 'should build a config / and /boot on their own RAID devices' do
+        node.default['fb_storage']['devices'] = []
+        ('sda'..'sdp').each do |d|
+          node.automatic['block_device'][d] = {}
+        end
+        node.automatic['block_device']['md0'] = {}
+        node.automatic['block_device']['md21'] = {}
+        {
+          '/' => '/dev/md0',
+          '/boot' => '/dev/md21',
+        }.each do |mp, device|
+          allow(node).to receive(:device_of_mount).with(mp).and_return(device)
+          allow(File).to receive(:symlink?).with(device).and_return(false)
+        end
+        allow(Dir).to receive(:glob).with('/sys/block/md0/slaves/*').and_return(
+          ('sda'..'sdf').map { |disk| "/sys/block/md0/slaves/#{disk}" },
+        )
+        allow(Dir).to receive(:glob).with('/sys/block/md21/slaves/*').
+          and_return(
+            ('sdg'..'sdp').map { |disk| "/sys/block/md21/slaves/#{disk}" },
+        )
+        expected_arrays = {
+          '/dev/md0' => { '_skip' => true, 'members' => [] },
+          '/dev/md21' => { '_skip' => true, 'members' => [] },
+        }
+        expected = { :disks => {}, :arrays => expected_arrays }
+        expect(FB::Storage.build_mapping(node, [])).to eq(expected)
+      end
+
+      it 'should fail to build a config with an array and / both on md0' do
+        node.default['fb_storage']['devices'] = [
+          device1, device2, device3, device4, device5,
+          device6, device7, device8, device9, device10,
+          device11, device12, device13, device14, device15
+        ]
+        node.default['fb_storage']['arrays'] = [
+          array1, array2, array3
+        ]
+        ('sda'..'sdp').each do |d|
+          node.automatic['block_device'][d] = {}
+        end
+        node.automatic['block_device']['md0'] = {}
+        node.automatic['block_device']['nvme0'] = {}
+        {
+          '/' => '/dev/md0',
+          '/boot' => '/dev/md0',
+        }.each do |mp, device|
+          allow(node).to receive(:device_of_mount).with(mp).and_return(device)
+          allow(File).to receive(:symlink?).with(device).and_return(false)
+          if mp == '/boot'
+            boot_mock = double
+            allow(Pathname).to receive(:new).with(mp).and_return(boot_mock)
+            allow(boot_mock).to receive(:mountpoint?).and_return(device)
+          end
+        end
+        allow(Dir).to receive(:glob).with('/sys/block/md0/slaves/*').and_return(
+          ['sda', 'nvme0'].map { |disk| "/sys/block/md0/slaves/#{disk}" },
+        )
+        expect do
+          FB::Storage.build_mapping(node, [])
+        end.to raise_error(
+          RuntimeError, 'fb_storage: Asked to configure md0 but that is `/`!'
+        )
+      end
+
+      it 'should build a config without /boot mounted' do
+        node.default['fb_storage']['devices'] = [
+          device1, device2, device3
+        ]
+        node.default['fb_storage']['arrays'] = [array1]
+        ('sda'..'sdd').each do |d|
+          node.automatic['block_device'][d] = {}
+        end
+        root_dev = 'md4'
+        node.automatic['block_device'][root_dev] = {}
+        node.automatic['block_device']['nvme0'] = {}
+        root_md = "/dev/#{root_dev}"
+        allow(node).to receive(:device_of_mount).with('/').and_return(root_md)
+        allow(File).to receive(:symlink?).with(root_md).and_return(false)
+        allow(Dir).to receive(:glob).with("/sys/block/#{root_dev}/slaves/*").
+          and_return(
+            ['sda', 'nvme0'].map do |disk|
+              "/sys/block/#{root_dev}/slaves/#{disk}"
+            end,
+        )
+        # Because we do Pathname.new('/boot'), we need to mock it
+        boot_mock = double
+        allow(Pathname).to receive(:new).with('/boot').and_return(boot_mock)
+        allow(boot_mock).to receive(:mountpoint?).and_return(nil)
+        expected_disks = {
+          '/dev/sdb' => device1,
+          '/dev/sdc' => device2,
+          '/dev/sdd' => device3,
+        }
+        expected_arrays = {
+          '/dev/md0' => array1.merge(
+            { 'members' => expected_disks.keys.map { |x| "#{x}1" } },
+          ),
+          root_md => { '_skip' => true, 'members' => [] },
+        }
+        expected = { :disks => expected_disks, :arrays => expected_arrays }
+        expect(FB::Storage.build_mapping(node, [])).to eq(expected)
+      end
+
     end
 
     context 'hybrid_xfs arrays' do
