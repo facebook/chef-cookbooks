@@ -77,6 +77,8 @@ module FB
     # List of devices the storage API shouldn't touch, so the ones holding
     # / and /boot as touching those could result in tears
     def self.devices_to_skip(node)
+      # Legacy. We should probably fail hard here
+      return [] unless node.device_of_mount('/')
       # If / or /boot is mounted in a RAID array, exclude all the members
       root_dev = self.root_device_name(node)
       return [] unless root_dev
