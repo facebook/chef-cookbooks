@@ -191,6 +191,16 @@ module FB
           "fb_storage: All storage: #{all_storage}",
         )
         format_rules = node['fb_storage']['format'].to_hash
+
+        # Make sure all format rules are explicitly booleans
+        bad_rules = format_rules.reject do |_, value|
+          [TrueClass, FalseClass].include?(value.class)
+        end
+        unless bad_rules.empty?
+          fail 'fb_storage: format rules must be booleans! ' +
+            "Fix #{bad_rules.keys}"
+        end
+
         Chef::Log.info(
           "fb_storage: Converge rules: #{format_rules}",
         )

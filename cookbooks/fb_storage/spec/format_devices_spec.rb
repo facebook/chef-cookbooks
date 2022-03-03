@@ -468,6 +468,27 @@ describe FB::Storage::FormatDevicesProvider do
             },
           )
         end
+
+        it 'fails when format booleans are strings' do
+          node.default['fb_storage']['format'] = default_perms
+          node.default['fb_storage']['format'][
+            'mismatched_filesystem_or_partition'] = 'wut'
+          expect do
+            get_primary_work(fake_storage)
+          end.to raise_error(
+            RuntimeError, /fb_storage: format rules must be booleans! Fix/
+          )
+        end
+
+        it 'fails when format booleans are nil' do
+          node.default['fb_storage']['format'] = default_perms
+          node.default['fb_storage']['format']['hotswap'] = nil
+          expect do
+            get_primary_work(fake_storage)
+          end.to raise_error(
+            RuntimeError, /fb_storage: format rules must be booleans! Fix/
+          )
+        end
       end
 
       context 'empty data' do
