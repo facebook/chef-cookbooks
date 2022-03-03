@@ -95,6 +95,8 @@ describe FB::Storage do
         allow(node).to receive(:device_of_mount).with('/').and_return(
           "/dev/#{partition}",
         )
+        allow(File).to receive(:symlink?).with("/dev/#{partition}").
+          and_return(false)
         expect(FB::Storage.root_device_name(node)).to eq(device)
       end
     end
@@ -108,8 +110,35 @@ describe FB::Storage do
         allow(node).to receive(:device_of_mount).with('/').and_return(
           "/dev/#{device}",
         )
+        allow(File).to receive(:symlink?).with("/dev/#{device}").
+          and_return(false)
         expect(FB::Storage.root_device_name(node)).to eq(device)
       end
+    end
+
+    it 'should resolve dev mapper to the underlying device' do
+      # '/dev/mapper/transient' is a symlink to /dev/dm-0
+      mapper_dev = '/dev/mapper/transient'
+      root_dev = 'dm-0'
+      node.automatic['block_device'][root_dev] = {}
+      allow(node).to receive(:device_of_mount).with('/').and_return(
+        mapper_dev,
+      )
+      allow(File).to receive(:symlink?).with(mapper_dev).and_return(true)
+      allow(File).to receive(:realpath).with(mapper_dev).and_return(root_dev)
+      expect(FB::Storage.root_device_name(node)).to eq(root_dev)
+    end
+
+    it 'should skip resolving links when /dev is not visible' do
+      # some build environments, like antlir, don't expose /dev
+      # / is on /dev/loop0, but /dev/loop0 doesn't exist
+      root_dev = 'loop0'
+      node.automatic['block_device'][root_dev] = {}
+      allow(node).to receive(:device_of_mount).with('/').and_return(
+        root_dev,
+      )
+      allow(File).to receive(:symlink?).with(root_dev).and_return(false)
+      expect(FB::Storage.root_device_name(node)).to eq(root_dev)
     end
   end
 
