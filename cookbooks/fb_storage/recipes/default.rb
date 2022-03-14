@@ -185,6 +185,11 @@ ohai 'filesystem' do
   action :nothing
 end
 
+ohai 'mdadm' do
+  plugin 'mdadm'
+  action :nothing
+end
+
 ruby_block 'convert persistent storage file' do
   # simple only_if to short-circuit if we don't use Storage API
   # or aren't in the conversion shard
@@ -202,13 +207,6 @@ ruby_block 'convert persistent storage file' do
   end
 end
 
-fb_storage_format_devices 'go' do
-  not_if { node['fb_storage']['devices'].empty? }
-  do_reprobe lazy { node['fb_storage']['format']['reprobe_before_repartition'] }
-  # fb_fstab won't mount properly if we don't update data.
-  notifies :reload, 'ohai[filesystem]', :immediately
-end
-
 package 'mdadm' do
   only_if do
     # we are enabled...
@@ -220,6 +218,14 @@ package 'mdadm' do
       !node['fb_storage']['arrays'].empty?
   end
   action :upgrade
+  notifies :reload, 'ohai[mdadm]', :immediately
+end
+
+fb_storage_format_devices 'go' do
+  not_if { node['fb_storage']['devices'].empty? }
+  do_reprobe lazy { node['fb_storage']['format']['reprobe_before_repartition'] }
+  # fb_fstab won't mount properly if we don't update data.
+  notifies :reload, 'ohai[filesystem]', :immediately
 end
 
 template '/etc/mdadm.conf' do
