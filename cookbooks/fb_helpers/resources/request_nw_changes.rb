@@ -17,6 +17,7 @@
 #
 
 default_action :request_nw_changes
+unified_mode true
 
 action :request_nw_changes do
   file FB::Helpers::NW_CHANGES_NEEDED do

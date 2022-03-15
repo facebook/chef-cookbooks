@@ -29,6 +29,7 @@ property :mode, String, :required => true
 property :gated_action, Symbol, :required => false, :default => :create
 
 default_action :manage
+unified_mode true
 
 action_class do
   # Copied from lib/chef/runner.rb

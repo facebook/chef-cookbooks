@@ -16,6 +16,7 @@
 # limitations under the License.
 
 resource_name :fb_helpers_reboot
+unified_mode true
 
 provides :fb_helpers_reboot, :os => ['darwin', 'linux']
 

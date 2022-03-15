@@ -19,6 +19,7 @@
 resource_name :fb_choco_bootstrap
 provides :fb_choco_bootstrap
 default_action :install
+unified_mode true
 
 property :version, :kind_of => String
 

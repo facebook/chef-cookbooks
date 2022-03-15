@@ -22,6 +22,7 @@ property :owner, String
 property :group, String
 property :mode, String
 property :rights, String
+unified_mode true
 
 default_action :create
 

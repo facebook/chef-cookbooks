@@ -19,6 +19,7 @@
 resource_name :fb_choco_configure
 provides :fb_choco_configure, :os => 'windows'
 default_action :change
+unified_mode true
 property :config,   Hash,
          :coerce => proc { |i|
                       desired = {}

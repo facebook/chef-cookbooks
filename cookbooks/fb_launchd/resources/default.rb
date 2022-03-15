@@ -17,8 +17,8 @@
 #
 
 provides :fb_launchd, :os => 'darwin'
-
 default_action :run
+unified_mode true
 
 # Attributes that circumvent or defeat the purpose of using launchd as a node
 # API. Blacklist them so that this blows up when they're used. If you really
