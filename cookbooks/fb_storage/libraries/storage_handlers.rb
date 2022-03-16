@@ -130,7 +130,7 @@ module FB
             parted_commands << "set #{partnum} raid on"
           end
           if partinfo['part_name']
-            parted_commands << "name #{partnum} #{partinfo['part_name']}"
+            parted_commands << "name #{partnum} '\"#{partinfo['part_name']}\"'"
           end
           if partinfo['part_type']
             sfdisk_commands <<

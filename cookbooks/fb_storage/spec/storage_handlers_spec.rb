@@ -193,7 +193,7 @@ describe FB::Storage::Handler do
 
       it 'sets partition labels' do
         expect(Mixlib::ShellOut).to receive(:new).with(
-          %r{parted -s '/dev/sdzz' .*name 1 poop},
+          %r{parted -s '/dev/sdzz' .*name 1 '"poop"'},
         ).and_return(mock_so)
         sh = TestHandler.new('/dev/sdzz', node)
         multiple['partitions'][0]['part_name'] = 'poop'
