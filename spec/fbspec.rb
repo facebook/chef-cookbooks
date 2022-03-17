@@ -33,7 +33,9 @@ module FB
         config.cookbook_path = cookbook_path
       end
       FB::Spec.configure do |config|
-        config.platforms = platforms
+        config.default_platforms = platforms['default']
+        config.extra_platforms = platforms['extra']
+        config.all_platforms = platforms['default'].merge(platforms['extra'])
       end
     end
 
@@ -47,10 +49,14 @@ module FB
     end
 
     class Configuration
-      attr_accessor :platforms
+      attr_accessor :default_platforms
+      attr_accessor :extra_platforms
+      attr_accessor :all_platforms
 
       def initialize
-        @platforms = {}
+        @default_platforms = {}
+        @extra_platforms = {}
+        @all_platforms = {}
       end
     end
 
@@ -70,7 +76,7 @@ module FB
         runner_args = {
           :platform => @config['platform'],
           :version => @config['version'],
-          :platform_group => 'xxxx',
+          :os_name => 'xxxx',
         }.merge(extra_args)
         ChefSpec::SoloRunner.new(runner_args) do |node|
           chef_run_block_extras(node)
@@ -86,7 +92,7 @@ module FB
       end
 
       def platform
-        @config[:platform_group]
+        @config[:os_name]
       end
 
       def fixture(name)
@@ -112,8 +118,8 @@ module FB
       def initialize(config, &block)
         RSpec.describe config[:described_recipe] do
           config[:supported].each do |platform|
-            FB::Spec.configuration.platforms[platform].each do |os|
-              os[:platform_group] = platform
+            FB::Spec.configuration.all_platforms[platform].each do |os|
+              os[:os_name] = platform
               tags = config[:supported].map do |x|
                 { x => false }
               end.reduce({}, :merge)
@@ -137,7 +143,7 @@ def recipe(name, options = [], &block)
   if options.include?(:supported)
     supported = [*options[:supported]].map(&:to_sym)
   else
-    supported = FB::Spec.configuration.platforms.keys
+    supported = FB::Spec.configuration.default_platforms.keys
   end
 
   if options.include?(:unsupported)

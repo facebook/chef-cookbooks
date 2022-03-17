@@ -19,32 +19,45 @@
 
 PLATFORMS = if Fauxhai::VERSION.start_with?('6')
               {
-                :centos7 => [
-                  {
-                    'platform' => 'centos',
-                    'version' => '7.3.1611',
-                  },
-                ],
-                :mac_os_x => [
-                  {
-                    'platform' => 'mac_os_x',
-                    'version' => '10.12',
-                  },
-                ],
+                'default' => {
+                  :centos7 => [
+                    {
+                      'platform' => 'centos',
+                      'version' => '7.3.1611',
+                    },
+                  ],
+                  :mac_os_x => [
+                    {
+                      'platform' => 'mac_os_x',
+                      'version' => '10.12',
+                    },
+                  ],
+                },
+                'extra' => {},
               }.freeze
             else
               {
-                :centos8 => [
-                  {
-                    'platform' => 'centos',
-                    'version' => '8',
-                  },
-                ],
-                :mac_os_x => [
-                  {
-                    'platform' => 'mac_os_x',
-                    'version' => '10.15',
-                  },
-                ],
+                'default' => {
+                  :centos8 => [
+                    {
+                      'platform' => 'centos',
+                      'version' => '8',
+                    },
+                  ],
+                  :mac_os_x => [
+                    {
+                      'platform' => 'mac_os_x',
+                      'version' => '10.15',
+                    },
+                  ],
+                },
+                'extra' => {
+                  :centos7 => [
+                    {
+                      'platform' => 'centos',
+                      'version' => '7.8.2003',
+                    },
+                  ],
+                },
               }.freeze
             end
