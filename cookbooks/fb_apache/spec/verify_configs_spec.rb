@@ -24,6 +24,6 @@ recipe 'fb_apache::default', :unsupported => [:mac_os_x] do |tc|
 
     expect do
       chef_run.converge(described_recipe)
-    end.to_not raise_error(RuntimeError)
+    end.to_not raise_error
   end
 end
