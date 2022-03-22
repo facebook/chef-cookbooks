@@ -19,6 +19,32 @@
 default_action :manage
 
 action :manage do
+  ohai_ifaces = node['network']['interfaces'].to_hash.keys
+
+  # Set up execute resources to reconfigure network settings so that they can be
+  # notified by and subscribed to from other recipes.
+  interfaces = (node['fb_networkd']['networks'].keys +
+                node['fb_networkd']['devices'].keys +
+                node['fb_networkd']['links'].keys).uniq
+  interfaces.each do |iface|
+    next if iface == 'lo'
+
+    execute "networkctl reconfigure #{iface}" do
+      command "/bin/networkctl reconfigure #{iface}"
+      action :nothing
+    end
+
+    # For existing interfaces filled out by the network plugin, the execute
+    # block was already set up in the fb_networkd recipe. If we haven't set it
+    # up yet, add it here.
+    unless ohai_ifaces.include?(iface)
+      execute "udevadm trigger #{iface}" do
+        command "/bin/udevadm trigger --action=add /sys/class/net/#{iface}"
+        action :nothing
+      end
+    end
+  end
+
   managed_networks = []
   managed_links = []
   managed_netdevs = []
@@ -91,7 +117,7 @@ action :manage do
         group node.root_group
         mode '0644'
         action :delete
-        notifies :run, 'execute[networkctl reload]'
+        notifies :run, 'execute[networkctl reload]', :immediately
         notifies :run, "execute[networkctl reconfigure #{conf['name']}]"
       end
 
@@ -109,7 +135,7 @@ action :manage do
       variables(
         :config => conf['config'],
       )
-      notifies :run, 'execute[networkctl reload]'
+      notifies :run, 'execute[networkctl reload]', :immediately
       notifies :run, "execute[networkctl reconfigure #{conf['name']}]"
     end
   end
@@ -241,7 +267,7 @@ action :manage do
         group node.root_group
         mode '0644'
         action :delete
-        notifies :run, 'execute[networkctl reload]'
+        notifies :run, 'execute[networkctl reload]', :immediately
         notifies :run, "execute[networkctl reconfigure #{conf['name']}]"
       end
 
@@ -259,7 +285,7 @@ action :manage do
       variables(
         :config => conf['config'],
       )
-      notifies :run, 'execute[networkctl reload]'
+      notifies :run, 'execute[networkctl reload]', :immediately
       notifies :run, "execute[networkctl reconfigure #{conf['name']}]"
     end
   end
@@ -278,10 +304,10 @@ action :manage do
         action :nothing
       end
 
-      file path do
+      file path do # ~FC022
         only_if { node.interface_change_allowed?(iface) }
         action :delete
-        notifies :run, "execute[networkctl down #{iface}]"
+        notifies :run, "execute[networkctl down #{iface}]", :immediately
         notifies :run, 'execute[networkctl reload]'
       end
 
@@ -302,7 +328,7 @@ action :manage do
         action :nothing
       end
 
-      file path do
+      file path do # ~FC022
         only_if { node.interface_change_allowed?(iface) }
         action :delete
         notifies :run, "execute[udevadm trigger #{iface}]"
@@ -325,10 +351,10 @@ action :manage do
         action :nothing
       end
 
-      file path do
+      file path do # ~FC022
         only_if { node.interface_change_allowed?(iface) }
         action :delete
-        notifies :run, "execute[networkctl delete #{iface}]"
+        notifies :run, "execute[networkctl delete #{iface}]", :immediately
         notifies :run, 'execute[networkctl reload]'
       end
 
