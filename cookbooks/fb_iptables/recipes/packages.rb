@@ -19,7 +19,7 @@
 # limitations under the License.
 #
 
-if node.fedora34?
+if node.fedora34? || node.fedora35?
   packages = ['iptables-compat']
 else
   packages = ['iptables']
