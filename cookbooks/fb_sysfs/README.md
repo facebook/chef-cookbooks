@@ -58,6 +58,47 @@ fb_sysfs "Set some stuff" do
 end
 ```
 
+### Read Method
+`read_method` allows client code to pass in a callback to be used as an
+alternative to directly reading a file. The callback accepts a path to the
+target file and a desired value to be written to that file. It must return a
+bool indicating whether the desired value should be applied (written) based on
+some alternate criteria.
+
+`true` indicates a change must be made because the current value is not correct
+`false` indicates no change needs to be made because the desired value and the
+current value match.
+
+This might be useful in cases for example where a file is non-readable. The
+"current value" in these cases can come from a different source. Consider the
+example below, where the current value is obtained elsewhere from the path to
+the target file.
+
+```ruby
+module Foo
+  class Helper
+    def self.check_some_criteria?(node, path, value)
+      if !::File.exist?(path)
+        return false
+      end
+
+      current_value = lookup_some_system_property()
+      if current_value == value
+        return false
+      end
+
+      return true
+    end
+  end
+end
+
+fb_sysfs '/sys/some/unreadable/file' do
+  type :int
+  value 1
+  read_method Foo::Helper.method('check_some_criteria?')
+end
+```
+
 ### EINVAL handling
 Some sysfs paths will return an EINVAL when reads or writes are attempted, to
 signal that the underlying driver doesn't support the operation. The resource

@@ -23,13 +23,16 @@ property :path, String, :name_property => true
 property :value, [String, Integer, :EINVAL], :required => true
 property :type, Symbol, :required => true
 property :ignore_einval, [true, false], :default => false
+# allows clients to pass in a callback to be used instead of a direct read
+property :read_method, Method, :required => false
 
 action_class do
   include FB::Sysfs::Provider
 end
 
-load_current_value do
-  if ::File.exist?(path)
+load_current_value do |new_resource|
+  # read normally when no custom read_method is present and path exists
+  if !new_resource.read_method && ::File.exist?(path)
     begin
       value ::File.read(path)
     rescue SystemCallError => e
@@ -44,18 +47,42 @@ load_current_value do
 end
 
 action :set do
-  if current_resource.value == :EINVAL
+  if new_resource.read_method
+    update_needed = new_resource.read_method.call(node, new_resource.path,
+                                                  new_resource.value)
+    unless [TrueClass, FalseClass].include?(update_needed.class)
+      fail 'fb_sysfs: read_method must return a boolean, got ' +
+        "#{update_needed.class}!"
+    end
+
+    if update_needed
+      Chef::Log.debug(
+        "fb_sysfs #{new_resource.path}: custom read method indicates update " +
+        'is needed',
+      )
+
+      converge_by("writing #{new_resource.value} to #{new_resource.path}") do
+        ::File.write(new_resource.path, new_resource.value.to_s)
+
+        Chef::Log.debug("fb_sysfs #{new_resource.path}: value written " +
+                        new_resource.value.to_s)
+
+      end
+    else
+      Chef::Log.debug(
+        "fb_sysfs #{new_resource.path}: custom read indicates no update is " +
+        'needed',
+      )
+    end
+  elsif current_resource.value == :EINVAL
     if new_resource.ignore_einval
       Chef::Log.warn("fb_sysfs: ignoring EINVAL on #{new_resource.path} as " +
                      'requested, resource will be left unmanaged!')
-      return
     else
       fail "fb_sysfs: got EINVAL on #{new_resource.path} and ignore_einval " +
            'is false, aborting!'
     end
-  end
-
-  if check(current_resource.value, new_resource.value, new_resource.type)
+  elsif check(current_resource.value, new_resource.value, new_resource.type)
     Chef::Log.debug(
       "fb_sysfs #{new_resource.path}: Value set correctly, nothing to do. " +
       "Current value: #{current_resource.value.inspect}",
