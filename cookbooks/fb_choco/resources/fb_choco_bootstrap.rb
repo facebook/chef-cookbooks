@@ -44,41 +44,18 @@ action :install do
   current_version = FB::Version.new(current_resource.version)
   desired_version = FB::Version.new(new_resource.version)
 
-  case current_version <=> desired_version
-  when -1
-    # Higher version
-    Chef::Log.debug('[fb_choco] Current version is older. Upgrading...')
-  when 0
-    # Same version
-    Chef::Log.debug('[fb_choco] Chocolatey is current, nothing to do.')
+  if current_version != FB::Version.new('0.0.0')
+    # A verson of choco is already installed. We don't need the correct version
+    # installed as we will use the installed version to upgrade us to desired.
+    Chef::Log.debug('[fb_choco] Chocolatey already bootstrapped. Skipping...')
     return
-  when 1
-    # Lower version
-    # Upgrade should not try to install older versions.
-    Chef::Log.warn(
-      "[fb_choco] Chocolatey #{desired_version} is older than what is " +
-      "installed (#{current_version}). Downgrading...",
-    )
-  else # Only alternative is nil
-    # Nil is returned if comparison was not with a version.
-    fail(
-      '[fb_choco] Version comparisons failed! Current: ' +
-      "#{current_resource.version}, Desired: #{new_resource.version}",
-    )
   end
 
+  Chef::Log.debug('[fb_choco] Chocolatey is not installed. Bootstrapping...')
+
   converge_by("Installing chocolatey v#{desired_version}") do
-    if current_version == FB::Version.new('0.0.0')
-      # If chocolatey doesn't exist, use the script
-      run_bootstrap_script
-    else
-      # Chocolatey exists. Let's use built in upgrade mechanism
-      chocolatey_package 'chocolatey' do
-        action :upgrade
-        version node['fb_choco']['bootstrap']['version']
-        options '--allow-downgrade'
-      end
-    end
+    # If chocolatey doesn't exist, use the script
+    run_bootstrap_script
   end
 end
 

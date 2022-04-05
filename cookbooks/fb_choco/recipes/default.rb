@@ -46,3 +46,10 @@ unless ENV['ChocolateyInstall'].nil?
     end
   end
 end
+
+chocolatey_package 'chocolatey' do
+  action :upgrade
+  version lazy { node['fb_choco']['bootstrap']['version'] }
+  options '--allow-downgrade'
+  only_if { node['fb_choco']['enabled']['bootstrap'] }
+end
