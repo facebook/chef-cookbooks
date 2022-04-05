@@ -1,11 +1,9 @@
 fb_logrotate Cookbook
 ====================
-This configures the logrotate package with common configs that go on
-every server, but do not necessarily have a corresponding cookbook
-they should go in.
+This configures logrotate
 
 If the system that this cookbook is run on is MAC OS X, it will populate all
-the files outlined in the configration in the newsylog.d format.
+the files outlined in the configuration in the newsylog.d format.
 
 See http://www.freebsd.org/cgi/man.cgi?query=newsyslog.conf
 for more details about the newsyslog feature.

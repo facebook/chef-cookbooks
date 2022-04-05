@@ -55,7 +55,8 @@ whyrun_safe_ruby_block 'munge logrotate configs' do
 
           if %w{hourly daily weekly monthly yearly}.include?(rotation)
             time = rotation
-            node.rm(:fb_logrotate, :configs, name, :overrides, :rotation)
+            node.default[
+              'fb_logrotate']['configs'][name]['overrides']['rotation'] = nil
           else
             fail "fb_logrotate:[#{name}]: rotation #{rotation} invalid"
           end
@@ -69,7 +70,8 @@ whyrun_safe_ruby_block 'munge logrotate configs' do
         if block['overrides']['nocompress'] &&
            node['fb_logrotate']['globals']['nocompress']
           # redundant, remove
-          node.rm(:fb_logrotate, :configs, name, :overrides, :nocompress)
+          node.default[
+            'fb_logrotate']['configs'][name]['overrides']['nocompress'] = nil
         end
       end
       if time

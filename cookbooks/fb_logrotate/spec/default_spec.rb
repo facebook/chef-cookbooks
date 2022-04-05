@@ -38,11 +38,13 @@ recipe 'fb_logrotate::default', :unsupported => [:mac_os_x] do |tc|
     it 'should create a customized logrotate config' do
       expect(Chef::Log).not_to receive(:warn).with(/fb_logrotate:/)
       chef_run.converge(described_recipe) do |node|
+        node.default['fb_logrotate']['globals']['nocompress'] = true
         node.default['fb_logrotate']['globals']['maxage'] = '3'
         node.default['fb_logrotate']['configs']['rsyslog-stats'] = {
           'files' => ['/var/log/rsyslog-stats.log'],
           'overrides' => {
             'missingok' => true,
+            'nocompress' => true,
           },
         }
         node.default['fb_logrotate']['configs']['weekly-thing'] = {
@@ -66,22 +68,6 @@ recipe 'fb_logrotate::default', :unsupported => [:mac_os_x] do |tc|
       # confirm size translated
       expect(chef_run).to render_file(logrotate_config).
         with_content(/size 10M/)
-    end
-
-    it 'should remove redudant nocompress override' do
-      expect(Chef::Log).not_to receive(:warn).with(/fb_logrotate:/)
-      chef_run.converge(described_recipe) do |node|
-        node.default['fb_logrotate']['globals']['nocompress'] = true
-        node.default['fb_logrotate']['configs']['rsyslog-stats'] = {
-          'files' => ['/var/log/rsyslog-stats.log'],
-          'overrides' => {
-            'nocompress' => true,
-          },
-        }
-      end
-      overrides = chef_run.node['fb_logrotate']['configs']['rsyslog-stats'][
-        'overrides']
-      expect(overrides).to eq({})
     end
 
     it 'should warn when an unknown override is used' do
