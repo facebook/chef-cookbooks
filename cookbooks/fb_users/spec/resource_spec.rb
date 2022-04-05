@@ -48,6 +48,12 @@ recipe 'fb_users::default' do |tc|
       'testuser' => {
         'uid' => 55,
       },
+      'guarduser' => {
+        'uid' => 67,
+      },
+      'no_guarduser' => {
+        'uid' => 76,
+      },
     }
   end
 
@@ -74,6 +80,12 @@ recipe 'fb_users::default' do |tc|
       },
       'lazygroup' => {
         'gid' => 5757,
+      },
+      'guardgroup' => {
+        'gid' => 6767,
+      },
+      'no_guardgroup' => {
+        'gid' => 7676,
       },
       'users' => {
         'gid' => 100,
@@ -150,6 +162,14 @@ recipe 'fb_users::default' do |tc|
                 },
               },
             },
+            'guarduser' => {
+              'action' => :add,
+              'only_if' => proc { true },
+            },
+            'no_guarduser' => {
+              'action' => :add,
+              'only_if' => proc { false },
+            },
             'cleanup' => {
               'action' => :delete,
             },
@@ -174,6 +194,16 @@ recipe 'fb_users::default' do |tc|
             'lazygroup' => {
               'members' => proc { ['testuser'] },
               'action' => :add,
+            },
+            'guardgroup' => {
+              'members' => [],
+              'action' => :add,
+              'only_if' => proc { true },
+            },
+            'no_guardgroup' => {
+              'members' => [],
+              'action' => :add,
+              'only_if' => proc { false },
             },
             'testgroup' => {
               'members' => [],
@@ -324,6 +354,24 @@ recipe 'fb_users::default' do |tc|
       it 'notifies expected things' do
         expect(chef_run.group('testgroup')).to notify('file[test resource]').
           to(:delete)
+      end
+    end
+    context 'only_if guards' do
+      it 'creates a user with true only_if guard' do
+        expect(chef_run).to create_user('guarduser').with(
+          :uid => 67,
+        )
+      end
+      it 'creates a group with true only_if guard' do
+        expect(chef_run).to create_group('guardgroup').with(
+          :gid => 6767,
+        )
+      end
+      it 'does not create a user with false only_if guard' do
+        expect(chef_run).to_not create_user('no_guarduser')
+      end
+      it 'does not create a group with false only_if guard' do
+        expect(chef_run).to_not create_group('no_guardgroup')
       end
     end
   end

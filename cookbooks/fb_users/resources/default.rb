@@ -90,6 +90,12 @@ action :manage do
     # helper variables
     mapinfo = ::FB::Users::UID_MAP[username]
     pgroup = info['gid'] || node['fb_users']['user_defaults']['gid']
+    unless info['only_if'].nil?
+      unless info['only_if'].instance_of?(Proc)
+        fail "fb_users's only_if requires a Proc for #{username}"
+      end
+      next unless info['only_if'].call
+    end
     homedir = info['home'] || "/home/#{username}"
     homedir_group = info['homedir_group'] || pgroup
     # If `manage_home` isn't set, we'll use a user-specified default.
@@ -175,6 +181,12 @@ action :manage do
 
   # and then converge all groups
   node['fb_users']['groups'].each do |groupname, info|
+    unless info['only_if'].nil?
+      unless info['only_if'].instance_of?(Proc)
+        fail "fb_users's only_if requires a Proc for #{username}"
+      end
+      next unless info['only_if'].call
+    end
     if info['action'] == :delete
       group groupname do # ~FB015
         action :remove

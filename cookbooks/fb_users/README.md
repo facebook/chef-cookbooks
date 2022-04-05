@@ -199,6 +199,16 @@ if the homedir is being changed.
 Note that to enable subscribes, these sub-resources were added to the root
 run context, but will be moved back to the subresource run context shortly.
 
+If a user or group can only be determined at runtime or there are recipe
+ordering issues, a proc can be given to the `only_if` attribute as a guard.
+
+```ruby
+node.default['fb_users']['users']['acidburn'] = {
+  'only_if' => proc { node.elite? },
+  'action' => :add,
+}
+```
+
 ### Passwords in data_bags
 
 `fb_users` will also look for user passwords in a data_bag called
