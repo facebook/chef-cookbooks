@@ -43,4 +43,11 @@ default['fb_fluentbit'] = {
   # Handle package install
   'manage_packages' => true,
   'plugin_manage_packages' => true,
+
+  'windows_package' => {
+    'source' => 'https://fluentbit.io/releases/1.9/fluent-bit-1.9.0-win32.exe',
+    'checksum' =>
+      'f6d690c8b123d6211398feb2acc1c9aae6d3d7539ddfeedd4460f170e5af35ab',
+    'version' => 'fluent-bit-1.9.0-win32',
+  },
 }

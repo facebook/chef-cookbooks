@@ -17,7 +17,10 @@
 
 require './spec/spec_helper.rb'
 
-recipe('fb_fluentbit::default') do |tc|
+recipe(
+  'fb_fluentbit::default',
+  :unsupported => [:mac_os_x],
+) do |tc|
   it 'should raise error when parser has no format' do
     expect do
       tc.chef_run.converge(described_recipe) do |node|

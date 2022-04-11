@@ -13,6 +13,7 @@ Attributes
 * node['fb_fluentbit']['external_config_url']
 * node['fb_fluentbit']['manage_packages']
 * node['fb_fluentbit']['plugin_manage_packages']
+* node['fb_fluentbit']['windows_package']
 
 Usage
 -----
@@ -29,8 +30,12 @@ multiple tail plugin instances to get logs from multiple files.
 
 Fluentbit supports built-in and external plugins.
 
+### Supported Platforms
+* RHEL
+* Windows
+
 ### Install FluentBit
-The package installation of `td-agent-bit` is managed through defining:
+The package installation of FluentBit is managed through defining:
 `node.default['fb_fluentbit']['manage_packages'] = true`
 
 The purpose of this variable is to allow consumers to install their specific

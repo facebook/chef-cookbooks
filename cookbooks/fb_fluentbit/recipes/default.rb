@@ -15,14 +15,10 @@
 # limitations under the License.
 #
 
-# configs location
-CONF_FILE_NAME = '/etc/td-agent-bit/td-agent-bit.conf'.freeze
-PLUGIN_FILE_NAME = '/etc/td-agent-bit/plugins.conf'.freeze
-# fb_fluentbit core rpm name
-BASIC_PACKAGE_NAME = 'td-agent-bit'.freeze
-
-SERVICE_NAME = 'td-agent-bit'.freeze
-
+unless node.centos? || node.windows?
+  fail 'fb_fluentbit: unsupported platform. The list of supported platforms is
+       [centos, windows]'
+end
 whyrun_safe_ruby_block 'validate fluentbit config' do
   block do
     parsers = FB::Fluentbit.parsers_from_node(node)
@@ -37,59 +33,94 @@ whyrun_safe_ruby_block 'validate fluentbit config' do
   end
 end
 
-package 'td-agent-bit' do
-  only_if { node['fb_fluentbit']['manage_packages'] }
-  action :upgrade
-end
+include_recipe 'fb_fluentbit::centos' if node.centos?
+include_recipe 'fb_fluentbit::windows' if node.windows?
 
-package 'fluentbit external plugins' do
-  only_if { node['fb_fluentbit']['plugin_manage_packages'] }
-  package_name lazy {
-    FB::Fluentbit.external_plugins_from_node(node).map(&:package).sort.uniq
-  }
-  action :upgrade
-end
+windows_drive = ENV['SYSTEMDRIVE'] || 'C:'
 
-template '/etc/td-agent-bit/plugins.conf' do
+plugins_file_path = value_for_platform_family(
+  'rhel' => '/etc/td-agent-bit/plugins.conf',
+  'windows' => windows_drive + '\opt\td-agent-bit\conf\plugins.conf',
+)
+
+parsers_file_path = value_for_platform_family(
+  'rhel' => '/etc/td-agent-bit/parsers.conf',
+  'windows' => windows_drive + '\opt\td-agent-bit\conf\parsers.conf',
+)
+
+main_file_path = value_for_platform_family(
+  'rhel' => '/etc/td-agent-bit/td-agent-bit.conf',
+  'windows' => windows_drive + '\opt\td-agent-bit\conf\fluent-bit.conf',
+)
+
+template 'plugins config' do # ~FB031
   action :create
   source 'plugins.conf.erb'
-  owner 'root'
-  group 'root'
-  mode '0644'
-  notifies :restart, 'service[td-agent-bit]'
+  path plugins_file_path
+  if node.windows?
+    rights :full_control, 'Administrators'
+    notifies :restart, 'windows_service[FluentBit]'
+  else
+    owner 'root'
+    group 'root'
+    mode '0600'
+    notifies :restart, 'service[td-agent-bit]'
+  end
 end
 
-template '/etc/td-agent-bit/parsers.conf' do
+template 'parsers config' do # ~FB031
   action :create
   source 'parsers.conf.erb'
-  owner 'root'
-  group 'root'
-  mode '0644'
-  notifies :restart, 'service[td-agent-bit]'
+  path parsers_file_path
+  if node.windows?
+    rights :full_control, 'Administrators'
+    notifies :restart, 'windows_service[FluentBit]'
+  else
+    owner 'root'
+    group 'root'
+    mode '0600'
+    notifies :restart, 'service[td-agent-bit]'
+  end
 end
 
 remote_file 'remote config' do
   only_if { node['fb_fluentbit']['external_config_url'] }
-  source lazy { node['fb_fluentbit']['external_config_url'] }
-  path '/etc/td-agent-bit/td-agent-bit.conf'
   action :create
-  owner 'root'
-  group 'root'
-  mode '0600'
-  notifies :restart, 'service[td-agent-bit]'
+  source lazy { node['fb_fluentbit']['external_config_url'] }
+  path main_file_path
+  if node.windows?
+    rights :full_control, 'Administrators'
+    notifies :restart, 'windows_service[FluentBit]'
+  else
+    owner 'root'
+    group 'root'
+    mode '0600'
+    notifies :restart, 'service[td-agent-bit]'
+  end
 end
 
-template 'local config' do
+template 'local config' do # ~FB031
   not_if { node['fb_fluentbit']['external_config_url'] }
   action :create
   source 'conf.erb'
-  path '/etc/td-agent-bit/td-agent-bit.conf'
-  owner 'root'
-  group 'root'
-  mode '0600'
-  notifies :restart, 'service[td-agent-bit]'
+  path main_file_path
+  if node.windows?
+    rights :full_control, 'Administrators'
+    notifies :restart, 'windows_service[FluentBit]'
+  else
+    owner 'root'
+    group 'root'
+    mode '0600'
+    notifies :restart, 'service[td-agent-bit]'
+  end
 end
 
-service 'td-agent-bit' do
-  action [:enable, :start]
+if node.windows?
+  windows_service 'FluentBit' do
+    action :start
+  end
+else
+  service 'td-agent-bit' do
+    action [:enable, :start]
+  end
 end
