@@ -306,6 +306,31 @@ class Chef
       windows? && self['platform_version'] == '10.0.20348'
     end
 
+    # from https://en.wikipedia.org/wiki/Windows_10_version_history
+    def windows1903?
+      windows? && self['platform_version'] == '10.0.18362'
+    end
+
+    def windows1909?
+      windows? && self['platform_version'] == '10.0.18363'
+    end
+
+    def windows2004?
+      windows? && self['platform_version'] == '10.0.19041'
+    end
+
+    def windows20h2?
+      windows? && self['platform_version'] == '10.0.19042'
+    end
+
+    def windows21h1?
+      windows? && self['platform_version'] == '10.0.19043'
+    end
+
+    def windows21h2?
+      windows? && self['platform_version'] == '10.0.19044'
+    end
+
     def aristaeos?
       self['platform'] == 'arista_eos'
     end
