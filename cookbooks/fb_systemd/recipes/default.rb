@@ -98,6 +98,10 @@ execute 'process tmpfiles' do
       map { |x| " --exclude-prefix=#{x}" }.
       join
   }
+  Chef::Log.debug(
+    'Running in node.firstboot_any_phase? ' +
+    node.firstboot_any_phase?.to_s,
+  )
   # it returns 65 if it had to ignore some lines, which seems to happen
   # quite often on initial setup
   if node.firstboot_any_phase?
