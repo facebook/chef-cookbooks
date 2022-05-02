@@ -91,6 +91,15 @@ link '/etc/tmpfiles.d/selinux-policy.conf' do
   to '/dev/null'
 end
 
+# FIXME: Remove after https://github.com/systemd/systemd/pull/23205 is
+# resolved and released.
+execute 'Ensure systemd-network user exists' do
+  # rubocop:disable Layout/LineLength
+  command "#{systemd_prefix}/bin/systemd-sysusers --inline \"u systemd-network 192 \\\"systemd Network Management\\\"\""
+  # rubocop:enable Layout/LineLength
+  action :nothing
+end
+
 execute 'process tmpfiles' do
   command lazy {
     "#{systemd_prefix}/bin/systemd-tmpfiles --create" +
@@ -108,6 +117,7 @@ execute 'process tmpfiles' do
     returns [0, 65]
   end
   action :nothing
+  notifies :run, 'execute[Ensure systemd-network user exists]', :before
 end
 
 template '/etc/tmpfiles.d/chef.conf' do
