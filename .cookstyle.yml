@@ -330,6 +330,8 @@ Chef/RedundantCode/DoubleCompileTime:
   Enabled: true
 Chef/RedundantCode/GroupingMetadata:
   Enabled: true
+Chef/RedundantCode/LongDescriptionMetadata:
+  Enabled: true
 Chef/RedundantCode/MultiplePlatformChecks:
   Enabled: true
 Chef/RedundantCode/OhaiAttributeToString:
