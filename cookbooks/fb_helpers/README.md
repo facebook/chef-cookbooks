@@ -435,6 +435,12 @@ The following constants are available:
 
 The following methods are available:
 
+* `FB::Helpers.attempt_lazy { my_var }`
+   Should be used when attempting to write a lazy block to an api attribute.
+   If the client supports lazy attributes a DelayedEvaluator is returned, but
+   if the client does not support lazy attributes the block is evaluated and
+   the value is returned
+
 * `FB::Helpers.commentify(comment, arg)`
    Commentify takes the string in `comment` and wraps it appropriately
    for being a comment. By default it'll comment it ruby-style (leading "# ")

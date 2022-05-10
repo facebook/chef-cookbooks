@@ -23,6 +23,34 @@ module FB
     NW_CHANGES_ALLOWED = '/run/chef/chef_nw_changes_allowed'.freeze
     NW_CHANGES_NEEDED = '/run/chef/chef_pending_nw_changes_needed'.freeze
 
+    # attempt_lazy() should be used when attempting to write a lazy block to
+    # an api attribute.
+    #
+    # Usage:
+    #   attempt_lazy { my_var }
+    #
+    # Arguments:
+    #   block: A block to be used by the DelayedEvaluator or evaluated
+    #
+    # Notes:
+    # - For clients running a version of chef less than 17.0.42
+    #   DelayedEvaluators will not be automatically called when they are
+    #   read from the node object. To prevent breaking older clients, the
+    #   passed in block will be evaluated immediately and a value will
+    #   be returned instead of a DelayedEvaluator.
+    def self.attempt_lazy(&block)
+      if Chef::Version.new(Chef::VERSION) < Chef::Version.new('17.0.42')
+        Chef::Log.warn(
+          'fb_helpers.attempt_lazy: Lazy attributes are not supported on ' +
+          'chef versions before 17.0.42. Evaluating block immediately ' +
+          'and returning value rather than a DelayedEvaluator',
+        )
+        block.call
+      else
+        Chef::DelayedEvaluator.new { block.call }
+      end
+    end
+
     # commentify() takes a text string and converts it to a (possibly)
     # multi-line comment suitable for dropping into a config file.
     #

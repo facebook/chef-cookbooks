@@ -15,9 +15,45 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require 'chef'
 require_relative '../libraries/fb_helpers'
 
 describe FB::Helpers do
+  context 'attempt_lazy' do
+    it 'returns a DelayedEvaluator for chef 17.0.42' do
+      stub_const('Chef::VERSION', '17.0.42')
+      test_var = 'start'
+
+      res = FB::Helpers.attempt_lazy { test_var }
+      test_var = 'updated'
+
+      expect(res).to be_instance_of(Chef::DelayedEvaluator)
+      expect(res.call).to eq('updated')
+    end
+
+    it 'returns a DelayedEvaluator for chef 18.0.92' do
+      stub_const('Chef::VERSION', '18.0.92')
+      test_var = 'start'
+
+      res = FB::Helpers.attempt_lazy { test_var }
+      test_var = 'updated'
+
+      expect(res).to be_instance_of(Chef::DelayedEvaluator)
+      expect(res.call).to eq('updated')
+    end
+
+    it 'returns a value for chef 16.5.77' do
+      stub_const('Chef::VERSION', '16.5.77')
+      test_var = 'start'
+
+      res = FB::Helpers.attempt_lazy { test_var }
+      test_var = 'updated'
+
+      expect(res).to be_instance_of(String)
+      expect(res).to eq('start')
+    end
+  end
+
   context 'parse_json' do
     it 'parses basic JSON' do
       expect(FB::Helpers.parse_json('{}')).to eq({})
