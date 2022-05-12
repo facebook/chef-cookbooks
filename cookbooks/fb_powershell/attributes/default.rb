@@ -30,6 +30,9 @@ default['fb_powershell'] = {
   'manage_config' => false,
   'config' => {},
   # Profiles
+  # TODO: manage_profiles should default to false, but we need to refactor
+  # the call sites first
+  'manage_profiles' => true,
   'profiles' => {
     'AllUsersAllHosts' => nil,
     'AllUsersCurrentHost' => nil,

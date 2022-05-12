@@ -20,7 +20,7 @@ require_relative '../libraries/powershell'
 
 # rubocop:disable Style/MultilineBlockChain
 
-recipe 'fb_powershell::linux', :unsupported => [:mac_os_x] do |tc|
+recipe 'fb_powershell::default', :unsupported => [:mac_os_x] do |tc|
   let(:profile) { '/opt/microsoft/powershell/7/profile.ps1' }
 
   before do
@@ -35,6 +35,7 @@ recipe 'fb_powershell::linux', :unsupported => [:mac_os_x] do |tc|
   let(:chef_run) do
     tc.chef_run(:step_into => ['fb_powershell_apply_profiles']) do
     end.converge(described_recipe) do |node|
+      node.default['fb_powershell']['manage_profiles'] = true
       node.default['fb_powershell']['profiles']['AllUsersAllHosts'] = <<-EOH
 # This is a test of managing the PowerShell profiles!
 Write-Host "I look forward to seeing you in SEV review..."

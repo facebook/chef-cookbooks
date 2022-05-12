@@ -29,11 +29,3 @@ homebrew_cask 'install powershell' do
   only_if { node['fb_powershell']['pwsh']['manage'] }
   action :install
 end
-
-# Setup PowerShell Config
-fb_powershell_apply_config 'Managing the PowerShell Core config'
-
-# Manage PowerShell Core profiles
-fb_powershell_apply_profiles 'Managing the PowerShell profiles' do
-  powershell_core true
-end

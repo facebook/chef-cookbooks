@@ -34,11 +34,3 @@ package 'pin powershell' do
   action :install
   version lazy { node['fb_powershell']['pwsh']['version'] }
 end
-
-# Setup PowerShell Config
-fb_powershell_apply_config 'Managing the PowerShell Core config'
-
-# Manage PowerShell Core profiles
-fb_powershell_apply_profiles 'Managing PowerShell profiles' do
-  powershell_core true
-end

@@ -28,3 +28,14 @@ when 'linux'
 else
   fail "fb_powershell: not supported on #{node['os']}"
 end
+
+# Setup PowerShell Config
+fb_powershell_apply_config 'Managing the PowerShell Core config' do
+  only_if { node['fb_powershell']['manage_config'] }
+end
+
+# Manage PowerShell Core profiles
+fb_powershell_apply_profiles 'Managing PowerShell profiles' do
+  only_if { node['fb_powershell']['manage_profiles'] }
+  powershell_core true
+end
