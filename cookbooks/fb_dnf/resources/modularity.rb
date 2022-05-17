@@ -41,6 +41,8 @@ action :run do
         mode '0644'
         source 'fb_modules.module.erb'
         variables({ :name => name, :module => mod })
+        notifies :run, 'whyrun_safe_ruby_block[clean chef yum metadata]',
+                 :immediately
       end
     end
   end
@@ -59,6 +61,8 @@ action :run do
     next if mod && mod['enable']
     file modfile do
       action :delete
+      notifies :run, 'whyrun_safe_ruby_block[clean chef yum metadata]',
+               :immediately
     end
   end
 end
