@@ -94,6 +94,11 @@ end
 # FIXME: Remove after https://github.com/systemd/systemd/pull/23205 is
 # resolved and released.
 execute 'Ensure systemd-network user exists' do
+  only_if do
+    systemd_version = FB::Version.new(node['packages']['systemd']['version'])
+    # 'systemd-sysusers' was only introduced in v.215
+    systemd_version >= FB::Version.new('215')
+  end
   # rubocop:disable Layout/LineLength
   command "#{systemd_prefix}/bin/systemd-sysusers --inline \"u systemd-network 192 \\\"systemd Network Management\\\"\""
   # rubocop:enable Layout/LineLength
