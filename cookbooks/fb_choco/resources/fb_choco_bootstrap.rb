@@ -23,14 +23,17 @@ default_action :install
 property :version, :kind_of => String
 
 load_current_value do
-  extend Chef::Mixin::Which
-  choco_exe = which('choco.exe')
-  ver = Mixlib::ShellOut.new("#{choco_exe} --version")
+  extend FB::Choco::Helpers
   begin
+    choco_exe = get_choco_bin
+    fail if choco_exe.nil?
+    ver = Mixlib::ShellOut.new("#{choco_exe} --version")
     choco_version = ver.run_command.stdout.chomp
     fail if choco_version.empty?
-  rescue StandardError
-    Chef::Log.warn('fb_choco: Chocolatey executable was not found!')
+  rescue StandardError => e
+    Chef::Log.warn(
+      "fb_choco: Chocolatey executable was not found due to error:#{e.message}",
+    )
     choco_version = '0.0.0'
   end
   set_or_return(:version, choco_version, {})
