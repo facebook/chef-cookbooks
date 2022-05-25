@@ -47,7 +47,7 @@ action_class do
       # We may not have this group if it's a remote one, so check we do and
       # that it's set to create
       if info && info['action'] && info['action'] != :delete
-        group "bootstrap #{grp}" do # ~FB015
+        group "bootstrap #{grp}" do # rubocop:disable Chef/Meta/ResourceReplacer # ~FB015
           group_name grp
           gid ::FB::Users::GID_MAP[grp]['gid']
           action :create
@@ -122,7 +122,7 @@ action :manage do
     # delete any users and optionally clean up home dirs if `manage_home true`
     if info['action'] == :delete
       # keep property list in sync with FB::Users._validate
-      user username do # ~FB014
+      user username do # rubocop:disable Chef/Meta/ResourceReplacer # ~FB014
         manage_home manage_homedir
         action :remove
         info['notifies']&.each_value do |notif|
@@ -141,7 +141,7 @@ action :manage do
 
     # disabling fc009 because it triggers on 'secure_token' below which
     # is already guarded by a version 'if'
-    user username do # ~FC009 ~FB014
+    user username do # rubocop:disable Chef/Meta/ResourceReplacer # ~FB014 ~FC009
       uid mapinfo['uid'].to_i
       # the .to_i here is important - if the usermap accidentally
       # quotes the gid, then it will try to look up a group named "142"
@@ -188,7 +188,7 @@ action :manage do
       next unless info['only_if'].call
     end
     if info['action'] == :delete
-      group groupname do # ~FB015
+      group groupname do # rubocop:disable Chef/Meta/ResourceReplacer # ~FB015
         action :remove
         info['notifies']&.each_value do |notif|
           timing = notif['timing'] || 'delayed'
@@ -201,7 +201,7 @@ action :manage do
     mapinfo = ::FB::Users::GID_MAP[groupname]
     # disabling fc009 becasue it triggers on 'comment' below which
     # is already guarded by a version 'if'
-    group groupname do # ~FC009 ~FB015
+    group groupname do # rubocop:disable Chef/Meta/ResourceReplacer # ~FB015
       gid mapinfo['gid'].to_i
       system mapinfo['system'] unless mapinfo['system'].nil?
       if info['members']
