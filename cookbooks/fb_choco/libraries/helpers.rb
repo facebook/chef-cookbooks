@@ -26,10 +26,10 @@ module FB
         # "which" uses $env:PATH to find the chocolatey binary.  When
         # chocolatey is installed it will update $env:PATH, however
         # this requires the shell to be restarted.  If which does not find
-        # choco.exe in $env:PATH it returns 'false'
+        # choco.exe in $env:PATH it returns 'nil'
         # In this situtation lets also check the most likely location.
         which_path = which(file_name)
-        return which_path unless which_path == false
+        return which_path unless which_path.nil?
 
         expected_paths = [
           "C:\\ProgramData\\Chocolatey\\bin\\#{file_name}",
