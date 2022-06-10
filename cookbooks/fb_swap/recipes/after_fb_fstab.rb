@@ -20,7 +20,7 @@
 # this only works once fb_fstab has actually rendered/reloaded
 # fstab and systemd-fstab-generator run
 
-['device', 'file'].each do |type|
+['device', 'file', 'additional_file'].each do |type|
   next if type == 'device' && FB::FbSwap._device(node).nil?
 
   service "start #{type} swap" do
@@ -36,4 +36,12 @@
     service_name lazy { FB::FbSwap._swap_unit(node, type) }
     action [:stop]
   end
+end
+
+directory 'delete_additional_volume' do
+  only_if { node['fb_swap']['_calculated']['swapoff_needed'] }
+  not_if { node['fb_swap']['enabled'] }
+  path lazy { FB::FbSwap._additional_volume(node) }
+  recursive true
+  action :delete
 end

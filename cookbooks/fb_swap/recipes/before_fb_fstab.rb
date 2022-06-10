@@ -33,9 +33,27 @@ whyrun_safe_ruby_block 'Validate and calculate swap sizes' do
   end
 end
 
-['device', 'file'].each do |type|
+template '/usr/local/libexec/manage-additional-swap-file' do
+  source 'manage-additional-swap-file.sh.erb'
+  owner 'root'
+  group 'root'
+  # read/execute for root, read only for everyone else.
+  mode '0544'
+  notifies :run, 'execute[manage-additional-swap-file]', :immediately
+end
+
+execute 'manage-additional-swap-file' do
+  only_if do
+    node['fb_swap']['_calculated']['additional_file_size_bytes'].
+      positive? &&
+      node['fb_swap']['_calculated']['additional_file_current_size_bytes'].
+        negative?
+  end
+  command '/usr/local/libexec/manage-additional-swap-file'
+end
+
+['device', 'file', 'additional_file'].each do |type|
   next if type == 'device' && FB::FbSwap._device(node).nil?
-  manage_unit = "manage-swap-#{type}.service"
 
   whyrun_safe_ruby_block "Add #{type} swap to fstab" do
     only_if { node['fb_swap']['_calculated']["#{type}_size_bytes"].positive? }
@@ -50,7 +68,10 @@ end
       }
     end
   end
-
+end
+['device', 'file'].each do |type|
+  next if type == 'device' && FB::FbSwap._device(node).nil?
+  manage_unit = "manage-swap-#{type}.service"
   template "/etc/systemd/system/#{manage_unit}" do
     source "#{manage_unit}.erb"
     owner 'root'

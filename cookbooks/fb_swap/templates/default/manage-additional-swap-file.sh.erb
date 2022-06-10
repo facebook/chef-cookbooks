@@ -1,0 +1,43 @@
+#!/bin/sh
+# fallocate and mkswap the additionalswapfile
+
+set -euo pipefail
+<%
+filesystem = node['fb_swap']['filesystem']
+filesystem += '/' unless filesystem.end_with?('/')
+fs_type = FB::FbSwap._filesystem_map_for_fs(node)['fs_type']
+file_size_bytes = node['fb_swap']['_calculated']['additional_file_size_bytes']
+-%>
+vol='<%= filesystem %>additionalswapvol'
+<%
+if file_size_bytes > 0
+-%>
+file="${vol}/additionalswapfile"
+# ensure the subvolume or directory itself exists
+if [ ! -d "${vol}" ] ; then
+<% if fs_type == 'btrfs' -%>
+    /usr/sbin/btrfs subvolume create "${vol}"
+<% else -%>
+    mkdir "${vol}"
+<% end -%>
+fi
+if [ ! -f "${file}" -o -z "$(/usr/sbin/swapon | /bin/grep -o "^${file} ")" ] ; then
+    # delete in case volume full
+    /usr/bin/rm --force "${file}"
+    # create a new empty file
+    /usr/bin/touch "${file}"
+<% if fs_type == 'btrfs' -%>
+    # Mark as no-copy-on-write. Only works on new/empty files.
+    /usr/bin/chattr +C "${file}"
+<% end -%>
+<% if fs_type == 'xfs' -%>
+    # fallocate on xfs can't creates working swapfiles, fill them up with dd
+    /usr/bin/dd if=/dev/zero of="${file}" iflag=count_bytes bs=1M count=<%= file_size_bytes %>
+<% else -%>
+    /usr/bin/fallocate --length <%= file_size_bytes %> "${file}"
+<% end -%>
+    /usr/sbin/mkswap "${file}"
+fi
+<%
+end
+-%>

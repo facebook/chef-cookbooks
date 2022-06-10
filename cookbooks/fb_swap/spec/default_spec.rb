@@ -29,6 +29,7 @@ describe 'fb_swap' do
       'fs_type' => 'ext4',
       'devices' => ['/dev/blocka42'],
     }
+    node.default['fb_swap']['min_additional_file_size'] = 16 * 1024 * 1024
   end
 
   context 'btrfs' do
@@ -55,6 +56,75 @@ describe 'fb_swap' do
     end
     it 'should return true if not btrfs, and not rotational' do
       FB::FbSwap.swap_file_possible?(node).should eq(true)
+    end
+  end
+
+  context 'no need for add. swap file if swapoff reason is defined' do
+    it 'should return -1 for additional_file_size_bytes' do
+      node.default['fb_swap']['swapoff_allowed_because'] = 'Non empty reason'
+      _, additional_file_size_bytes =
+        FB::FbSwap._validate_resize_additional_file(1, 1, 1, node)
+      additional_file_size_bytes.should eq(-1)
+    end
+  end
+
+  context 'no need for add. swap file if main swap file size is enough' do
+    it 'should return -1 for additional_file_size_bytes' do
+      _, additional_file_size_bytes =
+        FB::FbSwap._validate_resize_additional_file(2, 2, 1, node)
+      additional_file_size_bytes.should eq(-1)
+    end
+  end
+
+  context 'no need for add. swap file if main swap file does not exist' do
+    it 'should return -1 for additional_file_size_bytes' do
+      _, additional_file_size_bytes =
+        FB::FbSwap._validate_resize_additional_file(2, -1, -1, node)
+      additional_file_size_bytes.should eq(-1)
+    end
+  end
+
+  BYTES_IN_14_1G = 16 * 1024 * 1024 * 1024 - 2048917504
+  BYTES_IN_16G = 16 * 1024 * 1024 * 1024
+  BYTES_IN_32G = 32 * 1024 * 1024 * 1024
+
+  context 'need for add. swap file if main swap file size is not enough' do
+    it 'should return file sizes correct' do
+      file_size_bytes, additional_file_size_bytes =
+        FB::FbSwap._validate_resize_additional_file(
+          BYTES_IN_32G, BYTES_IN_16G, -1, node
+        )
+      file_size_bytes.should eq(BYTES_IN_16G)
+      additional_file_size_bytes.should eq(BYTES_IN_16G)
+    end
+  end
+
+  context 'no need to recreate add. swap file if it has correct size' do
+    it 'should return file sizes correct' do
+      file_size_bytes, additional_file_size_bytes =
+        FB::FbSwap._validate_resize_additional_file(2, 1, 1, node)
+      file_size_bytes.should eq(1)
+      additional_file_size_bytes.should eq(1)
+    end
+  end
+
+  context 'Unsatisfiable requested file sizes(both files exist)' do
+    it 'should return current file sizes' do
+      file_size_bytes, additional_file_size_bytes =
+        FB::FbSwap._validate_resize_additional_file(3, 1, 1, node)
+      file_size_bytes.should eq(1)
+      additional_file_size_bytes.should eq(1)
+    end
+  end
+  # Side effect mitigation of the bug(https://fb.me/swapfilebug)
+  context 'no need for add. swap file if size is less than min size(16GB)' do
+    it 'should return -1 for additional_file_size_bytes' do
+      file_size_bytes, additional_file_size_bytes =
+        FB::FbSwap._validate_resize_additional_file(
+          BYTES_IN_16G, BYTES_IN_14_1G, -1, node
+        )
+      file_size_bytes.should eq(BYTES_IN_14_1G)
+      additional_file_size_bytes.should eq(-1)
     end
   end
 end
