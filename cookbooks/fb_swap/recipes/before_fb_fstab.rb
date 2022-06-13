@@ -64,7 +64,7 @@ end
         'device' => FB::FbSwap._path(node, type),
         'type' => 'swap',
         # prioritize swap file in case that swap partition is on a spinning disk
-        'opts' => type == 'file' ? 'pri=10' : 'pri=5',
+        'opts' => type == 'device' ? 'pri=5' : 'pri=10',
       }
     end
   end
