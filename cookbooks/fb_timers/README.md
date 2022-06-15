@@ -116,7 +116,9 @@ whatever you're doing.
   of the timer unit file.
 * `autostart`: Setting this to false will prevent units from being enabled and
   started in the chef run.  This can be used for creating user units which are
-  managed by other means. (defaults to `True`)
+  managed by other means. (defaults to `true`)
+* `requires_enable`: Setting this to false will prevent including the `Requires`
+  field in the timer unit file. (defaults to `true`)
 
 ### Common Calendar Patterns
 A helper library is provided to allow easy generation of [systemd calendar

@@ -33,6 +33,7 @@ module FB
       'description' => nil,
       'only_if' => nil,
       'persistent' => false,
+      'requires_enable' => true,
       'service_options' => {},
       'service_unit_options' => {},
       'splay' => '0s',
