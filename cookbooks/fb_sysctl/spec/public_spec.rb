@@ -6,31 +6,39 @@ require_relative '../libraries/sync'
 describe FB::Sysctl do
   context '#incorrect_settings' do
     it 'treats identical settings as the same' do
-      FB::Sysctl.incorrect_settings(
-        { 'somekey' => '1 2 val thing' },
-        { 'somekey' => '1 2 val thing' },
-      ).should eq({})
+      expect(
+        FB::Sysctl.incorrect_settings(
+          { 'somekey' => '1 2 val thing' },
+          { 'somekey' => '1 2 val thing' },
+        ),
+      ).to eq({})
     end
 
     it 'treats settings with whitespace differences the same' do
-      FB::Sysctl.incorrect_settings(
-        { 'somekey' => '1  2    val thing' },
-        { 'somekey' => '1 2 val thing' },
-      ).should eq({})
+      expect(
+        FB::Sysctl.incorrect_settings(
+          { 'somekey' => '1  2    val thing' },
+          { 'somekey' => '1 2 val thing' },
+        ),
+      ).to eq({})
     end
 
     it 'treats different settings as different' do
-      FB::Sysctl.incorrect_settings(
-        { 'somekey' => '1 3 val thing' },
-        { 'somekey' => '1 2 val thing' },
-      ).should eq({ 'somekey' => '1 3 val thing' })
+      expect(
+        FB::Sysctl.incorrect_settings(
+          { 'somekey' => '1 3 val thing' },
+          { 'somekey' => '1 2 val thing' },
+        ),
+      ).to eq({ 'somekey' => '1 3 val thing' })
     end
 
     it 'handles integers and strings correctly' do
-      FB::Sysctl.incorrect_settings(
-        { 'somekey' => 12 },
-        { 'somekey' => '12' },
-      ).should eq({})
+      expect(
+        FB::Sysctl.incorrect_settings(
+          { 'somekey' => 12 },
+          { 'somekey' => '12' },
+        ),
+      ).to eq({})
     end
 
     it 'handles many values properly' do
@@ -46,10 +54,12 @@ describe FB::Sysctl do
       desired['somekey2'] = 'differnt val'
       desired['somekey4'] = 'poop'
       desired['somekey6'] = 99
-      FB::Sysctl.incorrect_settings(
-        current,
-        desired,
-      ).should eq(
+      expect(
+        FB::Sysctl.incorrect_settings(
+          current,
+          desired,
+        ),
+      ).to eq(
         {
           'somekey2' => 'another_value',
           'somekey4' => '[stuff] here',
@@ -68,10 +78,12 @@ describe FB::Sysctl do
     end
 
     it 'ignores keys we do not care about' do
-      FB::Sysctl.incorrect_settings(
-        { 'real_key' => 'val', 'extra_key' => 'val2' },
-        { 'real_key' => 'val' },
-      ).should eq({})
+      expect(
+        FB::Sysctl.incorrect_settings(
+          { 'real_key' => 'val', 'extra_key' => 'val2' },
+          { 'real_key' => 'val' },
+        ),
+      ).to eq({})
     end
   end
 end
