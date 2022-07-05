@@ -69,6 +69,9 @@ your node.
 * `node.fedora35?`
     Is Fedora 35
 
+* `node.fedora36?`
+    Is Fedora 36
+
 * `node.redhat?`
     Is Redhat Enterprise Linux
 

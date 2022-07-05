@@ -87,6 +87,10 @@ class Chef
       self.fedora? && self['platform_version'] == '35'
     end
 
+    def fedora36?
+      self.fedora? && self['platform_version'] == '36'
+    end
+
     def redhat?
       self['platform'] == 'redhat'
     end
