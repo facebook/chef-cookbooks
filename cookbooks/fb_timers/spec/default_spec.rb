@@ -88,6 +88,7 @@ recipe 'fb_timers::default', :unsupported => [:mac_os_x] do |tc|
       ) do |node|
         allow(node).to receive(:systemd?).and_return(true)
       end.converge('fb_systemd::reload', described_recipe) do |node|
+        node.automatic['packages']['systemd']['version'] = '246.1'
         node.default['fb_timers']['jobs'] = {
           'simple' => {
             'calendar' => '*:0/15:0',
@@ -206,6 +207,37 @@ recipe 'fb_timers::default', :unsupported => [:mac_os_x] do |tc|
       unit_types.each do |type|
         expect(chef_run).to_not render_file("#{t_path}no_proc.#{type}")
         expect(chef_run).to render_file("#{t_path}yes_proc.#{type}")
+      end
+    end
+  end
+
+  context 'running systemd version before 246' do
+    cached(:chef_run) do
+      tc.chef_run(
+        :step_into => ['fb_timers_setup'],
+      ) do |node|
+        allow(node).to receive(:systemd?).and_return(true)
+      end.converge('fb_systemd::reload', described_recipe) do |node|
+        node.automatic['packages']['systemd']['version'] = '245.1'
+        node.default['fb_timers']['jobs'] = {
+          'complex' => {
+            'calendar' => 'Sat,Thu,Mon..Wed,Sat..Sun',
+            'command' => '/usr/local/bin/foobar.sh thing1 thing2',
+            'timeout' => '1d',
+            'timeout_stop' => '1h',
+            'accuracy' => '1h',
+            'persistent' => true,
+            'splay' => '0.5h',
+            'syslog' => true,
+          },
+        }
+      end
+    end
+
+    it 'should create timer unit files including StandardOutput' do
+      unit_types.each do |type|
+        expect(chef_run).to render_file("#{t_path}complex.#{type}").
+          with_content(tc.fixture("complex_245.#{type}"))
       end
     end
   end
