@@ -31,8 +31,11 @@ action_class do
 end
 
 load_current_value do |new_resource|
-  # read normally when no custom read_method is present and path exists
-  if !new_resource.read_method && ::File.exist?(path)
+  unless ::File.exist?(path)
+    fail "fb_sysfs: error - #{path} doesn't exist."
+  end
+  # read normally when no custom read_method is present
+  unless new_resource.read_method
     begin
       value ::File.read(path)
     rescue SystemCallError => e
