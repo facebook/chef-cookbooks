@@ -19,6 +19,7 @@ package 'fluentbit' do
   only_if { node['fb_fluentbit']['manage_packages'] }
   package_name 'td-agent-bit'
   action :upgrade
+  notifies :restart, 'service[td-agent-bit]'
 end
 
 package 'fluentbit external plugins' do
@@ -27,4 +28,5 @@ package 'fluentbit external plugins' do
     FB::Fluentbit.external_plugins_from_node(node).map(&:package).sort.uniq
   }
   action :upgrade
+  notifies :restart, 'service[td-agent-bit]'
 end
