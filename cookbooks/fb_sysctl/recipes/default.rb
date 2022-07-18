@@ -20,8 +20,8 @@
 
 template '/etc/sysctl.conf' do
   mode '0644'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   source 'sysctl.conf.erb'
 end
 

@@ -2,8 +2,8 @@
 
 default_action :apply
 
-def set_sysctl(name, val)
-  s = shell_out("/sbin/sysctl -w #{name}=\"#{val}\"")
+def set_sysctl(node, name, val)
+  s = shell_out("#{FB::Sysctl.binary_path(node)} -w #{name}=\"#{val}\"")
   s.error!
 end
 
@@ -17,7 +17,7 @@ end
 # correct.
 action :apply do
   bad_settings = FB::Sysctl.incorrect_settings(
-    FB::Sysctl.current_settings,
+    FB::Sysctl.current_settings(node),
     node['fb_sysctl'].to_hash,
   )
   unless bad_settings.empty? # ~FC023
@@ -29,7 +29,7 @@ action :apply do
         "fb_sysctl: Setting sysctls: #{messages.join(', ')}",
       )
       bad_settings.each_key do |k|
-        set_sysctl(k, node['fb_sysctl'][k])
+        set_sysctl(node, k, node['fb_sysctl'][k])
       end
     end
   end

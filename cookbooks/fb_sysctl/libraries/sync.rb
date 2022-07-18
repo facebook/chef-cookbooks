@@ -18,14 +18,21 @@
 module FB
   # tools for the fb_sysctl cookbook
   module Sysctl
-    def self.current_settings
-      s = Mixlib::ShellOut.new('/sbin/sysctl -a')
+    def self.binary_path(node)
+      if node.macos?
+        return '/usr/sbin/sysctl'
+      end
+      '/sbin/sysctl'
+    end
+
+    def self.current_settings(node)
+      s = Mixlib::ShellOut.new("#{FB::Sysctl.binary_path(node)} -a")
       s.run_command
       s.error!
 
       current = {}
       s.stdout.each_line do |line|
-        line.match(/^(\S+)\s*=\s*(.*)$/)
+        line.match(/^(\S+)(?:\s*=|:)\s*(.*)$/)
         current[$1] = $2
       end
       current

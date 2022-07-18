@@ -4,6 +4,75 @@ require 'chef/node'
 require_relative '../libraries/sync'
 
 describe FB::Sysctl do
+  let(:node) { Chef::Node.new }
+
+  context '#binary_path' do
+    it 'returns linux path' do
+      allow(node).to receive(:macos?).and_return(false)
+      expect(FB::Sysctl.binary_path(node)).to eq('/sbin/sysctl')
+    end
+
+    it 'returns macos path' do
+      allow(node).to receive(:macos?).and_return(true)
+      expect(FB::Sysctl.binary_path(node)).to eq('/usr/sbin/sysctl')
+    end
+  end
+
+  context '#normalize' do
+    it 'handles spaces' do
+      expect(FB::Sysctl.normalize('1 2 3')).to eq('1 2 3')
+    end
+
+    it 'handles tabs' do
+      expect(FB::Sysctl.normalize("1\t2\t3")).to eq('1 2 3')
+    end
+  end
+
+  context '#current_settings' do
+    let(:shellout) do
+      double(
+        :run_command => nil,
+        :error! => nil,
+        :stdout => '',
+        :stderr => '',
+        :exitstatus => 0,
+        :live_stream => '',
+      )
+    end
+
+    it 'handles linux format' do
+      allow(node).to receive(:macos?).and_return(false)
+      allow(shellout).to receive(:stdout).
+        and_return("fake1.sysctl.setting=1\nfake2.sysctl.setting=2")
+      allow(Mixlib::ShellOut).to receive(:new).with('/sbin/sysctl -a').
+        and_return(shellout)
+      allow(shellout).to receive(:run_command).and_return(shellout)
+      allow(shellout).to receive(:error?).and_return(false)
+      expect(FB::Sysctl.current_settings(node)).to eq(
+        {
+          'fake1.sysctl.setting' => '1',
+          'fake2.sysctl.setting' => '2',
+        },
+      )
+    end
+
+    it 'handles macos format' do
+      allow(node).to receive(:macos?).and_return(true)
+      allow(shellout).to receive(:stdout).
+        and_return("fake1.sysctl.setting = 1\nfake2.sysctl.setting = 2")
+      allow(Mixlib::ShellOut).to receive(:new).with('/usr/sbin/sysctl -a').
+        and_return(shellout)
+      allow(shellout).to receive(:run_command).and_return(shellout)
+      allow(shellout).to receive(:error?).and_return(false)
+      expect(FB::Sysctl.current_settings(node)).to eq(
+        {
+          'fake1.sysctl.setting' => '1',
+          'fake2.sysctl.setting' => '2',
+        },
+      )
+    end
+  end
+
   context '#incorrect_settings' do
     it 'treats identical settings as the same' do
       expect(
