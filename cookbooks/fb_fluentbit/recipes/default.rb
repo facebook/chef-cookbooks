@@ -33,9 +33,6 @@ whyrun_safe_ruby_block 'validate fluentbit config' do
   end
 end
 
-include_recipe 'fb_fluentbit::centos' if node.centos?
-include_recipe 'fb_fluentbit::windows' if node.windows?
-
 windows_drive = ENV['SYSTEMDRIVE'] || 'C:'
 
 plugins_file_path = value_for_platform_family(
@@ -52,6 +49,27 @@ main_file_path = value_for_platform_family(
   'rhel' => '/etc/td-agent-bit/td-agent-bit.conf',
   'windows' => windows_drive + '\opt\td-agent-bit\conf\fluent-bit.conf',
 )
+
+# Create a directory for runtime state
+state_dir = value_for_platform_family(
+  'rhel' => '/var/fluent-bit',
+  'windows' => windows_drive + '\ProgramData\fluent-bit',
+)
+
+directory 'runtime state directory' do
+  action :create
+  path state_dir
+  if node.windows?
+    rights :full_control, 'Administrators'
+  else
+    owner 'root'
+    group 'root'
+    mode '0755'
+  end
+end
+
+include_recipe 'fb_fluentbit::centos' if node.centos?
+include_recipe 'fb_fluentbit::windows' if node.windows?
 
 template 'plugins config' do # ~FB031
   action :create

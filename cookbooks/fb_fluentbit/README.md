@@ -62,6 +62,7 @@ out certain lines based on grep, and ultimately logging to stdout.
 node.default['fb_fluentbit']['input']['tail']['tail_myfile'] = {
   'Path' => '/var/log/my_log.txt',
   'Tag' => 'my_cool_log',
+  'db' => '/var/fluent-bit/my_log.db'
 }
 
 # Filter out lines that contain "badstuff"
@@ -83,6 +84,7 @@ This will be rendered as:
     Name tail
     Path /var/log/my_log.txt
     Tag my_cool_log
+    db /var/fluent-bit/my_log.db
 
 [FILTER]
     Name grep
@@ -93,6 +95,13 @@ This will be rendered as:
     Name stdout
     Match my_cool_log
 ```
+
+### Runtime State
+Some plugins have runtime state. For example the tail plugin should be
+configured to save the state of the tracked file across service restarts. This
+state is stored in a sqlite db file at a path provided in the INPUT config.
+The directory `/var/fluent-bit/` (or `\ProgramData\fluent-bit\` in windows)  is
+maintained as a central location for such files.
 
 ### External plugins
 Fluent Bit supports external/custom plugins. This cookbook API allows for
