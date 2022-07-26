@@ -293,23 +293,23 @@ EOF
 describe FB::Grub do
   it 'should extract the root drive correctly from a grub 1 config' do
     extracted = FB::Grub.extract_root_device(grub1_contents)
-    extracted.should eq('hd0,1')
+    expect(extracted).to eq('hd0,1')
   end
 
   it 'should not pay attention to root drive comments' do
     grub1_with_comment = "# root(hd9,99)\n" + grub1_contents
     extracted = FB::Grub.extract_root_device(grub1_with_comment)
-    extracted.should eq('hd0,1')
+    expect(extracted).to eq('hd0,1')
   end
 
   it 'should extract the root drive correctly from a grub 2 config' do
     extracted = FB::Grub.extract_root_device(grub2_contents)
-    extracted.should eq('hd0,gpt2')
+    expect(extracted).to eq('hd0,gpt2')
   end
 
   it 'should extract device hints correctly from a grub 1 config' do
     extracted = FB::Grub.extract_device_hints(grub1_contents)
-    extracted.should eq(
+    expect(extracted).to eq(
       ['device (hd0,1) HD(1,800,80000,a7d234b6-5131-4dbf-b1c3-b53aedf4c486)'],
     )
   end
@@ -317,18 +317,18 @@ describe FB::Grub do
   it 'should not pay attention to commented out device hints' do
     grub1_with_comment = "# device (hd0,1) HD(123)\n" + grub1_contents
     extracted = FB::Grub.extract_device_hints(grub1_with_comment)
-    extracted.should eq(
+    expect(extracted).to eq(
       ['device (hd0,1) HD(1,800,80000,a7d234b6-5131-4dbf-b1c3-b53aedf4c486)'],
     )
   end
 
   it 'should extract device hints correctly from a grub 2 config' do
     extracted = FB::Grub.extract_device_hints(grub2_contents)
-    extracted.should eq([])
+    expect(extracted).to eq([])
   end
 
   it 'should not extract random stuff from search statements' do
     extracted = FB::Grub.extract_device_hints(grub2_search_statements)
-    extracted.should eq([])
+    expect(extracted).to eq([])
   end
 end

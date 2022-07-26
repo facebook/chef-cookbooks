@@ -23,11 +23,11 @@ require_relative '../libraries/rh_int_helpers'
 describe FB::NetworkScripts do
   context '#len2mask' do
     it 'should handle class netmasks' do
-      FB::NetworkScripts.len2mask(24).should eq('255.255.255.0')
+      expect(FB::NetworkScripts.len2mask(24)).to eq('255.255.255.0')
     end
 
     it 'should handle CIDR netmasks' do
-      FB::NetworkScripts.len2mask(27).should eq('255.255.255.224')
+      expect(FB::NetworkScripts.len2mask(27)).to eq('255.255.255.224')
     end
   end
 
@@ -35,7 +35,7 @@ describe FB::NetworkScripts do
     it 'should make a list of IPs' do
       start = 'fe80::202:c9ff:fe4f:0'
       finish = 'fe80::202:c9ff:fe4f:5'
-      FB::NetworkScripts.v6range2list(start, finish).should eq(
+      expect(FB::NetworkScripts.v6range2list(start, finish)).to eq(
         [
           'fe80::202:c9ff:fe4f:0/128',
           'fe80::202:c9ff:fe4f:1/128',
@@ -59,63 +59,64 @@ describe FB::NetworkScripts::RHInterfaceHelpers do
     it 'should return true for interfaces that are up' do
       int = 'oogabooga0'
       f = "/sys/class/net/#{int}/flags"
-      File.should_receive(:exist?).with(f).and_return(true)
-      File.should_receive(:read).with(f).and_return("0x1003\n")
-      running?(int, node).should eq(true)
+      expect(File).to receive(:exist?).with(f).and_return(true)
+      expect(File).to receive(:read).with(f).and_return("0x1003\n")
+      expect(running?(int, node)).to eq(true)
     end
 
     # most virtual interfaces report '0x9' when up
     it 'should return true for virtual interfaces up' do
       int = 'oogabooga0'
       f = "/sys/class/net/#{int}/flags"
-      File.should_receive(:exist?).with(f).and_return(true)
-      File.should_receive(:read).with(f).and_return("0x9\n")
-      running?(int, node).should eq(true)
+      expect(File).to receive(:exist?).with(f).and_return(true)
+      expect(File).to receive(:read).with(f).and_return("0x9\n")
+      expect(running?(int, node)).to eq(true)
     end
 
     it 'should return false for interfaces that are down' do
       int = 'oogabooga0'
       f = "/sys/class/net/#{int}/flags"
-      File.should_receive(:exist?).with(f).and_return(true)
-      File.should_receive(:read).with(f).and_return("0x1002\n")
-      running?(int, node).should eq(false)
+      expect(File).to receive(:exist?).with(f).and_return(true)
+      expect(File).to receive(:read).with(f).and_return("0x1002\n")
+      expect(running?(int, node)).to eq(false)
     end
 
     it 'should return false for interfaces that are non-existent' do
       int = 'oogabooga0'
       f = "/sys/class/net/#{int}/flags"
-      File.should_receive(:exist?).with(f).and_return(false)
-      running?(int, node).should eq(false)
+      expect(File).to receive(:exist?).with(f).and_return(false)
+      expect(running?(int, node)).to eq(false)
     end
   end
 
   context '#read_ifcfg_file' do
     it 'should ignore comments' do
       f = '/tmp/foof'
-      File.should_receive(:read).with(f).and_return("# foo\n# bar\n")
-      read_ifcfg(f).should eq({})
+      expect(File).to receive(:read).with(f).and_return("# foo\n# bar\n")
+      expect(read_ifcfg(f)).to eq({})
     end
 
     it 'should parse keyval pairs' do
       f = '/tmp/foof'
-      File.should_receive(:read).with(f).and_return("KEY=VAL\nKEY2=VAL2\n")
-      read_ifcfg(f).should eq({ 'KEY' => 'VAL', 'KEY2' => 'VAL2' })
+      expect(File).to receive(:read).with(f).and_return("KEY=VAL\nKEY2=VAL2\n")
+      expect(read_ifcfg(f)).to eq({ 'KEY' => 'VAL', 'KEY2' => 'VAL2' })
     end
 
     it 'should handle quoted values' do
       f = '/tmp/foof'
-      File.should_receive(:read).with(f).and_return(
+      expect(File).to receive(:read).with(f).and_return(
         "KEY=\"VAL\"\nKEY2=\"VAL2\"\n",
       )
-      read_ifcfg(f).should eq({ 'KEY' => 'VAL', 'KEY2' => 'VAL2' })
+      expect(read_ifcfg(f)).to eq({ 'KEY' => 'VAL', 'KEY2' => 'VAL2' })
     end
 
     it 'should handle empty values' do
       f = '/tmp/foof'
-      File.should_receive(:read).with(f).and_return(
+      expect(File).to receive(:read).with(f).and_return(
         "KEY=VAL\nKEY2=\nKEY3=\"\"\n",
       )
-      read_ifcfg(f).should eq({ 'KEY' => 'VAL', 'KEY2' => '', 'KEY3' => '' })
+      expect(read_ifcfg(f)).
+        to eq({ 'KEY' => 'VAL', 'KEY2' => '', 'KEY3' => '' })
     end
   end
 
@@ -123,19 +124,19 @@ describe FB::NetworkScripts::RHInterfaceHelpers do
     it 'should report removed keys' do
       c1 = { 'KEY1' => 'stuff here', 'KEY2' => 'more stuff' }
       c2 = { 'KEY2' => 'more stuff' }
-      get_changed_keys(c1, c2).should eq(['KEY1'])
+      expect(get_changed_keys(c1, c2)).to eq(['KEY1'])
     end
 
     it 'should report added keys' do
       c1 = { 'KEY2' => 'more stuff' }
       c2 = { 'KEY1' => 'stuff here', 'KEY2' => 'more stuff' }
-      get_changed_keys(c1, c2).should eq(['KEY1'])
+      expect(get_changed_keys(c1, c2)).to eq(['KEY1'])
     end
 
     it 'should report modified keys' do
       c1 = { 'KEY1' => 'stuff here', 'KEY2' => 'more stuff' }
       c2 = { 'KEY1' => 'different here', 'KEY2' => 'more stuff' }
-      get_changed_keys(c1, c2).should eq(['KEY1'])
+      expect(get_changed_keys(c1, c2)).to eq(['KEY1'])
     end
 
     it 'should report combinations' do
@@ -149,7 +150,7 @@ describe FB::NetworkScripts::RHInterfaceHelpers do
         'KEY3' => 'same stuff',
         'KEY4' => 'more stuff',
       }
-      get_changed_keys(c1, c2).should eq(['KEY1', 'KEY2', 'KEY4'])
+      expect(get_changed_keys(c1, c2)).to eq(['KEY1', 'KEY2', 'KEY4'])
     end
 
     it 'should see IPv6 addresses with different casing the same' do
@@ -159,7 +160,7 @@ describe FB::NetworkScripts::RHInterfaceHelpers do
       c2 = {
         'IPV6ADDR' => '2401:db00:0021:70dd:FACE:0000:00a9:0000',
       }
-      get_changed_keys(c1, c2).should eq([])
+      expect(get_changed_keys(c1, c2)).to eq([])
     end
 
     it 'should see IPv6 addresses with different expansion the same' do
@@ -169,7 +170,7 @@ describe FB::NetworkScripts::RHInterfaceHelpers do
       c2 = {
         'IPV6ADDR' => '2401:db00:0021:70dd:face:0:00a9:0',
       }
-      get_changed_keys(c1, c2).should eq([])
+      expect(get_changed_keys(c1, c2)).to eq([])
 
       c1 = {
         'IPV6ADDR' => '2401:db00:0021:70dd:face:0000:00a9:0000',
@@ -177,7 +178,7 @@ describe FB::NetworkScripts::RHInterfaceHelpers do
       c2 = {
         'IPV6ADDR' => '2401:db00:0021:70dd:face::00a9:0',
       }
-      get_changed_keys(c1, c2).should eq([])
+      expect(get_changed_keys(c1, c2)).to eq([])
     end
 
     it 'should see IPv6 addresses with and without /64 the same' do
@@ -187,14 +188,14 @@ describe FB::NetworkScripts::RHInterfaceHelpers do
       c2 = {
         'IPV6ADDR' => '2401:db00:0021:70dd:face:0000:00a9:0000',
       }
-      get_changed_keys(c1, c2).should eq([])
+      expect(get_changed_keys(c1, c2)).to eq([])
       c1 = {
         'IPV6ADDR' => '2401:db00:0021:70dd:face:0000:00a9:0000',
       }
       c2 = {
         'IPV6ADDR' => '2401:db00:0021:70dd:face:0000:00a9:0000/64',
       }
-      get_changed_keys(c1, c2).should eq([])
+      expect(get_changed_keys(c1, c2)).to eq([])
     end
 
     it 'should see IPv6 addresses with different CIDR as different' do
@@ -204,14 +205,14 @@ describe FB::NetworkScripts::RHInterfaceHelpers do
       c2 = {
         'IPV6ADDR' => '2401:db00:0021:70dd:face:0000:00a9:0000/128',
       }
-      get_changed_keys(c1, c2).should eq(['IPV6ADDR'])
+      expect(get_changed_keys(c1, c2)).to eq(['IPV6ADDR'])
       c1 = {
         'IPV6ADDR' => '2401:db00:0021:70dd:face:0000:00a9:0000/128',
       }
       c2 = {
         'IPV6ADDR' => '2401:db00:0021:70dd:face:0000:00a9:0000',
       }
-      get_changed_keys(c1, c2).should eq(['IPV6ADDR'])
+      expect(get_changed_keys(c1, c2)).to eq(['IPV6ADDR'])
     end
 
     it 'should see IPV6 secondary address with different casing the same' do
@@ -225,7 +226,7 @@ describe FB::NetworkScripts::RHInterfaceHelpers do
           '2401:DB00:0021:70DD:FACE:0000:00A9:0000/64 ' +
             '2803:6080:C898:74A9::1/64',
       }
-      get_changed_keys(c1, c2).should eq([])
+      expect(get_changed_keys(c1, c2)).to eq([])
     end
 
     it 'should see IPV6 secondary address with different expansion the same' do
@@ -239,7 +240,7 @@ describe FB::NetworkScripts::RHInterfaceHelpers do
           '2401:db00:0021:70dd:face:0:00a9:0/64 ' +
             '2803:6080:c898:74a9::1/64',
       }
-      get_changed_keys(c1, c2).should eq([])
+      expect(get_changed_keys(c1, c2)).to eq([])
 
       c1 = {
         'IPV6ADDR_SECONDARIES' =>
@@ -251,7 +252,7 @@ describe FB::NetworkScripts::RHInterfaceHelpers do
           '2401:db00:0021:70dd:face::00a9:0/64 ' +
             '2803:6080:c898:74a9::1/64',
       }
-      get_changed_keys(c1, c2).should eq([])
+      expect(get_changed_keys(c1, c2)).to eq([])
     end
   end
 
@@ -266,7 +267,7 @@ describe FB::NetworkScripts::RHInterfaceHelpers do
           'prefixlen' => '64',
         },
       }
-      get_v6addrs(node, iface).should eq(['fe80::1/64'])
+      expect(get_v6addrs(node, iface)).to eq(['fe80::1/64'])
     end
 
     it 'should not report local v6 addresses' do
@@ -278,7 +279,7 @@ describe FB::NetworkScripts::RHInterfaceHelpers do
           'prefixlen' => '64',
         },
       }
-      get_v6addrs(node, iface).should eq([])
+      expect(get_v6addrs(node, iface)).to eq([])
     end
 
     it 'should not report v4 addresses' do
@@ -290,7 +291,7 @@ describe FB::NetworkScripts::RHInterfaceHelpers do
           'prefixlen' => '64',
         },
       }
-      get_v6addrs(node, iface).should eq([])
+      expect(get_v6addrs(node, iface)).to eq([])
     end
   end
 
@@ -308,7 +309,7 @@ describe FB::NetworkScripts::RHInterfaceHelpers do
       config = {
         'ipv6' => '2401:db00:11:d0d8:face:0:47:0',
       }
-      get_v6_changes(node, iface, config).should eq([Set.new, Set.new])
+      expect(get_v6_changes(node, iface, config)).to eq([Set.new, Set.new])
     end
 
     it 'should not remove primary addr even if formatted differently' do
@@ -324,7 +325,7 @@ describe FB::NetworkScripts::RHInterfaceHelpers do
       config = {
         'ipv6' => '2401:db00:11:d0d8:face:0:47:0',
       }
-      get_v6_changes(node, iface, config).should eq([Set.new, Set.new])
+      expect(get_v6_changes(node, iface, config)).to eq([Set.new, Set.new])
     end
 
     it 'should add extra addresses' do
@@ -342,7 +343,7 @@ describe FB::NetworkScripts::RHInterfaceHelpers do
           '2401:ffff:6969:0:0:0:0:4/64',
         ],
       }
-      get_v6_changes(node, iface, config).should eq(
+      expect(get_v6_changes(node, iface, config)).to eq(
         [Set.new(['2401:ffff:6969::4/64']), Set.new],
       )
     end
@@ -364,7 +365,7 @@ describe FB::NetworkScripts::RHInterfaceHelpers do
       config = {
         'ipv6' => '2401:db00:11:d0d8:face:0:47:0',
       }
-      get_v6_changes(node, iface, config).should eq(
+      expect(get_v6_changes(node, iface, config)).to eq(
         [Set.new, Set.new(['2401:ffff:6969::4/64'])],
       )
     end
@@ -406,7 +407,7 @@ describe FB::NetworkScripts::RHInterfaceHelpers do
         ],
 
       }
-      get_v6_changes(node, iface, config).should eq(
+      expect(get_v6_changes(node, iface, config)).to eq(
         [
           Set.new(['2401:69ff:6669::8/64']),
           Set.new(['2401:1111:666::99/64']),

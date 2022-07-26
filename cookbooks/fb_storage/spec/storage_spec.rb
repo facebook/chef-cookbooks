@@ -144,12 +144,12 @@ describe FB::Storage do
 
   context '#partition_device_name' do
     it 'should insert a p when the device name ends in a number' do
-      FB::Storage.partition_device_name('abcd0', 2).
-        should eq('abcd0p2')
+      expect(FB::Storage.partition_device_name('abcd0', 2)).
+        to eq('abcd0p2')
     end
     it 'should not insert a p when the device name ends in a number' do
-      FB::Storage.partition_device_name('abcd', 2).
-        should eq('abcd2')
+      expect(FB::Storage.partition_device_name('abcd', 2)).
+        to eq('abcd2')
     end
   end
 
@@ -1391,11 +1391,11 @@ describe FB::Storage do
         ],
       }
 
-      FB::Storage.partition_names('/dev/fioa', device1).
-        should eq(['/dev/fioa1'])
+      expect(FB::Storage.partition_names('/dev/fioa', device1)).
+        to eq(['/dev/fioa1'])
 
-      FB::Storage.partition_names('/dev/fioa', device2).
-        should eq(['/dev/fioa1', '/dev/fioa2', '/dev/fioa3'])
+      expect(FB::Storage.partition_names('/dev/fioa', device2)).
+        to eq(['/dev/fioa1', '/dev/fioa2', '/dev/fioa3'])
     end
   end
 

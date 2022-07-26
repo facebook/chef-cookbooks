@@ -37,7 +37,7 @@ describe 'fb_swap' do
       node.default['filesystem']['by_mountpoint']['/']['fs_type'] = 'btrfs'
     end
     it 'should return false if btrfs' do
-      FB::FbSwap.swap_file_possible?(node).should eq(false)
+      expect(FB::FbSwap.swap_file_possible?(node)).to eq(false)
     end
   end
 
@@ -46,7 +46,7 @@ describe 'fb_swap' do
       mock_lsblk('1')
     end
     it 'should return false if rotational' do
-      FB::FbSwap.swap_file_possible?(node).should eq(false)
+      expect(FB::FbSwap.swap_file_possible?(node)).to eq(false)
     end
   end
 
@@ -55,7 +55,7 @@ describe 'fb_swap' do
       mock_lsblk('0')
     end
     it 'should return true if not btrfs, and not rotational' do
-      FB::FbSwap.swap_file_possible?(node).should eq(true)
+      expect(FB::FbSwap.swap_file_possible?(node)).to eq(true)
     end
   end
 
@@ -64,7 +64,7 @@ describe 'fb_swap' do
       node.default['fb_swap']['swapoff_allowed_because'] = 'Non empty reason'
       _, additional_file_size_bytes =
         FB::FbSwap._validate_resize_additional_file(1, 1, 1, node)
-      additional_file_size_bytes.should eq(-1)
+      expect(additional_file_size_bytes).to eq(-1)
     end
   end
 
@@ -72,7 +72,7 @@ describe 'fb_swap' do
     it 'should return -1 for additional_file_size_bytes' do
       _, additional_file_size_bytes =
         FB::FbSwap._validate_resize_additional_file(2, 2, 1, node)
-      additional_file_size_bytes.should eq(-1)
+      expect(additional_file_size_bytes).to eq(-1)
     end
   end
 
@@ -80,7 +80,7 @@ describe 'fb_swap' do
     it 'should return -1 for additional_file_size_bytes' do
       _, additional_file_size_bytes =
         FB::FbSwap._validate_resize_additional_file(2, -1, -1, node)
-      additional_file_size_bytes.should eq(-1)
+      expect(additional_file_size_bytes).to eq(-1)
     end
   end
 
@@ -94,8 +94,8 @@ describe 'fb_swap' do
         FB::FbSwap._validate_resize_additional_file(
           BYTES_IN_32G, BYTES_IN_16G, -1, node
         )
-      file_size_bytes.should eq(BYTES_IN_16G)
-      additional_file_size_bytes.should eq(BYTES_IN_16G)
+      expect(file_size_bytes).to eq(BYTES_IN_16G)
+      expect(additional_file_size_bytes).to eq(BYTES_IN_16G)
     end
   end
 
@@ -103,8 +103,8 @@ describe 'fb_swap' do
     it 'should return file sizes correct' do
       file_size_bytes, additional_file_size_bytes =
         FB::FbSwap._validate_resize_additional_file(2, 1, 1, node)
-      file_size_bytes.should eq(1)
-      additional_file_size_bytes.should eq(1)
+      expect(file_size_bytes).to eq(1)
+      expect(additional_file_size_bytes).to eq(1)
     end
   end
 
@@ -112,8 +112,8 @@ describe 'fb_swap' do
     it 'should return current file sizes' do
       file_size_bytes, additional_file_size_bytes =
         FB::FbSwap._validate_resize_additional_file(3, 1, 1, node)
-      file_size_bytes.should eq(1)
-      additional_file_size_bytes.should eq(1)
+      expect(file_size_bytes).to eq(1)
+      expect(additional_file_size_bytes).to eq(1)
     end
   end
   # Side effect mitigation of the bug(https://fb.me/swapfilebug)
@@ -123,8 +123,8 @@ describe 'fb_swap' do
         FB::FbSwap._validate_resize_additional_file(
           BYTES_IN_16G, BYTES_IN_14_1G, -1, node
         )
-      file_size_bytes.should eq(BYTES_IN_14_1G)
-      additional_file_size_bytes.should eq(-1)
+      expect(file_size_bytes).to eq(BYTES_IN_14_1G)
+      expect(additional_file_size_bytes).to eq(-1)
     end
   end
 end

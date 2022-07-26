@@ -60,34 +60,35 @@ EOF
 
   context 'generate_base_fstab' do
     it 'should not regenerate base fstab' do
-      File.should_receive(:exist?).with(FB::Fstab::BASE_FILENAME).
+      expect(File).to receive(:exist?).with(FB::Fstab::BASE_FILENAME).
         and_return(true)
-      File.should_receive(:size?).with(FB::Fstab::BASE_FILENAME).
+      expect(File).to receive(:size?).with(FB::Fstab::BASE_FILENAME).
         and_return(true)
-      File.should_not_receive(:open)
+      expect(File).not_to receive(:open)
       FB::Fstab.generate_base_fstab
     end
     it 'should generate new base fstab' do
-      File.should_receive(:exist?).with(FB::Fstab::BASE_FILENAME).
+      expect(File).to receive(:exist?).with(FB::Fstab::BASE_FILENAME).
         and_return(false)
-      FileUtils.should_receive(:cp).and_return(nil)
-      FileUtils.should_receive(:chmod).and_return(
+      expect(FileUtils).to receive(:cp).and_return(nil)
+      expect(FileUtils).to receive(:chmod).and_return(
         ['/root/fstab.before_fb_fstab'],
       )
-      File.should_receive(:read).and_return(full_contents)
-      File.should_receive(:write).with(FB::Fstab::BASE_FILENAME, base_contents)
+      expect(File).to receive(:read).and_return(full_contents)
+      expect(File).to receive(:write).with(FB::Fstab::BASE_FILENAME,
+                                           base_contents)
       FB::Fstab.generate_base_fstab
     end
   end
 
   context 'determine_base_fstab_entries' do
     it 'should regenerate base fstab properly' do
-      FB::Fstab.determine_base_fstab_entries(full_contents).
-        should eq(base_contents)
+      expect(FB::Fstab.determine_base_fstab_entries(full_contents)).
+        to eq(base_contents)
     end
     it 'should not include exta tmpfs mounts' do
-      FB::Fstab.determine_base_fstab_entries(full_contents).
-        should eq(base_contents)
+      expect(FB::Fstab.determine_base_fstab_entries(full_contents)).
+        to eq(base_contents)
     end
   end
 
@@ -100,13 +101,13 @@ EOF
       }
     end
     it 'should return the autofs parent when one exists' do
-      FB::Fstab.autofs_parent('/mnt/foo/bar', node).should eq('/mnt/foo')
+      expect(FB::Fstab.autofs_parent('/mnt/foo/bar', node)).to eq('/mnt/foo')
     end
     it 'should return the autofs dir when same as mount' do
-      FB::Fstab.autofs_parent('/mnt/foo', node).should eq('/mnt/foo')
+      expect(FB::Fstab.autofs_parent('/mnt/foo', node)).to eq('/mnt/foo')
     end
     it 'should return false if no conflict with autofs' do
-      FB::Fstab.autofs_parent('/mnt/waka', node).should eq(false)
+      expect(FB::Fstab.autofs_parent('/mnt/waka', node)).to eq(false)
     end
   end
   context 'label_to_device' do
@@ -119,7 +120,7 @@ EOF
           'label' => 'label2',
         },
       }
-      FB::Fstab.label_to_device('label2', node).should eq('bar')
+      expect(FB::Fstab.label_to_device('label2', node)).to eq('bar')
     end
     it 'should not get confused by fs without label' do
       node.default[attr_name]['by_device'] = {
@@ -130,7 +131,7 @@ EOF
           'label' => 'label2',
         },
       }
-      FB::Fstab.label_to_device('label2', node).should eq('bar')
+      expect(FB::Fstab.label_to_device('label2', node)).to eq('bar')
     end
     it 'should fail on missing label' do
       node.default[attr_name]['by_device'] = {
@@ -156,7 +157,7 @@ EOF
           'uuid' => 'uuid2',
         },
       }
-      FB::Fstab.uuid_to_device('uuid2', node).should eq('bar')
+      expect(FB::Fstab.uuid_to_device('uuid2', node)).to eq('bar')
     end
     it 'should not get confused by fs without uuid' do
       node.default[attr_name]['by_device'] = {
@@ -167,7 +168,7 @@ EOF
           'uuid' => 'uuid2',
         },
       }
-      FB::Fstab.uuid_to_device('uuid2', node).should eq('bar')
+      expect(FB::Fstab.uuid_to_device('uuid2', node)).to eq('bar')
     end
     it 'should fail on missing uuid' do
       node.default[attr_name]['by_device'] = {
@@ -185,29 +186,29 @@ EOF
   end
   context 'parse_in_maint_file' do
     it 'should return an empty array if file does not exist' do
-      File.should_receive(:exist?).with(FB::Fstab::IN_MAINT_DISKS_FILENAME).
+      expect(File).to receive(:exist?).with(FB::Fstab::IN_MAINT_DISKS_FILENAME).
         and_return(false)
-      FB::Fstab.parse_in_maint_file(FB::Fstab::IN_MAINT_DISKS_FILENAME).
-        should eq([])
+      expect(FB::Fstab.parse_in_maint_file(FB::Fstab::IN_MAINT_DISKS_FILENAME)).
+        to eq([])
     end
     it 'should delete stale files' do
       stat = double('FSstat')
-      stat.should_receive(:mtime).and_return(Time.new - 60 * 60 * 24 * 8)
-      File.should_receive(:exist?).with(FB::Fstab::IN_MAINT_DISKS_FILENAME).
+      expect(stat).to receive(:mtime).and_return(Time.new - 60 * 60 * 24 * 8)
+      expect(File).to receive(:exist?).with(FB::Fstab::IN_MAINT_DISKS_FILENAME).
         and_return(true)
-      File.should_receive(:stat).with(FB::Fstab::IN_MAINT_DISKS_FILENAME).
+      expect(File).to receive(:stat).with(FB::Fstab::IN_MAINT_DISKS_FILENAME).
         and_return(stat)
-      File.should_receive(:unlink).with(FB::Fstab::IN_MAINT_DISKS_FILENAME).
+      expect(File).to receive(:unlink).with(FB::Fstab::IN_MAINT_DISKS_FILENAME).
         and_return(true)
-      FB::Fstab.parse_in_maint_file(FB::Fstab::IN_MAINT_DISKS_FILENAME).
-        should eq([])
+      expect(FB::Fstab.parse_in_maint_file(FB::Fstab::IN_MAINT_DISKS_FILENAME)).
+        to eq([])
     end
   end
   context 'get_in_maint_mounts' do
     it 'should canonicalize mount paths' do
       expect(FB::Fstab).to receive(:parse_in_maint_file).
         with(FB::Fstab::IN_MAINT_MOUNTS_FILENAME).and_return(['/mnt/d0/'])
-      FB::Fstab.get_in_maint_mounts.should eq(['/mnt/d0'])
+      expect(FB::Fstab.get_in_maint_mounts).to eq(['/mnt/d0'])
     end
   end
   context 'get_unmasked_base_mounts' do
@@ -290,9 +291,9 @@ EOF
       expect(File).to receive(:read).with(FB::Fstab::BASE_FILENAME).
         and_return(base_contents)
       m = FB::Fstab.get_unmasked_base_mounts(:hash, node)
-      m.should eq(default_ret)
+      expect(m).to eq(default_ret)
       m = FB::Fstab.get_unmasked_base_mounts(:lines, node).join("\n") + "\n"
-      m.should eq(base_contents)
+      expect(m).to eq(base_contents)
     end
     it 'should drop swap if masked' do
       expect(File).to receive(:read).with(FB::Fstab::BASE_FILENAME).
@@ -300,7 +301,7 @@ EOF
       node.default['fb_fstab']['exclude_base_swap'] = true
       m = FB::Fstab.get_unmasked_base_mounts(:hash, node)
       default_ret.delete('/dev/sda3')
-      m.should eq(default_ret)
+      expect(m).to eq(default_ret)
     end
     it 'should not return overridden mounts' do
       expect(File).to receive(:read).with(FB::Fstab::BASE_FILENAME).
@@ -317,7 +318,7 @@ EOF
       }
       m = FB::Fstab.get_unmasked_base_mounts(:hash, node)
       default_ret.delete('/dev/sda1')
-      m.should eq(default_ret)
+      expect(m).to eq(default_ret)
     end
     it 'should raise an exception if base has bad label' do
       contents = base_contents +
@@ -344,7 +345,7 @@ EOF
       }
       m = FB::Fstab.get_unmasked_base_mounts(:hash, node)
       default_ret.delete('/dev/sda1')
-      m.should eq(default_ret)
+      expect(m).to eq(default_ret)
     end
     it 'should raise an exception if user specifies bad label' do
       expect(File).to receive(:read).with(FB::Fstab::BASE_FILENAME).
@@ -379,7 +380,7 @@ EOF
         },
       }
       m = FB::Fstab.get_unmasked_base_mounts(:hash, node)
-      m.should eq(default_ret)
+      expect(m).to eq(default_ret)
     end
   end
 end
@@ -408,98 +409,98 @@ describe 'FB::FstabProvider', :include_provider do
       node.default['fb_fstab']['ignorable_opts'] = []
     end
     it 'should find identical things identical' do
-      compare_opts(
-        'rw,size=1G',
-        'rw,size=1G',
-      ).should eq(true)
+      expect(compare_opts(
+               'rw,size=1G',
+               'rw,size=1G',
+      )).to eq(true)
     end
     it 'should find different-order strings identical' do
-      compare_opts(
-        'size=1G,rw',
-        'rw,size=1G',
-      ).should eq(true)
+      expect(compare_opts(
+               'size=1G,rw',
+               'rw,size=1G',
+      )).to eq(true)
     end
     it 'should find arrays and strings identical' do
-      compare_opts(
-        'rw,size=1G',
-        ['size=1G', 'rw'],
-      ).should eq(true)
+      expect(compare_opts(
+               'rw,size=1G',
+               ['size=1G', 'rw'],
+      )).to eq(true)
     end
     it 'should treat missing-rw opts as identical' do
-      compare_opts(
-        'size=1G',
-        ['size=1G', 'rw'],
-      ).should eq(true)
+      expect(compare_opts(
+               'size=1G',
+               ['size=1G', 'rw'],
+      )).to eq(true)
     end
     it 'should not treat ro and rw as the same' do
-      compare_opts(
-        'size=1G,ro',
-        ['size=1G', 'rw'],
-      ).should eq(false)
+      expect(compare_opts(
+               'size=1G,ro',
+               ['size=1G', 'rw'],
+      )).to eq(false)
     end
     it 'should handle arrays the same' do
-      compare_opts(
-        ['size=1G'],
-        ['size=1G', 'rw'],
-      ).should eq(true)
+      expect(compare_opts(
+               ['size=1G'],
+               ['size=1G', 'rw'],
+      )).to eq(true)
     end
     it 'should catch different sizes as different opts' do
-      compare_opts(
-        ['rw', 'size=2G'],
-        ['size=1G', 'rw'],
-      ).should eq(false)
+      expect(compare_opts(
+               ['rw', 'size=2G'],
+               ['size=1G', 'rw'],
+      )).to eq(false)
     end
     it 'should honor ignored string opts' do
       node.default['fb_fstab']['ignorable_opts'] << 'nofail'
-      compare_opts(
-        ['rw', 'nofail', 'noatime'],
-        ['rw', 'noatime'],
-      ).should eq(true)
+      expect(compare_opts(
+               ['rw', 'nofail', 'noatime'],
+               ['rw', 'noatime'],
+      )).to eq(true)
     end
     it 'should honor ignored regex opts' do
       node.default['fb_fstab']['ignorable_opts'] << /^addr=.*/
-      compare_opts(
-        ['rw', 'addr=10.0.0.1', 'noatime'],
-        ['rw', 'noatime'],
-      ).should eq(true)
+      expect(compare_opts(
+               ['rw', 'addr=10.0.0.1', 'noatime'],
+               ['rw', 'noatime'],
+      )).to eq(true)
     end
     it 'should normalize size opts' do
-      compare_opts(
-        'size=4K',
-        'size=4096',
-      ).should eq(true)
-      compare_opts(
-        'size=4M',
-        'size=4194304',
-      ).should eq(true)
-      compare_opts(
-        'size=4g',
-        'size=4294967296',
-      ).should eq(true)
-      compare_opts(
-        'size=4t',
-        'size=4398046511104',
-      ).should eq(true)
+      expect(compare_opts(
+               'size=4K',
+               'size=4096',
+      )).to eq(true)
+      expect(compare_opts(
+               'size=4M',
+               'size=4194304',
+      )).to eq(true)
+      expect(compare_opts(
+               'size=4g',
+               'size=4294967296',
+      )).to eq(true)
+      expect(compare_opts(
+               'size=4t',
+               'size=4398046511104',
+      )).to eq(true)
     end
     it 'should treat sizes it does not understand as opaque' do
-      compare_opts(
-        'size=4L',
-        'size=4L',
-      ).should eq(true)
-      compare_opts(
-        'size=4L',
-        'size=4',
-      ).should eq(false)
-      compare_opts(
-        'size=4L',
-        'size=4T',
-      ).should eq(false)
+      expect(compare_opts(
+               'size=4L',
+               'size=4L',
+      )).to eq(true)
+      expect(compare_opts(
+               'size=4L',
+               'size=4',
+      )).to eq(false)
+      expect(compare_opts(
+               'size=4L',
+               'size=4T',
+      )).to eq(false)
     end
     it 'should not normalize different values to be the same' do
-      compare_opts(
-        'size=4K',
-        'size=4000',
-      ).should eq(false)
+      expect(compare_opts(
+               'size=4K',
+               'size=4000',
+      )).to eq(false)
     end
   end
 
@@ -508,16 +509,16 @@ describe 'FB::FstabProvider', :include_provider do
       node.default['fb_fstab']['type_normalization_map'] = {}
     end
     it 'should see identical types as identical' do
-      compare_fstype('xfs', 'xfs').should eq(true)
+      expect(compare_fstype('xfs', 'xfs')).to eq(true)
     end
     it 'should not see auto as the same as anything else' do
-      compare_fstype('xfs', 'auto').should eq(false)
+      expect(compare_fstype('xfs', 'auto')).to eq(false)
     end
     it 'should not see auto as the same as anything else - left' do
-      compare_fstype('auto', 'ext4').should eq(false)
+      expect(compare_fstype('auto', 'ext4')).to eq(false)
     end
     it 'should see different things as different' do
-      compare_fstype('xfs', 'ext4').should eq(false)
+      expect(compare_fstype('xfs', 'ext4')).to eq(false)
     end
     it 'should normalize types according to the map' do
       node.default['fb_fstab']['type_normalization_map']['fuse.gluster'] =
@@ -550,54 +551,54 @@ describe 'FB::FstabProvider', :include_provider do
     }
 
     it 'should keep identical desired fs' do
-      should_keep(
-        mounted_sdc1,
-        desired_sdc1,
-        {},
-      ).should eq(true)
+      expect(should_keep(
+               mounted_sdc1,
+               desired_sdc1,
+               {},
+      )).to eq(true)
     end
     it 'should keep identical base fs' do
-      should_keep(
-        mounted_sdc1,
-        {},
-        basemounts_sdc1,
-      ).should eq(true)
+      expect(should_keep(
+               mounted_sdc1,
+               {},
+               basemounts_sdc1,
+      )).to eq(true)
     end
     it 'should not keep random fs' do
-      should_keep(
-        {
-          'device' => '/dev/sdd1',
-          'mount' => '/mnt/bar',
-          'fs_type' => 'xfs',
-          'mount_options' => ['rw'],
-        },
-        desired_sdc1,
-        {},
-      ).should eq(false)
+      expect(should_keep(
+               {
+                 'device' => '/dev/sdd1',
+                 'mount' => '/mnt/bar',
+                 'fs_type' => 'xfs',
+                 'mount_options' => ['rw'],
+               },
+               desired_sdc1,
+               {},
+      )).to eq(false)
     end
     it 'should keep desired devices mounted elsewhere' do
-      should_keep(
-        {
-          'device' => '/dev/sdc1',
-          'mount' => '/mnt/bar',
-          'fs_type' => 'xfs',
-          'mount_options' => ['rw'],
-        },
-        desired_sdc1,
-        {},
-      ).should eq(true)
+      expect(should_keep(
+               {
+                 'device' => '/dev/sdc1',
+                 'mount' => '/mnt/bar',
+                 'fs_type' => 'xfs',
+                 'mount_options' => ['rw'],
+               },
+               desired_sdc1,
+               {},
+      )).to eq(true)
     end
     it 'should not keep base devices mounted elsewhere' do
-      should_keep(
-        {
-          'device' => '/dev/sdc1',
-          'mount' => '/mnt/bar',
-          'fs_type' => 'xfs',
-          'mount_options' => ['rw'],
-        },
-        {},
-        basemounts_sdc1,
-      ).should eq(false)
+      expect(should_keep(
+               {
+                 'device' => '/dev/sdc1',
+                 'mount' => '/mnt/bar',
+                 'fs_type' => 'xfs',
+                 'mount_options' => ['rw'],
+               },
+               {},
+               basemounts_sdc1,
+      )).to eq(false)
     end
     it 'should keep autofs-parented mounts' do
       node.default[attr_name]['by_pair']['auto.waka,/foo'] = {
@@ -605,15 +606,15 @@ describe 'FB::FstabProvider', :include_provider do
         'mount' => '/foo',
         'fs_type' => 'autofs',
       }
-      should_keep(
-        {
-          'device' => 'some.host:/dev/stupid',
-          'mount' => '/foo/bar',
-          'fs_type' => 'nfs',
-        },
-        {},
-        {},
-      ).should eq(true)
+      expect(should_keep(
+               {
+                 'device' => 'some.host:/dev/stupid',
+                 'mount' => '/foo/bar',
+                 'fs_type' => 'nfs',
+               },
+               {},
+               {},
+      )).to eq(true)
     end
     it 'should keep autofs-parented mounts - non NFS' do
       node.default[attr_name]['by_pair']['auto.waka,/foo'] = {
@@ -621,15 +622,15 @@ describe 'FB::FstabProvider', :include_provider do
         'mount' => '/foo',
         'fs_type' => 'autofs',
       }
-      should_keep(
-        {
-          'device' => 'some.host:/dev/stupid',
-          'mount' => '/foo/bar',
-          'fs_type' => 'fuse',
-        },
-        {},
-        {},
-      ).should eq(true)
+      expect(should_keep(
+               {
+                 'device' => 'some.host:/dev/stupid',
+                 'mount' => '/foo/bar',
+                 'fs_type' => 'fuse',
+               },
+               {},
+               {},
+      )).to eq(true)
     end
     it 'should not keep non-autofs-parented NFS mounts' do
       node.default[attr_name]['by_pair']['auto.waka,/foo'] = {
@@ -637,15 +638,15 @@ describe 'FB::FstabProvider', :include_provider do
         'mount' => '/foo',
         'fs_type' => 'autofs',
       }
-      should_keep(
-        {
-          'device' => 'some.host:/dev/stupid',
-          'mount' => '/thing/bar',
-          'fs_type' => 'fuse',
-        },
-        {},
-        {},
-      ).should eq(false)
+      expect(should_keep(
+               {
+                 'device' => 'some.host:/dev/stupid',
+                 'mount' => '/thing/bar',
+                 'fs_type' => 'fuse',
+               },
+               {},
+               {},
+      )).to eq(false)
     end
   end
   context 'tmpfs_mount_status' do
@@ -673,13 +674,13 @@ describe 'FB::FstabProvider', :include_provider do
           'opts' => 'size=100M,rw',
         },
       }
-      Chef::Log.should_receive(:warn).with(
+      expect(Chef::Log).to receive(:warn).with(
         'fb_fstab: Treating ["tmpfs"] on /mnt/waka the same as awesomesauce ' +
         'on /mnt/waka because they are both tmpfs.',
       )
-      tmpfs_mount_status(
-        desired_mounts['awesomemount'],
-      ).should eq(:same)
+      expect(tmpfs_mount_status(
+               desired_mounts['awesomemount'],
+      )).to eq(:same)
     end
     it 'should detect identical filesystems as such' do
       node.default[attr_name]['by_pair']['awesomesauce,/mnt/waka'] = {
@@ -696,9 +697,9 @@ describe 'FB::FstabProvider', :include_provider do
           'opts' => 'size=100M,rw',
         },
       }
-      tmpfs_mount_status(
-        desired_mounts['awesomemount'],
-      ).should eq(:same)
+      expect(tmpfs_mount_status(
+               desired_mounts['awesomemount'],
+      )).to eq(:same)
     end
     it 'should detect remounts' do
       node.default[attr_name]['by_pair']['awesomesauce,/mnt/waka'] = {
@@ -715,9 +716,9 @@ describe 'FB::FstabProvider', :include_provider do
           'opts' => 'size=200M,rw',
         },
       }
-      tmpfs_mount_status(
-        desired_mounts['awesomemount'],
-      ).should eq(:remount)
+      expect(tmpfs_mount_status(
+               desired_mounts['awesomemount'],
+      )).to eq(:remount)
     end
     it 'should detect conflict' do
       node.default[attr_name]['by_pair']['/dev/sdc1,/mnt/waka'] = {
@@ -740,9 +741,9 @@ describe 'FB::FstabProvider', :include_provider do
           'opts' => 'size=200M,rw',
         },
       }
-      tmpfs_mount_status(
-        desired_mounts['awesomemount'],
-      ).should eq(:conflict)
+      expect(tmpfs_mount_status(
+               desired_mounts['awesomemount'],
+      )).to eq(:conflict)
     end
     it 'should detect missing fs' do
       node.default[attr_name] = {
@@ -758,9 +759,9 @@ describe 'FB::FstabProvider', :include_provider do
           'opts' => 'size=200M,rw',
         },
       }
-      tmpfs_mount_status(
-        desired_mounts['awesomemount'],
-      ).should eq(:missing)
+      expect(tmpfs_mount_status(
+               desired_mounts['awesomemount'],
+      )).to eq(:missing)
     end
   end
   context 'mount_status' do
@@ -783,9 +784,9 @@ describe 'FB::FstabProvider', :include_provider do
           'opts' => 'rw,noatime',
         },
       }
-      mount_status(
-        desired_mounts['awesomemount'],
-      ).should eq(:same)
+      expect(mount_status(
+               desired_mounts['awesomemount'],
+      )).to eq(:same)
     end
     it 'should detect identical mounts subvolumes' do
       node.default[attr_name]['by_device']['/dev/sdd1'] = {
@@ -802,9 +803,9 @@ describe 'FB::FstabProvider', :include_provider do
           'opts' => 'subvolid=123',
         },
       }
-      mount_status(
-        desired_mounts['awesomemount'],
-      ).should eq(:moved)
+      expect(mount_status(
+               desired_mounts['awesomemount'],
+      )).to eq(:moved)
     end
     it 'should detect remount needed' do
       node.default[attr_name]['by_pair']['/dev/sdd1,/mnt/d0'] = {
@@ -821,9 +822,9 @@ describe 'FB::FstabProvider', :include_provider do
           'opts' => 'rw,noatime',
         },
       }
-      mount_status(
-        desired_mounts['awesomemount'],
-      ).should eq(:remount)
+      expect(mount_status(
+               desired_mounts['awesomemount'],
+      )).to eq(:remount)
     end
     it 'should detect moved filesystems - with different opts' do
       node.default[attr_name]['by_pair']['/dev/sdd1,/mnt/d0'] = {
@@ -845,9 +846,9 @@ describe 'FB::FstabProvider', :include_provider do
           'opts' => 'rw,noatime',
         },
       }
-      mount_status(
-        desired_mounts['awesomemount'],
-      ).should eq(:moved)
+      expect(mount_status(
+               desired_mounts['awesomemount'],
+      )).to eq(:moved)
     end
     it 'should detect handle auto as not an fstype conflict' do
       node.default[attr_name]['by_pair']['/dev/sdd1,/mnt/d0'] = {
@@ -864,9 +865,9 @@ describe 'FB::FstabProvider', :include_provider do
           'opts' => 'rw,noatime',
         },
       }
-      mount_status(
-        desired_mounts['awesomemount'],
-      ).should eq(:same)
+      expect(mount_status(
+               desired_mounts['awesomemount'],
+      )).to eq(:same)
     end
     it 'should detect fstype conflict - with different opts' do
       node.default[attr_name]['by_pair']['/dev/sdd1,/mnt/d0'] = {
@@ -883,9 +884,9 @@ describe 'FB::FstabProvider', :include_provider do
           'opts' => 'rw,noatime',
         },
       }
-      mount_status(
-        desired_mounts['awesomemount'],
-      ).should eq(:conflict)
+      expect(mount_status(
+               desired_mounts['awesomemount'],
+      )).to eq(:conflict)
     end
     it 'should detect something-already-there conflict' do
       node.default[attr_name]['by_pair']['/dev/sdd1,/mnt/d0'] = {
@@ -912,9 +913,9 @@ describe 'FB::FstabProvider', :include_provider do
           'opts' => 'rw,noatime',
         },
       }
-      mount_status(
-        desired_mounts['awesomemount'],
-      ).should eq(:conflict)
+      expect(mount_status(
+               desired_mounts['awesomemount'],
+      )).to eq(:conflict)
     end
     it 'should detect missing filesystems' do
       node.default[attr_name]['by_pair']['/dev/sda1,/mnt/waka'] = {
@@ -931,9 +932,9 @@ describe 'FB::FstabProvider', :include_provider do
           'opts' => 'rw,noatime',
         },
       }
-      mount_status(
-        desired_mounts['awesomemount'],
-      ).should eq(:missing)
+      expect(mount_status(
+               desired_mounts['awesomemount'],
+      )).to eq(:missing)
     end
     it 'should detect missing filesystems even if device is in ohai' do
       node.default[attr_name]['by_pair'] = {
@@ -973,9 +974,9 @@ describe 'FB::FstabProvider', :include_provider do
           'opts' => 'rw,noatime',
         },
       }
-      mount_status(
-        desired_mounts['awesomemount'],
-      ).should eq(:missing)
+      expect(mount_status(
+               desired_mounts['awesomemount'],
+      )).to eq(:missing)
     end
   end
   context 'mount' do
@@ -987,16 +988,16 @@ describe 'FB::FstabProvider', :include_provider do
         'opts' => 'rw,noatime',
       }
       expect(node).to receive(:systemd?).and_return(false)
-      File.should_receive(:exist?).with(desired_mount['mount_point']).
+      expect(File).to receive(:exist?).with(desired_mount['mount_point']).
         and_return(true)
       so = double('FSshell_out1')
-      so.should_receive(:run_command).and_return(so)
-      so.should_receive(:error?).and_return(false)
-      so.should_receive(:error!).and_return(nil)
-      Mixlib::ShellOut.should_receive(:new).with(
+      expect(so).to receive(:run_command).and_return(so)
+      expect(so).to receive(:error?).and_return(false)
+      expect(so).to receive(:error!).and_return(nil)
+      expect(Mixlib::ShellOut).to receive(:new).with(
         "cd /dev/shm && /bin/mount #{desired_mount['mount_point']}",
       ).and_return(so)
-      mount(desired_mount, [], []).should eq(true)
+      expect(mount(desired_mount, [], [])).to eq(true)
     end
     it 'should attempt to mount by systemd mount unit on systemd hosts' do
       desired_mount = {
@@ -1006,24 +1007,24 @@ describe 'FB::FstabProvider', :include_provider do
         'opts' => 'rw,noatime',
       }
       expect(node).to receive(:systemd?).and_return(true)
-      File.should_receive(:exist?).with(desired_mount['mount_point']).
+      expect(File).to receive(:exist?).with(desired_mount['mount_point']).
         and_return(true)
       so = double('FSshell_out2')
-      so.should_receive(:run_command).and_return(so)
-      so.should_receive(:error!).and_return(nil)
-      so.should_receive(:stdout).and_return('thisisaunit')
+      expect(so).to receive(:run_command).and_return(so)
+      expect(so).to receive(:error!).and_return(nil)
+      expect(so).to receive(:stdout).and_return('thisisaunit')
       so2 = double('FSshell_out1')
-      so2.should_receive(:run_command).and_return(so2)
-      so2.should_receive(:error?).and_return(false)
-      so2.should_receive(:error!).and_return(nil)
-      Mixlib::ShellOut.should_receive(:new).with(
+      expect(so2).to receive(:run_command).and_return(so2)
+      expect(so2).to receive(:error?).and_return(false)
+      expect(so2).to receive(:error!).and_return(nil)
+      expect(Mixlib::ShellOut).to receive(:new).with(
         "/bin/systemd-escape -p --suffix=mount #{desired_mount['mount_point']}",
       ).and_return(so)
 
-      Mixlib::ShellOut.should_receive(:new).with(
+      expect(Mixlib::ShellOut).to receive(:new).with(
         '/bin/systemctl start thisisaunit',
       ).and_return(so2)
-      mount(desired_mount, [], []).should eq(true)
+      expect(mount(desired_mount, [], [])).to eq(true)
     end
     it 'should raise failures on mount failure' do
       desired_mount = {
@@ -1033,13 +1034,14 @@ describe 'FB::FstabProvider', :include_provider do
         'opts' => 'rw,noatime',
       }
       expect(node).to receive(:systemd?).and_return(false)
-      File.should_receive(:exist?).with(desired_mount['mount_point']).
+      expect(File).to receive(:exist?).with(desired_mount['mount_point']).
         and_return(true)
       so = double('FSshell_out2')
-      so.should_receive(:run_command).and_return(so)
-      so.should_receive(:error?).and_return(true)
-      so.should_receive(:error!).and_raise(Mixlib::ShellOut::ShellCommandFailed)
-      Mixlib::ShellOut.should_receive(:new).with(
+      expect(so).to receive(:run_command).and_return(so)
+      expect(so).to receive(:error?).and_return(true)
+      expect(so).to receive(:error!).
+        and_raise(Mixlib::ShellOut::ShellCommandFailed)
+      expect(Mixlib::ShellOut).to receive(:new).with(
         "cd /dev/shm && /bin/mount #{desired_mount['mount_point']}",
       ).and_return(so)
       expect do
@@ -1056,15 +1058,15 @@ describe 'FB::FstabProvider', :include_provider do
         'allow_remount_failure' => true,
       }
       expect(node).to receive(:systemd?).and_return(false)
-      File.should_receive(:exist?).with(desired_mount['mount_point']).
+      expect(File).to receive(:exist?).with(desired_mount['mount_point']).
         and_return(true)
       so = double('FSshell_out3')
-      so.should_receive(:run_command).and_return(so)
-      so.should_receive(:error?).and_return(true)
-      Mixlib::ShellOut.should_receive(:new).with(
+      expect(so).to receive(:run_command).and_return(so)
+      expect(so).to receive(:error?).and_return(true)
+      expect(Mixlib::ShellOut).to receive(:new).with(
         "cd /dev/shm && /bin/mount #{desired_mount['mount_point']}",
       ).and_return(so)
-      mount(desired_mount, [], []).should eq(true)
+      expect(mount(desired_mount, [], [])).to eq(true)
     end
     it 'should not try to mount in-maintenance disks' do
       desired_mount = {
@@ -1076,7 +1078,7 @@ describe 'FB::FstabProvider', :include_provider do
         'mp_owner' => 'nobody',
         'mp_group' => 'nobody',
       }
-      mount(desired_mount, ['/dev/sdd1'], []).should eq(true)
+      expect(mount(desired_mount, ['/dev/sdd1'], [])).to eq(true)
     end
     it 'should not try to mount in-maintenance mounts' do
       desired_mount = {
@@ -1088,7 +1090,7 @@ describe 'FB::FstabProvider', :include_provider do
         'mp_owner' => 'nobody',
         'mp_group' => 'nobody',
       }
-      mount(desired_mount, [], ['/mnt/d0']).should eq(true)
+      expect(mount(desired_mount, [], ['/mnt/d0'])).to eq(true)
     end
     it 'should create the mountpoint for you' do
       desired_mount = {
@@ -1101,25 +1103,26 @@ describe 'FB::FstabProvider', :include_provider do
         'mp_group' => 'nobody',
       }
       expect(node).to receive(:systemd?).and_return(false)
-      File.should_receive(:exist?).with(desired_mount['mount_point']).
+      expect(File).to receive(:exist?).with(desired_mount['mount_point']).
         and_return(false)
-      FileUtils.should_receive(:mkdir_p).with(desired_mount['mount_point'],
-                                              :mode => 0755).and_return(true)
-      FileUtils.should_receive(:chmod).with(
+      expect(FileUtils).to receive(:mkdir_p).
+        with(desired_mount['mount_point'],
+             :mode => 0755).and_return(true)
+      expect(FileUtils).to receive(:chmod).with(
         desired_mount['mp_perms'].to_i(8), desired_mount['mount_point']
       ).and_return(true)
-      FileUtils.should_receive(:chown).with(
+      expect(FileUtils).to receive(:chown).with(
         desired_mount['mp_owner'], desired_mount['mp_group'],
         desired_mount['mount_point']
       ).and_return(true)
       so = double('FSshell_out4')
-      so.should_receive(:run_command).and_return(so)
-      so.should_receive(:error?).and_return(false)
-      so.should_receive(:error!).and_return(nil)
-      Mixlib::ShellOut.should_receive(:new).with(
+      expect(so).to receive(:run_command).and_return(so)
+      expect(so).to receive(:error?).and_return(false)
+      expect(so).to receive(:error!).and_return(nil)
+      expect(Mixlib::ShellOut).to receive(:new).with(
         "cd /dev/shm && /bin/mount #{desired_mount['mount_point']}",
       ).and_return(so)
-      mount(desired_mount, [], []).should eq(true)
+      expect(mount(desired_mount, [], [])).to eq(true)
     end
   end
 end

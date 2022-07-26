@@ -38,12 +38,12 @@ describe 'Chef::Node' do
     end
 
     it 'should return size in GB' do
-      Chef::Log.should_not_receive(:warn)
-      node.fs_size_gb('/').should eq(914.6791610717773)
+      expect(Chef::Log).not_to receive(:warn)
+      expect(node.fs_size_gb('/')).to eq(914.6791610717773)
     end
 
     it 'should warn and return true' do
-      Chef::Log.should_receive(:warn)
+      expect(Chef::Log).to receive(:warn)
       node.fs_size_gb('/fake')
     end
   end
@@ -57,8 +57,8 @@ describe 'Chef::Node' do
     end
 
     it 'should return size in KB' do
-      Chef::Log.should_not_receive(:warn)
-      node.fs_size_kb('/').should eq(959110616.0)
+      expect(Chef::Log).not_to receive(:warn)
+      expect(node.fs_size_kb('/')).to eq(959110616.0)
     end
   end
 
@@ -74,11 +74,11 @@ describe 'Chef::Node' do
     end
 
     it 'should return various values as requested' do
-      Chef::Log.should_not_receive(:warn)
-      node.fs_value('/', 'size').should eq(959110616.0)
-      node.fs_value('/', 'available').should eq(810110218.0)
-      node.fs_value('/', 'used').should eq(149000398.0)
-      node.fs_value('/', 'percent').should eq(15.0)
+      expect(Chef::Log).not_to receive(:warn)
+      expect(node.fs_value('/', 'size')).to eq(959110616.0)
+      expect(node.fs_value('/', 'available')).to eq(810110218.0)
+      expect(node.fs_value('/', 'used')).to eq(149000398.0)
+      expect(node.fs_value('/', 'percent')).to eq(15.0)
     end
 
     it 'should throw an error on invalid args' do
@@ -97,26 +97,26 @@ describe 'Chef::Node' do
       node.default['fqdn'] = 'dev1020.prn2.facebook.com'
     end
     it 'should return true if we are in flexible_shard' do
-      node.in_flexible_shard?(66, 100).should eq(true)
-      node.in_flexible_shard?(99, 100).should eq(true)
-      node.in_flexible_shard?(466, 1000).should eq(true)
-      node.in_flexible_shard?(116, 255).should eq(true)
-      node.in_flexible_shard?(2, 12).should eq(true)
+      expect(node.in_flexible_shard?(66, 100)).to eq(true)
+      expect(node.in_flexible_shard?(99, 100)).to eq(true)
+      expect(node.in_flexible_shard?(466, 1000)).to eq(true)
+      expect(node.in_flexible_shard?(116, 255)).to eq(true)
+      expect(node.in_flexible_shard?(2, 12)).to eq(true)
     end
     it 'should return false if we are not in flexible_shard' do
-      node.in_flexible_shard?(0, 100).should eq(false)
-      node.in_flexible_shard?(65, 100).should eq(false)
-      node.in_flexible_shard?(465, 1000).should eq(false)
-      node.in_flexible_shard?(115, 255).should eq(false)
-      node.in_flexible_shard?(1, 12).should eq(false)
+      expect(node.in_flexible_shard?(0, 100)).to eq(false)
+      expect(node.in_flexible_shard?(65, 100)).to eq(false)
+      expect(node.in_flexible_shard?(465, 1000)).to eq(false)
+      expect(node.in_flexible_shard?(115, 255)).to eq(false)
+      expect(node.in_flexible_shard?(1, 12)).to eq(false)
     end
     it 'should have consistent overflow behaviour' do
-      node.in_flexible_shard?(100, 100).should eq(true)
-      node.in_flexible_shard?(199, 100).should eq(true)
+      expect(node.in_flexible_shard?(100, 100)).to eq(true)
+      expect(node.in_flexible_shard?(199, 100)).to eq(true)
     end
     it 'should have consistent underflow behaviour' do
-      node.in_flexible_shard?(-1, 100).should eq(false)
-      node.in_flexible_shard?(-99, 100).should eq(false)
+      expect(node.in_flexible_shard?(-1, 100)).to eq(false)
+      expect(node.in_flexible_shard?(-99, 100)).to eq(false)
     end
   end
 
@@ -128,9 +128,9 @@ describe 'Chef::Node' do
       node.default['fqdn'] = 'dev1020.prn2.facebook.com'
     end
     it 'should return correct shard on multiple calls' do
-      node.get_flexible_shard(100).should eq(66)
+      expect(node.get_flexible_shard(100)).to eq(66)
       # Should remain 66 on second calling
-      node.get_flexible_shard(100).should eq(66)
+      expect(node.get_flexible_shard(100)).to eq(66)
     end
   end
 
@@ -142,27 +142,27 @@ describe 'Chef::Node' do
       node.default['fqdn'] = 'dev1020.prn2.facebook.com'
     end
     it 'should return true if we are in shard' do
-      node.in_shard?(66).should eq(true)
+      expect(node.in_shard?(66)).to eq(true)
       # Should remain true on second calling
-      node.in_shard?(66).should eq(true)
+      expect(node.in_shard?(66)).to eq(true)
 
-      node.in_shard?(67).should eq(true)
+      expect(node.in_shard?(67)).to eq(true)
     end
     it 'should return false if we are not in shard' do
-      node.in_shard?(65).should eq(false)
+      expect(node.in_shard?(65)).to eq(false)
       # Should remain false on second calling
-      node.in_shard?(65).should eq(false)
+      expect(node.in_shard?(65)).to eq(false)
     end
     it 'should retain legacy overflow behaviour' do
       # avoid using literals so linters don't fire
       [100, 199].each do |v|
-        node.in_shard?(v).should eq(true)
+        expect(node.in_shard?(v)).to eq(true)
       end
     end
     it 'should retain legacy underflow behaviour' do
       # avoid using literals so linters don't fire
       [-1, -99].each do |v|
-        node.in_shard?(v).should eq(false)
+        expect(node.in_shard?(v)).to eq(false)
       end
     end
   end
@@ -187,10 +187,10 @@ describe 'Chef::Node' do
         duration_value = seconds
         time_threshold_value = our_shard + start_time.tv_sec
 
-        node.timeshard_parsed_values(
-          start_time.to_s,
-          duration,
-        ).should eq({
+        expect(node.timeshard_parsed_values(
+                 start_time.to_s,
+                 duration,
+        )).to eq({
                       'start_time' => start_time.tv_sec,
                       'duration' => duration_value,
                       'time_threshold' => time_threshold_value,
@@ -213,32 +213,32 @@ describe 'Chef::Node' do
     }.each do |duration, seconds|
       it "should return false the second before our shard - #{duration}" do
         our_shard = node.get_flexible_shard(seconds)
-        node.in_timeshard?(
-          (Time.now - (our_shard - 1)).to_s,
-          duration,
-        ).should eq(false)
+        expect(node.in_timeshard?(
+                 (Time.now - (our_shard - 1)).to_s,
+                 duration,
+        )).to eq(false)
       end
 
       it "should return true the second of our shard - #{duration}" do
         our_shard = node.get_flexible_shard(seconds)
-        node.in_timeshard?(
-          (Time.now - our_shard).to_s,
-          duration,
-        ).should eq(true)
+        expect(node.in_timeshard?(
+                 (Time.now - our_shard).to_s,
+                 duration,
+        )).to eq(true)
       end
 
       it "should return true much later than our shard - #{duration}" do
-        node.in_timeshard?(
-          (Time.now - (seconds - 1)).to_s,
-          duration,
-        ).should eq(true)
+        expect(node.in_timeshard?(
+                 (Time.now - (seconds - 1)).to_s,
+                 duration,
+        )).to eq(true)
       end
 
       it "should return false much earlier than our shard - #{duration}" do
-        node.in_timeshard?(
-          (Time.now - 1).to_s,
-          duration,
-        ).should eq(false)
+        expect(node.in_timeshard?(
+                 (Time.now - 1).to_s,
+                 duration,
+        )).to eq(false)
       end
 
       it "should fail if start_time is an invalid time - #{duration}" do
@@ -257,25 +257,25 @@ describe 'Chef::Node' do
 
       # Build a string that always has a single digit hour and day value.
       start_time = start_time.strftime('%Y-%m-%-d %-H:%M:%S')
-      node.in_timeshard?(
-        start_time,
-        '40d',
-      ).should eq(true)
+      expect(node.in_timeshard?(
+               start_time,
+               '40d',
+      )).to eq(true)
     end
   end
 
   context 'Chef::Node.systemd?' do
     it 'should check the running system for running systemd' do
-      ::File.stub(:directory?).with(anything).and_call_original
-      ::File.stub(:directory?).with('/run/systemd/system').
+      allow(::File).to receive(:directory?).with(anything).and_call_original
+      allow(::File).to receive(:directory?).with('/run/systemd/system').
         and_return true
-      node.systemd?.should eq(true)
+      expect(node.systemd?).to eq(true)
     end
     it 'should check the running system for systemd not running' do
-      ::File.stub(:directory?).with(anything).and_call_original
-      ::File.stub(:directory?).with('/run/systemd/system').
+      allow(::File).to receive(:directory?).with(anything).and_call_original
+      allow(::File).to receive(:directory?).with('/run/systemd/system').
         and_return false
-      node.systemd?.should eq(false)
+      expect(node.systemd?).to eq(false)
     end
   end
 

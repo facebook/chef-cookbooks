@@ -140,34 +140,35 @@ describe FB::Systemd do
 
   context 'merge systemd unit' do
     it 'should merge when no conflict' do
-      merged['Service']['SyslogIdentifier'].should eql('syslog1')
-      merged['Service']['ProtectKernelTunables'].should eql('yes')
+      expect(merged['Service']['SyslogIdentifier']).to eql('syslog1')
+      expect(merged['Service']['ProtectKernelTunables']).to eql('yes')
     end
 
     it 'should override settings' do
-      merged['Service']['ProtectControlGroups'].should eql('no')
+      expect(merged['Service']['ProtectControlGroups']).to eql('no')
     end
 
     it 'should append lists together' do
-      merged['Service']['Environment'].should eql(
+      expect(merged['Service']['Environment']).to eql(
         ['VAR1="def_val1"', 'VAR2="def_val2"'],
       )
       # A list and not a list should still be appended together
-      merged['Service']['Environment2'].should eql(
+      expect(merged['Service']['Environment2']).to eql(
         ['VAR1="def_val1"', 'VAR2="def_val2"'],
       )
     end
 
     it 'should handle when zeroing a list' do
-      merged['Service']['CapabilityBoundingSet'].should eql(
+      expect(merged['Service']['CapabilityBoundingSet']).to eql(
         ['CAP_CHOWN', '', 'CAP_SETUID'],
       )
     end
 
     it 'should handle empty inputs' do
-      FB::Systemd.merge_unit({}, {}).should eql({})
-      FB::Systemd.merge_unit(default_systemd, {}).should eql(pruned)
-      FB::Systemd.merge_unit({}, override_systemd).should eql(override_systemd)
+      expect(FB::Systemd.merge_unit({}, {})).to eql({})
+      expect(FB::Systemd.merge_unit(default_systemd, {})).to eql(pruned)
+      expect(FB::Systemd.merge_unit({}, override_systemd)).
+        to eql(override_systemd)
     end
   end
 end
