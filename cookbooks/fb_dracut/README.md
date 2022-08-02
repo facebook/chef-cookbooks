@@ -21,6 +21,7 @@ Attributes
 * node['fb_dracut']['conf']['kernel_only']
 * node['fb_dracut']['conf']['no_kernel']
 * node['fb_dracut']['manage_packages']
+* node['fb_dracut']['disable']
 
 Usage
 -----
@@ -101,3 +102,7 @@ The following are pre-initialized for you as noted:
 * `node['fb_dracut']['conf']['early_microcode']`
   Include CPU microcode for early loading by the kernel.  (true|false|nil)
   (default=true)
+
+* `node['fb_dracut']['disable']`
+  Disable all actions in this cookbook.  (true|false|nil)
+  (default=false)

@@ -25,6 +25,7 @@ end
 include_recipe 'fb_dracut::packages'
 
 template '/etc/dracut.conf.d/ZZ-chef.conf' do
+  not_if { node['fb_dracut']['disable'] }
   source 'dracut.conf.erb'
   owner 'root'
   group 'root'
@@ -33,12 +34,13 @@ template '/etc/dracut.conf.d/ZZ-chef.conf' do
 end
 
 file '/etc/dracut.conf' do
+  not_if { node['fb_dracut']['disable'] }
   action :delete
   notifies :run, 'execute[rebuild all initramfs]'
 end
 
 execute 'rebuild all initramfs' do
-  not_if { node.container? || node.quiescent? }
+  not_if { node.container? || node.quiescent? || node['fb_dracut']['disable'] }
   command 'dracut --force'
   action :nothing
   if node.systemd?

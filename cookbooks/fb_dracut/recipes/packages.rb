@@ -19,6 +19,8 @@
 #
 
 package 'dracut' do
-  only_if { node['fb_dracut']['manage_packages'] }
+  only_if do
+    node['fb_dracut']['manage_packages'] && !node['fb_dracut']['disable']
+  end
   action :upgrade
 end
