@@ -41,6 +41,9 @@ default['fb_network_scripts'] = {
   'routing' => {
     'extra_routes' => {},
   },
+  'rules' => {
+    'extra_rules' => {},
+  },
   'ring_params' => ring_params,
   'pause' => {
     'rx' => nil,

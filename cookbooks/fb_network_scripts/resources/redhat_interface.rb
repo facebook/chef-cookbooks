@@ -221,14 +221,22 @@ action :enable do # ~FC017
 
   if interface == primary_int
     route_key = 'extra_routes'
+    rule_key = 'extra_rules'
   else
     route_key = "extra_routes_#{interface}"
+    rule_key = "extra_rules_#{interface}"
   end
   route_config = node['fb_network_scripts']['routing'][route_key]
+  rule_config = node['fb_network_scripts']['rules'][rule_key]
   if route_config
     extra_routes = route_config.to_hash
   else
     extra_routes = {}
+  end
+  if rule_config
+    extra_rules = rule_config.to_hash
+  else
+    extra_rules = {}
   end
   unless extra_routes.empty?
     route_file = "/etc/sysconfig/network-scripts/route-#{interface}"
@@ -247,7 +255,6 @@ action :enable do # ~FC017
                 })
       gated_action v4_routes.empty? ? :delete : :create
     end
-
     fb_helpers_gated_template route6_file do
       allow_changes node.nw_changes_allowed?
       owner 'root'
@@ -259,6 +266,37 @@ action :enable do # ~FC017
                   'config' => config,
                 })
       gated_action v6_routes.empty? ? :delete : :create
+    end
+  end
+  # Check for the enabled rules and add them to networking scripts
+  unless extra_rules.empty?
+    rule_file = "/etc/sysconfig/network-scripts/rule-#{interface}"
+    rule6_file = "/etc/sysconfig/network-scripts/rule6-#{interface}"
+    v4_rules =
+      extra_rules.select { |_pref, route| route['protocol'].include?('v4') }
+    v6_rules =
+      extra_rules.select { |_pref, route| route['protocol'].include?('v6') }
+    fb_helpers_gated_template rule_file do
+      allow_changes node.nw_changes_allowed?
+      owner 'root'
+      group 'root'
+      mode '0644'
+      source 'rule.erb'
+      variables({
+                  'rules' => v4_rules,
+                })
+      gated_action v4_rules.empty? ? :delete : :create
+    end
+    fb_helpers_gated_template rule6_file do
+      allow_changes node.nw_changes_allowed?
+      owner 'root'
+      group 'root'
+      mode '0644'
+      source 'rule.erb'
+      variables({
+                  'rules' => v6_rules,
+                })
+      gated_action v6_rules.empty? ? :delete : :create
     end
   end
 

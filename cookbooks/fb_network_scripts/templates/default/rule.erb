@@ -1,0 +1,17 @@
+# This file is maintained by Chef. Do not edit, all changes will be
+# overwritten. See fb_network_scripts/README.md
+
+<%
+  @rules.each do |net, vals|
+    unless vals.is_a?(Array)
+      vals = [vals]
+    end
+    vals.each do |rule|
+      rule.delete('protocol')
+      rt = Hash['pref' => net].merge(rule)
+-%>
+<%= rt.flatten.join(' ') %>
+<%
+    end
+  end
+-%>

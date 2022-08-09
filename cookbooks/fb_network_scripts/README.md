@@ -367,6 +367,48 @@ node.default['fb_network_scripts']['routing']['extra_routes_eth13']['::0/0'] = [
 If `gw` is left out, then it is assumed you want to use the default gateway,
 in which case you may also specify a `src`.
 
+#### `node['fb_network_scripts']['rules']['extra_rules_ethX']`
+
+Helps you add extra rules for an interface say ethX.
+Hash of the form:
+
+```ruby
+$some_rule_pref => {
+ 'to' => $some_destination_subnet, # optional
+ 'oif' => $some_interface_name, #optional
+ 'lookup' => $some_route_table_number_or_local_reference,
+ 'protocol' => $v4_or_v6
+}
+```
+
+For example:
+
+```ruby
+node.default['fb_network_scripts']['rules']['extra_rules_eth4']['14'] = {
+  "oif"=>"eth4",
+  "lookup"=>"4",
+  "protocol"=>"v6"
+}
+```
+
+To add multiple rules with different preferences:
+
+```ruby
+node.default['fb_network_scripts']['rules']['extra_rules_eth5']['15']= [{
+  "oif"=>"eth5",
+  "lookup"=>"5",
+  "protocol"=>"v6",
+}
+node.default['fb_network_scripts']['rules']['extra_rules_eth5']['205']= [{
+  "to"=>"2401:db00:116b:bc00:0000:0000:0000:0000/54",
+  "lookup"=>"5",
+  "protocol"=>"v6"
+}
+```
+
+If `to` is left out, then it may be that you want to specify outgoing device
+to match, in which case you may also specify a `oif` as per above example.
+
 ### When can Chef make network changes
 Network changes can be disruptive and have potential for major impact. To
 mitigate this, `fb_network_scripts` is limited to making host network changes
