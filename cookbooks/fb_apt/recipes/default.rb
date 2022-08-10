@@ -23,7 +23,7 @@ unless node.debian? || node.ubuntu?
 end
 
 # rubocop:disable Lint/UnneededCopDisableDirective
-# rubocop:disable ChefModernize/ExecuteAptUpdate
+# rubocop:disable Chef/Modernize/ExecuteAptUpdate
 
 package 'apt' do
   action :upgrade
@@ -123,5 +123,5 @@ else
   end
   # rubocop:enable ChefDeprecations/LogResourceNotifications
 end
-# rubocop:enable ChefModernize/ExecuteAptUpdate
+# rubocop:enable Chef/Modernize/ExecuteAptUpdate
 # rubocop:enable Lint/UnneededCopDisableDirective
