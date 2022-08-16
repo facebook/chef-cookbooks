@@ -3,5 +3,11 @@
 
 [PLUGINS]
 <% FB::Fluentbit.external_plugins_from_node(node).each do |plugin| %>
+  <% if plugin.path.is_a? String %>
     Path <%= plugin.path %>
+  <% else %>
+      <% plugin.path.each do |path| %>
+    Path <%= path %>
+      <% end -%>
+  <% end -%>
 <% end -%>

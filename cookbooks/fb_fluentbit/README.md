@@ -115,6 +115,18 @@ node.default['fb_fluentbit']['external']['my_plugin'] = {
 }
 ```
 
+Or if the package distributes multiple plugins you can define all
+paths through a list as:
+
+```
+node.default['fb_fluentbit']['external']['my_plugin'] = {
+  'package' => 'my-rpm-package',
+  'path' => ['/usr/local/lib/my_plugin/my_plugin.so',
+    '/usr/local/lib/my_plugin/second_plugin.so'
+  ],
+}
+```
+
 You must include the package name as shown here and by default that package
 will be installed and upgraded to the latest available version. If you need
 to control the version explicitly, you can disable package installation by
