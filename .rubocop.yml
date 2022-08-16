@@ -1,42 +1,113 @@
 AllCops:
+  DisabledByDefault: true
   TargetRubyVersion: 2.4
   Exclude:
     # template files named `rb` instead of `erb` are a sin against ruby-nature.
     - '**/templates/**/*.rb'#
 
-Layout/DotPosition:
-  EnforcedStyle: trailing
+Bundler/DuplicatedGem:
+  Enabled: true
 
-# enforce lf to avoid failures on Windows systems
-Layout/EndOfLine:
-  EnforcedStyle: lf
-
-Layout/FirstArrayElementIndentation:
-  EnforcedStyle: consistent
-
-# This recommends using external gems to parse heredocs
-Layout/HeredocIndentation:
+Bundler/GemComment:
   Enabled: false
 
-# disabling until corrected in core
-Layout/MultilineOperationIndentation:
-  Enabled: false
-  EnforcedStyle: indented
+Bundler/InsecureProtocolSource:
+  Enabled: true
 
-Layout/EmptyLineAfterGuardClause:
+Bundler/OrderedGems:
+  Enabled: true
+
+Gemspec/DuplicatedAssignment:
+  Enabled: true
+
+Gemspec/OrderedDependencies:
+  Enabled: true
+
+Gemspec/RequiredRubyVersion:
+  Enabled: true
+
+Gemspec/RubyVersionGlobalsUsage:
+  Enabled: true
+
+Layout/AccessModifierIndentation:
+  Enabled: true
+
+Layout/ArgumentAlignment:
+  Enabled: true
+
+Layout/ArrayAlignment:
+  Enabled: true
+
+Layout/AssignmentIndentation:
+  Enabled: true
+
+Layout/BeginEndAlignment:
+  Enabled: true
+
+Layout/BlockAlignment:
+  Enabled: true
+
+Layout/BlockEndNewline:
+  Enabled: true
+
+Layout/CaseIndentation:
+  Enabled: true
+
+Layout/ClassStructure:
   Enabled: false
 
 # TODO re-evaluate after chef-workstation upgrade
-Layout/HashAlignment:
+Layout/ClosingHeredocIndentation:
   Enabled: false
 
 # TODO re-evaluate after chef-workstation upgrade
 Layout/ClosingParenthesisIndentation:
   Enabled: false
 
-# TODO re-evaluate after chef-workstation upgrade
-Layout/ClosingHeredocIndentation:
+Layout/CommentIndentation:
+  Enabled: true
+
+Layout/ConditionPosition:
+  Enabled: true
+
+Layout/DefEndAlignment:
+  Enabled: true
+
+Layout/DotPosition:
+  EnforcedStyle: trailing
+
+Layout/ElseAlignment:
+  Enabled: true
+
+Layout/EmptyComment:
+  Enabled: true
+
+Layout/EmptyLineAfterGuardClause:
   Enabled: false
+
+Layout/EmptyLineAfterMagicComment:
+  Enabled: true
+
+Layout/EmptyLineAfterMultilineCondition:
+  Enabled: false
+
+Layout/EmptyLineBetweenDefs:
+  Enabled: true
+
+Layout/EmptyLines:
+  Enabled: true
+
+Layout/EmptyLinesAroundAccessModifier:
+  Enabled: true
+
+Layout/EmptyLinesAroundArguments:
+  Enabled: true
+
+Layout/EmptyLinesAroundAttributeAccessor:
+  Enabled: true
+
+Layout/EmptyLinesAroundBeginBody:
+  Enabled: true
 
 # TODO re-evaluate after chef-workstation upgrade
 Layout/EmptyLinesAroundBlockBody:
@@ -46,38 +117,522 @@ Layout/EmptyLinesAroundBlockBody:
 Layout/EmptyLinesAroundClassBody:
   Enabled: false
 
+Layout/EmptyLinesAroundExceptionHandlingKeywords:
+  Enabled: true
+
+Layout/EmptyLinesAroundMethodBody:
+  Enabled: true
+
+Layout/EmptyLinesAroundModuleBody:
+  Enabled: true
+
+Layout/EndAlignment:
+  Enabled: true
+
+# enforce lf to avoid failures on Windows systems
+Layout/EndOfLine:
+  EnforcedStyle: lf
+
+Layout/ExtraSpacing:
+  Enabled: true
+
+Layout/FirstArgumentIndentation:
+  Enabled: true
+
+Layout/FirstArrayElementIndentation:
+  EnforcedStyle: consistent
+
+Layout/FirstArrayElementLineBreak:
+  Enabled: false
+
+Layout/FirstHashElementIndentation:
+  Enabled: true
+
+Layout/FirstHashElementLineBreak:
+  Enabled: false
+
+Layout/FirstMethodArgumentLineBreak:
+  Enabled: false
+
+Layout/FirstMethodParameterLineBreak:
+  Enabled: false
+
+Layout/FirstParameterIndentation:
+  Enabled: true
+
+# TODO re-evaluate after chef-workstation upgrade
+Layout/HashAlignment:
+  Enabled: false
+
+Layout/HeredocArgumentClosingParenthesis:
+  Enabled: false
+
+# This recommends using external gems to parse heredocs
+Layout/HeredocIndentation:
+  Enabled: false
+
+Layout/IndentationConsistency:
+  Enabled: true
+
+Layout/IndentationStyle:
+  Enabled: true
+
+Layout/IndentationWidth:
+  Enabled: true
+
+Layout/InitialIndentation:
+  Enabled: true
+
+Layout/LeadingCommentSpace:
+  Enabled: true
+
+Layout/LeadingEmptyLines:
+  Enabled: true
+
+Layout/LineLength:
+  Max: 80
+
+Layout/MultilineArrayBraceLayout:
+  Enabled: true
+
+Layout/MultilineArrayLineBreaks:
+  Enabled: false
+
+Layout/MultilineAssignmentLayout:
+  Enabled: false
+
+Layout/MultilineBlockLayout:
+  Enabled: true
+
+Layout/MultilineHashBraceLayout:
+  Enabled: true
+
+Layout/MultilineHashKeyLineBreaks:
+  Enabled: false
+
+Layout/MultilineMethodArgumentLineBreaks:
+  Enabled: false
+
+Layout/MultilineMethodCallBraceLayout:
+  Enabled: true
+
+Layout/MultilineMethodCallIndentation:
+  Enabled: true
+
+Layout/MultilineMethodDefinitionBraceLayout:
+  Enabled: true
+
+# disabling until corrected in core
+Layout/MultilineOperationIndentation:
+  Enabled: false
+  EnforcedStyle: indented
+
+Layout/ParameterAlignment:
+  Enabled: true
+
+Layout/RescueEnsureAlignment:
+  Enabled: true
+
+Layout/SpaceAfterColon:
+  Enabled: true
+
+Layout/SpaceAfterComma:
+  Enabled: true
+
+Layout/SpaceAfterMethodName:
+  Enabled: true
+
+Layout/SpaceAfterNot:
+  Enabled: true
+
+Layout/SpaceAfterSemicolon:
+  Enabled: true
+
+Layout/SpaceAroundBlockParameters:
+  Enabled: true
+
+Layout/SpaceAroundEqualsInParameterDefault:
+  Enabled: true
+
+Layout/SpaceAroundKeyword:
+  Enabled: true
+
+Layout/SpaceAroundMethodCallOperator:
+  Enabled: true
+
 # TODO re-evaluate after chef-workstation upgrade
 Layout/SpaceAroundOperators:
   Enabled: false
+
+Layout/SpaceBeforeBlockBraces:
+  Enabled: true
+
+Layout/SpaceBeforeComma:
+  Enabled: true
+
+Layout/SpaceBeforeComment:
+  Enabled: true
+
+Layout/SpaceBeforeFirstArg:
+  Enabled: true
+
+Layout/SpaceBeforeSemicolon:
+  Enabled: true
+
+Layout/SpaceInLambdaLiteral:
+  Enabled: true
+
+Layout/SpaceInsideArrayLiteralBrackets:
+  Enabled: true
+
+Layout/SpaceInsideArrayPercentLiteral:
+  Enabled: true
+
+Layout/SpaceInsideBlockBraces:
+  Enabled: true
+
+Layout/SpaceInsideHashLiteralBraces:
+  Enabled: true
+
+Layout/SpaceInsideParens:
+  Enabled: true
+
+Layout/SpaceInsidePercentLiteralDelimiters:
+  Enabled: true
+
+Layout/SpaceInsideRangeLiteral:
+  Enabled: true
+
+Layout/SpaceInsideReferenceBrackets:
+  Enabled: true
+
+Layout/SpaceInsideStringInterpolation:
+  Enabled: true
+
+Layout/TrailingEmptyLines:
+  Enabled: true
+
+Layout/TrailingWhitespace:
+  Enabled: true
+
+# no, we're not putting parens around `lazy`
+Lint/AmbiguousBlockAssociation:
+  Enabled: false
+
+Lint/AmbiguousOperator:
+  Enabled: true
+
+Lint/AmbiguousRegexpLiteral:
+  Enabled: true
+
+Lint/AssignmentInCondition:
+  Enabled: true
+
+Lint/BigDecimalNew:
+  Enabled: true
+
+# TODO move exception to file after chef-workstation upgrade
+Lint/BinaryOperatorWithIdenticalOperands:
+  Exclude:
+  - cookbooks/fb_helpers/spec/version_spec.rb
+
+Lint/BooleanSymbol:
+  Enabled: true
+
+Lint/CircularArgumentReference:
+  Enabled: true
+
+# TODO re-evaluate after chef-workstation upgrade
+Lint/ConstantDefinitionInBlock:
+  Enabled: false
+
+Lint/ConstantResolution:
+  Enabled: false
+
+Lint/Debugger:
+  Enabled: true
+
+Lint/DeprecatedClassMethods:
+  Enabled: true
+
+Lint/DeprecatedOpenSSLConstant:
+  Enabled: true
+
+Lint/DisjunctiveAssignmentInConstructor:
+  Enabled: true
+
+Lint/DuplicateCaseCondition:
+  Enabled: true
+
+Lint/DuplicateElsifCondition:
+  Enabled: true
+
+Lint/DuplicateHashKey:
+  Enabled: true
+
+Lint/DuplicateMethods:
+  Enabled: true
+
+Lint/DuplicateRequire:
+  Enabled: true
+
+Lint/DuplicateRescueException:
+  Enabled: true
+
+Lint/EachWithObjectArgument:
+  Enabled: true
+
+Lint/ElseLayout:
+  Enabled: true
+
+Lint/EmptyConditionalBody:
+  Enabled: true
+
+Lint/EmptyEnsure:
+  Enabled: true
+
+Lint/EmptyExpression:
+  Enabled: true
+
+Lint/EmptyFile:
+  Enabled: true
+
+Lint/EmptyInterpolation:
+  Enabled: true
+
+Lint/EmptyWhen:
+  Enabled: true
+
+Lint/EnsureReturn:
+  Enabled: true
+
+Lint/ErbNewArguments:
+  Enabled: true
+
+Lint/FlipFlop:
+  Enabled: true
+
+Lint/FloatComparison:
+  Enabled: true
+
+Lint/FloatOutOfRange:
+  Enabled: true
+
+Lint/FormatParameterMismatch:
+  Enabled: true
+
+Lint/HashCompareByIdentity:
+  Enabled: true
+
+Lint/HeredocMethodCallPosition:
+  Enabled: false
+
+Lint/IdentityComparison:
+  Enabled: true
+
+Lint/ImplicitStringConcatenation:
+  Enabled: true
+
+Lint/IneffectiveAccessModifier:
+  Enabled: true
+
+Lint/InheritException:
+  Enabled: true
+
+Lint/InterpolationCheck:
+  Enabled: true
+
+Lint/LiteralAsCondition:
+  Enabled: true
+
+Lint/LiteralInInterpolation:
+  Enabled: true
+
+Lint/Loop:
+  Enabled: true
 
 # TODO re-evaluate after chef-workstation upgrade
 Lint/MissingCopEnableDirective:
   Enabled: false
 
 # TODO re-evaluate after chef-workstation upgrade
-Lint/BinaryOperatorWithIdenticalOperands:
-  Enabled: false
-
-# TODO re-evaluate after chef-workstation upgrade
 Lint/MissingSuper:
   Enabled: false
+
+Lint/MixedRegexpCaptureTypes:
+  Enabled: true
+
+Lint/MultipleComparison:
+  Enabled: true
+
+Lint/NestedMethodDefinition:
+  Enabled: true
+
+Lint/NestedPercentLiteral:
+  Enabled: true
+
+Lint/NextWithoutAccumulator:
+  Enabled: true
+
+Lint/NonDeterministicRequireOrder:
+  Enabled: true
+
+Lint/NonLocalExitFromIterator:
+  Enabled: true
+
+Lint/NumberConversion:
+  Enabled: false
+
+Lint/OrderedMagicComments:
+  Enabled: true
+
+Lint/OutOfRangeRegexpRef:
+  Enabled: true
+
+Lint/ParenthesesAsGroupedExpression:
+  Enabled: true
+
+Lint/PercentStringArray:
+  Enabled: true
+
+Lint/PercentSymbolArray:
+  Enabled: true
+
+Lint/RaiseException:
+  Enabled: true
+
+Lint/RandOne:
+  Enabled: true
 
 # TODO re-evaluate after chef-workstation upgrade
 Lint/RedundantCopDisableDirective:
   Enabled: false
 
-# TODO re-evaluate after chef-workstation upgrade
-Lint/ConstantDefinitionInBlock:
-  Enabled: false
+Lint/RedundantCopEnableDirective:
+  Enabled: true
 
-# TODO move exception to file after chef-workstation upgrade
-Lint/BinaryOperatorWithIdenticalOperands:
-  Exclude:
-    - cookbooks/fb_helpers/spec/version_spec.rb
+Lint/RedundantRequireStatement:
+  Enabled: true
 
-# no, we're not putting parens around `lazy`
-Lint/AmbiguousBlockAssociation:
-  Enabled: false
+Lint/RedundantSafeNavigation:
+  Enabled: true
+
+Lint/RedundantSplatExpansion:
+  Enabled: true
+
+Lint/RedundantStringCoercion:
+  Enabled: true
+
+Lint/RedundantWithIndex:
+  Enabled: true
+
+Lint/RedundantWithObject:
+  Enabled: true
+
+Lint/RegexpAsCondition:
+  Enabled: true
+
+Lint/RequireParentheses:
+  Enabled: true
+
+Lint/RescueException:
+  Enabled: true
+
+Lint/RescueType:
+  Enabled: true
+
+Lint/ReturnInVoidContext:
+  Enabled: true
+
+Lint/SafeNavigationChain:
+  Enabled: true
+
+Lint/SafeNavigationConsistency:
+  Enabled: true
+
+Lint/SafeNavigationWithEmpty:
+  Enabled: true
+
+Lint/ScriptPermission:
+  Enabled: true
+
+Lint/SelfAssignment:
+  Enabled: true
+
+Lint/SendWithMixinArgument:
+  Enabled: true
+
+Lint/ShadowedArgument:
+  Enabled: true
+
+Lint/ShadowedException:
+  Enabled: true
+
+Lint/ShadowingOuterLocalVariable:
+  Enabled: true
+
+Lint/StructNewOverride:
+  Enabled: true
+
+Lint/SuppressedException:
+  Enabled: true
+
+Lint/Syntax:
+  Enabled: true
+
+Lint/ToJSON:
+  Enabled: true
+
+Lint/TopLevelReturnWithArgument:
+  Enabled: true
+
+Lint/TrailingCommaInAttributeDeclaration:
+  Enabled: true
+
+Lint/UnderscorePrefixedVariableName:
+  Enabled: true
+
+Lint/UnifiedInteger:
+  Enabled: true
+
+Lint/UnreachableCode:
+  Enabled: true
+
+Lint/UnreachableLoop:
+  Enabled: true
+
+Lint/UnusedBlockArgument:
+  Enabled: true
+
+Lint/UnusedMethodArgument:
+  Enabled: true
+
+Lint/UriEscapeUnescape:
+  Enabled: true
+
+Lint/UriRegexp:
+  Enabled: true
+
+Lint/UselessAccessModifier:
+  Enabled: true
+
+Lint/UselessAssignment:
+  Enabled: true
+
+Lint/UselessElseWithoutRescue:
+  Enabled: true
+
+Lint/UselessMethodDefinition:
+  Enabled: true
+
+Lint/UselessSetterCall:
+  Enabled: true
+
+Lint/UselessTimes:
+  Enabled: true
+
+Lint/Void:
+  Enabled: true
 
 Metrics/AbcSize:
   Enabled: false
@@ -95,14 +650,14 @@ Metrics/ClassLength:
 Metrics/CyclomaticComplexity:
   Enabled: false
 
-Layout/LineLength:
-  Max: 80
-
 Metrics/MethodLength:
   Enabled: false
 
 Metrics/ModuleLength:
   Enabled: false
+
+Metrics/ParameterLists:
+  Enabled: true
 
 # I don't know what it's metric for "human complexity" is, but it's wrong.
 Metrics/PerceivedComplexity:
@@ -112,36 +667,176 @@ Metrics/PerceivedComplexity:
 Migration/DepartmentName:
   Enabled: false
 
-# this trips on *any* method called 'get_*' wtf.
 Naming/AccessorMethodName:
   Enabled: false
+
+Naming/AsciiIdentifiers:
+  Enabled: true
+
+Naming/BinaryOperatorParameterName:
+  Enabled: true
+
+Naming/BlockParameterName:
+  Enabled: true
+
+Naming/ClassAndModuleCamelCase:
+  Enabled: true
+
+Naming/ConstantName:
+  Enabled: true
 
 # This blows up on things like base_packages-redhat
 Naming/FileName:
   Enabled: false
 
+Naming/HeredocDelimiterCase:
+  Enabled: true
+
 # Heredocs are fine with "EOF"
 Naming/HeredocDelimiterNaming:
   Enabled: false
+
+Naming/MemoizedInstanceVariableName:
+  Enabled: true
+
+Naming/MethodName:
+  Enabled: true
 
 # re-evaluate after upgrade to chef workstation, is highly configurable
 # fires on methods with short args:  def foo(k, v, i)
 Naming/MethodParameterName:
   Enabled: false
 
-# no autocorrection
-Naming/VariableNumber:
-  Enabled: false
+Naming/PredicateName:
+  Enabled: true
 
 # TODO re-evaluate after chef-workstation upgrade
 Naming/RescuedExceptionsVariableName:
   Enabled: false
 
+Naming/VariableName:
+  Enabled: true
+
+# no autocorrection
+Naming/VariableNumber:
+  Enabled: false
+
+Security/Eval:
+  Enabled: true
+
+Security/JSONLoad:
+  Enabled: true
+
+Security/MarshalLoad:
+  Enabled: true
+
+Security/Open:
+  Enabled: true
+
+Security/YAMLLoad:
+  Enabled: true
+
+# TODO re-evaluate after chef-workstation upgrade
+Style/AccessModifierDeclarations:
+  Enabled: false
+
+Style/AccessorGrouping:
+  Enabled: true
+
+Style/Alias:
+  Enabled: true
+
+Style/AndOr:
+  Enabled: true
+
+Style/ArrayCoercion:
+  Enabled: false
+
+Style/ArrayJoin:
+  Enabled: true
+
+Style/AsciiComments:
+  Enabled: true
+
+Style/Attr:
+  Enabled: true
+
+Style/AutoResourceCleanup:
+  Enabled: false
+
+Style/BarePercentLiterals:
+  Enabled: true
+
+Style/BeginBlock:
+  Enabled: true
+
+Style/BisectedAttrAccessor:
+  Enabled: true
+
+Style/BlockComments:
+  Enabled: true
+
+Style/BlockDelimiters:
+  Enabled: true
+
+Style/CaseEquality:
+  Enabled: true
+
+Style/CaseLikeIf:
+  Enabled: false
+
+Style/CharacterLiteral:
+  Enabled: true
+
+Style/ClassAndModuleChildren:
+  Enabled: true
+
+Style/ClassCheck:
+  Enabled: true
+
+# TODO re-evaluate after chef-workstation upgrade
+Style/ClassEqualityComparison:
+  Enabled: false
+
+Style/ClassMethods:
+  Enabled: true
+
+Style/ClassMethodsDefinitions:
+  Enabled: false
+
+Style/ClassVars:
+  Enabled: true
+
+Style/CollectionMethods:
+  Enabled: false
+
+Style/ColonMethodCall:
+  Enabled: true
+
+Style/ColonMethodDefinition:
+  Enabled: true
+
+# TODO re-evaluate after chef-workstation upgrade
+Style/CombinableLoops:
+  Enabled: false
+
+Style/CommandLiteral:
+  Enabled: true
+
 Style/CommentAnnotation:
   Enabled: false
 
+Style/CommentedKeyword:
+  Enabled: true
+
 # Bug with constants? https://phabricator.fb.com/P56108678
 Style/ConditionalAssignment:
+  Enabled: false
+
+Style/ConstantVisibility:
+  Enabled: false
+
+Style/Copyright:
   Enabled: false
 
 # this is disabled by default in v59 so am just disabling it now
@@ -149,11 +844,80 @@ Style/ConditionalAssignment:
 Style/DateTime:
   Enabled: false
 
+Style/DefWithParentheses:
+  Enabled: true
+
+Style/Dir:
+  Enabled: true
+
+Style/DisableCopsWithinSourceCodeDirective:
+  Enabled: false
+
 Style/Documentation:
   Enabled: false
 
+Style/DocumentationMethod:
+  Enabled: false
+
+Style/DoubleCopDisableDirective:
+  Enabled: true
+
+Style/DoubleNegation:
+  Enabled: true
+
+Style/EachForSimpleLoop:
+  Enabled: true
+
+Style/EachWithObject:
+  Enabled: true
+
+Style/EmptyBlockParameter:
+  Enabled: true
+
+Style/EmptyCaseCondition:
+  Enabled: true
+
+Style/EmptyElse:
+  Enabled: true
+
+Style/EmptyLambdaParameter:
+  Enabled: true
+
+Style/EmptyLiteral:
+  Enabled: true
+
+Style/EmptyMethod:
+  Enabled: true
+
 Style/Encoding:
   Enabled: false
+
+Style/EndBlock:
+  Enabled: true
+
+Style/EvalWithLocation:
+  Enabled: true
+
+Style/EvenOdd:
+  Enabled: true
+
+Style/ExpandPathArguments:
+  Enabled: true
+
+Style/ExplicitBlockArgument:
+  Enabled: true
+
+Style/ExponentialNotation:
+  Enabled: true
+
+Style/FloatDivision:
+  Enabled: true
+
+Style/For:
+  Enabled: true
+
+Style/FormatString:
+  Enabled: true
 
 Style/FormatStringToken:
   Enabled: false
@@ -162,28 +926,169 @@ Style/FormatStringToken:
 Style/FrozenStringLiteralComment:
   Enabled: false
 
+Style/GlobalStdStream:
+  Enabled: true
+
+Style/GlobalVars:
+  Enabled: true
+
 # guardclause sacrifices ease of readability for consistency at times
 Style/GuardClause:
+  Enabled: false
+
+Style/HashAsLastArrayItem:
+  Enabled: true
+
+# TODO re-evaluate after chef-workstation upgrade
+Style/HashEachMethods:
+  Enabled: false
+
+# TODO re-evaluate after chef-workstation upgrade
+Style/HashLikeCase:
   Enabled: false
 
 Style/HashSyntax:
   EnforcedStyle: hash_rockets
 
+Style/HashTransformKeys:
+  Enabled: true
+
+Style/HashTransformValues:
+  Enabled: true
+
+Style/IdenticalConditionalBranches:
+  Enabled: true
+
+Style/IfInsideElse:
+  Enabled: true
+
 # compact code is nice, but this is actually harder to read for new users
 Style/IfUnlessModifier:
   Enabled: false
 
+Style/IfUnlessModifierOfIfUnless:
+  Enabled: true
+
+Style/IfWithSemicolon:
+  Enabled: true
+
+Style/ImplicitRuntimeError:
+  Enabled: false
+
+Style/InfiniteLoop:
+  Enabled: true
+
+Style/InlineComment:
+  Enabled: false
+
+Style/InverseMethods:
+  Enabled: true
+
+Style/IpAddresses:
+  Enabled: false
+
+Style/KeywordParametersOrder:
+  Enabled: true
+
+Style/Lambda:
+  Enabled: true
+
+Style/LambdaCall:
+  Enabled: true
+
 # backslash is extra dumb in ruby, we want the OPPOSITE of this rule
 Style/LineEndConcatenation:
+  Enabled: false
+
+Style/MethodCallWithArgsParentheses:
+  Enabled: false
+
+Style/MethodCallWithoutArgsParentheses:
+  Enabled: true
+
+Style/MethodCalledOnDoEndBlock:
+  Enabled: false
+
+Style/MethodDefParentheses:
+  Enabled: true
+
+Style/MinMax:
+  Enabled: true
+
+Style/MissingElse:
+  Enabled: false
+
+Style/MissingRespondToMissing:
+  Enabled: true
+
+Style/MixinGrouping:
+  Enabled: true
+
+Style/MixinUsage:
+  Enabled: true
+
+Style/ModuleFunction:
+  Enabled: true
+
+# TODO re-evaluate after chef-workstation upgrade
+Style/MultilineBlockChain:
+  Enabled: false
+
+Style/MultilineIfModifier:
+  Enabled: true
+
+Style/MultilineIfThen:
+  Enabled: true
+
+Style/MultilineMemoization:
+  Enabled: true
+
+Style/MultilineMethodSignature:
   Enabled: false
 
 # autocorrection in v86 https://github.com/rubocop-hq/rubocop/pull/8148
 Style/MultilineTernaryOperator:
   Enabled: false
 
+Style/MultilineWhenThen:
+  Enabled: true
+
+Style/MultipleComparison:
+  Enabled: true
+
+Style/MutableConstant:
+  Enabled: true
+
+Style/NegatedIf:
+  Enabled: true
+
+Style/NegatedUnless:
+  Enabled: true
+
+Style/NegatedWhile:
+  Enabled: true
+
+Style/NestedModifier:
+  Enabled: true
+
+Style/NestedParenthesizedCalls:
+  Enabled: true
+
+Style/NestedTernaryOperator:
+  Enabled: true
+
 # So just keep iterating instead of breaking? wtf.
 Style/Next:
   Enabled: false
+
+Style/NilComparison:
+  Enabled: true
+
+Style/NonNilCheck:
+  Enabled: true
+
+Style/Not:
+  Enabled: true
 
 Style/NumericLiteralPrefix:
   Enabled: false
@@ -200,6 +1105,29 @@ Style/NumericLiterals:
 Style/NumericPredicate:
   Enabled: false
 
+Style/OneLineConditional:
+  Enabled: true
+
+Style/OptionHash:
+  Enabled: false
+
+Style/OptionalArguments:
+  Enabled: true
+
+# TODO re-evaluate after chef-workstation upgrade
+Style/OptionalBooleanParameter:
+  Enabled: false
+
+# TODO re-evaluate after chef-workstation upgrade
+Style/OrAssignment:
+  Enabled: false
+
+Style/ParallelAssignment:
+  Enabled: true
+
+Style/ParenthesesAroundCondition:
+  Enabled: true
+
 Style/PercentLiteralDelimiters:
   PreferredDelimiters:
     '%':  '{}'
@@ -213,8 +1141,69 @@ Style/PercentLiteralDelimiters:
     '%W': '{}'
     '%x': '{}'
 
+Style/PercentQLiterals:
+  Enabled: true
+
 # TODO: re-evaluate this for performance impacts
 Style/PerlBackrefs:
+  Enabled: false
+
+Style/PreferredHashMethods:
+  Enabled: true
+
+Style/Proc:
+  Enabled: true
+
+Style/RaiseArgs:
+  Enabled: true
+
+Style/RandomWithOffset:
+  Enabled: true
+
+# TODO re-evaluate after chef-workstation upgrade
+Style/RedundantAssignment:
+  Enabled: false
+
+Style/RedundantBegin:
+  Enabled: true
+
+Style/RedundantCapitalW:
+  Enabled: true
+
+# TODO re-evaluate after chef-workstation upgrade
+Style/RedundantCondition:
+  Enabled: false
+
+Style/RedundantConditional:
+  Enabled: true
+
+Style/RedundantException:
+  Enabled: true
+
+Style/RedundantFetchBlock:
+  Enabled: true
+
+# TODO re-evaluate after chef-workstation upgrade
+Style/RedundantFileExtensionInRequire:
+  Enabled: false
+
+Style/RedundantFreeze:
+  Enabled: true
+
+Style/RedundantInterpolation:
+  Enabled: true
+
+Style/RedundantParentheses:
+  Enabled: true
+
+Style/RedundantPercentQ:
+  Enabled: true
+
+Style/RedundantRegexpCharacterClass:
+  Enabled: true
+
+# TODO re-evaluate after chef-workstation upgrade
+Style/RedundantRegexpEscape:
   Enabled: false
 
 Style/RedundantReturn:
@@ -223,15 +1212,94 @@ Style/RedundantReturn:
 Style/RedundantSelf:
   Enabled: false
 
+Style/RedundantSelfAssignment:
+  Enabled: true
+
+Style/RedundantSort:
+  Enabled: true
+
+Style/RedundantSortBy:
+  Enabled: true
+
 Style/RegexpLiteral:
   EnforcedStyle: mixed
+
+Style/RescueModifier:
+  Enabled: true
+
+Style/RescueStandardError:
+  Enabled: true
+
+Style/ReturnNil:
+  Enabled: false
 
 # enable after v72 where many dangerous autocorrect bugs were corrected
 Style/SafeNavigation:
   Enabled: false
 
+Style/Sample:
+  Enabled: true
+
+Style/SelfAssignment:
+  Enabled: true
+
+Style/Semicolon:
+  Enabled: true
+
+Style/Send:
+  Enabled: false
+
 Style/SignalException:
   EnforcedStyle: semantic
+
+Style/SingleArgumentDig:
+  Enabled: true
+
+Style/SingleLineBlockParams:
+  Enabled: false
+
+Style/SingleLineMethods:
+  Enabled: true
+
+Style/SlicingWithRange:
+  Enabled: true
+
+# TODO re-evaluate after chef-workstation upgrade
+Style/SoleNestedConditional:
+  Enabled: false
+
+Style/SpecialGlobalVars:
+  Enabled: true
+
+Style/StabbyLambdaParentheses:
+  Enabled: true
+
+Style/StaticClass:
+  Enabled: false
+
+Style/StderrPuts:
+  Enabled: true
+
+Style/StringConcatenation:
+  Enabled: false
+
+Style/StringHashKeys:
+  Enabled: false
+
+Style/StringLiterals:
+  Enabled: true
+
+Style/StringLiteralsInInterpolation:
+  Enabled: true
+
+Style/StringMethods:
+  Enabled: false
+
+Style/Strip:
+  Enabled: true
+
+Style/StructInheritance:
+  Enabled: true
 
 # It would forbid action [:enable, :start]
 # in v66 we can specify brackets for enforced style with autocorrect
@@ -239,73 +1307,69 @@ Style/SignalException:
 Style/SymbolArray:
   Enabled: false
 
+Style/SymbolLiteral:
+  Enabled: true
+
+Style/SymbolProc:
+  Enabled: true
+
+Style/TernaryParentheses:
+  Enabled: true
+
+Style/TrailingBodyOnClass:
+  Enabled: true
+
+Style/TrailingBodyOnMethodDefinition:
+  Enabled: true
+
+Style/TrailingBodyOnModule:
+  Enabled: true
+
 Style/TrailingCommaInArguments:
   EnforcedStyleForMultiline: comma
 
 Style/TrailingCommaInArrayLiteral:
   EnforcedStyleForMultiline: comma
 
+Style/TrailingCommaInBlockArgs:
+  Enabled: false
+
 Style/TrailingCommaInHashLiteral:
   EnforcedStyleForMultiline: comma
+
+Style/TrailingMethodEndStatement:
+  Enabled: true
+
+Style/TrailingUnderscoreVariable:
+  Enabled: true
+
+Style/TrivialAccessors:
+  Enabled: true
+
+Style/UnlessElse:
+  Enabled: true
+
+Style/UnpackFirst:
+  Enabled: true
+
+Style/VariableInterpolation:
+  Enabled: true
+
+Style/WhenThen:
+  Enabled: true
+
+Style/WhileUntilDo:
+  Enabled: true
+
+Style/WhileUntilModifier:
+  Enabled: true
 
 # TODO: convert the codebase to enable this
 Style/WordArray:
   Enabled: false
 
-Style/StringConcatenation:
-  Enabled: false
+Style/YodaCondition:
+  Enabled: true
 
-Style/CaseLikeIf:
-  Enabled: false
-
-# TODO re-evaluate after chef-workstation upgrade
-Style/OptionalBooleanParameter:
-  Enabled: false
-
-# TODO re-evaluate after chef-workstation upgrade
-Style/RedundantFileExtensionInRequire:
-  Enabled: false
-
-# TODO re-evaluate after chef-workstation upgrade
-Style/SoleNestedConditional:
-  Enabled: false
-
-# TODO re-evaluate after chef-workstation upgrade
-Style/ClassEqualityComparison:
-  Enabled: false
-
-# TODO re-evaluate after chef-workstation upgrade
-Style/RedundantRegexpEscape:
-  Enabled: false
-
-# TODO re-evaluate after chef-workstation upgrade
-Style/HashLikeCase:
-  Enabled: false
-
-# TODO re-evaluate after chef-workstation upgrade
-Style/AccessModifierDeclarations:
-  Enabled: false
-
-# TODO re-evaluate after chef-workstation upgrade
-Style/RedundantAssignment:
-  Enabled: false
-
-# TODO re-evaluate after chef-workstation upgrade
-Style/CombinableLoops:
-  Enabled: false
-
-# TODO re-evaluate after chef-workstation upgrade
-Style/OrAssignment:
-  Enabled: false
-
-# TODO re-evaluate after chef-workstation upgrade
-Style/RedundantCondition:
-  Enabled: false
-
-# TODO re-evaluate after chef-workstation upgrade
-Style/HashEachMethods:
-  Enabled: false
-
-# TODO re-evaluate after chef-workstation upgrade
-Style/MultilineBlockChain:
-  Enabled: false
+Style/ZeroLengthPredicate:
+  Enabled: true
