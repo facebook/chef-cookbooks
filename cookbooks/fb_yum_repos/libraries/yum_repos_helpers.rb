@@ -34,11 +34,15 @@ module FB
           :default =>
             'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-$releasever-$basearch',
         },
+        :rocky=> {
+          :default =>
+            'https://dl.rockylinux.org/pub/rocky/9/metadata/RPM-GPG-KEY-Rocky-9',
+        },
       )
     end
 
     def self.gen_repo_config(node, name, config = {})
-      unless node.centos? || node.fedora?
+      unless node.centos? || node.fedora? || node.rocky?
         fail "fb_yum_repos[gen_repo_config]: unsupported platform #{platform}"
       end
 
