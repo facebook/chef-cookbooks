@@ -18,8 +18,8 @@
 # limitations under the License.
 #
 
-unless node.centos? || node.fedora?
-  fail 'fb_yum_repos: this cookbook only supports CentOS and Fedora'
+unless node.centos? || node.fedora? || node.rocky?
+  fail 'fb_yum_repos: this cookbook only supports CentOS, Fedora, and Rocky Linux'
 end
 
 execute 'clean yum metadata' do
