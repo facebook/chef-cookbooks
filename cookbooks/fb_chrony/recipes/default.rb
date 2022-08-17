@@ -19,7 +19,7 @@
 # limitations under the License.
 #
 
-if node.centos? || node.redhat? || node.fedora?
+if node.centos? || node.redhat? || node.fedora? || node.rocky?
   chrony_svc = 'chronyd'
   chrony_conf = '/etc/chrony.conf'
   chrony_user = 'chrony'
