@@ -150,11 +150,9 @@ whyrun_safe_ruby_block 'validate storage options' do
     end
     storage['arrays']&.each_with_index do |array, aidx|
       next if array['_skip']
+
       # this is roughly the same logic as the label in the partition
       # loop above... but I don't see a good way of abstracting it out
-
-      next if array['_skip']
-
       if array['whole_device']
         fail "fb_storage: 'whole_device' was set on array #{aidx}" +
           ", but that's not a valid setting on an array."
