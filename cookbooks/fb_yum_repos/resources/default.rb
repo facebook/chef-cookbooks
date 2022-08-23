@@ -40,7 +40,7 @@ action :run do
   repos.each do |group, group_config|
     unless group_config['repos']
       fail 'fb_yum_repos[manage repos]: no repos defined for repo group ' +
-           repo_group
+           group
     end
 
     template ::File.join(YUM_REPOS_D, "#{group}.repo") do # ~FB031
