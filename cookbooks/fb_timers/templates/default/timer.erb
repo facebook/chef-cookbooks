@@ -18,6 +18,9 @@ OnCalendar=<%= @conf['calendar'] %>
 AccuracySec=<%= @conf['accuracy'] %>
 Persistent=<%= @conf['persistent'] %>
 RandomizedDelaySec=<%= @conf['splay'] %>
+<% if @conf.has_key?('fixed_splay') %>
+FixedRandomDelay=<%= @conf['fixed_splay'] %>
+<% end %>
 Unit=<%= @conf['name'] %>.service
 <% @conf['timer_options'].each do |name, value| %>
 <%= name %>=<%= value %>

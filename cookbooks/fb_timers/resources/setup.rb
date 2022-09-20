@@ -88,6 +88,15 @@ action :run do
       conf['description'] = "Run scheduled task #{conf['name']}"
     end
 
+    if FB::Version.new(node['packages']['systemd'][
+      'version']) < FB::Version.new('247')
+      Chef::Log.warn(
+        'fb_timers: Detected systemd version older than 247, removing' +
+        " unsupported `fixed_splay` key for timer #{name}",
+      )
+      conf.delete('fixed_splay')
+    end
+
     unknown_keys = conf.keys - FB::Systemd::TIMER_COOKBOOK_KEYS - optional_keys
     if unknown_keys.any?
       Chef::Log.warn(

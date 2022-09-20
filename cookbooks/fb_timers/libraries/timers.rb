@@ -31,6 +31,7 @@ module FB
       'autostart' => true,
       'command' => nil,
       'description' => nil,
+      'fixed_splay' => true,
       'only_if' => nil,
       'persistent' => false,
       'requires_enable' => true,

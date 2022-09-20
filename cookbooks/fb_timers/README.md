@@ -89,6 +89,12 @@ Optional fields:
 * `splay`: Maximum random time to wait before executing the task. A value of 0
   disables this behavior. Corresponds to the field `RandomizedDelaySec` in
   (defaults to `0s`)
+* `fixed_splay`: Boolean to control whether or not the timer should use a
+  constant delay value to prevent the splay being recalculated with each systemd
+  daemon reload or timer restart. A value of `true` has no effect when `splay`
+  is `0s`. Corresponds to the field `FixedRandomDelay` of the systemd timer unit
+  added in systemd 247. For older versions of systemd, `FixedRandomDelay` will
+  be omitted from the timer unit. (defaults to `true`)
 * `syslog`: Whether or not to enable syslog for this service. A value of true
   sets `StandardOutput` and `StandardError` to `syslog`, and `SyslogIdentifier`
   to the name of your job. As of systemd 246, `StandardOutput` and
