@@ -36,3 +36,13 @@ service 'disable kpatch' do
   service_name 'kpatch'
   action [:stop, :disable]
 end
+
+fb_systemd_override 'before-remount-fs' do
+  unit_name 'kpatch.service'
+  content({
+            'Unit' => {
+              'DefaultDependencies' => 'no',
+              'Before' => 'systemd-remount-fs.service',
+            },
+          })
+end
