@@ -1,0 +1,34 @@
+<%
+  if node.centos7?
+    interpreter = '/usr/bin/env python'
+  else
+    interpreter = '/usr/libexec/platform-python'
+  end
+%>
+#!<%= interpreter %>
+
+
+import json
+import logging
+import logging.handlers
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
+handler = logging.handlers.SysLogHandler("dev/log")
+logger.addHandler(handler)
+
+try:
+    with open("/etc/sysfs_files_on_boot") as hashfile_json:
+        hashfile =json.load(hashfile_json)
+
+#only catch FileNotFoundError when trying to load original file
+except FileNotFoundError:
+  logger.info(f"set_sysfs_on_boot.py: /etc/sysfs_files_on_boot does not exist. set_sysfs_on_boot is not writing.")
+  exit
+try:
+  for filename,filecontent in hashfile.items():
+      with open(filename.strip(), "r+") as sysfs_file:
+          sysfs_file.write(filecontent)
+          logger.info(f"set_sysfs_on_boot.py: {filecontent} written to {filename}")
+#log exception to syslog instead of somewhere else
+except Exception as e:
+    logger.exception(str(e))

@@ -25,6 +25,7 @@ property :type, Symbol, :required => true
 property :ignore_einval, [true, false], :default => false
 # allows clients to pass in a callback to be used instead of a direct read
 property :read_method, Method, :required => false
+property :set_on_boot, [true, false], :default => false
 
 action_class do
   include FB::Sysfs::Provider
@@ -77,17 +78,30 @@ action :set do
   elsif current_resource.value == :EINVAL
     if new_resource.ignore_einval
       Chef::Log.warn("fb_sysfs: ignoring EINVAL on #{new_resource.path} as " +
-                     'requested, resource will be left unmanaged!')
+                     'requested, resource will be left unmanaged!  This resource will
+                     not be set_on_boot')
+
+      if new_resource.set_on_boot
+        fail 'fb_sysfs set_on_boot has been set with ignore EINVAL.  This will not set sysfs files on boot.'
+      end
     else
       fail "fb_sysfs: got EINVAL on #{new_resource.path} and ignore_einval " +
            'is false, aborting!'
     end
   elsif check(current_resource.value, new_resource.value, new_resource.type)
+    if new_resource.set_on_boot
+      create_set_on_boot_hash(node, new_resource.type, new_resource.path, new_resource.value)
+      Chef::Log.debug("fb_sysfs #{new_resource.path}: value #{new_resource.value} will be set on boot.")
+    end
     Chef::Log.debug(
       "fb_sysfs #{new_resource.path}: Value set correctly, nothing to do. " +
       "Current value: #{current_resource.value.inspect}",
     )
   else
+    if new_resource.set_on_boot
+      create_set_on_boot_hash(node, new_resource.type, new_resource.path, new_resource.value)
+      Chef::Log.debug("fb_sysfs #{new_resource.path}: value #{new_resource.value} will be set on reboot.")
+    end
     # We are using file to write content, not to manage the file itself,
     # so we exempt the internal foodcritic rule that requires owner/group/mode.
     file new_resource.path do # ~FB023

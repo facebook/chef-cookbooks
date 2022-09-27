@@ -1,7 +1,9 @@
 #
+# Cookbook Name:: fb_sysfs
+#
 # vim: syntax=ruby:expandtab:shiftwidth=2:softtabstop=2:tabstop=2
 #
-# Copyright (c) 2016-present, Facebook, Inc.
+# (c) Facebook, Inc. and its affiliates. Confidential and proprietary.
 # All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,28 +19,4 @@
 # limitations under the License.
 #
 
-module FB
-  class Sysfs
-    module Provider
-      def check(current, new, type)
-        case type
-        when :list
-          current.include?("[#{new.chomp}]")
-        when :int
-          current.to_i == new.to_i
-        else
-          current.chomp == new.chomp
-        end
-      end
-
-      def create_set_on_boot_hash(node, type, path, content)
-        if type==:list
-          node.default['fb_sysfs']['_set_on_boot'][path]= "#{content.to_s.chomp}\n"
-
-        else
-          node.default['fb_sysfs']['_set_on_boot'][path]= content.to_s
-        end
-      end
-    end
-  end
-end
+default['fb_sysfs'] ={ '_set_on_boot'=> {} }
