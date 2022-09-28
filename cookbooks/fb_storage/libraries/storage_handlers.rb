@@ -62,6 +62,10 @@ module FB
 
       attr_accessor :mkfs_timeout
 
+      class << self
+        attr_reader :name
+      end
+
       def initialize(device, node)
         if self.instance_of?(FB::Storage::Handler)
           fail NO_BASE_CLASS_MSG
@@ -504,6 +508,8 @@ module FB
       end
 
       class FioHandler < FB::Storage::Handler
+        @name = 'FioHandler'
+
         def initialize(device, node)
           super
           @type = :fio
@@ -535,6 +541,8 @@ module FB
       end
 
       class JbodHandler < FB::Storage::Handler
+        @name = 'JbodHandler'
+
         def initialize(device, node)
           super
           @type = :jbod
@@ -550,6 +558,8 @@ module FB
       end
 
       class MdHandler < FB::Storage::Handler
+        @name = 'MdHandler'
+
         def initialize(device, node)
           super
           @type = :md
