@@ -1,8 +1,10 @@
 <%
   if node.centos7?
     interpreter = '/usr/bin/env python'
-  else
+  elsif node.centos8?
     interpreter = '/usr/libexec/platform-python'
+  else
+    interpreter = '/usr/bin/python3'
   end
 %>
 #!<%= interpreter %>
@@ -22,13 +24,13 @@ try:
 
 #only catch FileNotFoundError when trying to load original file
 except FileNotFoundError:
-  logger.info(f"set_sysfs_on_boot.py: /etc/sysfs_files_on_boot does not exist. set_sysfs_on_boot is not writing.")
+  logger.info("set_sysfs_on_boot.py: /etc/sysfs_files_on_boot does not exist. set_sysfs_on_boot is not writing.")
   exit
 try:
   for filename,filecontent in hashfile.items():
       with open(filename.strip(), "r+") as sysfs_file:
           sysfs_file.write(filecontent)
-          logger.info(f"set_sysfs_on_boot.py: {filecontent} written to {filename}")
+          logger.info("set_sysfs_on_boot.py: %s written to %s" % (filecontent, filename))
 #log exception to syslog instead of somewhere else
 except Exception as e:
     logger.exception(str(e))
