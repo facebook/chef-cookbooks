@@ -23,6 +23,7 @@ Attributes
 * node['fb_swap']['swapoff_allowed_because']
 * node['fb_swap']['filesystem']
 * node['fb_swap']['strict']
+* node['fb_swap']['allow_unmanaged']
 
 Usage
 -----
@@ -89,3 +90,10 @@ node.default['fb_swap']['strict'] = false
 * btrfs root filesystem is not supported until https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=ed46ff3d423780fa5173b38a844bf0fdb210a2a7
 * If any device(s) belonging to the root filesystem are rotational, using a
   swap file is not recommended.
+
+### allow_unmanaged
+You can disable the sanity check which looks for unmanaged swap devices via:
+
+```ruby
+node.default['fb_swap']['allow_unmanaged'] = true
+```

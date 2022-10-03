@@ -54,7 +54,9 @@ module FB
           # found the additional swap file
           additional_file_current_size_bytes = swap['size_bytes']
         else
-          fail "fb_swap: Found an unmanaged swap: #{swap}"
+          unless node['fb_swap']['allow_unmanaged']
+            fail "fb_swap: Found an unmanaged swap: #{swap}"
+          end
         end
       end
 
