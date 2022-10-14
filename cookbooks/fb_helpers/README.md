@@ -444,6 +444,12 @@ The following methods are available:
    if the client does not support lazy attributes the block is evaluated and
    the value is returned
 
+* `FB::Helpers.evaluate_lazy_enumerable { my_enumerable }`
+   Should be used when a potentially nested Enumerable contains a
+   Chef::DelayedEvaluator that will not be directly assigned
+   directly to resource attribute.  This should only be executed at converge time
+   within a lazy block.
+
 * `FB::Helpers.commentify(comment, arg)`
    Commentify takes the string in `comment` and wraps it appropriately
    for being a comment. By default it'll comment it ruby-style (leading "# ")

@@ -51,6 +51,32 @@ module FB
       end
     end
 
+    # evaluate_lazy_hash() should be used to evaluate an object that contains
+    # DelayedEvaluators that will not be assigned to an attribute and hence be
+    # evaluated
+    #
+    # Usage:
+    #   evaluate_lazy_enumerable { my_enumerable }
+    #
+    # Arguments:
+    #   my_enumerable: An enumerable that contains elements that should be evaluated
+    #
+    def self.evaluate_lazy_enumerable(my_enumerable)
+      if my_enumerable.respond_to?(:each_pair)
+        my_enumerable.each_pair do |key, value|
+          if value.respond_to?(:each)
+            evaluate_lazy_enumerable(value)
+          elsif value.is_a?(::Chef::DelayedEvaluator)
+            my_enumerable[key] = value.call
+          end
+        end
+      elsif my_enumerable.respond_to?(:each)
+        my_enumerable.each do |element|
+          evaluate_lazy_enumerable(element)
+        end
+      end
+    end
+
     # commentify() takes a text string and converts it to a (possibly)
     # multi-line comment suitable for dropping into a config file.
     #

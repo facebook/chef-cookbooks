@@ -19,6 +19,49 @@ require 'chef'
 require_relative '../libraries/fb_helpers'
 
 describe FB::Helpers do
+  context 'evaluate_lazy_enumerable' do
+    before do
+      stub_const('Chef::VERSION', '17.0.42')
+    end
+
+    it 'makes no change to simple hash' do
+      test_var = { 'test' => 'var' }
+
+      expect(FB::Helpers.evaluate_lazy_enumerable(test_var)).to eq(test_var)
+    end
+
+    it 'evaluates a simple hash' do
+      target = { 'test' => 'test' }
+      test_var = { 'test' => FB::Helpers.attempt_lazy { 'test' } }
+
+      expect(FB::Helpers.evaluate_lazy_enumerable(test_var)).to eq(target)
+    end
+
+    it 'evaluates a multi-level hash' do
+      target = { 'level1' => {
+        'level2' => 'test',
+      } }
+      test_var = { 'level1' => {
+        'level2' => FB::Helpers.attempt_lazy { 'test' },
+      } }
+
+      expect(FB::Helpers.evaluate_lazy_enumerable(test_var)).to eq(target)
+    end
+
+    it 'evaluates a an array of hashes' do
+      target = { 'level1' => [
+        { 'array_1' => 'test' },
+        { 'array_2' => 'test' },
+      ] }
+      test_var = { 'level1' => [
+        { 'array_1' => FB::Helpers.attempt_lazy { 'test' } },
+        { 'array_2' => FB::Helpers.attempt_lazy { 'test' } },
+      ] }
+
+      expect(FB::Helpers.evaluate_lazy_enumerable(test_var)).to eq(target)
+    end
+  end
+
   context 'attempt_lazy' do
     it 'returns a DelayedEvaluator for chef 17.0.42' do
       stub_const('Chef::VERSION', '17.0.42')
