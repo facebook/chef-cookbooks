@@ -189,8 +189,9 @@ Layout/LeadingCommentSpace:
 Layout/LeadingEmptyLines:
   Enabled: true
 
+# Modern terminals are usually capable to show more than 80 columns
 Layout/LineLength:
-  Max: 80
+  Max: 120
 
 Layout/MultilineArrayBraceLayout:
   Enabled: true
