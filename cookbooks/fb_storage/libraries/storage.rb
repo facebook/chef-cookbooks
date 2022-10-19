@@ -76,9 +76,14 @@ module FB
 
     # List of devices the storage API shouldn't touch, so the ones holding
     # / and /boot as touching those could result in tears
-    def self.devices_to_skip(node)
-      # Legacy. We should probably fail hard here
-      return [] unless node.device_of_mount('/')
+    def self.devices_to_skip(node, strict = false)
+      unless node.device_of_mount('/')
+        error_msg = 'fb_storage: Root mount device not found.'
+        Chef::Log.info(error_msg)
+        fail error_msg if strict
+        return []
+      end
+
       # If / or /boot is mounted in a RAID array, exclude all the members
       root_dev = self.root_device_name(node)
       return [] unless root_dev
