@@ -71,8 +71,12 @@ module FB
           end
         end
       elsif my_enumerable.respond_to?(:each)
-        my_enumerable.each do |element|
-          evaluate_lazy_enumerable(element)
+        my_enumerable.each_with_index do |element, index|
+          if element.respond_to?(:each)
+            evaluate_lazy_enumerable(element)
+          elsif element.is_a?(::Chef::DelayedEvaluator)
+            my_enumerable[index] = element.call
+          end
         end
       end
     end

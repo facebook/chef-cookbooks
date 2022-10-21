@@ -60,6 +60,17 @@ describe FB::Helpers do
 
       expect(FB::Helpers.evaluate_lazy_enumerable(test_var)).to eq(target)
     end
+
+    it 'evaluates a an array of DelayedEvaluators' do
+      target = ['test', 'test1']
+
+      test_var = [
+        FB::Helpers.attempt_lazy { 'test' },
+        FB::Helpers.attempt_lazy { 'test1' },
+      ]
+
+      expect(FB::Helpers.evaluate_lazy_enumerable(test_var)).to eq(target)
+    end
   end
 
   context 'attempt_lazy' do
