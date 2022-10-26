@@ -135,7 +135,7 @@ end
 
 if node.windows?
   windows_service 'FluentBit' do
-    action :start
+    action :nothing
   end
 else
   service 'td-agent-bit' do
