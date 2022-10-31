@@ -21,7 +21,7 @@
 grub_base_dir = node['fb_grub']['_grub_base_dir']
 grub2_base_dir = node['fb_grub']['_grub2_base_dir']
 
-directory 'efi_vendor_dir' do # ~FB024 mode is controlled by mount options
+directory 'efi_vendor_dir' do # rubocop:disable Chef/Meta/RequireOwnerGroupMode # ~FB024 mode is controlled by mount options
   only_if { node.efi? }
   path lazy { node['fb_grub']['_efi_vendor_dir'] }
   owner 'root'
