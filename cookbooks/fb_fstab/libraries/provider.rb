@@ -67,13 +67,13 @@ module FB
         # we pass in a relatively sane perm which is subject to umask If they
         # sent in perms, we'll do a real chmod right afterward which isn't
         # subject to umask.
-        FileUtils.mkdir_p(mount_data['mount_point'], :mode => 0o755)
+        FileUtils.mkdir_p(mount_data['mount_point'], :mode => 0o755) # rubocop:disable Chef/Meta/DontUseFileUtils
         if mount_data['mp_perms']
-          FileUtils.chmod(mount_data['mp_perms'].to_i(8),
+          FileUtils.chmod(mount_data['mp_perms'].to_i(8), # rubocop:disable Chef/Meta/DontUseFileUtils
                           mount_data['mount_point'])
         end
         if mount_data['mp_owner'] || mount_data['mp_group']
-          FileUtils.chown(mount_data['mp_owner'], mount_data['mp_group'],
+          FileUtils.chown(mount_data['mp_owner'], mount_data['mp_group'], # rubocop:disable Chef/Meta/DontUseFileUtils
                           mount_data['mount_point'])
         end
         if mount_data['mp_immutable']
@@ -136,7 +136,7 @@ module FB
       true
     end
 
-    def umount(mount_point, lock_file)
+    def umount(mount_point, lock_file, remove_dir)
       Chef::Log.info("fb_fstab: Unmounting #{mount_point}")
       s = Mixlib::ShellOut.new("/bin/umount #{mount_point}")
       _run_command_flocked(s, lock_file, mount_point)
@@ -150,6 +150,17 @@ module FB
         _run_command_flocked(sl, lock_file, mount_point)
       else
         s.error!
+      end
+      if remove_dir == true
+        Chef::Log.info("fb_fstab: Best effort removing #{mount_point}")
+        s = Mixlib::ShellOut.new("/usr/bin/rmdir #{mount_point}")
+        _run_command_flocked(s, lock_file, mount_point)
+        if s.error?
+          Chef::Log.warn("fb_fstab: #{s.stderr.chomp}")
+          Chef::Log.warn(
+            "fb_fstab: Removing #{mount_point} failed",
+          )
+        end
       end
       true
     end
@@ -332,7 +343,7 @@ module FB
 
         if node['fb_fstab']['enable_unmount']
           converge_by "unmount #{mounted_data['mount']}" do
-            umount(mounted_data['mount'], mounted_data['lock_file'])
+            umount(mounted_data['mount'], mounted_data['lock_file'], node['fb_fstab']['umount_delete_empty_mountdir'])
           end
         else
           Chef::Log.warn(

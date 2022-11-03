@@ -18,6 +18,7 @@ Attributes
 * node['fb_fstab']['umount_ignores']['types']
 * node['fb_fstab']['umount_ignores']['mount_points']
 * node['fb_fstab']['umount_ignores']['mount_point_prefixes']
+* node['fb_fstab']['umount_delete_empty_mountdir']
 * node['fb_fstab']['mounts'][$NAME]['device']
 * node['fb_fstab']['mounts'][$NAME]['mount_point']
 * node['fb_fstab']['mounts'][$NAME]['type']
@@ -87,6 +88,12 @@ may want:
 ```ruby
 node.default['fb_fstab']['umount_ignores']['devices'] << '/dev/sdb'
 ```
+
+`node['fb_fstab']['umount_delete_empty_mountdir']` - only works if
+`node['fb_fstab']['enable_unmount']` is true. It will try to best effort
+remove the mount dir directory - it has to be empty and not mounted
+for this step to be successful. Does log warning on `rmdir` error but does not
+throw exception.
 
 ### Filesystem Options
 The following options map directly to their `/etc/fstab` counterparts, so see
