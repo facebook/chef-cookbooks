@@ -23,7 +23,10 @@ provides :fb_sdparm
 
 def get_sdparm_value(param, device)
   cmd = Mixlib::ShellOut.new("sdparm --get #{param} /dev/#{device}").run_command
-  cmd.error!
+  # revert D40956734 when sdparm v1.13 ships
+  unless [0, 5].include?(cmd.exitstatus)
+    fail 'fb_sdparm: shellout to sdparm returned unexpected exit code'
+  end
   output = cmd.stdout
   # Match anything besides whitespace between '=' and paren
   re = /^#{param}\s+(\w+)\s/m
