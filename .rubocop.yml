@@ -1061,7 +1061,7 @@ Style/MutableConstant:
   Enabled: true
 
 Style/NegatedIf:
-  Enabled: true
+  Enabled: false
 
 Style/NegatedUnless:
   Enabled: true
