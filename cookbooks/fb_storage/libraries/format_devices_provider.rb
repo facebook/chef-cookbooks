@@ -419,7 +419,7 @@ module FB
         indicator_file = FB::Storage::ALREADY_ERASED_ALL_FILE
         if node.firstboot_tier? && format_rules['firstboot_eraseall'] &&
             !File.exist?(indicator_file)
-          FileUtils.touch(indicator_file) # ~FB029
+          FileUtils.touch(indicator_file) # rubocop:disable Chef/Meta/DontUseFileUtils
         end
       end
 
@@ -603,10 +603,10 @@ module FB
         # tmpfs, that's not a thing you'd actually do, so in practice it's
         # effectively just a place to mask things.
         unless File.exist?(FSTAB_GENERATOR_FILE)
-          FileUtils.ln_s('/dev/null', FSTAB_GENERATOR_FILE)
+          FileUtils.ln_s('/dev/null', FSTAB_GENERATOR_FILE) # rubocop:disable Chef/Meta/DontUseFileUtils
         end
         unless File.exist?(UDEV_MDADM_RULE)
-          FileUtils.ln_s('/dev/null', UDEV_MDADM_RULE)
+          FileUtils.ln_s('/dev/null', UDEV_MDADM_RULE) # rubocop:disable Chef/Meta/DontUseFileUtils
         end
         systemd_daemon_reload
       end
