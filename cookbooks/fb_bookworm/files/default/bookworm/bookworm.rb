@@ -106,19 +106,6 @@ if config.source_dirs.nil? || config.source_dirs.empty?
   fail 'configuration source_dirs cannot be empty'
 end
 
-def load_reports_dir(dir)
-  files = Dir.glob("#{dir}/*.rb")
-  files.each do |f|
-    name = Pathname(f).basename.to_s.gsub('.rb', '')
-    begin
-      Bookworm.load_report_class name, :dir => dir
-    rescue Bookworm::ClassLoadError
-      puts "Unable to load report #{f}"
-      exit(false)
-    end
-  end
-end
-
 report_src_dirs = ["#{__dir__}/reports/"]
 if Dir.exist? "#{config.system_contrib_dir}/reports"
   report_src_dirs.append "#{config.system_contrib_dir}/reports"
@@ -126,26 +113,13 @@ end
 
 if options[:"list-reports"]
   report_src_dirs.each do |d|
-    load_reports_dir d
+    Bookworm.load_reports_dir d
   end
 
   puts Bookworm::Reports.constants.map { |x|
     "#{x}\t#{Module.const_get("Bookworm::Reports::#{x}")&.description}"
   }.sort.join("\n")
   exit
-end
-
-def load_rules_dir(dir)
-  files = Dir.glob("#{dir}/*.rb")
-  files.each do |f|
-    name = Pathname(f).basename.to_s.gsub('.rb', '')
-    begin
-      Bookworm.load_rule_class name, :dir => dir
-    rescue Bookworm::ClassLoadError
-      puts "Unable to load rule #{f}"
-      exit(false)
-    end
-  end
 end
 
 rule_src_dirs = ["#{__dir__}/rules/"]
@@ -155,7 +129,7 @@ end
 
 if options[:"list-rules"]
   rule_src_dirs.each do |d|
-    load_reports_dir d
+    Bookworm.load_rules_dir d
   end
   puts Bookworm::InferRules.constants.map { |x|
     "#{x}\t#{Module.const_get("Bookworm::InferRules::#{x}")&.description}"

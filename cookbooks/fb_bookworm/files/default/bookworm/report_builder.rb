@@ -14,6 +14,7 @@
 # limitations under the License.
 #
 require 'json'
+require 'pathname'
 
 module Bookworm
   class BaseReport
@@ -63,6 +64,7 @@ module Bookworm
       puts output
     end
   end
+
   def self.get_report_rules(report_name)
     klass = Module.const_get("Bookworm::Reports::#{report_name}")
     klass.needs_rules
@@ -74,5 +76,18 @@ module Bookworm
     ::Bookworm::Reports.const_get(name.to_sym).class_eval(f)
   rescue StandardError
     raise Bookworm::ClassLoadError
+  end
+
+  def self.load_reports_dir(dir)
+    files = Dir.glob("#{dir}/*.rb")
+    files.each do |f|
+      name = Pathname(f).basename.to_s.gsub('.rb', '')
+      begin
+        Bookworm.load_report_class name, :dir => dir
+      rescue Bookworm::ClassLoadError
+        puts "Unable to load report #{f}"
+        exit(false)
+      end
+    end
   end
 end

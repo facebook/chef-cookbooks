@@ -14,6 +14,8 @@
 # limitations under the License.
 #
 require 'rubocop'
+require 'pathname'
+
 module Bookworm
   class InferRule
     class << self
@@ -61,5 +63,18 @@ module Bookworm
     ::Bookworm::InferRules.const_get(name.to_sym).class_eval(f)
   rescue StandardError
     raise Bookworm::ClassLoadError
+  end
+
+  def self.load_rules_dir(dir)
+    files = Dir.glob("#{dir}/*.rb")
+    files.each do |f|
+      name = Pathname(f).basename.to_s.gsub('.rb', '')
+      begin
+        Bookworm.load_rule_class name, :dir => dir
+      rescue Bookworm::ClassLoadError
+        puts "Unable to load rule #{f}"
+        exit(false)
+      end
+    end
   end
 end
