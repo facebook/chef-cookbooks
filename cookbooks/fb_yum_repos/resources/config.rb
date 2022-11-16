@@ -22,7 +22,7 @@ property :repos, Hash, :required => true
 default_action :create
 
 action :create do
-  template new_resource.path do # ~FB031 ~FB032
+  template new_resource.path do # rubocop:disable Chef/Meta/AvoidCookbookProperty # ~FB031 ~FB032
     cookbook 'fb_yum_repos'
     source 'yum.conf.erb'
     owner node.root_user

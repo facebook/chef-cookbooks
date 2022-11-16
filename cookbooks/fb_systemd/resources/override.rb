@@ -62,7 +62,7 @@ action :create do
     mode '0755'
   end
 
-  template ::File.join(override_dir, override_file) do # ~FB031 ~FB032
+  template ::File.join(override_dir, override_file) do # rubocop:disable Chef/Meta/AvoidCookbookProperty # ~FB031 ~FB032
     # If source is specified, use it, otherwise use our template...
     if new_resource.source
       source new_resource.source
