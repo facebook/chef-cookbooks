@@ -224,16 +224,7 @@ class Chef
     end
 
     def macos?
-      # rubocop:disable Chef/Correctness/InvalidPlatformValueForPlatformHelper
-      #
-      # Almost certainly `macos` was never a platform from Ohai, but it seems
-      # to be showing up in FB datasets, so for now, we'll just keep both,
-      # but it's likely a handler doing some munging. Once that gets sorted,
-      # this should get fixed.
-      # rubocop:enable Chef/Correctness/InvalidPlatformValueForPlatformHelper
-      %w{mac_os_x macos}.include?(self['platform'])
-    rescue StandardError
-      RUBY_PLATFORM.include?('darwin')
+      self['platform'] == 'mac_os_x'
     end
 
     alias macosx? macos?
