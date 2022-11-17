@@ -23,6 +23,8 @@ if node.centos?
     '.ICE-unix',
     '.Test-unix',
   ]
+elsif node.windows?
+  excludes = []
 else
   excludes = [
     '.X*-{lock,unix,unix/*}',
@@ -43,4 +45,5 @@ default['fb_tmpclean'] = {
   'excludes' => excludes,
   'remove_special_files' => false,
   'manage_packages' => true,
+  'windows_script_location' => 'c:\\chef\\fbit\\cleanup-temp.ps1',
 }

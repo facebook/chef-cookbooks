@@ -17,6 +17,11 @@
 # limitations under the License.
 #
 
+if platform_family?('windows')
+  include_recipe 'fb_tmpclean::windows'
+  return
+end
+
 include_recipe 'fb_tmpclean::packages'
 
 case node['platform_family']

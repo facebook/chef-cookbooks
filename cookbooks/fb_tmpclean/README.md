@@ -5,11 +5,12 @@ to ensure more appropriate filesystem cleanup.
 
 Requirements
 ------------
-Supports four platforms:
-* CentOS = tmpwatch
-* Debian = tmpreaper
-* Fedora = tmpwatch
-* macOS  = tmpreaper
+Supports five platforms:
+* CentOS  = tmpwatch
+* Debian  = tmpreaper
+* Fedora  = tmpwatch
+* macOS   = tmpreaper
+* Windows = powershell script
 
 Attributes
 ----------
@@ -18,6 +19,7 @@ Attributes
 * node['fb_tmpclean']['excludes']
 * node['fb_tmpclean']['timestamptype']
 * node['fb_tmpclean']['extra_lines']
+* node[;fb_tmpclean']['windows_script_location']
 
 Usage
 -----
@@ -34,6 +36,9 @@ the respective packages. It defaults to 240, and the files covered are:
 
 * CentOS and Fedora Includes (if exists)
   `/var/{cache/man,catman}/{cat?,X11R6/cat?,local/cat?}`
+
+* Windows includes (if exists)
+  `c:\\windows\\temp,c:\\temp`
 
 ### directories
 
@@ -61,6 +66,9 @@ for dir in directories:
     for exclusion in exclusions:
         print '-X ' + dir + '/' + exclusions
 ```
+
+Windows uses the -exclude parameter to Get-Childitem, which also takes globs, however
+the globs are file globs in this case
 
 ### timestamptype
 
@@ -111,3 +119,9 @@ Defaults:
   `attributes/default.rb'
 * `remove_special_files` defaults to false to avoid a default case that may be
   dangerous
+
+### windows_script_location
+
+This is where the windows powershell script is generated - it will be called as a
+schedulded task based on the timings specified in the other node attributes.  It
+defaults to c:\chef\fbit\cleanup-tmp.ps1.
