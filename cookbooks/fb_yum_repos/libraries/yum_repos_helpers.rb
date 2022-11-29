@@ -23,6 +23,7 @@ module FB
       'enabled',
       'countme',
       'repo_gpgcheck',
+      'module_hotfixes',
     ].freeze
 
     def self.get_default_gpg_key(_node)
