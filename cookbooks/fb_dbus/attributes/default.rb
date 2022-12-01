@@ -26,6 +26,7 @@ end
 default['fb_dbus'] = {
   'implementation' => implementation,
   'manage_packages' => true,
+  'manage_dbus_tools' => false,
   'reboot_required' => true,
   'allow_implementation_switch' => false,
 }

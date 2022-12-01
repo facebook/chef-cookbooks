@@ -24,6 +24,15 @@ package %w{dbus dbus-libs} do
   action :upgrade
 end
 
+# only install dbus-tools when requested
+package %w{dbus-tools} do
+  only_if do
+    node['fb_dbus']['manage_packages'] &&
+      node['fb_dbus']['manage_dbus_tools']
+  end
+  action :upgrade
+end
+
 package 'dbus-broker' do
   only_if do
     node['fb_dbus']['manage_packages'] &&
