@@ -9,3 +9,17 @@
     <% end -%>
 
 <% end -%>
+<% FB::Fluentbit.multiline_parsers_from_node(node).each do |parser| %>
+[MULTILINE_PARSER]
+    Name <%= parser.name %>
+    <% parser.config.each do |key, value| -%>
+    <% if key.eql?('rules') -%>
+    <%   value.each do |rule| -%>
+    rule  "<%= rule['state_name'] %>"  "<%= rule['pattern'] %>"  "<%= rule['next_state'] %>"
+    <%   end -%>
+    <% else -%>
+    <%= key %> <%= value %>
+    <% end -%>
+    <% end -%>
+
+<% end -%>

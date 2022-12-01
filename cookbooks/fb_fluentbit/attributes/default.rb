@@ -39,6 +39,7 @@ default['fb_fluentbit'] = {
   'input' => {},
   'filter' => {},
   'output' => {},
+  'multiline_parser' => {},
 
   # Handle package install
   'manage_packages' => true,

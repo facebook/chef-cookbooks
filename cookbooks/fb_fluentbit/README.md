@@ -163,3 +163,41 @@ This will be rendered in parsers.conf as:
     Time_Key time
     Time_Format %Y-%m-%dT%H:%M:%S %z
 ```
+
+### Custom Multiline Parsers
+Parsers can be configured by setting their name and configuration in
+`node['fb_fluentbit']['multiline_parser']` like so:
+
+```
+node.default['fb_fluentbit']['multiline_parser']['multiline-choco'] = {
+  'name' => 'multiline-choco',
+  'type' => 'regex',
+  'flush_timeout' => '1000',
+  "rules" => (
+    {
+      "state_name" => "start_state",
+      "pattern" => "/^(?<time>\d{4}\-\d{2}\-\d{2} \d{2}\:\d{2}\:\d{2},\d+) (?<thread>\d+) \[(?<log_level>(DEBUG|INFO |WARN |ERROR))\].*$/",
+      "next_state" => "cont",
+    },
+    {
+      "state_name" => "cont",
+      "pattern" => "/^(?!\d{4}\-\d{2}\-\d{2} \d{2}\:\d{2}\:\d{2},\d+).*/",
+      "next_state" => "cont",
+    },
+  ),
+}
+```
+
+Rules must be ordered and "start_state" MUST be the name of the first rule.
+See https://docs.fluentbit.io/manual/v/1.9-pre/administration/configuring-fluent-bit/multiline-parsing#rules-definition
+
+This will be rendered in parsers.conf as:
+
+```
+[MULTILINE_PARSER]
+    name  multiline-choco
+    type  regex
+    flush_timeout  1000
+    rule  "start_state"  "/^(?<time>\d{4}\-\d{2}\-\d{2} \d{2}\:\d{2}\:\d{2},\d+) (?<thread>\d+) \[(?<log_level>(DEBUG|INFO |WARN |ERROR))\].*$/"  "cont"
+    rule  "cont"  "/^(?!\d{4}\-\d{2}\-\d{2} \d{2}\:\d{2}\:\d{2},\d+).*/"  "cont"
+```

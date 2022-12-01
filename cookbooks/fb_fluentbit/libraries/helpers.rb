@@ -46,6 +46,12 @@ module FB
       end
     end
 
+    def self.multiline_parsers_from_node(node)
+      node['fb_fluentbit']['multiline_parser'].map do |name, config|
+        MultilineParser.new(name, config)
+      end
+    end
+
     class ExternalPlugin
       attr_reader :name, :package, :path
 
@@ -86,6 +92,42 @@ module FB
       def validate
         if format.nil?
           fail "fb_fluentbit: parser '#{@name}' does not define format"
+        end
+      end
+    end
+
+    class MultilineParser
+      attr_reader :name, :config
+
+      def initialize(name, config)
+        @name = name
+        @config = config
+      end
+
+      def validate_rules
+        # Rules are ordered, check if it's an array
+        return false unless @config['rules'].is_a?(Array)
+
+        # Check each rule
+        @config['rules'].each_with_index do |rule, index|
+          # Rules are hashes
+          return false unless rule.is_a?(Hash)
+          # Check for required keys
+          ['state_name', 'pattern', 'next_state'].each do |key|
+            return false unless rule.key? key
+          end
+          # Check if first rule is called "start_state"
+          if index.eql?(0)
+            return false unless rule['state_name'].eql?('start_state')
+          end
+          # Ensure that the "next_state" key actually exists
+          return false unless @config['rules'].any? { |a| a['state_name'].eql?(rule['next_state']) }
+        end
+      end
+
+      def validate
+        unless validate_rules
+          fail "fb_fluentbit: multiline parser '#{@name}' contains rule errors"
         end
       end
     end

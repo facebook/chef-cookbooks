@@ -70,6 +70,52 @@ recipe(
     end.to raise_error(RuntimeError)
   end
 
+  it 'should raise on error if multiline_parser rule is missing' do
+    expect do
+      tc.chef_run.converge(described_recipe) do |node|
+        node.default['fb_fluentbit']['multiline_parser']['my_multi_parse'] = {
+          'type' => 'regex',
+          'flush_timeout' => '1000',
+          'rules' => [
+            {
+              'state_name' => 'start_state',
+              'pattern' => '/^\d{4}\-\d{2}\-\d{2} \d{2}\:\d{2}\:\d{2},\d+ .*$/',
+              'next_state' => 'cont',
+            },
+            {
+              'state_name' => 'cont',
+              'pattern' => '/^ - .*/',
+              'next_state' => 'non_existant_rule',
+            },
+          ],
+        }
+      end
+    end.to raise_error(/fb_fluentbit: multiline parser .* contains rule errors/)
+  end
+
+  it 'should raise on error if multiline_parser start_state rule is missing' do
+    expect do
+      tc.chef_run.converge(described_recipe) do |node|
+        node.default['fb_fluentbit']['multiline_parser']['my_multi_parse'] = {
+          'type' => 'regex',
+          'flush_timeout' => '1000',
+          'rules' => [
+            {
+              'state_name' => 'begin',
+              'pattern' => '/^\d{4}\-\d{2}\-\d{2} \d{2}\:\d{2}\:\d{2},\d+ .*$/',
+              'next_state' => 'cont',
+            },
+            {
+              'state_name' => 'cont',
+              'pattern' => '/^ - .*/',
+              'next_state' => 'non_existant_rule',
+            },
+          ],
+        }
+      end
+    end.to raise_error(/fb_fluentbit: multiline parser .* contains rule errors/)
+  end
+
   context 'external plugin with bad config' do
     it 'should raise error when "package" is missing' do
       expect do

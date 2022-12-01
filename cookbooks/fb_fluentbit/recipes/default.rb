@@ -24,6 +24,9 @@ whyrun_safe_ruby_block 'validate fluentbit config' do
     parsers = FB::Fluentbit.parsers_from_node(node)
     parsers.each(&:validate)
 
+    multiline_parsers = FB::Fluentbit.multiline_parsers_from_node(node)
+    multiline_parsers.each(&:validate)
+
     external_plugins = FB::Fluentbit.external_plugins_from_node(node)
     external_plugins.each(&:validate)
 
