@@ -45,20 +45,24 @@ action :manage do
     end
   end
 
-  managed_networks = []
-  managed_links = []
-  managed_netdevs = []
+  # First collect all the systemd-networkd configuration files on the host. As
+  # we parse each interface, items will be removed from each array. By the
+  # end of the resource, only unmanaged (e.g. interfaces/files we want to =
+  # remove) will remain.
+  on_host_networks = []
+  on_host_links = []
+  on_host_netdevs = []
   config_glob = ::File.join(
     FB::Networkd::BASE_CONFIG_PATH, '*.{network,netdev,link}'
   )
   Dir.glob(config_glob).each do |path|
     if ::File.basename(path).include?('-fb_networkd-')
       if path.end_with?('.network')
-        managed_networks << path
+        on_host_networks << path
       elsif path.end_with?('.link')
-        managed_links << path
+        on_host_links << path
       elsif path.end_with?('.netdev')
-        managed_netdevs << path
+        on_host_netdevs << path
       end
     else
       Chef::Log.warn("fb_networkd: Unmanaged network config #{path} found")
@@ -92,22 +96,22 @@ action :manage do
     )
 
     # This file is actively managed and already exists on the host so remove it
-    # from the "manageds" array.
+    # from the "on_host" array.
     remove_conflicts = false
-    if managed_networks.include?(conffile)
-      managed_networks.delete(conffile)
+    if on_host_networks.include?(conffile)
+      on_host_networks.delete(conffile)
       remove_conflicts = true
     end
 
     # If this config was previously managed under a different name (e.g.
     # different priority) then set up a file resource to allow it to be deleted
     # when the new config is set up or if the "new" config already exists.
-    conflicting_networks = managed_networks.grep(
+    conflicting_networks = on_host_networks.grep(
       /-fb_networkd-#{conf['name']}.network$/,
     )
     conflicting_networks ||= []
     conflicting_networks.each do |path|
-      managed_networks.delete(path)
+      on_host_networks.delete(path)
 
       file path do
         only_if do
@@ -126,6 +130,7 @@ action :manage do
       end
     end
 
+    # Set up the template for this interface
     fb_helpers_gated_template conffile do # ~FB031
       allow_changes node.interface_change_allowed?(conf['name'])
       source 'networkd.conf.erb'
@@ -166,22 +171,22 @@ action :manage do
     )
 
     # This file is actively managed and already exists on the host so remove it
-    # from the "manageds" array.
+    # from the "on_host" array.
     remove_conflicts = false
-    if managed_links.include?(conffile)
-      managed_links.delete(conffile)
+    if on_host_links.include?(conffile)
+      on_host_links.delete(conffile)
       remove_conflicts = true
     end
 
     # If this config was previously managed under a different name (e.g.
     # different priority) then set up a file resource to allow it to be deleted
     # when the new config is set up or if the "new" config already exists.
-    conflicting_links = managed_links.grep(
+    conflicting_links = on_host_links.grep(
       /-fb_networkd-#{conf['name']}.link$/,
     )
     conflicting_links ||= []
     conflicting_links.each do |path|
-      managed_links.delete(path)
+      on_host_links.delete(path)
 
       file path do
         only_if do
@@ -199,6 +204,7 @@ action :manage do
       end
     end
 
+    # Set up the template for this interface
     fb_helpers_gated_template conffile do # ~FB031
       allow_changes node.interface_change_allowed?(conf['name'])
       source 'networkd.conf.erb'
@@ -242,22 +248,22 @@ action :manage do
     )
 
     # This file is actively managed and already exists on the host so remove it
-    # from the "manageds" array.
+    # from the "on_host" array.
     remove_conflicts = false
-    if managed_netdevs.include?(conffile)
-      managed_netdevs.delete(conffile)
+    if on_host_netdevs.include?(conffile)
+      on_host_netdevs.delete(conffile)
       remove_conflicts = true
     end
 
     # If this config was previously managed under a different name (e.g.
     # different priority) then set up a file resource to allow it to be deleted
     # when the new config is set up or if the "new" config already exists.
-    conflicting_netdevs = managed_netdevs.grep(
+    conflicting_netdevs = on_host_netdevs.grep(
       /-fb_networkd-#{conf['name']}.netdev$/,
     )
     conflicting_netdevs ||= []
     conflicting_netdevs.each do |path|
-      managed_netdevs.delete(path)
+      on_host_netdevs.delete(path)
 
       file path do
         only_if do
@@ -276,6 +282,7 @@ action :manage do
       end
     end
 
+    # Set up the template for this interface
     fb_helpers_gated_template conffile do # ~FB031
       allow_changes node.interface_change_allowed?(conf['name'])
       source 'networkd.conf.erb'
@@ -290,10 +297,10 @@ action :manage do
     end
   end
 
-  # For each managed file, check if we can make network changes on the
-  # inteface. If we can, then take down the interface (except links) and delete
+  # For each remaining file, check if we can make network changes on the
+  # interface. If we can, then take down the network interface and delete
   # the file.
-  managed_networks.each do |path|
+  on_host_networks.each do |path|
     iface = path[/-fb_networkd-(.*?).network/m, 1]
 
     if iface
@@ -317,7 +324,7 @@ action :manage do
     end
   end
 
-  managed_links.each do |path|
+  on_host_links.each do |path|
     iface = path[/-fb_networkd-(.*?).link/m, 1]
 
     if iface
@@ -340,7 +347,7 @@ action :manage do
     end
   end
 
-  managed_netdevs.each do |path|
+  on_host_netdevs.each do |path|
     iface = path[/-fb_networkd-(.*?).netdev/m, 1]
 
     if iface
