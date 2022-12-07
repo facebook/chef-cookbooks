@@ -17,6 +17,9 @@ require_relative 'knowledge_base'
 require_relative 'infer_base_classes'
 
 module Bookworm
+  # The InferEngine class takes a KnowledgeBase object, and then runs the given
+  # rules against the files within each bookworm key in the KnowledgeBase that
+  # the rule uses.
   class InferEngine
     def initialize(knowledge_base, rules = [])
       @kb = knowledge_base
@@ -27,11 +30,10 @@ module Bookworm
     end
 
     def process_rule(rule)
-      klass = Module.const_get("Bookworm::InferRules::#{rule}")
+      klass = Bookworm::InferRules.const_get(rule)
       klass.keys.each do |key|
-        @kb.send(BOOKWORM_KEYS[key]['plural'].to_sym).each do |name, metadata|
-          out = klass.new(metadata).output
-          @kb.add_metadata(key, name, rule, out)
+        @kb[key].each do |name, metadata|
+          @kb[key][name][rule] = klass.new(metadata).output
         end
       end
     end
