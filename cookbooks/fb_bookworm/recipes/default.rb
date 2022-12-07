@@ -18,7 +18,7 @@ cookbook_file '/usr/local/bin/bookworm' do
   source 'bookworm.sh'
   owner node.root_user
   group node.root_group
-  mode 0755
+  mode '0755'
 end
 
 remote_directory '/usr/local/lib/bookworm' do
@@ -26,5 +26,5 @@ remote_directory '/usr/local/lib/bookworm' do
   purge true
   owner node.root_user
   group node.root_group
-  mode 0755
+  mode '0755'
 end
