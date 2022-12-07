@@ -15,12 +15,10 @@
 #
 require 'rubocop'
 require 'parser/current'
-# require 'ripper'
 
-# TODO(dcrosby) move AST generation to a rule? This would allow multiple AST
-# parsers (ie ripper), which would be beneficial on heavy-duty rules It would
-# also remove overhead if only using string search/regexes in a rule (not a lot
-# of great use cases, but they exist)
+# TODO(dcrosby) Bookworm key should determine which AST parser is chosen. This
+# would allow multiple AST parsers (ie ripper) and a way of ingesting non-Ruby
+# files like JSON/YAML
 
 module Bookworm
   class Crawler
@@ -28,42 +26,33 @@ module Bookworm
 
     def initialize(config, keys: [])
       @config = config
+      @intake_queue = {}
+      @processed_files = {}
 
       # TODO(dcrosby) add messages to verbose mode
-      to_crawl = {}
-      keys.each do |k|
-        v = BOOKWORM_KEYS[k]
-        to_crawl[k] = @config.source_dirs[v['source_dirs']].
-                      map { |d| Dir.glob("#{d}/#{v['glob_pattern']}") }.flatten
-      end
-      @processed_files = {}
-      to_crawl.each do |key, files|
-        instance_variable_set("@#{key}_intake_queue", files)
-        instance_variable_set("@#{key}_processed_files", {})
-        @processed_files[key] = process_paths(key)
+      keys.each do |key|
+        generate_file_queue(key)
+        process_paths(key)
       end
     end
 
     private
 
+    def generate_file_queue(key)
+      v = BOOKWORM_KEYS[key]
+      @intake_queue[key] = @config.source_dirs[v['source_dirs']].
+                           map { |d| Dir.glob("#{d}/#{v['glob_pattern']}") }.flatten
+    end
+
     def process_paths(key)
-      queue = instance_variable_get("@#{key}_intake_queue")
+      queue = @intake_queue[key]
       processed_files = {}
       until queue.empty?
         path = queue.pop
         processed_files[path] = generate_ast(File.read(path))
       end
-      processed_files
+      @processed_files[key] = processed_files
     end
-
-    # Direct parser gem use is several seconds faster than using Rubocop
-    def generate_parser_ast(code)
-      Parser::CurrentRuby.parse(code)
-    end
-
-    # def generate_ripper_ast(code)
-    #   Ripper.sexp(code)[1]
-    # end
 
     # In order to keep rules from barfing on a nil value (when no AST is
     # generated at all from eg. an empty source code file), we supply a
