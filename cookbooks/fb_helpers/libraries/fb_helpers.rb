@@ -477,6 +477,36 @@ If the has is specified, it takes one or more of the following keys:
       self.parse_json(content, top_level_class, fallback)
     end
 
+    # parse_simple_keyvalue_file() takes a path string which contains lines of
+    # the form key=value and converts it to a ruby hash.
+    #
+    # Usage: parse_simple_keyvalue_file(path)
+    #
+    # Arguments:
+    # path: Required string. Path to the file to parse.
+    # options: Optional symbol / bool hash, designates non-default behaviors
+    #  - :force_downcase - forces keys to lowercase values
+    #  - :fallback - returns empty hash instead of an error in case of IOError on file
+    #  - :empty_value_is_nil - k/v pairs where v.empty? is true have v coerced to nil
+    #  - :include_whitespace - treats leading and trailing whitespace as semantic
+
+    def self.parse_simple_keyvalue_file(path, options = {})
+      parsed = {}
+      begin
+        IO.readlines(path).each do |line|
+          (k, _, v) = line.chomp.partition('=').map { |x| options[:include_whitespace] ? x : x.strip }
+          parsed[options[:force_downcase] ? k.downcase : k] = (v == '' && options[:empty_value_is_nil]? nil : v)
+        end
+      rescue IOError => e
+        if options[:fallback]
+          Chef::Log.error("fb_helpers: cannot read #{path}: #{e}.  Returning empty hash")
+        else
+          raise "fb_helpers: cannot read #{path}: #{e}."
+        end
+      end
+      parsed
+    end
+
     # parse_timeshard_start() takes a time string and converts its contents to a
     # unix timestamp, to be used in computing timeshard information
     #

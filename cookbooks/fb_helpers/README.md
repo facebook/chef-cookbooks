@@ -500,6 +500,16 @@ The following methods are available:
   it matches what is expected. If `fallback` is true, return an empty object
   in case of errors.
 
+* `FB::Helpers.parse_simple_keyvalue_file(path, options)`
+  Parse a simple key/value file with the form key=value and return a hash of
+  key/value pairs, stripping leading and trailing whitespace unless otherwise
+  specified. Accepts the following options:
+  * `:force_downcase` - if true, coerces keys into lower case.
+  * `:empty_value_is_nil` - if true, coerces empty string values to nil.
+  * `:include_whitespace` - if true, treats whitespace in the key/value pairs
+    as semantic
+  * `:fallback` - if true, return an empty hash in case of errors.
+
 * `FB::Helpers.parse_timeshard_start(time)`
   Takes a time string and converts its contents to a unix timestamp,
    to be used in computing timeshard information.

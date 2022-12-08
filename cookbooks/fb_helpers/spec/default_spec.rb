@@ -165,6 +165,67 @@ describe FB::Helpers do
     end
   end
 
+  context 'parse_simple_keyvalue_file' do
+    path = 'keyvalue_file.txt'.freeze
+
+    it 'throws an error when told to read a file that cannot be read' do
+      allow(IO).to receive(:readlines).with(path).and_raise(IOError)
+      expect do
+        FB::Helpers.parse_simple_keyvalue_file(path)
+      end.to raise_error(RuntimeError)
+    end
+
+    it 'ignores a file that cannot be read when told to do so' do
+      allow(IO).to receive(:readlines).with(path).and_raise(IOError)
+      expect(FB::Helpers.parse_simple_keyvalue_file(path, :fallback => true)).to eq({})
+    end
+
+    it 'parses an empty Key/Value file' do
+      allow(IO).to receive(:readlines).with(path).and_return([])
+      expect(FB::Helpers.parse_simple_keyvalue_file(path)).to eq({})
+    end
+
+    it 'parses a basic Key/Value file' do
+      allow(IO).to receive(:readlines).with(path).and_return(['KEY=value'])
+      expect(FB::Helpers.parse_simple_keyvalue_file(path)).to eq({ 'KEY' => 'value' })
+    end
+
+    it 'parses a basic Key/Value file with an empty value' do
+      allow(IO).to receive(:readlines).with(path).and_return(['KEY='])
+      expect(FB::Helpers.parse_simple_keyvalue_file(path)).to eq({ 'KEY' => '' })
+    end
+
+    it 'parses a basic Key/Value file with an empty value, coercing it to nil where required' do
+      allow(IO).to receive(:readlines).with(path).and_return(['KEY='])
+      expect(FB::Helpers.parse_simple_keyvalue_file(path, :empty_value_is_nil => true)).to eq({ 'KEY' => nil })
+    end
+
+    it 'parses a basic Key/Value file, downcasing keys when told to' do
+      allow(IO).to receive(:readlines).with(path).and_return(['KEY=value'])
+      expect(FB::Helpers.parse_simple_keyvalue_file(path, :force_downcase => true)).to eq({ 'key' => 'value' })
+    end
+
+    it 'parses a multiline Key/Value file' do
+      allow(IO).to receive(:readlines).with(path).and_return(['KEY=value', 'KEY2=val'])
+      expect(FB::Helpers.parse_simple_keyvalue_file(path)).to eq({ 'KEY' => 'value', 'KEY2' => 'val' })
+    end
+
+    it 'parses a basic Key/Value file with leading and trailing spaces' do
+      allow(IO).to receive(:readlines).with(path).and_return([' KEY=value '])
+      expect(FB::Helpers.parse_simple_keyvalue_file(path)).to eq({ 'KEY' => 'value' })
+    end
+
+    it 'parses a basic Key/Value file with spaces' do
+      allow(IO).to receive(:readlines).with(path).and_return(['KEY = value'])
+      expect(FB::Helpers.parse_simple_keyvalue_file(path)).to eq({ 'KEY' => 'value' })
+    end
+
+    it 'treats whitespace as semantic when required' do
+      allow(IO).to receive(:readlines).with(path).and_return([' KEY = value '])
+      expect(FB::Helpers.parse_simple_keyvalue_file(path, :include_whitespace =>true)).to eq({ ' KEY ' => ' value ' })
+    end
+  end
+
   context 'parse a time for timeshard computation' do
     it 'should succeed with a valid timestamp - 2020-1-1 9:00:00' do
       expect(FB::Helpers.parse_timeshard_start(
