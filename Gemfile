@@ -1,9 +1,9 @@
 source 'https://rubygems.org'
 
-gem 'chef', '~> 13'
+gem 'chef', '~> 14'
 gem 'cookstyle', '= 7.2.1'
 gem 'foodcritic', '~> 12'
-gem 'rspec', '= 3.6'
+gem 'rspec', '= 3.10'
 gem 'rubocop', '= 1.3.1'
 
 # work around https://github.com/cucumber/cucumber-ruby-core/issues/160
