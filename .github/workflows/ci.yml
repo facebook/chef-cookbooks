@@ -23,6 +23,8 @@ jobs:
       run: ./scripts/run_chefspec
     - name: Run rubocop
       run: ./scripts/run_rubocop .rubocop.yml
+    - name: Run cookstyle
+      run: ./scripts/run_cookstyle
     - name: Run foodcritic
       run: ./scripts/run_foodcritic
   kitchen:
