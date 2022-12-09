@@ -73,7 +73,6 @@ a.out
 # Testing #
 ###########
 .codeclimate.yml
-.foodcritic
 .rspec
 .rubocop.yml
 .travis.yml
