@@ -30,7 +30,6 @@ if node.debian? || (node.ubuntu? && !node.ubuntu16?)
   include_recipe 'fb_smokeping'
 end
 
-
 # Currently fb_reprepro is broken
 # https://github.com/facebook/chef-cookbooks/issues/78
 # include_recipe 'fb_reprepro'

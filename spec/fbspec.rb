@@ -49,9 +49,7 @@ module FB
     end
 
     class Configuration
-      attr_accessor :default_platforms
-      attr_accessor :extra_platforms
-      attr_accessor :all_platforms
+      attr_accessor :default_platforms, :extra_platforms, :all_platforms
 
       def initialize
         @default_platforms = {}

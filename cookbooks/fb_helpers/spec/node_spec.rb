@@ -191,10 +191,10 @@ describe 'Chef::Node' do
                  start_time.to_s,
                  duration,
         )).to eq({
-                      'start_time' => start_time.tv_sec,
+                   'start_time' => start_time.tv_sec,
                       'duration' => duration_value,
                       'time_threshold' => time_threshold_value,
-                    })
+                 })
       end
     end
   end
