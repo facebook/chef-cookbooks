@@ -52,7 +52,7 @@ jobs:
         os: ${{ matrix.os }}
       env:
         CHEF_LICENSE: accept-no-persist
-        CHEF_VERSION: 13.10.0
+        CHEF_VERSION: 14.15.6
   shellcheck:
     runs-on: ubuntu-latest
     steps:
