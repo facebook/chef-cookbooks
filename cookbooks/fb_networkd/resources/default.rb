@@ -19,6 +19,12 @@
 default_action :manage
 
 action :manage do
+  # There are some situations (i.e. changing the primary interface and
+  # corresponding addresses) where we need to restart systemd-networkd to make
+  # it happen smoothly. In that case this flag will get set for those situations
+  # as long as we are allowed to make network changes.
+  restart_networkd = false
+
   ohai_ifaces = node['network']['interfaces'].to_hash.keys
 
   # Set up execute resources to reconfigure network settings so that they can be
@@ -95,41 +101,6 @@ action :manage do
       "#{conf['priority']}-fb_networkd-#{conf['name']}.network",
     )
 
-    # This file is actively managed and already exists on the host so remove it
-    # from the "on_host" array.
-    remove_conflicts = false
-    if on_host_networks.include?(conffile)
-      on_host_networks.delete(conffile)
-      remove_conflicts = true
-    end
-
-    # If this config was previously managed under a different name (e.g.
-    # different priority) then set up a file resource to allow it to be deleted
-    # when the new config is set up or if the "new" config already exists.
-    conflicting_networks = on_host_networks.grep(
-      /-fb_networkd-#{conf['name']}.network$/,
-    )
-    conflicting_networks ||= []
-    conflicting_networks.each do |path|
-      on_host_networks.delete(path)
-
-      file path do
-        only_if do
-          node.interface_change_allowed?(conf['name']) && remove_conflicts
-        end
-        owner node.root_user
-        group node.root_group
-        mode '0644'
-        action :delete
-        notifies :run, 'execute[networkctl reload]', :immediately
-        notifies :run, "execute[networkctl reconfigure #{conf['name']}]"
-      end
-
-      if !node.interface_change_allowed?(conf['name']) && remove_conflicts
-        FB::Helpers._request_nw_changes_permission(run_context, new_resource)
-      end
-    end
-
     # Set up the template for this interface
     fb_helpers_gated_template conffile do # ~FB031
       allow_changes node.interface_change_allowed?(conf['name'])
@@ -142,6 +113,44 @@ action :manage do
       )
       notifies :run, 'execute[networkctl reload]', :immediately
       notifies :run, "execute[networkctl reconfigure #{conf['name']}]"
+    end
+
+    # This file is actively managed and already exists on the host so remove it
+    # from the "on_host" array.
+    if on_host_networks.include?(conffile)
+      on_host_networks.delete(conffile)
+    end
+
+    # If this config was previously managed under a different name (e.g.
+    # different priority) then set up a file resource to allow it to be deleted
+    # when the new config is set up or if the "new" config already exists.
+    conflicting_networks = on_host_networks.grep(
+      /-fb_networkd-#{conf['name']}.network$/,
+    )
+    conflicting_networks ||= []
+    conflicting_networks.each do |path|
+      # If this interface was formerly a primary interface, toggle the flag to
+      # restart systemd-networkd to make the IP address changes go smoothly.
+      # This is a bit of a hack but the alternative is to synchronize toggling
+      # the interface on/off which seems harder to implement right than a
+      # restart (networkctl reload/reconfigure don't seem to do it).
+      restart_networkd ||= ::File.basename(path).start_with?('1-fb_networkd-')
+
+      on_host_networks.delete(path)
+
+      file path do
+        only_if { node.interface_change_allowed?(conf['name']) }
+        owner node.root_user
+        group node.root_group
+        mode '0644'
+        action :delete
+        notifies :run, 'execute[networkctl reload]', :immediately
+        notifies :run, "execute[networkctl reconfigure #{conf['name']}]"
+      end
+
+      if !node.interface_change_allowed?(conf['name'])
+        FB::Helpers._request_nw_changes_permission(run_context, new_resource)
+      end
     end
   end
 
@@ -170,12 +179,23 @@ action :manage do
       "#{conf['priority']}-fb_networkd-#{conf['name']}.link",
     )
 
+    # Set up the template for this interface
+    fb_helpers_gated_template conffile do # ~FB031
+      allow_changes node.interface_change_allowed?(conf['name'])
+      source 'networkd.conf.erb'
+      owner node.root_user
+      group node.root_group
+      mode '0644'
+      variables(
+        :config => conf['config'],
+      )
+      notifies :run, "execute[udevadm trigger #{conf['name']}]"
+    end
+
     # This file is actively managed and already exists on the host so remove it
     # from the "on_host" array.
-    remove_conflicts = false
     if on_host_links.include?(conffile)
       on_host_links.delete(conffile)
-      remove_conflicts = true
     end
 
     # If this config was previously managed under a different name (e.g.
@@ -189,9 +209,7 @@ action :manage do
       on_host_links.delete(path)
 
       file path do
-        only_if do
-          node.interface_change_allowed?(conf['name']) && remove_conflicts
-        end
+        only_if { node.interface_change_allowed?(conf['name']) }
         owner node.root_user
         group node.root_group
         mode '0644'
@@ -199,22 +217,9 @@ action :manage do
         notifies :run, "execute[udevadm trigger #{conf['name']}]"
       end
 
-      if !node.interface_change_allowed?(conf['name']) && remove_conflicts
+      if !node.interface_change_allowed?(conf['name'])
         FB::Helpers._request_nw_changes_permission(run_context, new_resource)
       end
-    end
-
-    # Set up the template for this interface
-    fb_helpers_gated_template conffile do # ~FB031
-      allow_changes node.interface_change_allowed?(conf['name'])
-      source 'networkd.conf.erb'
-      owner node.root_user
-      group node.root_group
-      mode '0644'
-      variables(
-        :config => conf['config'],
-      )
-      notifies :run, "execute[udevadm trigger #{conf['name']}]"
     end
   end
 
@@ -247,12 +252,24 @@ action :manage do
       "#{conf['priority']}-fb_networkd-#{conf['name']}.netdev",
     )
 
+    # Set up the template for this interface
+    fb_helpers_gated_template conffile do # ~FB031
+      allow_changes node.interface_change_allowed?(conf['name'])
+      source 'networkd.conf.erb'
+      owner node.root_user
+      group node.root_group
+      mode '0644'
+      variables(
+        :config => conf['config'],
+      )
+      notifies :run, 'execute[networkctl reload]', :immediately
+      notifies :run, "execute[networkctl reconfigure #{conf['name']}]"
+    end
+
     # This file is actively managed and already exists on the host so remove it
     # from the "on_host" array.
-    remove_conflicts = false
     if on_host_netdevs.include?(conffile)
       on_host_netdevs.delete(conffile)
-      remove_conflicts = true
     end
 
     # If this config was previously managed under a different name (e.g.
@@ -266,9 +283,7 @@ action :manage do
       on_host_netdevs.delete(path)
 
       file path do
-        only_if do
-          node.interface_change_allowed?(conf['name']) && remove_conflicts
-        end
+        only_if { node.interface_change_allowed?(conf['name']) }
         owner node.root_user
         group node.root_group
         mode '0644'
@@ -277,23 +292,9 @@ action :manage do
         notifies :run, "execute[networkctl reconfigure #{conf['name']}]"
       end
 
-      if !node.interface_change_allowed?(conf['name']) && remove_conflicts
+      if !node.interface_change_allowed?(conf['name'])
         FB::Helpers._request_nw_changes_permission(run_context, new_resource)
       end
-    end
-
-    # Set up the template for this interface
-    fb_helpers_gated_template conffile do # ~FB031
-      allow_changes node.interface_change_allowed?(conf['name'])
-      source 'networkd.conf.erb'
-      owner node.root_user
-      group node.root_group
-      mode '0644'
-      variables(
-        :config => conf['config'],
-      )
-      notifies :run, 'execute[networkctl reload]', :immediately
-      notifies :run, "execute[networkctl reconfigure #{conf['name']}]"
     end
   end
 
@@ -369,5 +370,11 @@ action :manage do
         FB::Helpers._request_nw_changes_permission(run_context, new_resource)
       end
     end
+  end
+
+  execute 'systemd-networkd restart for tricky changes' do
+    only_if { restart_networkd && node.nw_changes_allowed? }
+    command '/bin/systemctl restart systemd-networkd'
+    action :run
   end
 end
