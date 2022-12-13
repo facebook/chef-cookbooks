@@ -539,6 +539,10 @@ The following methods are available:
   looking at `node['etc']['group']` but if the group was added during the same
   chef run then ohai won't have it, unless ohai was reloaded.
 
+* `FB::Helpers.get_hwaddr(interface)`
+  Return the hardware (MAC) address of the interface or nil if no such interface
+  was found.
+
 * `FB::Version.new(version)`
    Helper class to compare software versions. Sample usage:
 

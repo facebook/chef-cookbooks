@@ -632,6 +632,12 @@ If the has is specified, it takes one or more of the following keys:
       false
     end
 
+    def self.get_hwaddr(interface)
+      addrfile = "/sys/class/net/#{interface}/address"
+      return nil unless ::File.exist?(addrfile)
+      ::File.read(addrfile).strip.upcase
+    end
+
     def self._request_nw_changes_permission(run_context, new_resource)
       run_context.node.default['fb_helpers']['_nw_perm_requested'] = true
       notification = Chef::Resource::Notification.new(

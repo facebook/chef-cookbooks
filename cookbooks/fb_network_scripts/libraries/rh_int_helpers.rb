@@ -79,12 +79,6 @@ module FB
         return flags.hex & 0x1 == 1
       end
 
-      def get_hwaddr(interface)
-        addrfile = "/sys/class/net/#{interface}/address"
-        return nil unless ::File.exist?(addrfile)
-        ::File.read(addrfile).strip.upcase
-      end
-
       def read_ifcfg(file)
         d = {}
         Chef::Log.debug("fb_network_scripts: reading #{file}")

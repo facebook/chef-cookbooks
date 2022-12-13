@@ -67,7 +67,7 @@ action :enable do # ~FC017
   config = new_resource.config
 
   ifcfg_file = "/etc/sysconfig/network-scripts/ifcfg-#{interface}"
-  hwaddr = Helpers.get_hwaddr(interface)
+  hwaddr = FB::Helpers.get_hwaddr(interface)
   config_hwaddr = config['hwaddr']
   if config_hwaddr
     unless hwaddr
