@@ -201,3 +201,16 @@ This will be rendered in parsers.conf as:
     rule  "start_state"  "/^(?<time>\d{4}\-\d{2}\-\d{2} \d{2}\:\d{2}\:\d{2},\d+) (?<thread>\d+) \[(?<log_level>(DEBUG|INFO |WARN |ERROR))\].*$/"  "cont"
     rule  "cont"  "/^(?!\d{4}\-\d{2}\-\d{2} \d{2}\:\d{2}\:\d{2},\d+).*/"  "cont"
 ```
+
+### Custom Service Restart Command (Windows)
+Upon a FluentBit configuration change, the cookbook restarts the service to load
+updated configuration.
+
+If a custom command or script is required to restart the FluentBit service on
+Windows, it can be configured in `node['fb_fluentbit']['custom_svc_restart_command']`
+like so:
+
+```
+restart_command = 'powershell.exe -File C:\restart-script.ps1'
+node.default['fb_fluentbit']['custom_svc_restart_command'] = restart_command
+```

@@ -139,6 +139,9 @@ end
 if node.windows?
   windows_service 'FluentBit' do
     action :nothing
+    if node['fb_fluentbit']['custom_svc_restart_command']
+      restart_command node['fb_fluentbit']['custom_svc_restart_command']
+    end
   end
 else
   service 'td-agent-bit' do

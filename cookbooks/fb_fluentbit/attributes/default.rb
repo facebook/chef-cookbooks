@@ -51,4 +51,7 @@ default['fb_fluentbit'] = {
       'f6d690c8b123d6211398feb2acc1c9aae6d3d7539ddfeedd4460f170e5af35ab',
     'version' => 'fluent-bit-1.9.0-win32',
   },
+
+  # Set custom restart commands for service resource
+  'custom_svc_restart_command' => nil,
 }
