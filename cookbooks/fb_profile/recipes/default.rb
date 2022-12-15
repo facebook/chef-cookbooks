@@ -27,23 +27,13 @@ end
 
 directory '/etc/profile.d' do
   owner node.root_user
-  # https://github.com/chef/cookstyle/issues/657
-  # rubocop:disable Lint/UnneededCopDisableDirective
-  # rubocop:disable ChefDeprecations/NodeMethodsInsteadofAttributes
   group node.root_group
-  # rubocop:enable ChefDeprecations/NodeMethodsInsteadofAttributes
-  # rubocop:enable Lint/UnneededCopDisableDirective
   mode '0755'
 end
 
 template '/etc/profile.d/fb_profile.sh' do
   owner node.root_user
-  # https://github.com/chef/cookstyle/issues/657
-  # rubocop:disable Lint/UnneededCopDisableDirective
-  # rubocop:disable ChefDeprecations/NodeMethodsInsteadofAttributes
   group node.root_group
-  # rubocop:enable ChefDeprecations/NodeMethodsInsteadofAttributes
-  # rubocop:enable Lint/UnneededCopDisableDirective
   mode '0644'
 end
 

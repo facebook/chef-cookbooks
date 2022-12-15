@@ -148,14 +148,10 @@ if Chef::VERSION.to_i >= 16
     notifies :mask, 'service[disable postfix]'
   end
 else
-  # rubocop:disable Lint/UnneededCopDisableDirective
-  # rubocop:disable ChefDeprecations/LogResourceNotifications
   log 'masking postfix' do
     only_if do
       !node['fb_postfix']['enable'] && node['fb_postfix']['mask_service']
     end
     notifies :mask, 'service[disable postfix]'
   end
-  # rubocop:enable ChefDeprecations/LogResourceNotifications
-  # rubocop:enable Lint/UnneededCopDisableDirective
 end

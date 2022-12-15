@@ -22,7 +22,6 @@ unless node.debian? || node.ubuntu?
   fail 'fb_apt is only supported on Debian and Ubuntu.'
 end
 
-# rubocop:disable Lint/UnneededCopDisableDirective
 # rubocop:disable Chef/Modernize/ExecuteAptUpdate
 
 package 'apt' do
@@ -111,7 +110,6 @@ if Chef::VERSION.to_i >= 16
     notifies :run, 'execute[apt-get update]', :immediately
   end
 else
-  # rubocop:disable ChefDeprecations/LogResourceNotifications
   log 'periodic package cache update' do
     only_if do
       pkgcache = '/var/cache/apt/pkgcache.bin'
@@ -121,7 +119,5 @@ else
     end
     notifies :run, 'execute[apt-get update]', :immediately
   end
-  # rubocop:enable ChefDeprecations/LogResourceNotifications
 end
 # rubocop:enable Chef/Modernize/ExecuteAptUpdate
-# rubocop:enable Lint/UnneededCopDisableDirective

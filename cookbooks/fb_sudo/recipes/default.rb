@@ -25,12 +25,7 @@ template '/etc/sudoers' do
   source 'sudoers.erb'
   mode '0440'
   owner node.root_user
-  # https://github.com/chef/cookstyle/issues/657
-  # rubocop:disable Lint/UnneededCopDisableDirective
-  # rubocop:disable ChefDeprecations/NodeMethodsInsteadofAttributes
   group node.root_group
-  # rubocop:enable ChefDeprecations/NodeMethodsInsteadofAttributes
-  # rubocop:enable Lint/UnneededCopDisableDirective
   verify 'visudo -c -q -f %{path}'
 end
 

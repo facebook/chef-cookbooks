@@ -167,14 +167,10 @@ action :run do
       notifies :run, 'fb_systemd_reload[system instance]', :immediately
     end
   else
-    # rubocop:disable Lint/UnneededCopDisableDirective
-    # rubocop:disable ChefDeprecations/LogResourceNotifications
     log 'reloading systemd' do
       only_if { node['fb_timers']['_reload_needed'] }
       notifies :run, 'fb_systemd_reload[system instance]', :immediately
     end
-    # rubocop:enable ChefDeprecations/LogResourceNotifications
-    # rubocop:enable Lint/UnneededCopDisableDirective
   end
 
   directory '/etc/systemd/system/timers.target.wants' do

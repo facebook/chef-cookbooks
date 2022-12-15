@@ -43,12 +43,7 @@ template config do
   source config_src
   mode '0755'
   owner node.root_user
-  # https://github.com/chef/cookstyle/issues/657
-  # rubocop:disable Lint/UnneededCopDisableDirective
-  # rubocop:disable ChefDeprecations/NodeMethodsInsteadofAttributes
   group node.root_group
-  # rubocop:enable ChefDeprecations/NodeMethodsInsteadofAttributes
-  # rubocop:enable Lint/UnneededCopDisableDirective
 end
 
 if node.macos?
