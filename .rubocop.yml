@@ -325,6 +325,8 @@ Lint/AmbiguousOperator:
 
 Lint/AmbiguousRegexpLiteral:
   Enabled: true
+  # TODO re-enable autocorrection on RuboCop >= v1.19 see https://github.com/rubocop/rubocop/issues/10002
+  AutoCorrect: false
 
 Lint/AssignmentInCondition:
   Enabled: true
