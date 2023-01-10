@@ -43,6 +43,8 @@ file 'windows-tmpclean-ps-script' do
               ps_script = 'start-sleep -Seconds (1..3600 | get-random)'
               ps_script << "\n"
               folder_list.merge!(node['fb_tmpclean']['directories'])
+              # Note the default term is _hours_, not _seconds_ here - when I was
+              # originally writing this, I acutally misread that!
               folder_list.each do |dir_glob, val|
                 if val.to_s.end_with?('d')
                   term = "AddDays(-#{val.gsub('d', '')})"
@@ -53,7 +55,7 @@ file 'windows-tmpclean-ps-script' do
                 elsif val.to_s.end_with?('s')
                   term = "AddSeconds(-#{val.gsub('s', '')})"
                 elsif val.to_i.to_s == val.to_s
-                  term = "AddSeconds(-#{val})"
+                  term = "AddHours(-#{val})"
                 else
                   fail "Unhandled time setting of #{val}"
                 end
@@ -66,9 +68,12 @@ file 'windows-tmpclean-ps-script' do
 
                 # Windows Get-Childitem does not unglob folders
                 # use less than last access time as the gate for removing files
+                #
+                # Note that on 2016, you need both of these terms, though you do not on 2022!
                 ps_script << <<-EOH
         if (Test-Path #{dir_glob}) {
           Get-Childitem -directory -path #{dir_glob} | % {Get-Childitem -file -recurse -Path $_.fullName #{exclude_term}} | ? {$_.LastAccessTime -lt (Get-Date).#{term}} | % {Remove-Item -Path $_.fullName #{windows_dry_run}}
+          Get-Childitem -file -recurse -Path #{dir_glob} #{exclude_term} | ? {$_.LastAccessTime -lt (Get-Date).#{term}} | % {Remove-Item -Path $_.fullName #{windows_dry_run}}
         } \r\n
       EOH
               end
@@ -80,7 +85,7 @@ end
 windows_task 'create-cleanup-task' do # ~FB047
   # This is an absolute path - the linter is wrong
   command lazy {
-            'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe ' +
+            'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -File ' +
                 (node['fb_tmpclean']['windows_script_location']).to_s
           }           # ~FB047
   frequency :weekly
