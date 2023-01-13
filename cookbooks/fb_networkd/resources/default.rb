@@ -192,6 +192,15 @@ action :manage do
       notifies :run, "execute[udevadm trigger #{conf['name']}]"
     end
 
+    # Create dropin directory for link config file.
+    dropin_dir = conffile + '.d'
+    directory dropin_dir do
+      action :create
+      owner node.root_user
+      group node.root_group
+      mode '0755'
+    end
+
     # This file is actively managed and already exists on the host so remove it
     # from the "on_host" array.
     if on_host_links.include?(conffile)
