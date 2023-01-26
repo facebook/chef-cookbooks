@@ -15,7 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
+# TODO(dcrosby)
+# rubocop:disable Chef/Meta/DontUseFileUtils
 require 'chef/node'
 # we know relative_requires is bad, but it allows us to handle pathing
 # differences between internal repo and github
@@ -464,6 +465,13 @@ describe 'FB::FstabProvider', :include_provider do
                ['rw', 'noatime'],
       )).to eq(true)
     end
+    it 'should honor skipped options when provided' do
+      expect(compare_opts(
+               ['rw', 'size=1G', 'inode64'],
+               ['size=1G', 'rw'],
+               ['inode64'],
+      )).to eq(true)
+    end
     it 'should normalize size opts' do
       expect(compare_opts(
                'size=4K',
@@ -653,6 +661,10 @@ describe 'FB::FstabProvider', :include_provider do
     before(:each) do
       node.default['fb_fstab']['ignorable_opts'] = []
       node.default['fb_fstab']['type_normalization_map'] = {}
+      node.default['kernel'] = {
+        'release' => '5.12.0-0_foo',
+      }
+      node.default['os'] = 'linux'
     end
     it 'should detect oldschool tmpfs as the same' do
       node.default[attr_name]['by_pair']['tmpfs,/mnt/waka'] = {
@@ -688,6 +700,25 @@ describe 'FB::FstabProvider', :include_provider do
         'mount' => '/mnt/waka',
         'fs_type' => 'tmpfs',
         'mount_options' => ['size=100M', 'rw'],
+      }
+      desired_mounts = {
+        'awesomemount' => {
+          'device' => 'awesomesauce',
+          'mount_point' => '/mnt/waka',
+          'type' => 'tmpfs',
+          'opts' => 'size=100M,rw',
+        },
+      }
+      expect(tmpfs_mount_status(
+               desired_mounts['awesomemount'],
+      )).to eq(:same)
+    end
+    it 'should detect identical filesystems as such (Linux Kernel 5.9)' do
+      node.default[attr_name]['by_pair']['awesomesauce,/mnt/waka'] = {
+        'device' => 'awesomesauce',
+        'mount' => '/mnt/waka',
+        'fs_type' => 'tmpfs',
+        'mount_options' => ['size=100M', 'rw', 'inode64'],
       }
       desired_mounts = {
         'awesomemount' => {

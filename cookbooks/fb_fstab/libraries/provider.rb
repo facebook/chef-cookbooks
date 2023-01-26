@@ -67,28 +67,33 @@ module FB
         # we pass in a relatively sane perm which is subject to umask If they
         # sent in perms, we'll do a real chmod right afterward which isn't
         # subject to umask.
-        FileUtils.mkdir_p(mount_data['mount_point'], :mode => 0o755) # rubocop:disable Chef/Meta/DontUseFileUtils
+        # rubocop:disable Chef/Meta/DontUseFileUtils
+        FileUtils.mkdir_p(mount_data['mount_point'], :mode => 0o755)
         if mount_data['mp_perms']
-          FileUtils.chmod(mount_data['mp_perms'].to_i(8), # rubocop:disable Chef/Meta/DontUseFileUtils
+          FileUtils.chmod(mount_data['mp_perms'].to_i(8),
                           mount_data['mount_point'])
         end
         if mount_data['mp_owner'] || mount_data['mp_group']
-          FileUtils.chown(mount_data['mp_owner'], mount_data['mp_group'], # rubocop:disable Chef/Meta/DontUseFileUtils
+          FileUtils.chown(mount_data['mp_owner'], mount_data['mp_group'],
                           mount_data['mount_point'])
         end
+        # rubocop:enable Chef/Meta/DontUseFileUtils
         if mount_data['mp_immutable']
           readme = File.join(mount_data['mount_point'], 'README.txt')
           readme_body = 'This directory was created by chef to be an ' +
             'immutable mountpoint.  If you can see this, ' +
             "the mount is missing!\n"
+          # rubocop:disable Chef/Meta/NoFileWrites
           File.open(readme, 'w') do |f| # ~FB030
             f.write(readme_body)
           end
+          # rubocop:enable Chef/Meta/NoFileWrites
           s = Mixlib::ShellOut.new(
             "/bin/chattr +i #{mount_data['mount_point']}",
           ).run_command
           s.error!
         end
+
       end
       if node.systemd?
         # If you use FUSE mounts, and you're running Chef from a systemd timer,
@@ -370,7 +375,7 @@ module FB
       type1 == type2 || _normalize_type(type1) == _normalize_type(type2)
     end
 
-    def delete_ignored_opts!(tlist)
+    def delete_ignored_opts!(tlist, skipped_opts)
       ignorable_opts_s = node['fb_fstab']['ignorable_opts'].select do |x|
         x.is_a?(::String)
       end
@@ -378,7 +383,7 @@ module FB
         x.is_a?(::Regexp)
       end
       tlist.delete_if do |x|
-        ignorable_opts_s.include?(x) ||
+        skipped_opts.include?(x) || ignorable_opts_s.include?(x) ||
           ignorable_opts_r.any? do |regex|
             x =~ regex
           end
@@ -403,13 +408,13 @@ module FB
       fail RangeError "fb_fstab: Failed to translate #{opt}"
     end
 
-    def canonicalize_opts(opts)
+    def canonicalize_opts(opts, skipped_opts = [])
       # ensure both are arrays
       optsl = opts.is_a?(Array) ? opts.dup : opts.split(',')
       # 'rw' is implied, so if no readability is specified, add it to both,
       # so missing on one if them doesn't cause a false-negative
       optsl << 'rw' unless optsl.include?('ro') || optsl.include?('rw')
-      delete_ignored_opts!(optsl)
+      delete_ignored_opts!(optsl, skipped_opts)
       optsl.map! do |x|
         x.start_with?('size=') ? translate_size_opt(x) : x
       end
@@ -419,12 +424,17 @@ module FB
     end
 
     # Take opts in a variety of forms, and compare them intelligently
-    def compare_opts(opts1, opts2)
-      c1 = canonicalize_opts(opts1)
-      c2 = canonicalize_opts(opts2)
+    def compare_opts(opts1, opts2, skipped_opts = [])
+      c1 = canonicalize_opts(opts1, skipped_opts)
+      c2 = canonicalize_opts(opts2, skipped_opts)
 
       # Check that they're the same
       c1 == c2
+    end
+
+    # on Kernel >= 5.9, tmpfs are mounted with inode64 opt active
+    def _are_tmpfs_using_inode64?
+      return node.linux? && (FB::Version.new(node['kernel']['release']) > FB::Version.new('5.9'))
     end
 
     # Given a tmpfs desired mount `desired` check to see what it's status is;
@@ -439,7 +449,9 @@ module FB
     def tmpfs_mount_status(desired)
       # Start with checking if it was mounted the way we would mount it
       # this is ALMOST the same as the 'is it identical' check for non-tmpfs
-      # filesystems except that with tmpfs we don't treat 'auto' as equivalent
+      # filesystems except that with tmpfs we don't treat 'auto' as equivalent and
+      # that we skip inode64 option on current mount status - because it's activated
+      # by default on Linux kernel >= 5.9
       fs_data = node.filesystem_data
       key = "#{desired['device']},#{desired['mount_point']}"
       if fs_data['by_pair'][key]
@@ -449,7 +461,15 @@ module FB
             "fb_fstab: tmpfs #{desired['device']} on " +
             "#{desired['mount_point']} is currently mounted...",
           )
-          if compare_opts(desired['opts'], mounted['mount_options'])
+
+          skipped_opts = []
+          if _are_tmpfs_using_inode64?
+
+            # inode64 is active by default on tmpfs for Linux kernel > 5.9
+            skipped_opts.push('inode64')
+          end
+
+          if compare_opts(desired['opts'], mounted['mount_options'], skipped_opts)
             Chef::Log.debug('fb_fstab: ... with identical options.')
             return :same
           else
@@ -720,7 +740,7 @@ module FB
       if lock_file.nil?
         return shellout.run_command
       else
-        lock_fd = File.open(lock_file, 'a+')
+        lock_fd = File.open(lock_file, 'a+') # rubocop:disable Chef/Meta/NoFileWrites
         unless lock_fd.flock(File::LOCK_EX | File::LOCK_NB)
           fail IOError, "Couldn't grab lock at #{lock_file} for #{mount_point}"
         end
