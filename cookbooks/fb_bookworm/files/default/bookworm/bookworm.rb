@@ -38,7 +38,7 @@ parser.on(
 
 parser.on(
   '--list-rules',
-  'Get the (class) names of available inferrence rules',
+  'Get the (class) names of available inference rules',
 )
 
 parser.separator ''
@@ -68,7 +68,7 @@ parser.on(
 
 parser.on(
   '--irb-infer-step',
-  'Open IRB REPL after inferrence has run',
+  'Open IRB REPL after inference has run',
 )
 
 parser.on(

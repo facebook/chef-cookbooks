@@ -27,12 +27,12 @@ $ ./bookworm.rb -h
 Usage: bookworm.rb [options]
         --report CLASS               Give the (class) name of the report you'd like
         --list-reports               Get the (class) names of available reports
-        --list-rules                 Get the (class) names of available inferrence rules
+        --list-rules                 Get the (class) names of available inference rules
 
 Debugging options:
         --irb-config-step            Open IRB REPL after loading configuration
         --irb-crawl-step             Open IRB REPL after crawler has run
-        --irb-infer-step             Open IRB REPL after inferrence has run
+        --irb-infer-step             Open IRB REPL after inference has run
         --irb-report-step            Open IRB REPL after report is generated
 
 # Get a list of reports that can be run
