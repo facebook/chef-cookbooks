@@ -32,4 +32,5 @@ default['fb_system_upgrade'] = {
   'success_callback_method' => nil,
   'failure_callback_method' => nil,
   'notify_resources' => [],
+  'notify_resources_before' => [],
 }

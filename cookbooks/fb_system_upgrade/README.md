@@ -15,6 +15,7 @@ Attributes
 * node['fb_system_upgrade']['failure_callback_method']
 * node['fb_system_upgrade']['log']
 * node['fb_system_upgrade']['notify_resources']
+* node['fb_system_upgrade']['notify_resources_before']
 * node['fb_system_upgrade']['repos']
 * node['fb_system_upgrade']['success_callback_method']
 * node['fb_system_upgrade']['timeout']
@@ -68,6 +69,8 @@ operates in roughly like this:
   a package swap between them
 * generate the upgrade command as described above
 * execute the upgrade
+  * before the actual upgrade, notify any resources that were defined in
+    `node['fb_system_upgrade']['notify_resources_before']`
   * run the upgrade command with a timeout from
   `node['fb_system_upgrade']['timeout']` (defaulting to 30 minutes)
   * call any callback methods that were defined for success/failure in

@@ -86,6 +86,9 @@ action :run do
         fail msg
       end
     end
+    node['fb_system_upgrade']['notify_resources_before'].each do |my_r, my_a|
+      notifies my_a, my_r, :before
+    end
     node['fb_system_upgrade']['notify_resources'].each do |my_r, my_a|
       notifies my_a, my_r
     end
