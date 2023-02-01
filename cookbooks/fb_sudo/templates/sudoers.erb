@@ -1,7 +1,9 @@
 # This file is managed by Chef
 
 <% sudo = node['fb_sudo'].to_hash -%>
-<% sudo['defaults'].each do |key, val| %>
+<% node['fb_sudo']['defaults'].each_key do |key| %>
+<%   val = node['fb_sudo']['defaults'][key] %>
+<%   next if val.nil? %>
 <%   rendered_val = '' %>
 <%   if val.is_a?(TrueClass) %>
 <%     rendered_val = key %>
