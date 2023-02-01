@@ -19,8 +19,8 @@
 # limitations under the License.
 #
 
-if node.fedora34? || node.fedora35? || node.fedora36?
-  packages = ['iptables-compat']
+if (node.centos? && !(node.centos7? || node.centos8?)) || node.fedora?
+  packages = ['iptables-legacy']
 else
   packages = ['iptables']
 end
