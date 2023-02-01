@@ -18,7 +18,7 @@ module FB
   class SystemUpgrade
     extend Chef::Mixin::Which
 
-    def self.get_upgrade_command(node)
+    def self._get_base_command(node)
       package_manager = node.default_package_manager
       unless ['yum', 'dnf'].include?(package_manager)
         fail "fb_system_upgrade: default package manager #{package_manager} " +
@@ -41,6 +41,22 @@ module FB
         repos_cmd = "--disablerepo=* --enablerepo=#{repos.join(',')}"
       end
 
+      cmd = "#{bin} #{repos_cmd} -y"
+
+      cmd
+    end
+
+    def self.get_swap_command(node, old, new)
+      base_cmd = FB::SystemUpgrade._get_base_command(node)
+
+      cmd = "#{base_cmd} swap #{old} #{new}"
+
+      cmd
+    end
+
+    def self.get_upgrade_command(node)
+      base_cmd = FB::SystemUpgrade._get_base_command(node)
+
       exclude_cmd = ''
       exclude_pkgs = node['fb_system_upgrade']['exclude_packages']
 
@@ -53,7 +69,7 @@ module FB
       else
         dnf_cmd = 'upgrade'
       end
-      upgrade_cmd = "#{bin} #{repos_cmd} #{dnf_cmd} -y #{exclude_cmd}"
+      upgrade_cmd = "#{base_cmd} #{dnf_cmd} #{exclude_cmd}"
       log = node['fb_system_upgrade']['log']
       cmd = "date &>> #{log}; #{upgrade_cmd} &>> #{log}"
 

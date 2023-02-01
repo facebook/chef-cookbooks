@@ -42,6 +42,12 @@ action :run do
     end
   end
 
+  node['fb_system_upgrade']['early_swap_packages'].to_hash.each do |old, new|
+    execute "swap #{old} with #{new}" do
+      command FB::SystemUpgrade.get_swap_command(node, old, new)
+    end
+  end
+
   cmd = FB::SystemUpgrade.get_upgrade_command(node)
 
   ruby_block 'actual_dnf_upgrade' do # ~FC014

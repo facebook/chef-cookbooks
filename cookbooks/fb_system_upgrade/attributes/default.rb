@@ -21,6 +21,7 @@ default['fb_system_upgrade'] = {
   'config' => nil,
   'early_upgrade_packages' => [],
   'early_remove_packages' => [],
+  'early_swap_packages' => {},
   'exclude_packages' => [],
   'repos' => [],
   'wrapper' => 'nice -n 10 ionice -c 2 -n 7',

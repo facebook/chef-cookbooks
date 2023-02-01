@@ -10,6 +10,7 @@ Attributes
 * node['fb_system_upgrade']['config']
 * node['fb_system_upgrade']['early_upgrade_packages']
 * node['fb_system_upgrade']['early_remove_packages']
+* node['fb_system_upgrade']['early_swap_packages']
 * node['fb_system_upgrade']['exclude_packages']
 * node['fb_system_upgrade']['failure_callback_method']
 * node['fb_system_upgrade']['log']
@@ -26,6 +27,8 @@ This cookbook provides a pluggable framework for managing system upgrades.
 ### FB::SystemUpgrade
 The following methods are available:
 
+* `FB::SystemUpgrade.get_swap_command(node, old, new)`
+  Return the command to execute a package swap between `old` and `new`.
 * `FB::SystemUpgrade.get_upgrade_command(node)`
   Return the command that will be used to execute the system upgrade.
 
@@ -61,6 +64,8 @@ operates in roughly like this:
   the packages in the list
 * if `node['fb_system_upgrade']['early_remove_packages']` is set, remove all
   the packages in the list
+* for each entry in `node['fb_system_upgrade']['early_swap_packages']`, execute
+  a package swap between them
 * generate the upgrade command as described above
 * execute the upgrade
   * run the upgrade command with a timeout from
