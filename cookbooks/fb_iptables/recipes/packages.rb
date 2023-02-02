@@ -24,9 +24,7 @@ if (node.centos? && !(node.centos7? || node.centos8?)) || node.fedora?
 else
   packages = ['iptables']
 end
-if node.centos6?
-  packages << 'iptables-ipv6'
-elsif node.ubuntu?
+if node.ubuntu?
   packages << 'iptables-persistent'
 else
   packages << 'iptables-services'
