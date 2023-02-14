@@ -43,14 +43,14 @@ if node.centos7?
   if yc.package_available?('rpm-plugin-selinux')
     rpm_packages << 'rpm-plugin-selinux'
   end
-elsif node.centos9?
+elsif node.centos8?
   rpm_packages += %w{
     python3-rpm
+    rpm-plugin-selinux
   }
 else
   rpm_packages += %w{
     python3-rpm
-    rpm-plugin-selinux
   }
 end
 
