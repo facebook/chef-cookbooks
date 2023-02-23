@@ -18,10 +18,11 @@
 # limitations under the License.
 #
 
-template '/etc/systemd/networkd.conf' do
+fb_helpers_gated_template '/etc/systemd/networkd.conf' do
+  allow_changes node.nw_changes_allowed?
   source 'systemd.conf.erb'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
   variables(
     :config => 'networkd',
