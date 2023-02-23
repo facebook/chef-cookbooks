@@ -36,7 +36,6 @@ end
 }.each do |svc|
   service svc do
     only_if { node['fb_systemd']['networkd']['enable'] }
-    subscribes :restart, 'package[systemd packages]', :immediately
     if svc == 'systemd-networkd.socket'
       notifies :stop, 'service[systemd-networkd.service]', :before
       notifies :start, 'service[systemd-networkd.service]', :immediately

@@ -60,7 +60,6 @@ end
 
 service 'systemd-resolved' do
   only_if { node['fb_systemd']['resolved']['enable'] }
-  subscribes :restart, 'package[systemd packages]', :immediately
   action [:enable, :start]
 end
 
