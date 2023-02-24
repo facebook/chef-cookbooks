@@ -189,8 +189,8 @@ end
 
 # syslog has been moved into the main fb_logrotate.conf
 if node.debian_family? ||
-   node.rhel7? || node.rhel8? || node.rhel9? ||
-   node.centos7? || node.centos8? || node.centos9?
+   node.rhel7? || node.rhel8? ||
+   node.centos7? || node.centos8?
   # CentOS and Debian use different files for their main syslog configuration
   syslog_config = value_for_platform_family(
     ['rhel', 'fedora'] => '/etc/logrotate.d/syslog',
