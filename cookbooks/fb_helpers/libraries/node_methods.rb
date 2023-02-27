@@ -337,6 +337,46 @@ class Chef
       windows? && self['platform_version'] == '10.0.19044'
     end
 
+    def windows2012_or_newer?
+      windows? && Gem::Version.new(self['platform_version']) >= Gem::Version.new('6.2')
+    end
+
+    def windows2012r2_or_newer?
+      windows? && Gem::Version.new(self['platform_version']) >= Gem::Version.new('6.3')
+    end
+
+    def windows2016_or_newer?
+      windows? && Gem::Version.new(self['platform_version']) >= Gem::Version.new('10.0.14393')
+    end
+
+    def windows2019_or_newer?
+      windows? && Gem::Version.new(self['platform_version']) >= Gem::Version.new('10.0.17763')
+    end
+
+    def windows2022_or_newer?
+      windows? && Gem::Version.new(self['platform_version']) >= Gem::Version.new('10.0.20348')
+    end
+
+    def windows2012_or_older?
+      windows? && Gem::Version.new(self['platform_version']) < Gem::Version.new('6.3')
+    end
+
+    def windows2012r2_or_older?
+      windows? && Gem::Version.new(self['platform_version']) < Gem::Version.new('6.4')
+    end
+
+    def windows2016_or_older?
+      windows? && Gem::Version.new(self['platform_version']) <= Gem::Version.new('10.0.14393')
+    end
+
+    def windows2019_or_older?
+      windows? && Gem::Version.new(self['platform_version']) <= Gem::Version.new('10.0.17763')
+    end
+
+    def windows2022_or_older?
+      windows? && Gem::Version.new(self['platform_version']) <= Gem::Version.new('10.0.20348')
+    end
+
     def aristaeos?
       self['platform'] == 'arista_eos'
     end
