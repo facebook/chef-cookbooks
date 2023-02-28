@@ -50,6 +50,6 @@ end
 chocolatey_package 'chocolatey' do
   action :upgrade
   version lazy { node['fb_choco']['bootstrap']['version'] }
-  options '--allow-downgrade'
+  options '--allow-downgrade --force'
   only_if { node['fb_choco']['enabled']['bootstrap'] }
 end
