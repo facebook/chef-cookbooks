@@ -224,6 +224,18 @@ describe FB::Helpers do
       allow(IO).to receive(:readlines).with(path).and_return([' KEY = value '])
       expect(FB::Helpers.parse_simple_keyvalue_file(path, :include_whitespace =>true)).to eq({ ' KEY ' => ' value ' })
     end
+
+    it 'treats quotes as semantic when required - single quotes' do
+      allow(IO).to receive(:readlines).with(path).and_return(['KEY = \'value\''])
+      expect(FB::Helpers.parse_simple_keyvalue_file(path, :exclude_quotes =>false)).to eq({ 'KEY' => '\'value\'' })
+      expect(FB::Helpers.parse_simple_keyvalue_file(path, :exclude_quotes =>true)).to eq({ 'KEY' => 'value' })
+    end
+
+    it 'treats quotes as semantic when required - double quotes' do
+      allow(IO).to receive(:readlines).with(path).and_return(['KEY = "value"'])
+      expect(FB::Helpers.parse_simple_keyvalue_file(path, :exclude_quotes =>false)).to eq({ 'KEY' => '"value"' })
+      expect(FB::Helpers.parse_simple_keyvalue_file(path, :exclude_quotes =>true)).to eq({ 'KEY' => 'value' })
+    end
   end
 
   context 'parse a time for timeshard computation' do

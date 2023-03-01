@@ -489,12 +489,14 @@ If the has is specified, it takes one or more of the following keys:
     #  - :fallback - returns empty hash instead of an error in case of IOError on file
     #  - :empty_value_is_nil - k/v pairs where v.empty? is true have v coerced to nil
     #  - :include_whitespace - treats leading and trailing whitespace as semantic
+    #  - :exclude_quotes strips surrounding quotes
 
     def self.parse_simple_keyvalue_file(path, options = {})
       parsed = {}
       begin
         IO.readlines(path).each do |line|
           (k, _, v) = line.chomp.partition('=').map { |x| options[:include_whitespace] ? x : x.strip }
+          v.gsub!(/^['"](.*)['"]$/, '\1') if options[:exclude_quotes]
           parsed[options[:force_downcase] ? k.downcase : k] = (v == '' && options[:empty_value_is_nil]? nil : v)
         end
       rescue IOError => e

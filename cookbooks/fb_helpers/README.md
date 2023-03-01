@@ -511,6 +511,7 @@ The following methods are available:
   * `:empty_value_is_nil` - if true, coerces empty string values to nil.
   * `:include_whitespace` - if true, treats whitespace in the key/value pairs
     as semantic
+  * `:exclude_quotes` - if true, removes surrounding quotes
   * `:fallback` - if true, return an empty hash in case of errors.
 
 * `FB::Helpers.parse_timeshard_start(time)`
