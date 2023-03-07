@@ -43,6 +43,10 @@ class Chef
       self.centos? && self['platform_version'].start_with?('5')
     end
 
+    def rocky?
+      self['platform'] == 'rocky'
+    end
+
     def major_platform_version
       self['platform_version'].split('.')[0]
     end
