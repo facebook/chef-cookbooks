@@ -15,9 +15,9 @@
 # limitations under the License.
 #
 
-unless node.centos? || node.windows?
+unless node.rhel? || node.windows?
   fail 'fb_fluentbit: unsupported platform. The list of supported platforms is
-       [centos, windows]'
+       [RHEL, windows]'
 end
 whyrun_safe_ruby_block 'validate fluentbit config' do
   block do
@@ -71,7 +71,7 @@ directory 'runtime state directory' do
   end
 end
 
-include_recipe 'fb_fluentbit::centos' if node.centos?
+include_recipe 'fb_fluentbit::rhel' if node.rhel?
 include_recipe 'fb_fluentbit::windows' if node.windows?
 
 template 'plugins config' do # ~FB031
