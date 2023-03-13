@@ -22,7 +22,7 @@ default['fb_choco'] = {
     'manage' => false,
   },
   'bootstrap' => {
-    'version' => '0.10.3',
+    'version' => '1.2.1',
     'choco_download_url' => 'https://chocolatey.org/api/v2/Packages()?' +
       '$filter=((Id%20eq%20%27chocolatey%27)' +
       '%20and%20(not%20IsPrerelease))%20and%20IsLatestVersion',
