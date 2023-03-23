@@ -26,9 +26,18 @@ node.default['fb_systemd']['networkd']['enable'] = true
 
 fb_networkd 'manage configuration'
 
+# Increase timeout to avoid conflicting with any start/restart calls.
+# Yes this could be racy but if systemd-networkd takes more than 30 min to come
+# up there are probably bigger issues.
+# The other option is to gate this on whether systemd-networkd is running, but
+# that could also be racy if configs were changed while systemd-networkd is
+# restarting, and changes were not picked up. This seemed like the lesser of 2
+# evils.
 execute 'networkctl reload' do
   command '/bin/networkctl reload'
   action :nothing
+  environment({ 'SYSTEMD_BUS_TIMEOUT' => '1800s' })
+
 end
 
 node['network']['interfaces'].to_hash.each_key do |iface|
