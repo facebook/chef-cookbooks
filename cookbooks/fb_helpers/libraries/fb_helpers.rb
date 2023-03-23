@@ -650,6 +650,25 @@ If the has is specified, it takes one or more of the following keys:
       notification.fix_resource_reference(run_context.resource_collection)
       run_context.root_run_context.add_delayed_action(notification)
     end
+
+    # readfile() safely reads file content in a variable,
+    # removing the last line termination.
+    # It is suitable to read a single-liners (sysctl settings or similar).
+    # It would return an empty string when the file is not avialable.
+    #
+    # Usage:
+    #   readfile(path)
+    #
+    # Arguments:
+    #   path: Required file path
+    def self.readfile(filename)
+      begin
+        value = File.read(filename).chomp
+      rescue Errno::ENOENT
+        return ''
+      end
+      return value
+    end
   end
 
   # Helper class to compare software versions.

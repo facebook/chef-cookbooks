@@ -610,4 +610,20 @@ describe FB::Helpers do
                                   })
     end
   end
+
+  context 'readfile' do
+    PATH = 'filename'.freeze
+    it 'ignores non-existing path' do
+      allow(File).to receive(:read).with(PATH).and_raise(Errno::ENOENT)
+      expect(FB::Helpers.readfile(PATH)).to eq('')
+    end
+    it 'reads content' do
+      allow(File).to receive(:read).with(PATH).and_return('content')
+      expect(FB::Helpers.readfile(PATH)).to eq('content')
+    end
+    it 'removes line terminator' do
+      allow(File).to receive(:read).with(PATH).and_return("line with terminator\n")
+      expect(FB::Helpers.readfile(PATH)).to eq('line with terminator')
+    end
+  end
 end
