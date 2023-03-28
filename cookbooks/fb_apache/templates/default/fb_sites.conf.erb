@@ -3,7 +3,7 @@
 <% realvhost = conf['_virtualhost'] || vhost %>
 <VirtualHost <%= realvhost %>>
 <%   conf.reject! { |x, y| x == '_virtualhost' } %>
-<%=  render 'apache_conf.erb', :variables => {:conf => conf} %>
+<%   FB::Apache.render_apache_conf(_buf, 1, conf) %>
 </VirtualHost>
 
 <% end %>
