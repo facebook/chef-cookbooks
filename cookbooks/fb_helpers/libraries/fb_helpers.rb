@@ -499,7 +499,7 @@ If the has is specified, it takes one or more of the following keys:
           v.gsub!(/^['"](.*)['"]$/, '\1') if options[:exclude_quotes]
           parsed[options[:force_downcase] ? k.downcase : k] = (v == '' && options[:empty_value_is_nil]? nil : v)
         end
-      rescue IOError => e
+      rescue Errno::ENOENT => e
         if options[:fallback]
           Chef::Log.error("fb_helpers: cannot read #{path}: #{e}.  Returning empty hash")
         else

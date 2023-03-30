@@ -169,14 +169,14 @@ describe FB::Helpers do
     path = 'keyvalue_file.txt'.freeze
 
     it 'throws an error when told to read a file that cannot be read' do
-      allow(IO).to receive(:readlines).with(path).and_raise(IOError)
+      allow(IO).to receive(:readlines).with(path).and_raise(Errno::ENOENT)
       expect do
         FB::Helpers.parse_simple_keyvalue_file(path)
       end.to raise_error(RuntimeError)
     end
 
     it 'ignores a file that cannot be read when told to do so' do
-      allow(IO).to receive(:readlines).with(path).and_raise(IOError)
+      allow(IO).to receive(:readlines).with(path).and_raise(Errno::ENOENT)
       expect(FB::Helpers.parse_simple_keyvalue_file(path, :fallback => true)).to eq({})
     end
 
