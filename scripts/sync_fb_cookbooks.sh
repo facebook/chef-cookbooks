@@ -107,7 +107,7 @@ fi
 
 mode=''
 cookbook=''
-while getopts c:dhipsu: opt; do
+while getopts c:dhi:psu: opt; do
     case $opt in
         c)
             cookbook="$OPTARG"
