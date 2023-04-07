@@ -99,9 +99,12 @@ set boot=$root
 set blsdir=/loader/entries
 
 # load variable, mostly for default bootentry
-# Note : grub2-efi-x64-2.06+ rpm had removed the symbolic
-# link for grubenv in the efi path
-load_env --file /boot/grub2/grubenv
+if [ -f ${config_directory}/grubenv ]; then
+  load_env -f ${config_directory}/grubenv
+elif [ -s $prefix/grubenv ]; then
+  load_env
+fi
+
 if [ "${saved_entry}" ] ; then
   set default="${saved_entry}"
 fi
