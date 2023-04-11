@@ -15,11 +15,18 @@
 # limitations under the License.
 #
 
-if node['fb_fluentbit']['adopt_package_name_fluent-bit']
-  include_recipe 'fb_fluentbit::fluent-bit_default'
-else
-  Chef::Log.warn("On October 2nd, 2023 fb_fluentbit will adopt the fluent-bit name by default. Please upgrade your
-   version to 1.9.9 or newer and set adopt_package_name_fluent-bit to true. On April 15th, 2024 support of td-agen-bit
-   name will be dropped")
-  include_recipe 'fb_fluentbit::td-agent-bit_default'
+package 'Install FluentBit' do
+  only_if { node['fb_fluentbit']['manage_packages'] }
+  package_name 'fluent-bit'
+  action :upgrade
+  notifies :restart, 'service[fluent-bit]'
+end
+
+package 'Install fluentbit external plugins' do
+  only_if { node['fb_fluentbit']['plugin_manage_packages'] }
+  package_name lazy {
+    FB::Fluentbit.external_plugins_from_node(node).map(&:package).sort.uniq
+  }
+  action :upgrade
+  notifies :restart, 'service[fluent-bit]'
 end
