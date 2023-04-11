@@ -19,6 +19,25 @@
 class Chef
   # Our extensions of the node object
   class Node
+
+    # Is this a RHEL-compatible OS with a minimum major version number of `version`
+    def el_min_version?(version)
+      self['platform_family'] == 'rhel' && self.major_platform_version.to_i >= version
+    end
+
+    # Is this a RHEL-compatible OS with a maximum major version number of `version`
+    def el_max_version?(version)
+      self['platform_family'] == 'rhel' && self.major_platform_version.to_i <= version
+    end
+
+    def centos_min_version?(version)
+      self.centos? && self.el_min_version?(version)
+    end
+
+    def centos_max_version?(version)
+      self.centos? && self.el_max_version?(version)
+    end
+
     def centos?
       self['platform'] == 'centos'
     end
@@ -45,6 +64,14 @@ class Chef
 
     def rocky?
       self['platform'] == 'rocky'
+    end
+
+    def rocky_min_version?(version)
+      self.rocky? && self.el_min_version?(version)
+    end
+
+    def rocky_max_version?(version)
+      self.rocky? && self.el_max_version?(version)
     end
 
     def major_platform_version
@@ -136,6 +163,14 @@ class Chef
 
     def rhel9?
       self.rhel? && self['platform_version'].start_with?('9')
+    end
+
+    def rhel_min_version?(version)
+      self.rhel? && self.el_min_version?(version)
+    end
+
+    def rhel_max_version?(version)
+      self.centos? && self.el_max_version?(version)
     end
 
     def oracle?
