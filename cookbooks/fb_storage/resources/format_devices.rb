@@ -166,6 +166,9 @@ action :run do
       end
 
       fb_sysfs "/sys/block/#{dev}/queue/max_sectors_kb" do
+        # Due to a bug the kernel will override user settings every time the
+        # driver revalidates the namespace, so don't bother with nvme devs
+        not_if { dev.start_with?('nvme') && max_hw_sectors_kb >= 1024 }
         type :int
         value max_sectors_kb
         ignore_failure ignore_failure
