@@ -149,6 +149,10 @@ class Chef
       self.redhat? && self['platform_version'].start_with?('9')
     end
 
+    def rhel_family?
+      self['platform_family'] == 'rhel'
+    end
+
     def rhel?
       self['platform_family'] == 'rhel'
     end
