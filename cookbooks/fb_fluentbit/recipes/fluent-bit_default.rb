@@ -49,7 +49,7 @@ parsers_file_path = value_for_platform_family(
 )
 
 main_file_path = value_for_platform_family(
-  'rhel' => '/etc/fluent-bit/fluent-bit',
+  'rhel' => '/etc/fluent-bit/fluent-bit.conf',
   'windows' => windows_drive + '\opt\fluent-bit\conf\fluent-bit.conf',
 )
 
