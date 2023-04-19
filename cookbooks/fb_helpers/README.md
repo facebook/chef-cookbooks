@@ -39,6 +39,12 @@ your node.
 * `node.centos9?`
     Is CentOS Stream 9
 
+* `node.centos_max_version?(v)`
+    Is RHEL-compatible with a maximum version number of v
+
+* `node.centos_min_version?(v)`
+    Is RHEL-compatible with a minimum version number of v
+
 * `node.fedora?`
     Is Fedora
 
@@ -90,6 +96,12 @@ your node.
 * `node.redhat9?`
     Is Redhat Enterprise Linux 9
 
+* `node.rhel_max_version?(v)`
+    Is Redhat Enterprise Linux with a maximum version number of v
+
+* `node.rhel_min_version?(v)`
+    Is Redhat Enterprise Linux with a minimum version number of v
+
 * `node.rhel?`
     Is Redhat Enterprise Linux
 
@@ -116,6 +128,15 @@ your node.
 
 * `node.oracle8?`
     Is Oracle Enterprise Linux 8
+
+* `node.rhel_family?`
+    Is Redhat Enterprise Linux-compatible (eg CentOS, Oracle Linux, Rocky Linux)
+
+* `node.el_max_version?(v)`
+    Is RHEL-compatible with a maximum version number of v
+
+* `node.el_min_version?(v)`
+    Is RHEL-compatible with a minimum version number of v
 
 * `node.debian?`
     Is Debian

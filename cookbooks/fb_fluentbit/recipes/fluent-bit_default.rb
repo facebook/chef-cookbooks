@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-unless node.rhel? || node.windows?
+unless node.rhel_family? || node.windows?
   fail 'fb_fluentbit: unsupported platform. The list of supported platforms is
        [RHEL, windows]'
 end
@@ -71,7 +71,7 @@ directory 'runtime state directory' do
   end
 end
 
-include_recipe 'fb_fluentbit::fluent-bit_rhel' if node.rhel?
+include_recipe 'fb_fluentbit::fluent-bit_rhel' if node.rhel_family?
 include_recipe 'fb_fluentbit::fluent-bit_windows' if node.windows?
 
 template 'plugins config' do # ~FB031
