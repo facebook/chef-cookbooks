@@ -16,18 +16,81 @@
 # limitations under the License.
 #
 
+# Reference: Chef platform_family values
+# https://docs.chef.io/infra_language/checking_platforms/#platform_family-values
+
 class Chef
   # Our extensions of the node object
   class Node
 
+    def linux?
+      self['os'] == 'linux'
+    end
+
+    def major_platform_version
+      self['platform_version'].split('.')[0]
+    end
+
+    def rhel_family?
+      self['platform_family'] == 'rhel'
+    end
+
+    def _canonical_version(version)
+      if version.class == Integer
+        FB::Version.new(version.to_s)
+      elsif version.class == String
+        FB::Version.new(version)
+      elsif version.class == FB::Version
+        version
+      else
+        fail 'EL Version comparison can only be performed with strings and integers'
+      end
+    end
+
     # Is this a RHEL-compatible OS with a minimum major version number of `version`
     def el_min_version?(version)
-      self['platform_family'] == 'rhel' && self.major_platform_version.to_i >= version
+      self.rhel_family? && FB::Version.new(self['platform_version']) >= self._canonical_version(version)
     end
 
     # Is this a RHEL-compatible OS with a maximum major version number of `version`
     def el_max_version?(version)
-      self['platform_family'] == 'rhel' && self.major_platform_version.to_i <= version
+      self.rhel_family? && FB::Version.new(self['platform_version']) <= self._canonical_version(version)
+    end
+
+    def rhel_family7?
+      self.rhel_family? && self['platform_version'].start_with?('7')
+    end
+
+    def rhel_family8?
+      self.rhel_family? && self['platform_version'].start_with?('8')
+    end
+
+    def rhel_family9?
+      self.rhel_family? && self['platform_version'].start_with?('9')
+    end
+
+    def rhel?
+      self.rhel_family?
+    end
+
+    def rhel_min_version?(version)
+      self.rhel? && self.el_min_version?(version)
+    end
+
+    def rhel_max_version?(version)
+      self.rhel? && self.el_max_version?(version)
+    end
+
+    def rhel7?
+      self.rhel? && self['platform_version'].start_with?('7')
+    end
+
+    def rhel8?
+      self.rhel? && self['platform_version'].start_with?('8')
+    end
+
+    def rhel9?
+      self.rhel? && self['platform_version'].start_with?('9')
     end
 
     def centos_min_version?(version)
@@ -74,8 +137,64 @@ class Chef
       self.rocky? && self.el_max_version?(version)
     end
 
-    def major_platform_version
-      self['platform_version'].split('.')[0]
+    def redhat?
+      self['platform'] == 'redhat'
+    end
+
+    def redhat_min_version?(version)
+      self.redhat? && self.el_min_version?(version)
+    end
+
+    def redhat_max_version?(version)
+      self.redhat? && self.el_max_version?(version)
+    end
+
+    def redhat6?
+      self.redhat? && self['platform_version'].start_with?('6')
+    end
+
+    def redhat7?
+      self.redhat? && self['platform_version'].start_with?('7')
+    end
+
+    def redhat8?
+      self.redhat? && self['platform_version'].start_with?('8')
+    end
+
+    def redhat9?
+      self.redhat? && self['platform_version'].start_with?('9')
+    end
+
+    def oracle?
+      self['platform'] == 'oracle'
+    end
+
+    def oracle_min_version?(version)
+      self.oracle? && self.el_min_version?(version)
+    end
+
+    def oracle_max_version?(version)
+      self.oracle? && self.el_max_version?(version)
+    end
+
+    def oracle8?
+      self.oracle? && self['platform_version'].start_with?('8')
+    end
+
+    def oracle7?
+      self.oracle? && self['platform_version'].start_with?('7')
+    end
+
+    def oracle6?
+      self.oracle? && self['platform_version'].start_with?('6')
+    end
+
+    def oracle5?
+      self.oracle? && self['platform_version'].start_with?('5')
+    end
+
+    def fedora_family?
+      self['platform_family'] == 'fedora'
     end
 
     def fedora?
@@ -129,72 +248,8 @@ class Chef
         self['os_release']['variant_id'] == 'eln'
     end
 
-    def redhat?
-      self['platform'] == 'redhat'
-    end
-
-    def redhat6?
-      self.redhat? && self['platform_version'].start_with?('6')
-    end
-
-    def redhat7?
-      self.redhat? && self['platform_version'].start_with?('7')
-    end
-
-    def redhat8?
-      self.redhat? && self['platform_version'].start_with?('8')
-    end
-
-    def redhat9?
-      self.redhat? && self['platform_version'].start_with?('9')
-    end
-
-    def rhel_family?
-      self['platform_family'] == 'rhel'
-    end
-
-    def rhel?
-      self['platform_family'] == 'rhel'
-    end
-
-    def rhel7?
-      self.rhel? && self['platform_version'].start_with?('7')
-    end
-
-    def rhel8?
-      self.rhel? && self['platform_version'].start_with?('8')
-    end
-
-    def rhel9?
-      self.rhel? && self['platform_version'].start_with?('9')
-    end
-
-    def rhel_min_version?(version)
-      self.rhel? && self.el_min_version?(version)
-    end
-
-    def rhel_max_version?(version)
-      self.centos? && self.el_max_version?(version)
-    end
-
-    def oracle?
-      self['platform'] == 'oracle'
-    end
-
-    def oracle8?
-      self.oracle? && self['platform_version'].start_with?('8')
-    end
-
-    def oracle7?
-      self.oracle? && self['platform_version'].start_with?('7')
-    end
-
-    def oracle6?
-      self.oracle? && self['platform_version'].start_with?('6')
-    end
-
-    def oracle5?
-      self.oracle? && self['platform_version'].start_with?('5')
+    def debian_family?
+      self['platform_family'] == 'debian'
     end
 
     def debian?
@@ -253,24 +308,12 @@ class Chef
       self['platform'] == 'linuxmint'
     end
 
-    def linux?
-      self['os'] == 'linux'
-    end
-
-    def arch?
-      self['platform'] == 'arch'
-    end
-
-    def debian_family?
-      self['platform_family'] == 'debian'
-    end
-
     def arch_family?
       self['platform_family'] == 'arch'
     end
 
-    def fedora_family?
-      self['platform_family'] == 'fedora'
+    def arch?
+      self['platform'] == 'arch'
     end
 
     def macos?
