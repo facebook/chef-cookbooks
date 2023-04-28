@@ -453,6 +453,13 @@ your node.
    True if `node['fb_helpers']['interface_start_allowed_method']` is set and
    returns true, or if `node.interface_change_allowed?` is true.
 
+* `node.disruptable?`
+    A gate which can be used to limit dangerous code paths to only run during
+    provisioning, boot, or other times when the host is not running a
+    workload and can disrupted.  For initial boot you must
+    pass `CHEF_BOOT_SERVICE=true` as an environment variable from your
+    boot-time chef invocation.
+
 ### FB::Helpers
 The following constants are available:
 

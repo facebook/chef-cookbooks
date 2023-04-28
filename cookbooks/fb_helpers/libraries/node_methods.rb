@@ -1172,5 +1172,12 @@ class Chef
         return self.interface_change_allowed?(interface)
       end
     end
+
+    # A gate which can be used to limit dangerous code to only run during
+    # provisioning or upon boot
+    def disruptable?
+      @disruptable ||=
+        node.firstboot_any_phase? || ENV['CHEF_BOOT_SERVICE'] == 'true'
+    end
   end
 end
