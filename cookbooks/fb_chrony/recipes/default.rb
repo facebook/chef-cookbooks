@@ -19,7 +19,7 @@
 # limitations under the License.
 #
 
-if node.platform_family?('rhel') || node.platform_family?('fedora')
+if node.rhel_family? || node.fedora_family?
   chrony_svc = 'chronyd'
   chrony_conf = '/etc/chrony.conf'
   chrony_user = 'chrony'
