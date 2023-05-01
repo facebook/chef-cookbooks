@@ -184,37 +184,36 @@ action :run do
   end
 
   # Setup services
-  node['fb_timers']['jobs'].to_hash.each_pair do |_name, conf|
-    timer_name = "#{conf['name']}.timer"
+  if FB::Version.new(node['packages']['systemd']['version']) >
+      FB::Version.new('201')
 
-    service "#{timer_name} enable/start" do
-      only_if do
-        conf['autostart'] && FB::Version.new(node['packages']['systemd'][
-          'version']) > FB::Version.new('201')
+    node['fb_timers']['jobs'].to_hash.each_pair do |_name, conf|
+      timer_name = "#{conf['name']}.timer"
+
+      service "#{timer_name} enable/start" do
+        only_if { conf['autostart'] }
+        service_name timer_name
+        action [:enable, :start]
       end
-      service_name timer_name
-      action [:enable, :start]
     end
-
+  else
     # Versions prior to 201 did not support enablement of unit symlinks.
     # Workaround is to create the following symlink.
-    link "/etc/systemd/system/timers.target.wants/#{timer_name}" do
-      only_if do
-        conf['autostart'] && FB::Version.new(node['packages']['systemd'][
-          'version']) <= FB::Version.new('201')
-      end
-      to lazy {
-        "#{node['fb_timers']['_timer_path']}/#{conf['name']}.timer"
-      }
-    end
+    node['fb_timers']['jobs'].to_hash.each_pair do |_name, conf|
+      timer_name = "#{conf['name']}.timer"
 
-    service "#{timer_name} start only" do
-      only_if do
-        conf['autostart'] && FB::Version.new(node['packages']['systemd'][
-          'version']) <= FB::Version.new('201')
+      link "/etc/systemd/system/timers.target.wants/#{timer_name}" do
+        only_if { conf['autostart'] }
+        to lazy {
+          "#{node['fb_timers']['_timer_path']}/#{conf['name']}.timer"
+        }
       end
-      service_name timer_name
-      action [:start]
+
+      service "#{timer_name} start only" do
+        only_if { conf['autostart'] }
+        service_name timer_name
+        action [:start]
+      end
     end
   end
 
