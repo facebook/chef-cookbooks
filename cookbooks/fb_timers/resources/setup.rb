@@ -184,7 +184,35 @@ action :run do
   end
 
   # Setup services
-  if FB::Version.new(node['packages']['systemd']['version']) >
+  if node.in_shard?(0) && FB::Version.new(node['packages']['systemd']['version']) >
+      FB::Version.new('201')
+    # Build the list of timers with autostart enabled
+    enabled_timers = node['fb_timers']['jobs'].each_pair.select do |_name, conf|
+      conf['autostart']
+    end.map { |_name, conf| "#{conf['name']}.timer" }
+    Chef::Log.debug("fb_timers: autostart enabled timers is: #{enabled_timers}")
+    timers_status = FB::Timers.get_systemd_unit_status(enabled_timers)
+    # Build the list of timers which need to be enabled
+    need_enable = timers_status.each_key.reject do |id|
+      timers_status[id][:UnitFileState] == 'enabled'
+    end
+    # Build the list of timers which need to be started
+    need_start = timers_status.each_key.reject do |id|
+      timers_status[id][:Active] == 'active'
+    end
+    if !need_enable.empty?
+      Chef::Log.info("fb_timers: enabling timers: #{need_enable}")
+      execute 'Enable systemd timers' do
+        command "systemctl enable #{need_enable.join(' ')}"
+      end
+    end
+    if !need_start.empty?
+      Chef::Log.info("fb_timers: starting timers: #{need_start}")
+      execute 'Start systemd timers' do
+        command "systemctl start #{need_start.join(' ')}"
+      end
+    end
+  elsif FB::Version.new(node['packages']['systemd']['version']) >
       FB::Version.new('201')
 
     node['fb_timers']['jobs'].to_hash.each_pair do |_name, conf|

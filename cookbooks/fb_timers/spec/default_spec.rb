@@ -88,6 +88,7 @@ recipe 'fb_timers::default', :unsupported => [:mac_os_x] do |tc|
       ) do |node|
         allow(node).to receive(:systemd?).and_return(true)
       end.converge('fb_systemd::reload', described_recipe) do |node|
+        node.stub(:in_shard?).and_return(false)
         node.automatic['packages']['systemd']['version'] = '246.1'
         node.default['fb_timers']['jobs'] = {
           'simple' => {
@@ -194,6 +195,8 @@ recipe 'fb_timers::default', :unsupported => [:mac_os_x] do |tc|
         expect(chef_run).to enable_service("#{job}.timer")
         expect(chef_run).to_not enable_service("#{job}.service")
       end
+      # Switch to this after moving to the new way
+      # expect(chef_run).to run_execute('Enable systemd timers')
     end
 
     it 'should start the timer unit' do
@@ -201,6 +204,8 @@ recipe 'fb_timers::default', :unsupported => [:mac_os_x] do |tc|
         expect(chef_run).to start_service("#{job}.timer")
         expect(chef_run).to_not start_service("#{job}.service")
       end
+      # Switch to this after moving to the new way
+      # expect(chef_run).to run_execute('Start systemd timers')
     end
 
     it 'should handle jobs with only_ifs' do
