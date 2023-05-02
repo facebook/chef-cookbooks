@@ -17,8 +17,9 @@
 #
 
 action :run do
+  timer_path = node['fb_timers']['_timer_path']
   # Delete old jobs
-  Dir.glob("#{node['fb_timers']['_timer_path']}/*").each do |path|
+  Dir.glob("#{timer_path}/*").each do |path|
     # this doubles as the unit name.
     fname = ::File.basename(path)
 
@@ -128,13 +129,13 @@ action :run do
       unless conf['only_if'].call
         Chef::Log.debug("fb_timers: Not including #{conf['name']}" +
                         'due to only_if')
-        node.rm('fb_timers', 'jobs', conf['name'])
+        node.rm_default('fb_timers', 'jobs', conf['name'])
         next
       end
     end
 
     %w{service timer}.each do |type|
-      filename = "#{node['fb_timers']['_timer_path']}/#{conf['name']}.#{type}"
+      filename = "#{timer_path}/#{conf['name']}.#{type}"
       template filename do
         source "#{type}.erb"
         mode '0644'
@@ -232,9 +233,7 @@ action :run do
 
       link "/etc/systemd/system/timers.target.wants/#{timer_name}" do
         only_if { conf['autostart'] }
-        to lazy {
-          "#{node['fb_timers']['_timer_path']}/#{conf['name']}.timer"
-        }
+        to "#{timer_path}/#{conf['name']}.timer"
       end
 
       service "#{timer_name} start only" do
@@ -250,7 +249,7 @@ action :run do
     # only delete symlinks
     ::File.symlink?(unit) &&
       # whose targets are timer files
-      ::File.readlink(unit).start_with?(node['fb_timers']['_timer_path']) &&
+      ::File.readlink(unit).start_with?(timer_path) &&
       # whose targets don't exist
       !::File.exist?(::File.readlink(unit))
   end
