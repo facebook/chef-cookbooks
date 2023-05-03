@@ -224,3 +224,7 @@ like so:
 restart_command = 'powershell.exe -File C:\restart-script.ps1'
 node.default['fb_fluentbit']['custom_svc_restart_command'] = restart_command
 ```
+
+### Windows Service Enforcement
+To ensure the service is active and enabled (set to Automatic) on Windows,
+it can be configured with `node.default['fb_fluentbit']['keep_alive'] = true`

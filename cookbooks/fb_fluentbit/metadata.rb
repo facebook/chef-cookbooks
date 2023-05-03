@@ -8,3 +8,5 @@ source_url 'https://github.com/facebook/chef-cookbooks/'
 version '0.1.0'
 supports 'centos'
 supports 'windows'
+
+depends 'fb_helpers'
