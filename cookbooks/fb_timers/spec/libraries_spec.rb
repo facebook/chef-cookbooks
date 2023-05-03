@@ -1,5 +1,5 @@
 require './spec/spec_helper'
-require_relative '../../../../cookbooks/core/fb_timers/libraries/default'
+require_relative '../libraries/default'
 
 expected_service = {
   # A service which is already active and enabled
