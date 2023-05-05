@@ -121,7 +121,9 @@ template sysconfig do
   owner 'root'
   group 'root'
   mode '0644'
-  #notifies :restart, 'service[apache]'
+  if node['fb_apache']['prevent_restart'] == false
+    notifies :restart, 'service[apache]'
+  end
 end
 
 [moddir, sitesdir, confdir].uniq.each do |dir|
@@ -169,7 +171,9 @@ template "#{moddir}/fb_modules.conf" do
   group 'root'
   mode '0644'
   notifies :verify, 'fb_apache_verify_configs[doit]', :before
-  #notifies :restart, 'service[apache]'
+  if node['fb_apache']['prevent_restart'] == false
+    notifies :restart, 'service[apache]'
+  end
 end
 
 template "#{sitesdir}/fb_sites.conf" do
@@ -177,7 +181,9 @@ template "#{sitesdir}/fb_sites.conf" do
   group 'root'
   mode '0644'
   notifies :verify, 'fb_apache_verify_configs[doit]', :before
-  #notifies :reload, 'service[apache]'
+  if node['fb_apache']['prevent_restart'] == false
+    notifies :reload, 'service[apache]'
+  end
 end
 
 template "#{confdir}/fb_apache.conf" do
@@ -185,7 +191,9 @@ template "#{confdir}/fb_apache.conf" do
   group 'root'
   mode '0644'
   notifies :verify, 'fb_apache_verify_configs[doit]', :before
-  #notifies :reload, 'service[apache]'
+  if node['fb_apache']['prevent_restart'] == false
+    notifies :reload, 'service[apache]'
+  end
 end
 
 template "#{moddir}/00-mpm.conf" do
@@ -194,7 +202,9 @@ template "#{moddir}/00-mpm.conf" do
   mode '0644'
   # MPM cannot be changed on reload, only restart
   notifies :verify, 'fb_apache_verify_configs[doit]', :before
-  #notifies :restart, 'service[apache]'
+  if node['fb_apache']['prevent_restart'] == false
+    notifies :restart, 'service[apache]'
+  end
 end
 
 # We want to collect apache stats
@@ -205,7 +215,9 @@ template "#{confdir}/status.conf" do
   mode '0644'
   variables(:location => '/server-status')
   notifies :verify, 'fb_apache_verify_configs[doit]', :before
-  #notifies :restart, 'service[apache]'
+  if node['fb_apache']['prevent_restart'] == false
+    notifies :restart, 'service[apache]'
+  end
 end
 
 moddirbase = ::File.basename(moddir)
