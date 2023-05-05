@@ -147,10 +147,28 @@ if node.debian? || node.ubuntu?
   end
 end
 
+# By default the apache package installs some default config files which we're probably not interested in
+if node['platform_family'] == 'rhel'
+  %w{autoindex ssl userdir welcome}.each do |file|
+    file "#{sitesdir}/#{file}.conf" do
+      not_if { node['fb_apache']['enable_default_site'] }
+      action :delete
+    end
+  end
+end
+
 # The package comes pre-installed with module configs, but we dropp off our own
 # in fb_modules.conf. Also, we don't want non-Chef controlled module configs.
 fb_apache_cleanup_modules 'doit' do
   mod_dir moddir
+end
+
+template "#{httpdir}/conf/httpd.conf" do
+  owner 'root'
+  group 'root'
+  mode '0644'
+  notifies :verify, 'fb_apache_verify_configs[doit]', :before
+  notifies :reload, 'service[apache]'
 end
 
 template "#{moddir}/fb_modules.conf" do
@@ -226,5 +244,5 @@ end
 
 service 'apache' do
   service_name svc
-  action [:enable, :start]
+  action [:nothing]
 end

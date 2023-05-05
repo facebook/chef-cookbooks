@@ -1,3 +1,11 @@
-<Location "<%= @location %>">
+<Location /server-status>
     SetHandler server-status
+    Require local
+    # vpn users
+    Require ip 10.96.244.0/22
+    # vpn users
+    Require ip 10.100.240.0/22
+    # GCP vpn users
+    Require ip 10.0.0.0/8
+    Require ip 127.0.0.1
 </Location>
