@@ -121,7 +121,7 @@ template sysconfig do
   owner 'root'
   group 'root'
   mode '0644'
-  notifies :restart, 'service[apache]'
+  #notifies :restart, 'service[apache]'
 end
 
 [moddir, sitesdir, confdir].uniq.each do |dir|
@@ -147,6 +147,16 @@ if node.debian? || node.ubuntu?
   end
 end
 
+# By default the apache package installs some default config files which we're probably not interested in
+if node['platform_family'] == 'rhel'
+  %w{autoindex ssl userdir welcome}.each do |file|
+    file "#{sitesdir}/#{file}.conf" do
+      not_if { node['fb_apache']['enable_default_site'] }
+      action :delete
+    end
+  end
+end
+
 # The package comes pre-installed with module configs, but we dropp off our own
 # in fb_modules.conf. Also, we don't want non-Chef controlled module configs.
 fb_apache_cleanup_modules 'doit' do
@@ -159,7 +169,7 @@ template "#{moddir}/fb_modules.conf" do
   group 'root'
   mode '0644'
   notifies :verify, 'fb_apache_verify_configs[doit]', :before
-  notifies :restart, 'service[apache]'
+  #notifies :restart, 'service[apache]'
 end
 
 template "#{sitesdir}/fb_sites.conf" do
@@ -167,7 +177,7 @@ template "#{sitesdir}/fb_sites.conf" do
   group 'root'
   mode '0644'
   notifies :verify, 'fb_apache_verify_configs[doit]', :before
-  notifies :reload, 'service[apache]'
+  #notifies :reload, 'service[apache]'
 end
 
 template "#{confdir}/fb_apache.conf" do
@@ -175,7 +185,7 @@ template "#{confdir}/fb_apache.conf" do
   group 'root'
   mode '0644'
   notifies :verify, 'fb_apache_verify_configs[doit]', :before
-  notifies :reload, 'service[apache]'
+  #notifies :reload, 'service[apache]'
 end
 
 template "#{moddir}/00-mpm.conf" do
@@ -184,7 +194,7 @@ template "#{moddir}/00-mpm.conf" do
   mode '0644'
   # MPM cannot be changed on reload, only restart
   notifies :verify, 'fb_apache_verify_configs[doit]', :before
-  notifies :restart, 'service[apache]'
+  #notifies :restart, 'service[apache]'
 end
 
 # We want to collect apache stats
@@ -195,7 +205,7 @@ template "#{confdir}/status.conf" do
   mode '0644'
   variables(:location => '/server-status')
   notifies :verify, 'fb_apache_verify_configs[doit]', :before
-  notifies :restart, 'service[apache]'
+  #notifies :restart, 'service[apache]'
 end
 
 moddirbase = ::File.basename(moddir)
@@ -226,5 +236,5 @@ end
 
 service 'apache' do
   service_name svc
-  action [:enable, :start]
+  action [:enable]
 end
