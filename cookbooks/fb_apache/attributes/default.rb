@@ -185,3 +185,5 @@ default['fb_apache'] = {
   },
   'mpm' => 'prefork',
 }
+
+default['fb_apache']['allow_restart'] = true

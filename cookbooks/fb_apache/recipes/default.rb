@@ -121,7 +121,7 @@ template sysconfig do
   owner 'root'
   group 'root'
   mode '0644'
-  if node['fb_apache']['prevent_restart'] == false
+  if node['fb_apache']['allow_restart']
     notifies :restart, 'service[apache]'
   end
 end
@@ -171,7 +171,7 @@ template "#{moddir}/fb_modules.conf" do
   group 'root'
   mode '0644'
   notifies :verify, 'fb_apache_verify_configs[doit]', :before
-  if node['fb_apache']['prevent_restart'] == false
+  if node['fb_apache']['allow_restart']
     notifies :restart, 'service[apache]'
   end
 end
@@ -181,7 +181,7 @@ template "#{sitesdir}/fb_sites.conf" do
   group 'root'
   mode '0644'
   notifies :verify, 'fb_apache_verify_configs[doit]', :before
-  if node['fb_apache']['prevent_restart'] == false
+  if node['fb_apache']['allow_restart']
     notifies :reload, 'service[apache]'
   end
 end
@@ -191,7 +191,7 @@ template "#{confdir}/fb_apache.conf" do
   group 'root'
   mode '0644'
   notifies :verify, 'fb_apache_verify_configs[doit]', :before
-  if node['fb_apache']['prevent_restart'] == false
+  if node['fb_apache']['allow_restart']
     notifies :reload, 'service[apache]'
   end
 end
@@ -202,7 +202,7 @@ template "#{moddir}/00-mpm.conf" do
   mode '0644'
   # MPM cannot be changed on reload, only restart
   notifies :verify, 'fb_apache_verify_configs[doit]', :before
-  if node['fb_apache']['prevent_restart'] == false
+  if node['fb_apache']['allow_restart']
     notifies :restart, 'service[apache]'
   end
 end
@@ -215,7 +215,7 @@ template "#{confdir}/status.conf" do
   mode '0644'
   variables(:location => '/server-status')
   notifies :verify, 'fb_apache_verify_configs[doit]', :before
-  if node['fb_apache']['prevent_restart'] == false
+  if node['fb_apache']['allow_restart']
     notifies :restart, 'service[apache]'
   end
 end
