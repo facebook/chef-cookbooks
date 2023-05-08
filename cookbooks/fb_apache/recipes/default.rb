@@ -121,9 +121,7 @@ template sysconfig do
   owner 'root'
   group 'root'
   mode '0644'
-  if node['fb_apache']['allow_restart']
-    notifies :restart, 'service[apache]'
-  end
+  notifies :restart, 'service[apache]'
 end
 
 [moddir, sitesdir, confdir].uniq.each do |dir|
@@ -171,9 +169,7 @@ template "#{moddir}/fb_modules.conf" do
   group 'root'
   mode '0644'
   notifies :verify, 'fb_apache_verify_configs[doit]', :before
-  if node['fb_apache']['allow_restart']
-    notifies :restart, 'service[apache]'
-  end
+  notifies :restart, 'service[apache]'
 end
 
 template "#{sitesdir}/fb_sites.conf" do
@@ -181,9 +177,7 @@ template "#{sitesdir}/fb_sites.conf" do
   group 'root'
   mode '0644'
   notifies :verify, 'fb_apache_verify_configs[doit]', :before
-  if node['fb_apache']['allow_restart']
-    notifies :reload, 'service[apache]'
-  end
+  notifies :reload, 'service[apache]'
 end
 
 template "#{confdir}/fb_apache.conf" do
@@ -191,9 +185,7 @@ template "#{confdir}/fb_apache.conf" do
   group 'root'
   mode '0644'
   notifies :verify, 'fb_apache_verify_configs[doit]', :before
-  if node['fb_apache']['allow_restart']
-    notifies :reload, 'service[apache]'
-  end
+  notifies :reload, 'service[apache]'
 end
 
 template "#{moddir}/00-mpm.conf" do
@@ -202,9 +194,7 @@ template "#{moddir}/00-mpm.conf" do
   mode '0644'
   # MPM cannot be changed on reload, only restart
   notifies :verify, 'fb_apache_verify_configs[doit]', :before
-  if node['fb_apache']['allow_restart']
-    notifies :restart, 'service[apache]'
-  end
+  notifies :restart, 'service[apache]'
 end
 
 # We want to collect apache stats
@@ -215,9 +205,7 @@ template "#{confdir}/status.conf" do
   mode '0644'
   variables(:location => '/server-status')
   notifies :verify, 'fb_apache_verify_configs[doit]', :before
-  if node['fb_apache']['allow_restart']
-    notifies :restart, 'service[apache]'
-  end
+  notifies :restart, 'service[apache]'
 end
 
 moddirbase = ::File.basename(moddir)
@@ -246,7 +234,13 @@ if node['platform_family'] == 'debian'
   end
 end
 
-service 'apache' do
+service 'apache_enable' do
   service_name svc
   action [:enable]
+end
+
+service 'apache' do
+  service_name svc
+  only_if { node['fb_apache']['allow_restart'] }
+  action [:nothing]
 end

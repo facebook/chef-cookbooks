@@ -186,4 +186,4 @@ default['fb_apache'] = {
   'mpm' => 'prefork',
 }
 
-default['fb_apache']['allow_restart'] = true
+node.default['fb_apache']['allow_restart'] = true
