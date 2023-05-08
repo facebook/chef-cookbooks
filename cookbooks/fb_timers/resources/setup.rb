@@ -185,7 +185,7 @@ action :run do
   end
 
   # Setup services
-  if node.in_shard?(24) && FB::Version.new(node['packages']['systemd']['version']) >
+  if node.in_shard?(39) && FB::Version.new(node['packages']['systemd']['version']) >
       FB::Version.new('201')
     # Build the list of timers with autostart enabled
     enabled_timers = node['fb_timers']['jobs'].each_pair.select do |_name, conf|
