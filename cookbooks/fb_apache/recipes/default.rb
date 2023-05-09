@@ -163,6 +163,14 @@ fb_apache_cleanup_modules 'doit' do
   mod_dir moddir
 end
 
+template "#{httpdir}/conf/httpd.conf" do
+  owner 'root'
+  group 'root'
+  mode '0644'
+  notifies :verify, 'fb_apache_verify_configs[doit]', :before
+  notifies :reload, 'service[apache]'
+end
+
 template "#{moddir}/fb_modules.conf" do
   not_if { node.centos6? }
   owner 'root'
