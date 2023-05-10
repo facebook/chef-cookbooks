@@ -243,5 +243,5 @@ end
 
 service 'apache' do
   service_name svc
-  action [:nothing]
+  action [:enable, :start]
 end
