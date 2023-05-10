@@ -43,7 +43,7 @@ class Chef
       elsif version.class == FB::Version
         version
       else
-        fail 'EL Version comparison can only be performed with strings and integers'
+        fail 'fb_helpers: EL Version comparison can only be performed with strings and integers'
       end
     end
 
