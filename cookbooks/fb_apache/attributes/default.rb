@@ -90,6 +90,11 @@ default['fb_apache'] = {
   'manage_packages' => true,
   'enable_default_site' => true,
   'sites' => {},
+  'status_config' => {
+    '<Location /server-status>' => {
+      'SetHandler' => 'server-status'
+    },
+  },
   'extra_configs' => {},
   'modules' => modules,
   'modules_directory' => moddir,
