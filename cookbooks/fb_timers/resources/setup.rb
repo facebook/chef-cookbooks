@@ -185,8 +185,7 @@ action :run do
   end
 
   # Setup services
-  if node.in_shard?(79) && FB::Version.new(node['packages']['systemd']['version']) >
-      FB::Version.new('201')
+  if FB::Version.new(node['packages']['systemd']['version']) > FB::Version.new('201')
     # Build the list of timers with autostart enabled
     enabled_timers = node['fb_timers']['jobs'].each_pair.select do |_name, conf|
       conf['autostart']
@@ -211,18 +210,6 @@ action :run do
       Chef::Log.info("fb_timers: starting timers: #{need_start}")
       execute 'Start systemd timers' do
         command "systemctl start #{need_start.join(' ')}"
-      end
-    end
-  elsif FB::Version.new(node['packages']['systemd']['version']) >
-      FB::Version.new('201')
-
-    node['fb_timers']['jobs'].to_hash.each_pair do |_name, conf|
-      timer_name = "#{conf['name']}.timer"
-
-      service "#{timer_name} enable/start" do
-        only_if { conf['autostart'] }
-        service_name timer_name
-        action [:enable, :start]
       end
     end
   else
