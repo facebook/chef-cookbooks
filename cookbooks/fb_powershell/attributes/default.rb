@@ -20,6 +20,7 @@ default['fb_powershell'] = {
   'powershell' => {
     'manage' => false,
     'version' => nil,
+    'disable_v2' => false,
   },
   # Opensource PowerShell aka Core
   'pwsh' => {
