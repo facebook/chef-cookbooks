@@ -18,6 +18,11 @@
 # limitations under the License.
 #
 
+# Keep this in sync with the platform list in attributes
+unless %{centos debian fedora redhat ubuntu}.include?(node['platform'])
+  fail "fb_grub: this platform is not supported: #{node['platform']}"
+end
+
 include_recipe 'fb_grub::packages'
 include_recipe 'fb_grub::validate'
 include_recipe 'fb_grub::config'
