@@ -18,8 +18,8 @@
 # limitations under the License.
 #
 
-unless node.centos? || node.rocky? || node.debian? || node.ubuntu?
-  fail 'fb_collectd is only supported on CentOS, Rocky, Debian or Ubuntu.'
+unless node.rhel_family? || node.debian? || node.ubuntu?
+  fail 'fb_collectd is only supported on RHEL and family, Debian, or Ubuntu.'
 end
 
 case node['platform_family']
