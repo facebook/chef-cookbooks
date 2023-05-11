@@ -17,6 +17,7 @@ Attributes
 * node['fb_apache']['module_packages']
 * node['fb_apache']['enable_default_site']
 * node['fb_apache']['extra_configs']
+* node['fb_apache']['status_config']
 * node['fb_apache']['mpm']
 
 Usage
@@ -208,10 +209,13 @@ and we've pre-populated all the common modules on both distro variants.
 Finally, `node['fb_apache']['modules_directory']` is set to the proper module
 directory for your distro, but you may override it if you'd like.
 
-### Extra Configs
+### Extra Configs & Status Configs
 Everything in `node['fb_apache']['extra_configs']` will be converted from hash
 syntax to Apache Config syntax in the same 1:1 manner as the `sites` hash above
 and put into an `fb_apache.conf` config file.
+
+The same is true for for `node['fb_apache]['status_config]` which is by-default
+used to manage the `server-status` directive found in the `status.conf`file. 
 
 ### MPM
 Allows to chose mpm module used. It can be prefork, worker or event.
