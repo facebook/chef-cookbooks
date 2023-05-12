@@ -82,6 +82,7 @@ fb_grub = {
   'users' => {},
   'require_auth_on_boot' => false,
   'environment' => {},
+  'search_enabled' => true,
 }
 
 unless vendor.nil?

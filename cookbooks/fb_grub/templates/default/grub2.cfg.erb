@@ -150,11 +150,13 @@ else
     load_env -f ($root)/grub2/grubenv
   elif [ -f ($root)/boot/grub2/grubenv ]; then
     load_env -f ($root)/boot/grub2/grubenv
+<% if node['fb_grub']['search_enabled'] -%>
   else
     search --set=retry --label /
     if [ -f ($retry)/boot/efi/EFI/centos/grubenv ]; then
       load_env -f ($retry)/boot/efi/EFI/centos/grubenv
     fi
+<% end -%>
   fi
 fi
 
