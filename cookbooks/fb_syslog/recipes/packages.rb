@@ -23,9 +23,8 @@ package 'rsyslog' do
   # TODO(T152951763): Pin rsyslog to 8.2102.0.105.el9 in Antlir builds
   # See D45729033 for the Antlir counterpart
   if node.centos9? && node.antlir_build?
-    version '8.2102.0.105.el9'
+    version '8.2102.0-105.el9'
     action :install
-    allow_downgrade true
   else
     action :upgrade
   end
