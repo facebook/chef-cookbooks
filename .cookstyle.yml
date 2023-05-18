@@ -5,7 +5,7 @@ AllCops:
   # new cops and make upgrades easier (ie not dealing with a bunch of noise
   # each Cookstyle update)
   DisabledByDefault: true
-  TargetChefVersion: 13.10.0
+  TargetChefVersion: 14.15.6
 
 Chef/Correctness/BlockGuardWithOnlyString:
   Enabled: true
