@@ -502,7 +502,7 @@ module FB
         fail 'fb_storage: Unknown persistent disk format ' +
           "specified: #{version}"
       end
-      File.open(PREVIOUS_DISK_ORDER, 'w') do |fd| # ~FB030
+      File.open(PREVIOUS_DISK_ORDER, 'w') do |fd| # rubocop:disable Chef/Meta/NoFileWrites
         Chef::Log.debug('fb_storage: Writing out disk order')
         fd.write(JSON.generate(data))
       end
