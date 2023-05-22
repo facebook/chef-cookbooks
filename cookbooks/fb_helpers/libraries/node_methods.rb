@@ -467,6 +467,10 @@ class Chef
       self['platform'] == 'arista_eos'
     end
 
+    def aristaeos_4_28_or_newer?
+      self.aristaeos? && FB::Version.new(self['platform_version']) >= FB::Version.new('4.28')
+    end
+
     def embedded?
       self.aristaeos?
     end
