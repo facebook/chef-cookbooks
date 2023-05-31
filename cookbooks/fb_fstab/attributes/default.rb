@@ -67,6 +67,7 @@ default['fb_fstab'] = {
       # Core OS stuff to never umount...
       '/dev/shm',
       '/run',
+      '/sys/fs/bpf',
       '/sys/fs/cgroup',
       '/sys/fs/selinux',
       # Debian-isms
