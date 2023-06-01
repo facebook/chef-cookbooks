@@ -81,6 +81,7 @@ default['fb_fstab'] = {
     'mount_point_prefixes' => [
       '/run/user',
     ],
+    'mount_point_regexes' => [],
   },
   'type_normalization_map' => {
     # Gluster is mounted as '-t gluster', but shows up as 'fuse.gluster'
