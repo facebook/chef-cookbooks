@@ -114,6 +114,9 @@ default['fb_systemd'] = {
     'use_networkd_socket_with_networkd' => false,
     'config' => {},
   },
+  'nspawn' => {
+    'enable' => false,
+  },
   'resolved' => {
     'enable' => enable_resolved,
     'enable_nss_resolve' => enable_nss_resolve,
