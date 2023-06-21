@@ -233,6 +233,7 @@ action :manage do
   end
 
   node['fb_networkd']['devices'].each do |name, defconf|
+    restart_for_new_vlan = false
     conf = defconf.dup
     conf['name'] = name
 
@@ -273,6 +274,13 @@ action :manage do
       )
       notifies :run, 'execute[networkctl reload]', :immediately
       notifies :run, "execute[networkctl reconfigure #{conf['name']}]"
+
+      # If we are making a new VLAN, we must restart systemd-networkd for it to
+      # be created. Detect this case and set the restart flag.
+      if !on_host_networks.include?(conffile) &&
+          conf['config']['NetDev']['Kind'] == 'vlan'
+        restart_for_new_vlan = true
+      end
     end
 
     # This file is actively managed and already exists on the host so remove it
@@ -291,6 +299,10 @@ action :manage do
     conflicting_netdevs.each do |path|
       on_host_netdevs.delete(path)
 
+      # This was managed under a different file name so don't restart
+      # systemd-networkd.
+      restart_for_new_vlan = false
+
       file path do
         only_if { node.interface_change_allowed?(conf['name']) }
         owner node.root_user
@@ -305,6 +317,8 @@ action :manage do
         FB::Helpers._request_nw_changes_permission(run_context, new_resource)
       end
     end
+
+    restart_networkd ||= restart_for_new_vlan
   end
 
   # For each remaining file, check if we can make network changes on the
