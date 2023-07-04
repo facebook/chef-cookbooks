@@ -227,12 +227,12 @@ module Bookworm
 
     def load_classes_for_report
       @report_src_dirs.each do |d|
-        begin
-          Bookworm.load_report_class @report_name, :dir => d
-          break
-        rescue Bookworm::ClassLoadError
-          # puts "Unable to load report #{report_name}, take a look at bookworm --list-reports\n\n"
-        end
+
+        Bookworm.load_report_class @report_name, :dir => d
+        break
+      rescue Bookworm::ClassLoadError
+        # puts "Unable to load report #{report_name}, take a look at bookworm --list-reports\n\n"
+
       end
       unless Bookworm::Reports.const_defined?(@report_name.to_sym)
         cli_fail "Unable to load report #{@report_name}, take a look at bookworm --list-reports"
@@ -245,12 +245,12 @@ module Bookworm
       @rules = Bookworm.get_report_rules(@report_name)
       @rules.each do |rule|
         @rule_src_dirs.each do |d|
-          begin
-            Bookworm.load_rule_class rule, :dir => d
-            break
-          rescue Bookworm::ClassLoadError
-            # puts "Unable to load rule #{rule}, take a look at bookworm --list-rules\n\n"
-          end
+
+          Bookworm.load_rule_class rule, :dir => d
+          break
+        rescue Bookworm::ClassLoadError
+          # puts "Unable to load rule #{rule}, take a look at bookworm --list-rules\n\n"
+
         end
         unless Bookworm::InferRules.const_defined?(rule.to_sym)
           cli_fail "Unable to load rule #{rule}, take a look at bookworm --list-rules"
