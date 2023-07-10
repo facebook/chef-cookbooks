@@ -36,7 +36,7 @@ directory grub_base_dir do
   mode '0755'
 end
 
-template 'grub_config' do # ~FB031
+template 'grub_config' do
   only_if do
     node['platform_family'] == 'rhel' && node['fb_grub']['kernels'] &&
       node['fb_grub']['version'] == 1
@@ -82,7 +82,7 @@ end
   # to x86_64.
   efi_command = type == 'efi' && node.x64?
 
-  template "grub2_config_#{type}" do # ~FB031
+  template "grub2_config_#{type}" do
     only_if do
       (node['fb_grub']['kernels'] && node['fb_grub']['version'] == 2) &&
       (our_type || node['fb_grub']['force_both_efi_and_bios'])

@@ -41,7 +41,7 @@ directory '/var/run/chrony' do
   mode '0750'
 end
 
-template 'chrony.conf' do # ~FB031
+template 'chrony.conf' do
   path chrony_conf
   source 'chrony.conf.erb'
   owner 'root'

@@ -26,7 +26,7 @@ action :manage do
   install_paths = install_pwsh_path_list(node)
   install_paths.each do |install_path|
     path = ::File.join(install_path, 'powershell.config.json')
-    template path do # ~FB031
+    template path do
       only_if { node['fb_powershell']['manage_config'] }
       source 'powershell.config.json.erb'
       if platform?('windows')

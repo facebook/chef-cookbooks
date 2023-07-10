@@ -43,7 +43,7 @@ action :run do
            group
     end
 
-    template ::File.join(YUM_REPOS_D, "#{group}.repo") do # ~FB031
+    template ::File.join(YUM_REPOS_D, "#{group}.repo") do
       source 'yum.repo.erb'
       owner 'root'
       group 'root'

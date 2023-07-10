@@ -102,7 +102,7 @@ action :manage do
     )
 
     # Set up the template for this interface
-    fb_helpers_gated_template conffile do # ~FB031
+    fb_helpers_gated_template conffile do
       allow_changes node.interface_change_allowed?(conf['name'])
       source 'networkd.conf.erb'
       owner node.root_user
@@ -180,7 +180,7 @@ action :manage do
     )
 
     # Set up the template for this interface
-    fb_helpers_gated_template conffile do # ~FB031
+    fb_helpers_gated_template conffile do
       allow_changes node.interface_change_allowed?(conf['name'])
       source 'networkd.conf.erb'
       owner node.root_user
@@ -263,7 +263,7 @@ action :manage do
     )
 
     # Set up the template for this interface
-    fb_helpers_gated_template conffile do # ~FB031
+    fb_helpers_gated_template conffile do
       allow_changes node.interface_change_allowed?(conf['name'])
       source 'networkd.conf.erb'
       owner node.root_user

@@ -24,7 +24,7 @@ action :run do
     bls_entry =
       ::File.join(bls_root, "#{node['machine_id']}-#{data['version']}.conf")
 
-    template bls_entry do # ~FB031
+    template bls_entry do
       source 'bls-entry.conf.erb'
       owner 'root'
       group 'root'

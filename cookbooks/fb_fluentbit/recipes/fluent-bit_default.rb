@@ -74,7 +74,7 @@ end
 include_recipe 'fb_fluentbit::fluent-bit_rhel' if node.rhel_family?
 include_recipe 'fb_fluentbit::fluent-bit_windows' if node.windows?
 
-template 'plugins config' do # ~FB031
+template 'plugins config' do
   action :create
   source 'plugins.conf.erb'
   path plugins_file_path
@@ -89,7 +89,7 @@ template 'plugins config' do # ~FB031
   end
 end
 
-template 'parsers config' do # ~FB031
+template 'parsers config' do
   action :create
   source 'parsers.conf.erb'
   path parsers_file_path
@@ -120,7 +120,7 @@ remote_file 'remote config' do
   end
 end
 
-template 'local config' do # ~FB031
+template 'local config' do
   not_if { node['fb_fluentbit']['external_config_url'] }
   action :create
   source 'conf.erb'

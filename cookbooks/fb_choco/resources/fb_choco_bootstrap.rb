@@ -74,7 +74,7 @@ action_class do
         node['fb_choco']['bootstrap']['use_windows_compression'].to_s,
     }
 
-    cookbook_file 'chocolatey_install script' do # ~FB031
+    cookbook_file 'chocolatey_install script' do
       path choco_install_ps1
       source 'choco_install/install.ps1'
       owner 'Administrators'
