@@ -35,7 +35,7 @@ when 'debian'
   end
 
   # older versions of Debian and Ubuntu are missing some extra packages
-  unless ['trusty', 'jessie'].include?(node['lsb']['codename'])
+  if (node.ubuntu? && node['platform_version'].to_i < 14) || (node.debian? && node['platform_version'].to_i < 8)
     systemd_packages += %w{
       libnss-myhostname
       libnss-mymachines
@@ -58,6 +58,9 @@ package 'systemd packages' do
        node['platform_family'] == 'debian' &&
        !['trusty', 'jessie'].include?(node['lsb']['codename'])
       systemd_packages << 'systemd-journal-remote'
+    end
+    if node['fb_systemd']['timesyncd']['enable'] && node.debian?
+      systemd_packages << 'systemd-timesyncd'
     end
     if node['packages'] && node['packages']['systemd']['version']
       systemd_version = FB::Version.new(node['packages']['systemd']['version'])
