@@ -60,7 +60,7 @@ package 'systemd packages' do
        !['trusty', 'jessie'].include?(node['lsb']['codename'])
       systemd_packages << 'systemd-journal-remote'
     end
-    if node['fb_systemd']['timesyncd']['enable'] && node.debian?
+    if node['fb_systemd']['timesyncd']['enable']
       systemd_packages << 'systemd-timesyncd'
     end
     if node['packages'] && node['packages']['systemd']['version']
