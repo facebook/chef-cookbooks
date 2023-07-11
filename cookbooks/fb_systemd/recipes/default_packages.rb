@@ -35,7 +35,8 @@ when 'debian'
   end
 
   # older versions of Debian and Ubuntu are missing some extra packages
-  if (node.ubuntu? && node['platform_version'].to_i < 14) || (node.debian? && node['platform_version'].to_i < 8)
+  if (node.ubuntu? && node['platform_version'].to_i < 14) ||
+     (node.debian? && node['platform_version'].to_i < 8)
     systemd_packages += %w{
       libnss-myhostname
       libnss-mymachines
