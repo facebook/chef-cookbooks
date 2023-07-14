@@ -7,6 +7,7 @@ Requirements
 
 Attributes
 ----------
+* node['fb_syslog']['manage_packages']
 * node['fb_syslog']['syslog-entries']
 * node['fb_syslog']['rsyslog_server']
 * node['fb_syslog']['rsyslog_server_address']
@@ -30,6 +31,10 @@ Attributes
 
 Usage
 -----
+### Packages
+This cookbook will install and manage the `rsyslog` package unless the
+`node['fb_syslog']['manage_packages]` attribute is set to `false`.
+
 ### syslog-compatible entries
 The `node['fb_syslog']['syslog-entries']` is used to populate all lines
 in a `syslog.conf`, and all syslog-style entries in `rsyslog.conf`.

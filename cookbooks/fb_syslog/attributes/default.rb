@@ -99,4 +99,5 @@ default['fb_syslog'] = {
   'rsyslog_omprog_binary_args' => [],
   'sysconfig' => sysconfig,
   '_enable_syslog_socket_override' => true,
+  'manage_packages' => true,
 }
