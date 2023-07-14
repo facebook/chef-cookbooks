@@ -334,10 +334,8 @@ Lint/AssignmentInCondition:
 Lint/BigDecimalNew:
   Enabled: true
 
-# TODO move exception to file after chef-workstation upgrade
 Lint/BinaryOperatorWithIdenticalOperands:
-  Exclude:
-  - cookbooks/fb_helpers/spec/version_spec.rb
+  Enabled: true
 
 Lint/BooleanSymbol:
   Enabled: true
