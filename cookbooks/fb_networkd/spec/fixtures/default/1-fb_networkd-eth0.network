@@ -1,0 +1,18 @@
+# This file is maintained by Chef. Do not edit, all changes will be
+# overwritten. See fb_networkd/README.md
+
+[Network]
+Address = 2001:db00::1/64
+Address = 192.168.1.1/24
+Address = 2401:db00::1/64
+
+[Match]
+Name = eth0
+
+[Address]
+Address = 2001:db00::1/64
+PreferredLifetime = infinity
+
+[Address]
+Address = 2401:db00::1/64
+PreferredLifetime = 0
