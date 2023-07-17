@@ -20,12 +20,21 @@
 
 # This recipe is only for running ChefSpec tests
 if defined?(ChefSpec)
+  fb_helpers_request_nw_changes 'manage' do
+    action :nothing
+    delayed_action :cleanup_signal_files_when_no_change_required
+  end
+
+  service 'critical_service' do
+    action :nothing
+  end
+
   fb_helpers_gated_template '/tmp/testfile' do
     allow_changes node.nw_changes_allowed?
-    # purposefully bogus, so we raise UserIDNotFound and catch in spec
-    owner 'bogususer123'
-    group 'bogususer123'
+    owner 'root'
+    group 'root'
     mode '0644'
     source 'spec_network.erb'
+    notifies :restart, 'service[critical_service]', :immediately
   end
 end

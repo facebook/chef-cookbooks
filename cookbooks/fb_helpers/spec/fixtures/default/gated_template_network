@@ -1,0 +1,6 @@
+# Test template used for chefspec
+
+NETWORKING=yes
+HOSTNAME=fauxhai.local
+NETWORKING_IPV6=yes
+IFDOWN_ON_SHUTDOWN=no
