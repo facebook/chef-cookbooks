@@ -366,11 +366,11 @@ Chef/Sharing/DefaultMetadataMaintainer:
 Chef/Sharing/EmptyMetadataField:
   Enabled: true
 Chef/Sharing/IncludePropertyDescriptions:
-  Enabled: true
+  Enabled: false # TODO(T158836638) ratchet back in
 Chef/Sharing/IncludeResourceDescriptions:
-  Enabled: true
+  Enabled: false # TODO(T158836638) ratchet back in
 Chef/Sharing/IncludeResourceExamples:
-  Enabled: true
+  Enabled: false # TODO(T158836638) ratchet back in
 Chef/Sharing/InsecureCookbookURL:
   Enabled: true
 Chef/Sharing/InvalidLicenseString:
@@ -379,7 +379,7 @@ Chef/Sharing/InvalidLicenseString:
 Chef/Style/AttributeKeys:
   Enabled: true
 Chef/Style/CommentSentenceSpacing:
-  Enabled: true
+  Enabled: false # TODO: Re-enable in Cookstyle 7.32.3+
 Chef/Style/DefaultCopyrightComments:
   Enabled: true
 Chef/Style/FileMode:
