@@ -5,7 +5,7 @@ AllCops:
   # new cops and make upgrades easier (ie not dealing with a bunch of noise
   # each Cookstyle update)
   DisabledByDefault: true
-  TargetChefVersion: 14.15.6
+  TargetChefVersion: 16.18.0
 
 Chef/Correctness/BlockGuardWithOnlyString:
   Enabled: true
@@ -137,7 +137,7 @@ Chef/Deprecations/LibrarianChefSpec:
 Chef/Deprecations/LocaleDeprecatedLcAllProperty:
   Enabled: true
 Chef/Deprecations/LogResourceNotifications:
-  Enabled: true
+  Enabled: false # TODO(T158851402) ratchet back in
 Chef/Deprecations/MacosUserdefaultsGlobalProperty:
   Enabled: true
 Chef/Deprecations/NamePropertyWithDefaultValue:
