@@ -34,11 +34,13 @@ include_recipe 'fb_logrotate::packages'
 
 whyrun_safe_ruby_block 'munge logrotate configs' do
   block do
+    globals = node['fb_logrotate']['globals'] # Keep globals out of loop below to avoid deep merge cache flap
     node['fb_logrotate']['configs'].to_hash.each do |name, block|
+      config = block.dup
       time = nil
-      if block['overrides']
-        rotation = block['overrides']['rotation']
-        size = block['overrides']['size']
+      if config['overrides']
+        rotation = config['overrides']['rotation']
+        size = config['overrides']['size']
 
         if rotation && size
           fail "fb_logrotate:[#{name}]: you can only use size or rotation " +
@@ -48,15 +50,13 @@ whyrun_safe_ruby_block 'munge logrotate configs' do
         if rotation
           # if someone wants to override weekly but didn't specify
           # how many to keep, we default to 4
-          if rotation == 'weekly' && !block['overrides']['rotate']
-            node.default['fb_logrotate']['configs'][name][
-              'overrides']['rotate'] = '4'
+          if rotation == 'weekly' && !config['overrides']['rotate']
+            config['overrides']['rotate'] = '4'
           end
 
           if %w{hourly daily weekly monthly yearly}.include?(rotation)
             time = rotation
-            node.default[
-              'fb_logrotate']['configs'][name]['overrides']['rotation'] = nil
+            config['overrides']['rotation'] = nil
           else
             fail "fb_logrotate:[#{name}]: rotation #{rotation} invalid"
           end
@@ -64,19 +64,18 @@ whyrun_safe_ruby_block 'munge logrotate configs' do
 
         if size
           time = "size #{size}"
-          node.rm(:fb_logrotate, :configs, name, :overrides, :size)
+          config['overrides']['size'] = nil
         end
 
-        if block['overrides']['nocompress'] &&
-           node['fb_logrotate']['globals']['nocompress']
+        if config['overrides']['nocompress'] && globals['nocompress']
           # redundant, remove
-          node.default[
-            'fb_logrotate']['configs'][name]['overrides']['nocompress'] = nil
+          config['overrides']['nocompress'] = nil
         end
       end
       if time
-        node.default['fb_logrotate']['configs'][name]['time'] = time
+        config['time'] = time
       end
+      node.default['fb_logrotate']['configs'][name] = config
     end
   end
 end
