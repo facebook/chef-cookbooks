@@ -379,7 +379,7 @@ Chef/Sharing/InvalidLicenseString:
 Chef/Style/AttributeKeys:
   Enabled: true
 Chef/Style/CommentSentenceSpacing:
-  Enabled: false # TODO: Re-enable in Cookstyle 7.32.3+
+  Enabled: false # Turned off intentionally, too opinionated/noisy
 Chef/Style/DefaultCopyrightComments:
   Enabled: true
 Chef/Style/FileMode:
