@@ -306,7 +306,7 @@ module FB
     def self._swap_unit(node, type)
       if type == 'device'
         label = self._label(node)
-        if label && node.in_shard?(39)
+        if label && node.in_shard?(59)
           # the kernel escapes slash characters in the label name, so we have to
           # construct the by-label path with escapes, then resolve what path
           # systemd will create via the generators
