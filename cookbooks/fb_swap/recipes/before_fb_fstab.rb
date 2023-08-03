@@ -60,7 +60,7 @@ end
     block do
       # ask fb_fstab to create the unit
       device = FB::FbSwap._path(node, type)
-      if type == 'device' && node.in_shard?(59)
+      if type == 'device' && node.in_shard?(79)
         label = FB::FbSwap._label(node)
         if label
           device = "LABEL=#{label}"
