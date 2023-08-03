@@ -1,6 +1,6 @@
 # vim: syntax=ruby:expandtab:shiftwidth=2:softtabstop=2:tabstop=2
 #
-# Copyright (c) 2021-present, Facebook, Inc.
+# Copyright (c) 2023-present, Facebook, Inc.
 # All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,19 +16,22 @@
 # limitations under the License.
 #
 
-primary_int = 'eth0'
+default_action :trigger
 
-default['fb_networkd'] = {
-  'allow_dynamic_addresses' => true,
-  'primary_interface' => primary_int,
-  'enable_tun' => false,
-
-  'networks' => {
-    primary_int => {
-      'config' => {},
-    },
-  },
-  'links' => {},
-  'devices' => {},
-  'notify_resources' => {},
-}
+action :trigger do
+  if Chef::VERSION.to_i >= 16
+    notify_group 'notify resources after networkd change' do # rubocop:disable Chef/Meta/Chef16
+      node['fb_networkd']['notify_resources'].each do |my_r, my_a|
+        notifies my_a, my_r
+      end
+      action :run
+    end
+  else
+    log 'notify resources after networkd change' do
+      node['fb_networkd']['notify_resources'].each do |my_r, my_a|
+        notifies my_a, my_r
+      end
+      action :write
+    end
+  end
+end
