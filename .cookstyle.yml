@@ -201,6 +201,27 @@ Chef/Deprecations/WindowsTaskChangeAction:
 Chef/Deprecations/WindowsVersionHelpers:
   Enabled: true
 
+# These cookbooks don't follow the Effortless Pattern
+# See https://docs.chef.io/effortless/
+Chef/Effortless/Berksfile:
+  Enabled: false
+Chef/Effortless/ChefVaultUsed:
+  Enabled: false
+Chef/Effortless/CookbookUsesDatabags:
+  Enabled: false
+Chef/Effortless/CookbookUsesEnvironments:
+  Enabled: false
+Chef/Effortless/CookbookUsesPolicygroups:
+  Enabled: false
+Chef/Effortless/CookbookUsesRoles:
+  Enabled: false
+Chef/Effortless/CookbookUsesSearch:
+  Enabled: false
+Chef/Effortless/DependsChefVault:
+  Enabled: false
+Chef/Effortless/SearchForEnvironmentsOrRoles:
+  Enabled: false
+
 Chef/Modernize/ActionMethodInResource:
   Enabled: true
 Chef/Modernize/AllowedActionsFromInitialize:
@@ -378,7 +399,13 @@ Chef/Sharing/InvalidLicenseString:
 
 Chef/Style/AttributeKeys:
   Enabled: true
+Chef/Style/ChefWhaaat:
+  Enabled: false # Turned off intentionally, too opinionated/noisy
+Chef/Style/CommentFormat:
+  Enabled: false # Turned off intentionally, too opinionated/noisy
 Chef/Style/CommentSentenceSpacing:
+  Enabled: false # Turned off intentionally, too opinionated/noisy
+Chef/Style/CopyrightCommentFormat:
   Enabled: false # Turned off intentionally, too opinionated/noisy
 Chef/Style/DefaultCopyrightComments:
   Enabled: true
