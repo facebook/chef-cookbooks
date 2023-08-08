@@ -19,6 +19,8 @@ Chef/Correctness/DnfPackageAllowDowngrades:
   Enabled: true
 Chef/Correctness/IncorrectLibraryInjection:
   Enabled: true
+Chef/Correctness/InvalidCookbookName:
+  Enabled: true
 Chef/Correctness/InvalidDefaultAction:
   Enabled: true
 Chef/Correctness/InvalidNotificationTiming:
@@ -43,7 +45,11 @@ Chef/Correctness/MacosUserdefaultsInvalidType:
   Enabled: true
 Chef/Correctness/MalformedPlatformValueForPlatformHelper:
   Enabled: true
+Chef/Correctness/MetadataMalformedDepends:
+  Enabled: true
 Chef/Correctness/MetadataMissingName:
+  Enabled: true
+Chef/Correctness/MetadataMissingVersion:
   Enabled: true
 Chef/Correctness/NodeNormal:
   Enabled: true
@@ -54,6 +60,8 @@ Chef/Correctness/NotifiesActionNotSymbol:
 Chef/Correctness/OctalModeAsString:
   Enabled: true
 Chef/Correctness/OpenSSLPasswordHelpers:
+  Enabled: true
+Chef/Correctness/PowershellFileExists:
   Enabled: true
 Chef/Correctness/PowershellScriptDeleteFile:
   Enabled: true
@@ -86,6 +94,8 @@ Chef/Deprecations/ChefSpecCoverageReport:
   Enabled: true
 Chef/Deprecations/ChefSpecLegacyRunner:
   Enabled: true
+Chef/Deprecations/ChefSugarHelpers:
+  Enabled: true
 Chef/Deprecations/ChefWindowsPlatformHelper:
   Enabled: true
 Chef/Deprecations/Cheffile:
@@ -100,9 +110,17 @@ Chef/Deprecations/CookbookDependsOnPoise:
   Enabled: true
 Chef/Deprecations/CookbooksDependsOnSelf:
   Enabled: true
+Chef/Deprecations/DependsOnChefNginxCookbook:
+  Enabled: true
+Chef/Deprecations/DependsOnChefReportingCookbook:
+  Enabled: true
+Chef/Deprecations/DependsOnOmnibusUpdaterCookbook:
+  Enabled: true
 Chef/Deprecations/DeprecatedPlatformMethods:
   Enabled: true
 Chef/Deprecations/DeprecatedShelloutMethods:
+  Enabled: true
+Chef/Deprecations/DeprecatedSudoActions:
   Enabled: true
 Chef/Deprecations/DeprecatedWindowsVersionCheck:
   Enabled: true
@@ -120,7 +138,11 @@ Chef/Deprecations/ExecutePathProperty:
   Enabled: true
 Chef/Deprecations/ExecuteRelativeCreatesWithoutCwd:
   Enabled: true
+Chef/Deprecations/FoodcriticFile:
+  Enabled: true
 Chef/Deprecations/HWRPWithoutProvides:
+  Enabled: true
+Chef/Deprecations/HWRPWithoutUnifiedTrue:
   Enabled: true
 Chef/Deprecations/IncludingXMLRubyRecipe:
   Enabled: true
@@ -155,6 +177,8 @@ Chef/Deprecations/PartialSearchClassUsage:
 Chef/Deprecations/PartialSearchHelperUsage:
   Enabled: true
 Chef/Deprecations/PoiseArchiveUsage:
+  Enabled: true
+Chef/Deprecations/PolicyfileCommunitySource:
   Enabled: true
 Chef/Deprecations/PowershellCookbookHelpers:
   Enabled: true
@@ -238,9 +262,25 @@ Chef/Modernize/CustomResourceWithAttributes:
   Enabled: true
 Chef/Modernize/DatabagHelpers:
   Enabled: true
+Chef/Modernize/DeclareActionClass:
+  Enabled: true
 Chef/Modernize/DefaultActionFromInitialize:
   Enabled: true
 Chef/Modernize/Definitions:
+  Enabled: true
+Chef/Modernize/DependsOnChefVaultCookbook:
+  Enabled: true
+Chef/Modernize/DependsOnChocolateyCookbooks:
+  Enabled: true
+Chef/Modernize/DependsOnKernelModuleCookbook:
+  Enabled: true
+Chef/Modernize/DependsOnLocaleCookbook:
+  Enabled: true
+Chef/Modernize/DependsOnOpensslCookbook:
+  Enabled: true
+Chef/Modernize/DependsOnTimezoneLwrpCookbook:
+  Enabled: true
+Chef/Modernize/DependsOnWindowsFirewallCookbook:
   Enabled: true
 Chef/Modernize/DependsOnZypperCookbook:
   Enabled: true
@@ -316,9 +356,15 @@ Chef/Modernize/SysctlParamResource:
   Enabled: true
 Chef/Modernize/UnnecessaryDependsChef14:
   Enabled: true
+Chef/Modernize/UnnecessaryDependsChef15:
+  Enabled: true
 Chef/Modernize/UnnecessaryMixlibShelloutRequire:
   Enabled: true
 Chef/Modernize/UseBuildEssentialResource:
+  Enabled: true
+Chef/Modernize/UseChefLanguageEnvHelpers:
+  Enabled: true
+Chef/Modernize/UseChefLanguageSystemdHelper:
   Enabled: true
 Chef/Modernize/UseMultipackageInstalls:
   Enabled: true
@@ -380,6 +426,9 @@ Chef/RedundantCode/UnnecessaryDesiredState:
 Chef/RedundantCode/UnnecessaryNameProperty:
   Enabled: true
 Chef/RedundantCode/UseCreateIfMissing:
+  Enabled: true
+
+Chef/Security/SshPrivateKey:
   Enabled: true
 
 Chef/Sharing/DefaultMetadataMaintainer:
