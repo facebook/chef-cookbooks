@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+unified_mode(false) if Chef::VERSION >= 18 # TODO(T144966423)
 action :run do
   esp_path = node['fb_systemd']['boot']['path']
   entries = node['fb_systemd']['boot']['entries'].to_hash

@@ -17,6 +17,7 @@
 #
 
 provides :fb_launchd, :os => 'darwin'
+unified_mode(false) if Chef::VERSION >= 18 # TODO(T144966423)
 
 default_action :run
 

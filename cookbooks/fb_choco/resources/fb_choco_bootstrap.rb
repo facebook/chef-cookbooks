@@ -18,6 +18,7 @@
 
 resource_name :fb_choco_bootstrap
 provides :fb_choco_bootstrap
+unified_mode(false) if Chef::VERSION >= 18 # TODO(T144966423)
 default_action :install
 
 property :version, :kind_of => String

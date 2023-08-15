@@ -19,6 +19,7 @@
 # This resource will change the template only when network changes
 # are allowed.  If it is not allowed, it will request permission to make
 # network changes.
+unified_mode(false) if Chef::VERSION >= 18 # TODO(T144966423)
 property :allow_changes, :kind_of => [TrueClass, FalseClass], :required => true
 property :path, [String, nil], :required => false
 property :source, String, :required => true

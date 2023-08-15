@@ -15,6 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+unified_mode(false) if Chef::VERSION >= 18 # TODO(T144966423)
 property :destination, String, :name_property => true, :required => true
 property :source, String, :required => true
 property :sharddelete, [TrueClass, FalseClass], :default => false

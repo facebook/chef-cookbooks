@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+unified_mode(false) if Chef::VERSION >= 18 # TODO(T144966423)
 action :run do
   bls_root = ::File.join(node['fb_kernel']['boot_path'], 'loader', 'entries')
   bls_entries = []

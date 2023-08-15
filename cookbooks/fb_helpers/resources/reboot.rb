@@ -19,6 +19,7 @@
 resource_name :fb_helpers_reboot
 
 provides :fb_helpers_reboot, :os => ['darwin', 'linux']
+unified_mode(false) if Chef::VERSION >= 18 # TODO(T144966423)
 
 # description 'Use the fb_helpers_reboot resource if you need to indicate to an'
 #             ' external service that the host needs to be rebooted and when'

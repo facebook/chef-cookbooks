@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 
+unified_mode(false) if Chef::VERSION >= 18 # TODO(T144966423)
 property :path, String, :name_property => true
 property :config, Hash, :required => true
 property :repos, Hash, :required => true

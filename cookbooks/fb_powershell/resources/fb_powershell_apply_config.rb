@@ -17,6 +17,7 @@
 
 resource_name :fb_powershell_apply_config
 provides :fb_powershell_apply_config, :os => 'windows'
+unified_mode(false) if Chef::VERSION >= 18 # TODO(T144966423)
 provides :fb_powershell_apply_config, :os => 'darwin'
 provides :fb_powershell_apply_config, :os => 'linux'
 

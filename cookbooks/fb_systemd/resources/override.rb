@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+unified_mode(false) if Chef::VERSION >= 18 # TODO(T144966423)
 property :override_name, String, :name_property => true
 property :unit_name, String, :required => true
 property :content, [String, Hash], :required => false
