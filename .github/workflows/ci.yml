@@ -41,7 +41,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
     - name: Install Chef
-      uses: actionshub/chef-install@1.1.0
+      uses: actionshub/chef-install@2.0.4
       with:
         project: chef-workstation
         version: 20.11.180
