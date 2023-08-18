@@ -46,7 +46,7 @@ jobs:
         project: chef-workstation
         version: 20.11.180
     - name: Run Kitchen
-      uses: actionshub/test-kitchen@2.0.0
+      uses: actionshub/test-kitchen@2.1.0
       with:
         suite: default
         os: ${{ matrix.os }}
