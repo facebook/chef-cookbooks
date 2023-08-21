@@ -94,17 +94,76 @@ function load_video {
 # force it to use /boot/ device
 <%= root_line %>
 
-# load bls configs
+# The following grub logic utilizing grubenv block works for both
+# efi and bios boot on drives with the following partitions and labels
+#
+# lsblk -o name,label,mountpoint
+#
+# nvme0n1
+# ├─nvme0n1p1 /efi  /boot/efi
+# ├─nvme0n1p2 /boot /boot
+# ├─nvme0n1p3 /swap [SWAP]
+# └─nvme0n1p4 /     /
+#
+# nvme0n1
+# ├─nvme0n1p1 /boot /boot
+# ├─nvme0n1p2 /swap [SWAP]
+# └─nvme0n1p3 /     /
+#
+# nvme0n1
+# ├─nvme0n1p1 /efi  /boot/efi
+# ├─nvme0n1p2 /boot /boot
+# └─nvme0n1p3 /     /
+#
+# nvme0n1
+# ├─nvme0n1p1 /efi  /boot/efi
+# ├─nvme0n1p2 /swap [SWAP]
+# └─nvme0n1p3 /     /
+#
+# We assume from here on that root (grub environment variable) had been
+# appropriately set to the correct labeled partition ("/" or "/boot")
+# where boot loader entries could be found.
+
+# Some older version of blscfg had used boot instead of root
 set boot=$root
+# In cases where blsdir set here is incorrect
+# blscfg logic will reattempt with ($root)/boot/GRUB_BLS_CONFIG_PATH
 set blsdir=/loader/entries
 
-# load variable, mostly for default bootentry
+# Note installations of some grub2-efi rpms on our fleet have been known to
+# create symbolic link of grubenv on config_directory path and in other 
+# instances had permanently relocated the grubenv block to /boot/grub2/ path.
+# Scenario 1 : We have found grubenv on the config_directory path
+# config_directory points to either (hd0,gpt1)/EFI/CENTOS or (hd0,gpt1)/grub2
+# Scenario 2 : We did not find grubenv as a regular file (could have been a symbolic link)
+# on the config_directory path so lets hunt for the grubenv using the current root value
+# Scenario 3 : We may have bios loaded onto a /boot label partition with no grubenv and
+# with root also pointing to the same; we could retry searching for grubenv
+# on "/" labeled boot drive partition on known EFI path without altering the current
+# root (grub environment variable) value.
+# Scenario 4 : We did not find grubenv in any known device, path, thus saved_entry
+# will be unset, and default (grub environment variable) continues to be 0
 if [ -f ${config_directory}/grubenv ]; then
   load_env -f ${config_directory}/grubenv
-elif [ -s $prefix/grubenv ]; then
-  load_env
+else
+  if [ -f ($root)/grub2/grubenv ]; then
+    load_env -f ($root)/grub2/grubenv
+  elif [ -f ($root)/boot/grub2/grubenv ]; then
+    load_env -f ($root)/boot/grub2/grubenv
+<% if node['fb_grub']['search_enabled'] -%>
+  else
+    search --set=retry --label /
+    if [ -f ($retry)/boot/efi/EFI/centos/grubenv ]; then
+      load_env -f ($retry)/boot/efi/EFI/centos/grubenv
+    fi
+<% end -%>
+  fi
 fi
 
+# When load_env is successful, it would have set saved_entry
+# with value (boot loader entry filename) it had parsed from the 
+# grubenv block. When saved_entry is set, lets set it to 
+# default (grub environment variable) to hint blscfg
 if [ "${saved_entry}" ] ; then
   set default="${saved_entry}"
 fi
@@ -114,9 +173,15 @@ fi
 # to preserve escape chars in kernel opts like memmap=128M\$1G
 set kernelopts='<%= kargs %>'
 
-# load bls entries
 insmod blscfg
-blscfg
+# Passing default (not $default) as arg instructs blscfg to create bls
+# menu entries with flags show_non_default=false, show_default=true
+# ie only the entry that it deems to match grub environment variable default
+# (which can have value index(=0) or boot loader entry filename)
+blscfg default
+# We prefer to boot into the kernel that blscfg was able to add
+# to the menu. When blscfg is not successful in populating the menu,
+# then the first menu entry below this line will be chosen to boot
 <% end %>
 <% node['fb_grub']['kernels'].to_hash.each do |kernel, data| -%>
 <%   if node['fb_grub']['tboot']['enable'] && !kernel.include?('rescue') -%>

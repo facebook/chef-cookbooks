@@ -159,6 +159,8 @@ describe FB::Storage do
         '/dev/md0p1' => '/dev/md0',
         '/dev/nvme0n1p0' => '/dev/nvme0n1',
         '/dev/nvme1n2p1' => '/dev/nvme1n2',
+        '/dev/loop0p1' => '/dev/loop0',
+        '/dev/ram0p1' => '/dev/ram0',
         '/dev/something0p0' => '/dev/something0',
       }.each do |part, dev|
         expect(FB::Storage.device_name_from_partition(part)).
@@ -172,6 +174,9 @@ describe FB::Storage do
       {
         '/dev/md0' => '/dev/md0',
         '/dev/nvme0n1' => '/dev/nvme0n1',
+        '/dev/loop0' => '/dev/loop0',
+        '/dev/ram0' => '/dev/ram0',
+        '/dev/sr0' => '/dev/sr0',
       }.each do |part, dev|
         expect(FB::Storage.device_name_from_partition(part)).
           to eq(dev)

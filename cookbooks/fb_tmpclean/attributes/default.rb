@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-if node.centos?
+if node.rhel_family?
   excludes = [
     '.X11-unix',
     '.XIM-unix',

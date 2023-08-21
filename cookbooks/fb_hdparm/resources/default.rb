@@ -17,5 +17,6 @@
 # limitations under the License.
 #
 
+unified_mode(false) if Chef::VERSION >= 18 # TODO(T144966423)
 actions [:set]
 default_action :set

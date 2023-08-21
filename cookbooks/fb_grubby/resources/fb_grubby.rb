@@ -18,6 +18,7 @@
 
 resource_name :fb_grubby
 provides :fb_grubby
+unified_mode(false) if Chef::VERSION >= 18 # TODO(T144966423)
 default_action :manage
 
 action_class do

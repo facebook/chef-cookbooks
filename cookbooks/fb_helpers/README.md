@@ -39,6 +39,12 @@ your node.
 * `node.centos9?`
     Is CentOS Stream 9
 
+* `node.centos_max_version?(v)`
+    Is RHEL-compatible with a maximum version number of v
+
+* `node.centos_min_version?(v)`
+    Is RHEL-compatible with a minimum version number of v
+
 * `node.fedora?`
     Is Fedora
 
@@ -90,6 +96,12 @@ your node.
 * `node.redhat9?`
     Is Redhat Enterprise Linux 9
 
+* `node.rhel_max_version?(v)`
+    Is Redhat Enterprise Linux with a maximum version number of v
+
+* `node.rhel_min_version?(v)`
+    Is Redhat Enterprise Linux with a minimum version number of v
+
 * `node.rhel?`
     Is Redhat Enterprise Linux
 
@@ -116,6 +128,15 @@ your node.
 
 * `node.oracle8?`
     Is Oracle Enterprise Linux 8
+
+* `node.rhel_family?`
+    Is Redhat Enterprise Linux-compatible (eg CentOS, Oracle Linux, Rocky Linux)
+
+* `node.el_max_version?(v)`
+    Is RHEL-compatible with a maximum version number of v
+
+* `node.el_min_version?(v)`
+    Is RHEL-compatible with a minimum version number of v
 
 * `node.debian?`
     Is Debian
@@ -194,6 +215,9 @@ your node.
 
 * `node.aristaeos?`
     Is network switch running Arista EOS
+
+* `node.aristaeos_4_28_or_newer?`
+    Is network switch running Arista EOS and OS version is 4.28 or newer
 
 * `node.embedded?`
     Is embedded Linux, implies 'node.aristaeos?'. These devices likely have
@@ -431,6 +455,13 @@ your node.
 * `node.interface_start_allowed?(interface)`
    True if `node['fb_helpers']['interface_start_allowed_method']` is set and
    returns true, or if `node.interface_change_allowed?` is true.
+
+* `node.disruptable?`
+    A gate which can be used to limit dangerous code paths to only run during
+    provisioning, boot, or other times when the host is not running a
+    workload and can disrupted.  For initial boot you must
+    pass `CHEF_BOOT_SERVICE=true` as an environment variable from your
+    boot-time chef invocation.
 
 ### FB::Helpers
 The following constants are available:

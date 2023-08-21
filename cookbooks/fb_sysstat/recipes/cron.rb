@@ -56,6 +56,6 @@ end
 
 # the sa[12] commands here trample on those defined in the
 # sysstat_accounting_[12] jobs
-file '/etc/cron.d/sysstat' do
+file '/etc/cron.d/sysstat' do # rubocop:disable Chef/Modernize/CronDFileOrTemplate
   action :delete
 end

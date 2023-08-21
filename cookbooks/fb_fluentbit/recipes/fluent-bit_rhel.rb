@@ -1,8 +1,5 @@
 #
-# Cookbook Name:: fb_smartctl
-# Recipe:: default
-#
-# Copyright (c) 2021-present, Facebook, Inc.
+# Copyright (c) 2020-present, Facebook, Inc.
 # All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,6 +15,18 @@
 # limitations under the License.
 #
 
-if node.macos?
-  include_recipe 'fb_smartctl::osx'
+package 'Install FluentBit' do
+  only_if { node['fb_fluentbit']['manage_packages'] }
+  package_name 'fluent-bit'
+  action :upgrade
+  notifies :restart, 'service[fluent-bit]'
+end
+
+package 'Install fluentbit external plugins' do
+  only_if { node['fb_fluentbit']['plugin_manage_packages'] }
+  package_name lazy {
+    FB::Fluentbit.external_plugins_from_node(node).map(&:package).sort.uniq
+  }
+  action :upgrade
+  notifies :restart, 'service[fluent-bit]'
 end

@@ -18,16 +18,22 @@
 
 version = node.centos6? ? 1 : 2
 grub2_base_dir = '/boot/grub2'
-if node.centos6? || node.redhat?
+case node['platform']
+when 'centos'
+  vendor = node.centos6? ? 'redhat' : 'centos'
+when 'redhat'
   vendor = 'redhat'
-elsif node.debian?
+when 'debian'
   grub2_base_dir = '/boot/grub'
   vendor = 'debian'
-elsif node.ubuntu?
-  vendor = 'ubuntu'
+when 'fedora'
+  vendor = 'fedora'
+when 'ubuntu'
   grub2_base_dir = '/boot/grub'
+  vendor = 'ubuntu'
 else
-  vendor = 'centos'
+  # Not explicitly failing here because we're in attributes
+  vendor = nil
 end
 
 fb_grub = {
@@ -76,22 +82,25 @@ fb_grub = {
   'users' => {},
   'require_auth_on_boot' => false,
   'environment' => {},
+  'search_enabled' => true,
 }
 
-# Set the path to the grub config files
-vendor_dir = "/boot/efi/EFI/#{vendor}"
-fb_grub['_efi_vendor_dir'] = vendor_dir
-fb_grub['_grub_config_efi'] = "#{vendor_dir}/grub.conf"
-fb_grub['_grub2_config_efi'] = "#{vendor_dir}/grub.cfg"
-fb_grub['_grub_config_bios'] = "#{fb_grub['_grub_base_dir']}/grub.conf"
-fb_grub['_grub2_config_bios'] = "#{fb_grub['_grub2_base_dir']}/grub.cfg"
-# Have a 'current' variable that will point to the one that should be in use
-if node.efi?
-  fb_grub['_grub_config'] = fb_grub['_grub_config_efi']
-  fb_grub['_grub2_config'] = fb_grub['_grub2_config_efi']
-else
-  fb_grub['_grub_config'] = fb_grub['_grub_config_bios']
-  fb_grub['_grub2_config'] = fb_grub['_grub2_config_bios']
+unless vendor.nil?
+  # Set the path to the grub config files
+  vendor_dir = "/boot/efi/EFI/#{vendor}"
+  fb_grub['_efi_vendor_dir'] = vendor_dir
+  fb_grub['_grub_config_efi'] = "#{vendor_dir}/grub.conf"
+  fb_grub['_grub2_config_efi'] = "#{vendor_dir}/grub.cfg"
+  fb_grub['_grub_config_bios'] = "#{fb_grub['_grub_base_dir']}/grub.conf"
+  fb_grub['_grub2_config_bios'] = "#{fb_grub['_grub2_base_dir']}/grub.cfg"
+  # Have a 'current' variable that will point to the one that should be in use
+  if node.efi?
+    fb_grub['_grub_config'] = fb_grub['_grub_config_efi']
+    fb_grub['_grub2_config'] = fb_grub['_grub2_config_efi']
+  else
+    fb_grub['_grub_config'] = fb_grub['_grub_config_bios']
+    fb_grub['_grub2_config'] = fb_grub['_grub2_config_bios']
+  end
 end
 
 # Finally set the defaults

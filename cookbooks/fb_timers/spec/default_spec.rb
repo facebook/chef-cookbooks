@@ -190,17 +190,11 @@ recipe 'fb_timers::default', :unsupported => [:mac_os_x] do |tc|
     # fb_systemd_reload[system instance] to run immediately
 
     it 'should enable the timer unit' do
-      timer_jobs.each do |job|
-        expect(chef_run).to enable_service("#{job}.timer")
-        expect(chef_run).to_not enable_service("#{job}.service")
-      end
+      expect(chef_run).to run_execute('Enable systemd timers')
     end
 
     it 'should start the timer unit' do
-      timer_jobs.each do |job|
-        expect(chef_run).to start_service("#{job}.timer")
-        expect(chef_run).to_not start_service("#{job}.service")
-      end
+      expect(chef_run).to run_execute('Start systemd timers')
     end
 
     it 'should handle jobs with only_ifs' do

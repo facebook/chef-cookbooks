@@ -8,11 +8,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby: [2.4, 2.5, 2.6]
+        ruby: [2.5, 2.6, 2.7, 3.0, 3.1]
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: Setup Ruby
       uses: ruby/setup-ruby@v1
       with:
@@ -39,14 +39,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: Install Chef
-      uses: actionshub/chef-install@1.1.0
+      uses: actionshub/chef-install@2.0.4
       with:
         project: chef-workstation
         version: 20.11.180
     - name: Run Kitchen
-      uses: actionshub/test-kitchen@2.0.0
+      uses: actionshub/test-kitchen@2.1.0
       with:
         suite: default
         os: ${{ matrix.os }}
@@ -57,6 +57,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Run Shellcheck
-        uses: ludeeus/action-shellcheck@0.3.0
+        uses: ludeeus/action-shellcheck@2.0.0

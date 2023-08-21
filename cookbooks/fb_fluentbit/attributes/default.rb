@@ -54,4 +54,12 @@ default['fb_fluentbit'] = {
 
   # Set custom restart commands for service resource
   'custom_svc_restart_command' => nil,
+
+  # Keep service on Windows alive
+  'keep_alive' => nil,
+
+  # use for users already migrated to FluentBit 1.9 and newer which changes
+  # the binary, service, and directory names from td-agent-bit to fluent-bit
+  # This property will change to true on October 2nd, 2023.
+  'adopt_package_name_fluent-bit' => false,
 }

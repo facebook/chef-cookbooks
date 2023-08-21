@@ -60,7 +60,7 @@ if node.debian? || node.ubuntu?
   end
 end
 
-template sysconfig do # ~FB031
+template sysconfig do
   source 'sysconfig.erb'
   owner 'root'
   group 'root'

@@ -17,6 +17,7 @@
 
 resource_name :fb_powershell_apply_config
 provides :fb_powershell_apply_config, :os => 'windows'
+unified_mode(false) if Chef::VERSION >= 18 # TODO(T144966423)
 provides :fb_powershell_apply_config, :os => 'darwin'
 provides :fb_powershell_apply_config, :os => 'linux'
 
@@ -26,7 +27,7 @@ action :manage do
   install_paths = install_pwsh_path_list(node)
   install_paths.each do |install_path|
     path = ::File.join(install_path, 'powershell.config.json')
-    template path do # ~FB031
+    template path do
       only_if { node['fb_powershell']['manage_config'] }
       source 'powershell.config.json.erb'
       if platform?('windows')

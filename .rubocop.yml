@@ -1,6 +1,6 @@
 AllCops:
   DisabledByDefault: true
-  TargetRubyVersion: 2.4
+  TargetRubyVersion: 2.5
   Exclude:
     # template files named `rb` instead of `erb` are a sin against ruby-nature.
     - '**/templates/**/*.rb'#
@@ -325,8 +325,6 @@ Lint/AmbiguousOperator:
 
 Lint/AmbiguousRegexpLiteral:
   Enabled: true
-  # TODO re-enable autocorrection on RuboCop >= v1.19 see https://github.com/rubocop/rubocop/issues/10002
-  AutoCorrect: false
 
 Lint/AssignmentInCondition:
   Enabled: true
@@ -334,10 +332,8 @@ Lint/AssignmentInCondition:
 Lint/BigDecimalNew:
   Enabled: true
 
-# TODO move exception to file after chef-workstation upgrade
 Lint/BinaryOperatorWithIdenticalOperands:
-  Exclude:
-  - cookbooks/fb_helpers/spec/version_spec.rb
+  Enabled: true
 
 Lint/BooleanSymbol:
   Enabled: true

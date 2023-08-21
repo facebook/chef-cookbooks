@@ -1,3 +1,4 @@
+unified_mode(false) if Chef::VERSION >= 18 # TODO(T144966423)
 require 'fileutils'
 
 property :httpdir, String

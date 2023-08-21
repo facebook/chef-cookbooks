@@ -39,7 +39,7 @@ module FB
           config.after(:example) do
             result = RubyProf.stop
             printer = RubyProf::GraphPrinter.new(result)
-            printer.print(STDOUT)
+            printer.print($stdout)
           end
         end
       end

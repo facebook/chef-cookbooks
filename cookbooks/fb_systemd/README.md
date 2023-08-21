@@ -23,6 +23,7 @@ Attributes
 * node['fb_systemd']['logind']['config']
 * node['fb_systemd']['networkd']['enable']
 * node['fb_systemd']['networkd']['config']
+* node['fb_systemd']['nspawn']['enable']
 * node['fb_systemd']['resolved']['enable']
 * node['fb_systemd']['resolved']['enable_nss_resolve']
 * node['fb_systemd']['resolved']['config']
@@ -301,6 +302,10 @@ You can choose whether or not to enable `systemd-logind` with the
 to work, this is required, and it defaults to true. Logind can be configured
 using the `node['fb_systemd']['logind']['config']` attribute, according to the
 [logind documentation](https://www.freedesktop.org/software/systemd/man/logind.conf.html).
+
+### nspawn configuration
+You can choose whether or not to enable `systemd-nspawn` with the
+`node['fb_systemd']['nspawn']['enable']` attribute, which defaults to `false`.
 
 ### networkd configuration
 You can choose whether or not to enable `systemd-networkd` with the

@@ -59,9 +59,16 @@ end
     only_if { node['fb_swap']['_calculated']["#{type}_size_bytes"].positive? }
     block do
       # ask fb_fstab to create the unit
+      device = FB::FbSwap._path(node, type)
+      if type == 'device'
+        label = FB::FbSwap._label(node)
+        if label
+          device = "LABEL=#{label}"
+        end
+      end
       node.default['fb_fstab']['mounts']["swap_#{type}"] = {
         'mount_point' => 'swap',
-        'device' => FB::FbSwap._path(node, type),
+        'device' => device,
         'type' => 'swap',
         # prioritize swap file in case that swap partition is on a spinning disk
         'opts' => type == 'device' ? 'pri=5' : 'pri=10',

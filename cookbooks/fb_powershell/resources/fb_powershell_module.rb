@@ -14,7 +14,7 @@ property :version,
          [Integer, String, Array],
          :coerce => proc { |m| Array(m) },
          :default => '0'
-property :repository,
+property :repository, # rubocop:todo Chef/RedundantCode/PropertyWithRequiredAndDefault
          String,
          :required => true,
          :default => 'PSGallery'

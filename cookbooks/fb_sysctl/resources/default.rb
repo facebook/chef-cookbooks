@@ -1,5 +1,6 @@
 # Copyright (c) 2018-present, Facebook, Inc.
 
+unified_mode(false) if Chef::VERSION >= 18 # TODO(T144966423)
 default_action :apply
 
 def set_sysctl(node, name, val)

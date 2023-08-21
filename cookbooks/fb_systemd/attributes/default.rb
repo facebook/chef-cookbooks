@@ -111,8 +111,11 @@ default['fb_systemd'] = {
   },
   'networkd' => {
     'enable' => enable_networkd,
-    'use_networkd_socket_with_networkd' => !node.in_shard?(39),
+    'use_networkd_socket_with_networkd' => false,
     'config' => {},
+  },
+  'nspawn' => {
+    'enable' => false,
   },
   'resolved' => {
     'enable' => enable_resolved,
