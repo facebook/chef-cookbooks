@@ -32,11 +32,20 @@ action :verify do
     # `/tmp/<whatever>`. This way, all the other configurations in the temp
     # folder are correctly loaded and verified.
     Chef::Log.debug("fb_apache: modify contents of '#{tdir}/conf/httpd.conf'")
-    file = Chef::Util::FileEdit.new("#{tdir}/conf/httpd.conf")
-    file.search_file_replace_line(%r{^ServerRoot "/etc/httpd"$},
-                                  "ServerRoot \"#{tdir}\"") ||
-      fail('Apache validation failed. Cannot find `ServerRoot /etc/httpd`')
-    file.write_file
+    if node.rhel_family?
+      file = Chef::Util::FileEdit.new("#{tdir}/conf/httpd.conf")
+      file.search_file_replace_line(%r{^ServerRoot "/etc/httpd"$},
+                                        "ServerRoot \"#{tdir}\"") ||
+            fail('Apache validation failed. Cannot find `ServerRoot /etc/httpd`')
+          file.write_file
+    else node.debian_family?
+      file = Chef::Util::FileEdit.new("#{tdir}/apache2.conf")
+      file.search_file_replace_line(%r{^.?ServerRoot "/etc/apache2"$},
+                                        "ServerRoot \"#{tdir}\"") ||
+            fail('Apache validation failed. Cannot find `ServerRoot /etc/apache2`')
+          file.write_file
+    end
+
 
     # we manually build the resource so that Chef does not add these to its
     # resource collection and hence not track it for "updates".
