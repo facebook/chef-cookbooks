@@ -75,7 +75,7 @@ when 'rhel'
 when 'debian'
   {
     'htcacheclean_run' => 'auto',
-    'htcacheclean_mode' => 'daeon',
+    'htcacheclean_mode' => 'daemon',
     'htcacheclean_size' => '300M',
     'htcacheclean_daemon_interval' => '120',
     'htcacheclean_path' => '/var/cache/apache2/mod_cache_disk',

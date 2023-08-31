@@ -72,6 +72,11 @@ confdir =
     end
   end
 
+baseconfig = value_for_platform_family(
+ 'rhel' => "#{httpdir}/conf/httpd.conf",
+ 'debian' => "#{httpdir}/apache2.conf",
+)
+
 sitesdir = value_for_platform_family(
   'rhel' => confdir,
   'debian' => "#{httpdir}/sites-enabled",
@@ -163,7 +168,7 @@ fb_apache_cleanup_modules 'doit' do
   mod_dir moddir
 end
 
-template "#{httpdir}/conf/httpd.conf" do
+template "#{baseconfig}" do
   owner 'root'
   group 'root'
   mode '0644'
@@ -238,6 +243,12 @@ if node['platform_family'] == 'debian'
   link "#{sitesdir}/000-default.conf" do
     only_if { node['fb_apache']['enable_default_site'] }
     to '../sites-available/000-default.conf'
+  end
+
+  %w{charset localized-error-pages other-vhosts-access-log security serve-cgi-bin}.each do |file|
+    file "#{confdir}/#{file}.conf" do
+      action :delete
+    end
   end
 end
 
