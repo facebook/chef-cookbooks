@@ -244,6 +244,12 @@ if node['platform_family'] == 'debian'
     only_if { node['fb_apache']['enable_default_site'] }
     to '../sites-available/000-default.conf'
   end
+
+  %w{charset localized-error-pages other-vhosts-access-log security serve-cgi-bin}.each do |file|
+    file "#{confdir}/#{file}.conf" do
+      action :delete
+    end
+  end
 end
 
 service 'apache' do
