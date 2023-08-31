@@ -338,6 +338,10 @@ class Chef
       macos? && node['platform_version'].start_with?('13.')
     end
 
+    def macos14?
+      macos? && node['platform_version'].start_with?('14.')
+    end
+
     def mac_mini_2014?
       macos? && node['hardware']['machine_model'] == 'Macmini7,1'
     end
