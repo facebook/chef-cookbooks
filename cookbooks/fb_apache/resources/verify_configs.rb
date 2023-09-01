@@ -33,12 +33,29 @@ action :verify do
     # folder are correctly loaded and verified.
     Chef::Log.debug("fb_apache: modify contents of '#{tdir}/conf/httpd.conf'")
     if node.rhel_family?
+      # Generate the base apache config before doing the path substitution trickery below.
+      build_resource(:template,
+                     "#{tdir}/conf/httpd.conf") do
+        source 'httpd.conf.erb'
+        owner 'root'
+        group 'root'
+        mode '0644'
+      end.run_action(:create)
+      # This is
       file = Chef::Util::FileEdit.new("#{tdir}/conf/httpd.conf")
       file.search_file_replace_line(%r{^ServerRoot "/etc/httpd"$},
                                         "ServerRoot \"#{tdir}\"") ||
             fail('Apache validation failed. Cannot find `ServerRoot /etc/httpd`')
           file.write_file
     else node.debian_family?
+      # Generate the base apache config before doing the path substitution trickery below.
+      build_resource(:template,
+                     "#{tdir}/apache2.conf") do
+        source 'apache2.conf.erb'
+        owner 'root'
+        group 'root'
+        mode '0644'
+      end.run_action(:create)
       file = Chef::Util::FileEdit.new("#{tdir}/apache2.conf")
       file.search_file_replace_line(%r{^.?ServerRoot "/etc/apache2"$},
                                         "ServerRoot \"#{tdir}\"") ||
