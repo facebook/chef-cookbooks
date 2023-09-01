@@ -159,11 +159,7 @@ end
 
 execute 'set default target' do
   only_if do
-    if node.antlir2_build?
-      current = shell_out('systemctl --root=/ get-default').stdout.strip
-    else
-      current = shell_out('systemctl get-default').stdout.strip
-    end
+    current = shell_out('systemctl get-default').stdout.strip
     is_ignored = node['fb_systemd']['ignore_targets'].include?(current)
     is_supported = FB::Version.new(node['packages']['systemd'][
       'version']) >= FB::Version.new('205')
@@ -171,7 +167,7 @@ execute 'set default target' do
       current != node['fb_systemd']['default_target']
   end
   command lazy {
-    "systemctl set-default #{node['fb_systemd']['default_target']} #{node.antlir2_build? ? '--root=/' : ''}"
+    "systemctl set-default #{node['fb_systemd']['default_target']}"
   }
 end
 

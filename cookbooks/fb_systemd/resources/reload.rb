@@ -34,10 +34,6 @@ action_class do
       )
       return
     end
-    # Image builds don't have a running systemd, that would make no sense
-    if node.antlir2_build?
-      return
-    end
     case new_resource.instance
     when 'system'
       execute "#{action} systemd system instance" do
