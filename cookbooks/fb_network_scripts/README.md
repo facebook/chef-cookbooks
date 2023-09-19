@@ -289,7 +289,7 @@ node.default['fb_network_scripts']['ifup']['ethtool'] << {
 Would, on interface startup run:
 
 ```
-ethtool -L eth0 | egrep -i -A5 current | awk '/Combined:/{print $2}'
+ethtool -l eth0 | egrep -i -A5 current | awk '/Combined:/{print $2}'
 ```
 
 And compare that to `16`. If it was not `16` then it would run:
