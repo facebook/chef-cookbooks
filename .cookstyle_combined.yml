@@ -1,0 +1,5 @@
+# Combine the RuboCop and Cookstyle specific rules here (as opposed to directly
+# including .rubocop.yml into .cookstyle.yml)
+inherit_from:
+  - .rubocop.yml
+  - .cookstyle.yml
