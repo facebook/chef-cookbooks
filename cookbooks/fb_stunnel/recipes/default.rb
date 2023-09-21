@@ -44,6 +44,12 @@ if node.centos? && node.systemd?
   end
 end
 
+directory '/etc/stunnel' do
+  owner 'root'
+  group 'root'
+  mode '0755'
+end
+
 template '/etc/stunnel/fb_tunnel.conf' do
   owner 'root'
   group 'root'
