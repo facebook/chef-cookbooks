@@ -21,6 +21,9 @@ property :repository, # rubocop:todo Chef/RedundantCode/PropertyWithRequiredAndD
 property :skip_publisher_check,
          [true, false],
          :default => false
+property :allow_clobber,
+         [true, false],
+         :default => false
 property :scope,
          String,
          :default => 'AllUsers'
@@ -97,6 +100,9 @@ action :upgrade do
       }
       if new_resource.skip_publisher_check
         splat['SkipPublisherCheck'] = true
+      end
+      if new_resource.allow_clobber
+        splat['AllowClobber'] = true
       end
 
       psscript = <<-EOH
