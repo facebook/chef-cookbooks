@@ -367,7 +367,11 @@ class Chef
     end
 
     def windows10?
-      windows? && self['platform_version'].start_with?('10.0')
+      windows? && self['platform_version'].start_with?('10.0.1')
+    end
+
+    def windows11?
+      windows? && self['platform_version'].start_with?('10.0.2')
     end
 
     def windows2008?
