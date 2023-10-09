@@ -30,6 +30,7 @@ default['fb_powershell'] = {
   # Manage the powershell.config.json used by PowerShell Core
   'manage_config' => false,
   'config' => {},
+  'disable_telemetry' => nil,
   # Profiles
   # TODO: manage_profiles should default to false, but we need to refactor
   # the call sites first

@@ -32,6 +32,12 @@ windows_feature_dism 'powershell2' do
   action :remove
 end
 
+# Manage Telemtry
+windows_env 'POWERSHELL_TELEMETRY_OPTOUT' do
+  not_if { node['fb_powershell']['disable_telemetry'].nil? }
+  value (node['fb_powershell']['disable_telemetry']).to_s
+end
+
 # Windows Powershell
 # Upgrade to latest package if no specific version given
 chocolatey_package 'upgrade windows powershell' do
