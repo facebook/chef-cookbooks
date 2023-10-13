@@ -260,7 +260,7 @@ module FB
       when 1
         return swap_mounts.keys[0]
       else
-        fail 'More than one swap mount found, this is not right.'
+        fail "More than one swap mount found, this is not right (found #{swap_mounts})."
       end
     end
 
