@@ -36,12 +36,11 @@ Fluentbit supports built-in and external plugins.
 
 ### Upgrade to fluent-bit package/service/directory name
 FluentBit moved from `td-agent-bit` naming starting with [v1.9.9](https://docs.fluentbit.io/manual/installation/upgrade-notes#fluent-bit-v1.9.9).
-If your tier uses FluentBit you can upgrade and continue using this cookbook
-by setting:
-`node.default['fb_fluentbit']['adopt_package_name_fluent-bi'] = true`
+If your tier uses FluentBit and you want to continue using the old
+'td-agent-bit' you can by setting:
+`node.default['fb_fluentbit']['adopt_package_name_fluent-bit'] = false`
 
 **Important dates for this**
-- October 2nd, 2023 fb_fluentbit will adopt the `fluent-bit` name by default
 - April 15th, 2024 support of the `td-agen-bit` name will be dropped
 
 ### Install FluentBit
