@@ -96,8 +96,9 @@ end
 execute 'Ensure systemd-network user exists' do
   only_if do
     systemd_version = FB::Version.new(node['packages']['systemd']['version'])
-    # 'systemd-sysusers' was only introduced in v.215
-    systemd_version >= FB::Version.new('215')
+    # 'systemd-sysusers' was introduced in v.215, but the --inline flag was
+    # only added in 238.
+    systemd_version >= FB::Version.new('238')
   end
   # rubocop:disable Layout/LineLength
   command "#{systemd_prefix}/bin/systemd-sysusers --inline \"u systemd-network 192 \\\"systemd Network Management\\\"\""
