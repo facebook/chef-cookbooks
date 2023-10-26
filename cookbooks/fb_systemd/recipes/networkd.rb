@@ -31,20 +31,18 @@ fb_helpers_gated_template '/etc/systemd/networkd.conf' do
   notifies :restart, 'service[systemd-networkd.service]'
 end
 
-if node.in_shard?(75)
-  # We need systemd-networkd to wait for udev rules to run before starting at boot
-  wait_for_udev = <<~EOF
-    [Unit]
-    After=systemd-udev-settle.service
-    Wants=systemd-udev-settle.service
-  EOF
+# We need systemd-networkd to wait for udev rules to run before starting at boot
+wait_for_udev = <<~EOF
+  [Unit]
+  After=systemd-udev-settle.service
+  Wants=systemd-udev-settle.service
+EOF
 
-  fb_systemd_override 'systemd-networkd wait for udev' do
-    only_if { node['fb_systemd']['networkd']['enable'] }
-    unit_name 'systemd-networkd.service'
-    content wait_for_udev
-    action :create
-  end
+fb_systemd_override 'systemd-networkd wait for udev' do
+  only_if { node['fb_systemd']['networkd']['enable'] }
+  unit_name 'systemd-networkd.service'
+  content wait_for_udev
+  action :create
 end
 
 service 'systemd-networkd.socket' do
@@ -79,11 +77,9 @@ service 'disable systemd-networkd.service' do
   action [:stop, :disable]
 end
 
-if node.in_shard?(75)
-  # Get networkd to block network-online.target until interfaces are up
-  service 'systemd-networkd-wait-online.service' do
-    only_if { node['fb_systemd']['networkd']['enable'] }
-    # This is a one-shot at boot time, no :start
-    action :enable
-  end
+# Get networkd to block network-online.target until interfaces are up
+service 'systemd-networkd-wait-online.service' do
+  only_if { node['fb_systemd']['networkd']['enable'] }
+  # This is a one-shot at boot time, no :start
+  action :enable
 end
