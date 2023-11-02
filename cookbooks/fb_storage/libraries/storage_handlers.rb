@@ -44,7 +44,7 @@ module FB
           info = {}
         end
         node['fb_storage']['_handlers'].each do |handler|
-          unless handler.superclass == FB::Storage::Handler
+          unless handler.ancestors.include?(FB::Storage::Handler)
             fail "fb_storage: handler #{handler.name} is not a subclass of " +
                  'FB::Storage::Handler, aborting!'
           end
