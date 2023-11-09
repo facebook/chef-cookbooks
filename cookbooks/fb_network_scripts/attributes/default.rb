@@ -60,6 +60,7 @@ default['fb_network_scripts'] = {
   'enable_tun' => false,
   'enable_bridge_filter' => false,
   'linkdelay' => 0,
+  'v6_default_gw' => nil,
 
   # Internal attributes, do not use
   '_rerun_ifup_local' => false,

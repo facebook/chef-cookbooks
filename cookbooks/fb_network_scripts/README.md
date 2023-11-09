@@ -53,6 +53,9 @@ Controls whether to manage packages for `network-scripts`; defaults to `true`.
 Controls pause frame settings of the primary interface. Keys correspond to
 parameters of `ethtool -a/-A`, values: `nil` (don't care), `true`, `false`.
 
+#### `node['fb_network_scripts']['v6_default_gw']`
+Sets IPV6_DEFAULTGW in /etc/sysconfig/network.  Defaults to `nil`
+
 ### Interface Configs
 This cookbook also provides interface configuration:
 
