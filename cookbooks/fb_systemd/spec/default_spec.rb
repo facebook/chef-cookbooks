@@ -49,4 +49,16 @@ recipe 'fb_systemd::default', :unsupported => [:mac_os_x] do |tc|
       tc.fixture('system.conf'),
     )
   end
+
+  it 'should skip default target when manage_default_target is false' do
+    chef_run.converge(described_recipe) do |node|
+      node.default['fb_systemd']['manage_default_target'] = false
+    end
+    expect(chef_run).not_to run_execute('set default target')
+  end
+
+  it 'should set default target when manage_default_target is true' do
+    chef_run.converge(described_recipe)
+    expect(chef_run).not_to run_execute('set default target')
+  end
 end

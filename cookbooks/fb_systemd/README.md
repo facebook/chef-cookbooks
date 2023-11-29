@@ -34,6 +34,7 @@ Attributes
 * node['fb_systemd']['tmpfiles_excluded_prefixes']
 * node['fb_systemd']['preset']
 * node['fb_systemd']['manage_systemd_packages']
+* node['fb_systemd']['manage_default_target']
 * node['fb_systemd']['boot']['enable']
 * node['fb_systemd']['boot']['path']
 * node['fb_systemd']['boot']['loader']
@@ -407,6 +408,11 @@ will take precedence over other preset files.
 By default this cookbook keeps the systemd packages up-to-date, but if you
 want to manage them locally, simply set
 `node['fb_systemd']['manage_systemd_packages']` to false.
+
+### Default target
+By default this cookbook manages the default systemd target, but if you
+want otherwise, set
+`node['fb_systemd']['manage_default_target']` to false.
 
 ### Boot
 You can choose whether or not to enable `systemd-boot` with the

@@ -153,12 +153,14 @@ template '/etc/systemd/system-preset/00-fb_systemd.preset' do
 end
 
 directory '/etc/systemd/user/default.target.wants' do
+  only_if { node['fb_systemd']['manage_default_target'] }
   owner 'root'
   group 'root'
   mode '0755'
 end
 
 execute 'set default target' do
+  only_if { node['fb_systemd']['manage_default_target'] }
   only_if do
     current = shell_out('systemctl get-default').stdout.strip
     is_ignored = node['fb_systemd']['ignore_targets'].include?(current)
@@ -173,6 +175,7 @@ execute 'set default target' do
 end
 
 link '/etc/systemd/system/default.target' do
+  only_if { node['fb_systemd']['manage_default_target'] }
   only_if do
     FB::Version.new(node['packages']['systemd'][
       'version']) < FB::Version.new('205')

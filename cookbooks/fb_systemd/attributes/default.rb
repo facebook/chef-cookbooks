@@ -131,6 +131,7 @@ default['fb_systemd'] = {
   'tmpfiles_excluded_prefixes' => [],
   'preset' => {},
   'manage_systemd_packages' => true,
+  'manage_default_target' => true,
   'boot' => {
     'enable' => false,
     'path' => esp_path,
