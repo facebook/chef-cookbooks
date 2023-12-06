@@ -131,7 +131,7 @@ template '/etc/tmpfiles.d/chef.conf' do
   owner 'root'
   group 'root'
   mode '0644'
-  notifies :run, 'execute[process tmpfiles]'
+  notifies :run, 'execute[process tmpfiles]', :immediately
 end
 
 execute 'load modules' do
