@@ -17,9 +17,10 @@
 
 resource_name :fb_powershell_apply_config
 provides :fb_powershell_apply_config, :os => 'windows'
-unified_mode(false) if Chef::VERSION >= 18 # TODO(T144966423)
 provides :fb_powershell_apply_config, :os => 'darwin'
 provides :fb_powershell_apply_config, :os => 'linux'
+unified_mode(false) if Chef::VERSION >= 18 # TODO(T144966423)
+description 'This resource was added to fb_powershell to manage configuration in a runtime safe manner.'
 
 default_action :manage
 
