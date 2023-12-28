@@ -22,6 +22,7 @@ Attributes
 * node['fb_apt']['want_source']
 * node['fb_apt']['preserve_unknown_keyrings']
 * node['fb_apt']['allow_modified_pkg_keyrings']
+* node['fb_apt']['apt_update_log_path']
 
 Usage
 -----
@@ -107,3 +108,8 @@ As mentioned above, `fb_apt` can assemble the basic sources for you. It uses
 the LSB "codename" of the current systemd to build the URLs. In the event you
 want to use Chef to upgrade across distros, however, you can set
 `node['fb_apt']['distro']` to the appropriate name and it will be used instead.
+
+### Logging `apt-get update`
+Set `node['fb_apt']['apt_update_log_path']` to log stdout and stderr of the
+`apt-get update` command invoked by this cookbook. This may be useful for
+debugging purposes. The caller must handle log rotation.

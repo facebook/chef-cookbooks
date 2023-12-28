@@ -38,6 +38,7 @@ default['fb_apt'] = {
   'want_source' => false,
   'preserve_unknown_keyrings' => false,
   'allow_modified_pkg_keyrings' => false,
+  'apt_update_log_path' => nil,
 }
 # fb_apt must be defined for this to work...
 keys = FB::Apt.get_official_keyids(node).map { |id| [id, nil] }.to_h
