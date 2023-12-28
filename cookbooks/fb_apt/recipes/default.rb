@@ -18,6 +18,8 @@
 # limitations under the License.
 #
 
+require 'shellwords'
+
 unless node.debian? || node.ubuntu?
   fail 'fb_apt is only supported on Debian and Ubuntu.'
 end
@@ -94,7 +96,11 @@ fb_apt_sources_list 'populate sources list' do
 end
 
 execute 'apt-get update' do
-  command 'apt-get update'
+  command lazy do
+    log_path = node['fb_apt']['apt_update_log_path']
+    cmd_suffix = " >>#{Shellwords.shellescape(log_path)} 2>&1" if log_path
+    "apt-get update#{cmd_suffix}"
+  end
   action :nothing
 end
 
