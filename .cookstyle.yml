@@ -7,6 +7,10 @@ AllCops:
   DisabledByDefault: true
   TargetChefVersion: 16.18.0
 
+# NOTE: this is also handled in regular RuboCop. T114949895
+Lint/Syntax:
+  Enabled: true
+
 Chef/Correctness/BlockGuardWithOnlyString:
   Enabled: true
 Chef/Correctness/ChefApplicationFatal:
