@@ -186,6 +186,10 @@ class Chef
       self.oracle? && self.el_max_version?(version)
     end
 
+    def oracle9?
+      self.oracle? && self['platform_version'].start_with?('9')
+    end
+
     def oracle8?
       self.oracle? && self['platform_version'].start_with?('8')
     end
