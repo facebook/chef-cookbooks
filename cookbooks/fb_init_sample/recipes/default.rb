@@ -50,6 +50,7 @@ if node.macos?
 end
 include_recipe 'fb_nsswitch'
 include_recipe 'fb_ssh'
+include_recipe 'fb_sssd'
 include_recipe 'fb_less'
 if node.linux? && !node.embedded? && !node.container?
   include_recipe 'fb_ethtool'
