@@ -15,7 +15,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'ruby-prof' if ENV['FB_RSPEC_PROFILING']
 require 'chefspec'
 require 'chefspec/lib/chefspec/matchers/render_file_matcher.rb'
 
@@ -33,13 +32,18 @@ module FB
         end
         config.cookbook_path = cookbook_path
         if ENV['FB_RSPEC_PROFILING']
+          require 'ruby-prof'
           config.before(:example) do
             RubyProf.start
           end
           config.after(:example) do
             result = RubyProf.stop
             printer = RubyProf::GraphPrinter.new(result)
-            printer.print($stdout)
+            profile_name = "rspec_profile-#{DateTime.now.iso8601(4)}.out"
+            File.open(profile_name, 'w+') do |file|
+              printer.print(file)
+            end
+            puts "Rspec profiling dumped to #{profile_name}"
           end
         end
       end
