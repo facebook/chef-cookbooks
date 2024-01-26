@@ -84,7 +84,7 @@ module FB
             'immutable mountpoint.  If you can see this, ' +
             "the mount is missing!\n"
           # rubocop:disable Chef/Meta/NoFileWrites
-          File.open(readme, 'w') do |f| # ~FB030
+          File.open(readme, 'w') do |f| # rubocop:disable Chef/Meta/NoFileWrites
             f.write(readme_body)
           end
           # rubocop:enable Chef/Meta/NoFileWrites

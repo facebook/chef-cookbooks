@@ -75,7 +75,7 @@ cookbook_file '/etc/default/consul' do
   mode '0644'
 end
 
-cookbook_file '/etc/consul/consul-agent-ca.pem' do # ~FB032
+cookbook_file '/etc/consul/consul-agent-ca.pem' do # rubocop:disable Chef/Meta/AvoidCookbookProperty
   only_if { node['fb_consul']['certificate_cookbook'] }
   cookbook lazy { node['fb_consul']['certificate_cookbook'] }
   owner 'root'
@@ -84,7 +84,7 @@ cookbook_file '/etc/consul/consul-agent-ca.pem' do # ~FB032
   notifies :restart, 'service[consul]'
 end
 
-cookbook_file '/etc/consul/consul-agent-ca-key.pem' do # ~FB032
+cookbook_file '/etc/consul/consul-agent-ca-key.pem' do # rubocop:disable Chef/Meta/AvoidCookbookProperty
   only_if do
     node['fb_consul']['config']['server'] &&
     node['fb_consul']['certificate_cookbook']
@@ -96,7 +96,7 @@ cookbook_file '/etc/consul/consul-agent-ca-key.pem' do # ~FB032
   notifies :restart, 'service[consul]'
 end
 
-cookbook_file '/etc/consul/consul-server.pem' do # ~FB032
+cookbook_file '/etc/consul/consul-server.pem' do # rubocop:disable Chef/Meta/AvoidCookbookProperty
   only_if do
     node['fb_consul']['config']['server'] &&
     node['fb_consul']['certificate_cookbook']
@@ -109,7 +109,7 @@ cookbook_file '/etc/consul/consul-server.pem' do # ~FB032
   notifies :restart, 'service[consul]'
 end
 
-cookbook_file '/etc/consul/consul-server-key.pem' do # ~FB032
+cookbook_file '/etc/consul/consul-server-key.pem' do # rubocop:disable Chef/Meta/AvoidCookbookProperty
   only_if do
     node['fb_consul']['config']['server'] &&
     node['fb_consul']['certificate_cookbook']

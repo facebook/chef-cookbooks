@@ -138,7 +138,7 @@ action :now do
       set_reboot_override('immediate')
       do_managed_reboot
     else
-      command = execute 'reboot' do # ~FB026
+      command = execute 'reboot' do # rubocop:disable Chef/Meta/FBUtilReboot
         command 'reboot'
         action :nothing
       end
@@ -196,7 +196,7 @@ action :process_deferred do
           node,
           load_reboot_reason,
         )
-        reboot 'reboot' do # ~FB026
+        reboot 'reboot' do # rubocop:disable Chef/Meta/FBUtilReboot
           action :request_reboot
         end
       else
@@ -224,7 +224,7 @@ action :rtc_wakeup do
     command "rtcwake -m no -s #{new_resource.wakeup_time_secs}"
     action :nothing
   end
-  poweroff = execute 'poweroff' do # ~FB026
+  poweroff = execute 'poweroff' do # rubocop:disable Chef/Meta/FBUtilReboot
     command 'shutdown -P now'
     action :nothing
   end
