@@ -111,7 +111,7 @@ envfile = value_for_platform_family(
   'debian' => '/etc/default/cron',
   ['rhel', 'fedora'] => '/etc/sysconfig/crond',
 )
-if envfile # ~FC023
+if envfile
   template envfile do
     source 'crond_env.erb'
     owner 'root'

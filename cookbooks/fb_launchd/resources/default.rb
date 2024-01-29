@@ -87,7 +87,7 @@ action_class do
       "and attributes #{attrs}",
     )
     return unless label
-    res = launchd label do # ~FC022
+    res = launchd label do
       action action.to_sym
       if attrs['only_if']
         only_if { attrs['only_if'].call }

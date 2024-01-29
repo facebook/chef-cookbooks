@@ -51,7 +51,7 @@ action :run do
 
   cmd = FB::SystemUpgrade.get_upgrade_command(node)
 
-  ruby_block 'actual_dnf_upgrade' do # ~FC014
+  ruby_block 'actual_dnf_upgrade' do
     block do
       Chef::Log.info("fb_system_upgrade: Actual upgrade command: #{cmd}")
       s = Mixlib::ShellOut.new(

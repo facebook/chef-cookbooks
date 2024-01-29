@@ -23,7 +23,7 @@ action :run do
 
   Dir.glob("#{esp_path}/loader/entries/fb_systemd_*.conf").each do |path|
     entry = /^fb_systemd_(\w+)\.conf$/.match(::File.basename(path))
-    if entry && !entries.include?(entry[1]) # ~FC023
+    if entry && !entries.include?(entry[1])
       file path do
         action :delete
       end

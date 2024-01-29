@@ -54,7 +54,7 @@ action :run do
     # We have to do this first cause you can't disable a unit who's file has
     # disappeared off the filesystem
     possible_link = "/etc/systemd/system/#{fname}"
-    if ::File.symlink?(possible_link) && # ~FC023
+    if ::File.symlink?(possible_link) &&
       ::File.readlink(possible_link) == path
       # systemd can get confused if you delete the file without disabling
       # the unit first. Disabling a linked unit removes the symlink anyway.

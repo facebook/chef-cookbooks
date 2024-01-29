@@ -87,7 +87,7 @@ action :run do
   storage.config.each_key do |device|
     dev = FB::Storage.device_name_from_path(device)
 
-    if node['fb_storage']['tuning']['scheduler'] # ~FC023
+    if node['fb_storage']['tuning']['scheduler']
       fb_sysfs "/sys/block/#{dev}/queue/scheduler" do
         # Kernels prior to 4.11 do not have multi-queue support - t19377518
         not_if { dev.start_with?('nvme') && !kernel_has_mq }
@@ -96,14 +96,14 @@ action :run do
       end
     end
 
-    if node['fb_storage']['tuning']['queue_depth'] # ~FC023
+    if node['fb_storage']['tuning']['queue_depth']
       fb_sysfs "/sys/block/#{dev}/device/queue_depth" do
         type :int
         value node['fb_storage']['tuning']['queue_depth']
       end
     end
 
-    if node['fb_storage']['tuning']['discard_max_bytes'] # ~FC023
+    if node['fb_storage']['tuning']['discard_max_bytes']
       fname = "/sys/block/#{dev}/device/discard_max_bytes"
       fb_sysfs fname do
         only_if do

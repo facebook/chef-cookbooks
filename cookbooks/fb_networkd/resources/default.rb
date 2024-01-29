@@ -336,7 +336,7 @@ action :manage do
         action :nothing
       end
 
-      file path do # ~FC022
+      file path do
         only_if { node.interface_change_allowed?(iface) }
         action :delete
         notifies :run, "execute[networkctl down #{iface}]", :immediately
@@ -360,7 +360,7 @@ action :manage do
         action :nothing
       end
 
-      file path do # ~FC022
+      file path do
         only_if { node.interface_change_allowed?(iface) }
         action :delete
         notifies :run, "execute[udevadm trigger #{iface}]"
@@ -383,7 +383,7 @@ action :manage do
         action :nothing
       end
 
-      file path do # ~FC022
+      file path do
         only_if { node.interface_change_allowed?(iface) }
         action :delete
         notifies :run, "execute[networkctl delete #{iface}]", :immediately

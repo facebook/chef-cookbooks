@@ -61,7 +61,7 @@ def stop(interface)
   s.error!
 end
 
-action :enable do # ~FC017
+action :enable do
   requires_full_restart = false
   to_converge = []
   interface = new_resource.interface
@@ -326,7 +326,7 @@ action :enable do # ~FC017
   end
 end
 
-action :update_ips do # ~FC017
+action :update_ips do
   interface = new_resource.interface
   if Helpers.will_restart_network?(run_context)
     Chef::Log.info("Ignoring #{interface} update_ips, network restart queued")

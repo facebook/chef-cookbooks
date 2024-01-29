@@ -90,7 +90,7 @@ end
 
   # Note: FC022 is masked because the unit name is derived from the type
   # variable in the loop
-  service manage_unit do # ~FC022
+  service manage_unit do
     # we can get restarted, but we don't need to enable/start this explicitly
     # due to the use of BindsTo on the swap unit
     action :nothing

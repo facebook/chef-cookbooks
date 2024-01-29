@@ -28,7 +28,7 @@ when 'debian'
   package_name = 'cron'
 end
 
-if package_name # ~FC023
+if package_name
   package package_name do
     action :upgrade
   end
