@@ -302,6 +302,8 @@ Chef/Modernize/ExecuteSysctl:
   Enabled: true
 Chef/Modernize/ExecuteTzUtil:
   Enabled: true
+Chef/Modernize/FoodcriticComments:
+  Enabled: true
 Chef/Modernize/IfProvidesDefaultAction:
   Enabled: true
 Chef/Modernize/IncludingAptDefaultRecipe:
