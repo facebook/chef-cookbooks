@@ -96,11 +96,11 @@ fb_apt_sources_list 'populate sources list' do
 end
 
 execute 'apt-get update' do
-  command lazy do
+  command(lazy do
     log_path = node['fb_apt']['apt_update_log_path']
     cmd_suffix = " >>#{Shellwords.shellescape(log_path)} 2>&1" if log_path
     "apt-get update#{cmd_suffix}"
-  end
+  end)
   action :nothing
 end
 
