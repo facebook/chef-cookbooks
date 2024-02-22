@@ -102,6 +102,10 @@ class Chef
       self.rhel? && self['platform_version'].start_with?('9')
     end
 
+    def rhel10?
+      self.rhel? && self['platform_version'].start_with?('10')
+    end
+
     def centos_min_version?(version)
       self.centos? && self.el_min_version?(version)
     end
@@ -112,6 +116,10 @@ class Chef
 
     def centos?
       self['platform'] == 'centos'
+    end
+
+    def centos10?
+      self.centos? && self['platform_version'].start_with?('10')
     end
 
     def centos9?
@@ -172,6 +180,10 @@ class Chef
 
     def redhat9?
       self.redhat? && self['platform_version'].start_with?('9')
+    end
+
+    def redhat10?
+      self.redhat? && self['platform_version'].start_with?('10')
     end
 
     def oracle?
@@ -252,6 +264,22 @@ class Chef
 
     def fedora36?
       self.fedora? && self['platform_version'] == '36'
+    end
+
+    def fedora37?
+      self.fedora? && self['platform_version'] == '37'
+    end
+
+    def fedora38?
+      self.fedora? && self['platform_version'] == '38'
+    end
+
+    def fedora39?
+      self.fedora? && self['platform_version'] == '39'
+    end
+
+    def fedora40?
+      self.fedora? && self['platform_version'] == '40'
     end
 
     def eln?
