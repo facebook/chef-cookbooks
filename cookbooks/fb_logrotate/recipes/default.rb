@@ -186,22 +186,25 @@ else
   end
 end
 
-# syslog has been moved into the main fb_logrotate.conf
-if node.debian_family? ||
-   node.rhel7? || node.rhel8? ||
-   node.centos7? || node.centos8?
-  # CentOS and Debian use different files for their main syslog configuration
+if node.centos9? || node.fedora38? || node.fedora39?
+  # This was a separate package but it's been subsumed again
+  # https://bugzilla.redhat.com/show_bug.cgi?id=2242243
+  # https://bugzilla.redhat.com/show_bug.cgi?id=1992153
+  package 'rsyslog-logrotate' do
+    action :remove
+  end
+else
+  # On all other systems the config is part of the main rsyslog package and
+  # needs to be clobbered directly. Note that CentOS and Debian use different
+  # files for their main syslog configuration.
   syslog_config = value_for_platform_family(
     ['rhel', 'fedora'] => '/etc/logrotate.d/syslog',
     'debian' => '/etc/logrotate.d/rsyslog',
   )
 
+  # We want to manage the rsyslog logrotate config with fb_logrote so we
+  # remove the one installed by the system package.
   file syslog_config do
     action 'delete'
-  end
-else
-  # As of Fedora 36 this is in a subpackage
-  package 'rsyslog-logrotate' do
-    action :remove
   end
 end
