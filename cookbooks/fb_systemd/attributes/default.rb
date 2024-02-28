@@ -105,6 +105,9 @@ default['fb_systemd'] = {
     'enable' => false,
     'config' => {},
   },
+  'homed' => {
+    'enable' => false,
+  },
   'logind' => {
     'enable' => true,
     'config' => {},

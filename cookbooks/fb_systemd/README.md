@@ -19,6 +19,7 @@ Attributes
 * node['fb_systemd']['journal-remote']['config']
 * node['fb_systemd']['journal-upload']['enable']
 * node['fb_systemd']['journal-upload']['config']
+* node['fb_systemd']['homed']['enable']
 * node['fb_systemd']['logind']['enable']
 * node['fb_systemd']['logind']['config']
 * node['fb_systemd']['networkd']['enable']
@@ -296,6 +297,10 @@ You can choose whether or not to enable `systemd-journal-upload` with the
 to `false`. journal-upload can be configured using the
 `node['fb_systemd']['journal-upload']['config']` attribute, according to the
 [journal-upload documentation](https://www.freedesktop.org/software/systemd/man/systemd-journal-upload.html).
+
+### homed configuration
+You can choose whether or not to enable `systemd-homed` with the
+`node['fb_systemd']['homed']['enable']` attribute.
 
 ### logind configuration
 You can choose whether or not to enable `systemd-logind` with the
