@@ -157,6 +157,15 @@ will result in:
 notifies :restart, 'service[some_service]'
 ```
 
+If you need to stop a service before a networkd change is made (and then start
+it against afterwards) you can use `node['fb_networkd']['stop_before']`.
+This is a list of resource names which will be issued a :stop before the
+networkd change is made, than a :start at the end of the run.
+
+```ruby
+node.default['fb_networkd']['stop_before'] << 'service[cool_service]'
+```
+
 ### When can Chef make network changes
 Network changes can be disruptive and have potential for major impact. To
 mitigate this, `node.interface_change_allowed?(interface)` from `fb_helpers`

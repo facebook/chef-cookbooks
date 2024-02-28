@@ -36,3 +36,39 @@ action :trigger do
     end
   end
 end
+
+action :stop do
+  if Chef::VERSION.to_i >= 16
+    notify_group 'stop resources before networkd change' do # rubocop:disable Chef/Meta/Chef16
+      node['fb_networkd']['stop_before'].each do |r|
+        notifies :stop, r, :immediately
+      end
+      action :run
+    end
+  else
+    log 'stop resources before networkd change' do
+      node['fb_networkd']['stop_before'].each do |r|
+        notifies :stop, r, :immediately
+      end
+      action :write
+    end
+  end
+end
+
+action :start do
+  if Chef::VERSION.to_i >= 16
+    notify_group 'start resources after networkd change' do # rubocop:disable Chef/Meta/Chef16
+      node['fb_networkd']['stop_before'].each do |r|
+        notifies :start, r
+      end
+      action :run
+    end
+  else
+    log 'start resources after networkd change' do
+      node['fb_networkd']['stop_before'].each do |r|
+        notifies :start, r
+      end
+      action :write
+    end
+  end
+end

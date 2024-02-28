@@ -25,7 +25,11 @@ end
 node.default['fb_systemd']['networkd']['enable'] = true
 
 fb_networkd 'manage configuration' do
+  # Trigger deferred actions (e.g. :restart)
   notifies :trigger, 'fb_networkd_notify[doit]'
+  # Trigger service stops (and starts) around networkd changes
+  notifies :stop, 'fb_networkd_notify[doit]', :before
+  notifies :start, 'fb_networkd_notify[doit]'
 end
 
 fb_networkd_notify 'doit' do
