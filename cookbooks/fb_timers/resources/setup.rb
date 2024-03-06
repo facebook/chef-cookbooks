@@ -73,6 +73,15 @@ action :run do
   # Setup current jobs
   node['fb_timers']['jobs'].to_hash.each_pair do |name, conf|
     conf = FB::Systemd::TIMER_DEFAULTS.merge(conf.merge('name' => name))
+
+    # Tempoary logic to shard out defaulting `requires_enable` to false
+    # and to deprecate the API parameter once done
+    # Check it's not already disabled elsewhere
+    if conf['requires_enable'] == true
+      # Work down shard - set false for any box in shard 98-99 (1%)
+      conf['requires_enable'] = node.in_shard?(98)
+    end
+
     node.default['fb_timers']['jobs'][name] = conf
 
     # Do this early so we can rely on commands being filled in
