@@ -240,6 +240,9 @@ your node.
 * `node.aristaeos_4_28_or_newer?`
     Is network switch running Arista EOS and OS version is 4.28 or newer
 
+* `node.aristaeos_4_31_or_newer?`
+    Is network switch running Arista EOS and OS version is 4.31 or newer
+
 * `node.embedded?`
     Is embedded Linux, implies 'node.aristaeos?'. These devices likely have
     minimal packages installed, little space, and/or some non-persistent
