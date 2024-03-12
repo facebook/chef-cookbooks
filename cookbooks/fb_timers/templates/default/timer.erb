@@ -3,9 +3,6 @@
 
 [Unit]
 Description=<%= @conf['description'] %>
-<% if @conf['requires_enable'] %>
-Requires=<%= @conf['name'] %>.service
-<% end %>
 <% @conf['timer_unit_options'].each do |name, value| %>
 <%= name %>=<%= value %>
 <% end %>

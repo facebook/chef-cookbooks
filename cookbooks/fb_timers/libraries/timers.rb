@@ -34,8 +34,6 @@ module FB
       'fixed_splay' => true,
       'only_if' => nil,
       'persistent' => false,
-      # TODO: Deprecate post rollout + clean up logic that uses it
-      'requires_enable' => true,
       'service_options' => {},
       'service_unit_options' => {},
       'splay' => '0s',

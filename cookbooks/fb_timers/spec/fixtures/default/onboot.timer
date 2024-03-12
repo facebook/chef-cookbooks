@@ -3,7 +3,6 @@
 
 [Unit]
 Description=Run scheduled task onboot
-Requires=onboot.service
 
 [Install]
 WantedBy=timers.target
