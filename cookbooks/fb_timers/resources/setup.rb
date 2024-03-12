@@ -78,8 +78,8 @@ action :run do
     # and to deprecate the API parameter once done
     # Check it's not already disabled elsewhere
     if conf['requires_enable'] == true
-      # Work down shard - set false for any box in shard 49-99 (25%)
-      conf['requires_enable'] = node.in_shard?(49)
+      # Work down shard - set false for any box in shard 24-99 (75%)
+      conf['requires_enable'] = node.in_shard?(24)
     end
 
     node.default['fb_timers']['jobs'][name] = conf
