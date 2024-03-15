@@ -23,6 +23,7 @@ Attributes
 * node['fb_apt']['preserve_unknown_keyrings']
 * node['fb_apt']['allow_modified_pkg_keyrings']
 * node['fb_apt']['apt_update_log_path']
+* node['fb_apt']['apt_update_strace_path']
 
 Usage
 -----
@@ -113,3 +114,10 @@ want to use Chef to upgrade across distros, however, you can set
 Set `node['fb_apt']['apt_update_log_path']` to log stdout and stderr of the
 `apt-get update` command invoked by this cookbook. This may be useful for
 debugging purposes. The caller must handle log rotation.
+
+Similarly, set `node['fb_apt']['apt_update_strace_path']` to capture strace
+output of the `apt-get update` command invoked by this cookbook. This may be
+useful for debugging purposes. Set `node['fb_apt']['apt_update_strace_flags']`
+to override the default strace flags (`-v -f -yy -Y -ttt -T -s4096 -A`). Note
+that by default, the log is appended to on each invocation. The caller must
+handle log rotation.
