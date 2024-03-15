@@ -654,6 +654,25 @@ describe FB::Storage::Handler do
         )
       end
 
+      it 'finds only partitions under that device' do
+        node.automatic[attr_name]['by_device'] = {
+          '/dev/sdz' => {},
+          '/dev/sdz1' => {},
+          '/dev/sdz2' => {},
+          '/dev/sdzz' => {},
+          '/dev/sdzz1' => {},
+          '/dev/sdzz2' => {},
+          '/dev/sdzp' => {},
+          '/dev/sdzp1' => {},
+          '/dev/sdzp2' => {},
+        }
+
+        sh = TestHandler.new('/dev/sdz', node)
+        expect(sh.existing_partitions).to eq(
+          %w{/dev/sdz1 /dev/sdz2},
+        )
+      end
+
       it 'finds all partitions on weirdly named devices' do
         # Similarly, all tests happen on sdzX to decrease any chance of
         # actually being related to real disks

@@ -11,5 +11,9 @@ unless node.centos?
 end
 
 package 'gpsd-clients' do
+  action :remove
+end
+
+package 'gpsd-minimal-clients' do
   action :upgrade
 end

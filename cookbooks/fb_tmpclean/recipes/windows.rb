@@ -82,12 +82,12 @@ file 'windows-tmpclean-ps-script' do
           }
 end
 
-windows_task 'create-cleanup-task' do # ~FB047
+windows_task 'create-cleanup-task' do # rubocop:disable Chef/Meta/WindowsTaskAbsolutePaths
   # This is an absolute path - the linter is wrong
   command lazy {
             'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -File ' +
                 (node['fb_tmpclean']['windows_script_location']).to_s
-          }           # ~FB047
+          }           # rubocop:disable Chef/Meta/WindowsTaskAbsolutePaths
   frequency :weekly
   start_time '02:20'
   start_when_available true

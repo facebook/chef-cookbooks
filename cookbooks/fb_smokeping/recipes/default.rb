@@ -19,7 +19,7 @@
 #
 
 packages = value_for_platform(
-  'ubuntu' => { :default => %w{fcgiwrap smokeping} },
+  ['debian', 'ubuntu'] => { :default => %w{fcgiwrap smokeping} },
 )
 
 package packages do

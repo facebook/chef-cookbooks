@@ -22,7 +22,7 @@ Type=oneshot
 <% if @conf['envfile'] %>
 EnvironmentFile=<%= @conf['envfile'] %>
 <% end %>
-<% if node['fb_timers']['enable_named_slices'] %>
+<% if node['fb_timers']['enable_named_slices'] and !@conf['service_options'].key?('Slice') %>
 Slice=system-timers-<%= @conf['name'] %>.slice
 <% end %>
 <% @conf['commands'].each do |command| %>

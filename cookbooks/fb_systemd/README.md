@@ -19,10 +19,12 @@ Attributes
 * node['fb_systemd']['journal-remote']['config']
 * node['fb_systemd']['journal-upload']['enable']
 * node['fb_systemd']['journal-upload']['config']
+* node['fb_systemd']['homed']['enable']
 * node['fb_systemd']['logind']['enable']
 * node['fb_systemd']['logind']['config']
 * node['fb_systemd']['networkd']['enable']
 * node['fb_systemd']['networkd']['config']
+* node['fb_systemd']['nspawn']['enable']
 * node['fb_systemd']['resolved']['enable']
 * node['fb_systemd']['resolved']['enable_nss_resolve']
 * node['fb_systemd']['resolved']['config']
@@ -33,6 +35,7 @@ Attributes
 * node['fb_systemd']['tmpfiles_excluded_prefixes']
 * node['fb_systemd']['preset']
 * node['fb_systemd']['manage_systemd_packages']
+* node['fb_systemd']['manage_default_target']
 * node['fb_systemd']['boot']['enable']
 * node['fb_systemd']['boot']['path']
 * node['fb_systemd']['boot']['loader']
@@ -295,12 +298,20 @@ to `false`. journal-upload can be configured using the
 `node['fb_systemd']['journal-upload']['config']` attribute, according to the
 [journal-upload documentation](https://www.freedesktop.org/software/systemd/man/systemd-journal-upload.html).
 
+### homed configuration
+You can choose whether or not to enable `systemd-homed` with the
+`node['fb_systemd']['homed']['enable']` attribute.
+
 ### logind configuration
 You can choose whether or not to enable `systemd-logind` with the
 `node['fb_systemd']['logind']['enable']` attribute. Note that for user sessions
 to work, this is required, and it defaults to true. Logind can be configured
 using the `node['fb_systemd']['logind']['config']` attribute, according to the
 [logind documentation](https://www.freedesktop.org/software/systemd/man/logind.conf.html).
+
+### nspawn configuration
+You can choose whether or not to enable `systemd-nspawn` with the
+`node['fb_systemd']['nspawn']['enable']` attribute, which defaults to `false`.
 
 ### networkd configuration
 You can choose whether or not to enable `systemd-networkd` with the
@@ -402,6 +413,11 @@ will take precedence over other preset files.
 By default this cookbook keeps the systemd packages up-to-date, but if you
 want to manage them locally, simply set
 `node['fb_systemd']['manage_systemd_packages']` to false.
+
+### Default target
+By default this cookbook manages the default systemd target, but if you
+want otherwise, set
+`node['fb_systemd']['manage_default_target']` to false.
 
 ### Boot
 You can choose whether or not to enable `systemd-boot` with the

@@ -314,4 +314,28 @@ describe 'Chef::Node' do
       end.to raise_error(RuntimeError)
     end
   end
+
+  context 'Chef::Node.disruptable?' do
+    it 'is not disruptable by default' do
+      expect(node.disruptable?).to be(false)
+    end
+
+    it 'is not disruptable unless in provisioning or upon boot' do
+      allow(node).to receive(:firstboot_any_phase?).and_return(false)
+      ENV.stub(:[]).with('CHEF_BOOT_SERVICE').and_return ''
+      expect(node.disruptable?).to be(false)
+    end
+
+    it 'is disruptable when in provisioning' do
+      allow(node).to receive(:firstboot_any_phase?).and_return(true)
+      ENV.stub(:[]).with('CHEF_BOOT_SERVICE').and_return ''
+      expect(node.disruptable?).to be(true)
+    end
+
+    it 'is disruptable when booting' do
+      allow(node).to receive(:firstboot_any_phase?).and_return(false)
+      ENV.stub(:[]).with('CHEF_BOOT_SERVICE').and_return 'true'
+      expect(node.disruptable?).to be(true)
+    end
+  end
 end

@@ -21,7 +21,7 @@
 grub_base_dir = node['fb_grub']['_grub_base_dir']
 grub2_base_dir = node['fb_grub']['_grub2_base_dir']
 
-directory 'efi_vendor_dir' do # rubocop:disable Chef/Meta/RequireOwnerGroupMode # ~FB024 mode is controlled by mount options
+directory 'efi_vendor_dir' do # rubocop:disable Chef/Meta/RequireOwnerGroupMode mode is controlled by mount options
   only_if { node.efi? }
   path lazy { node['fb_grub']['_efi_vendor_dir'] }
   owner 'root'
@@ -36,7 +36,7 @@ directory grub_base_dir do
   mode '0755'
 end
 
-template 'grub_config' do # ~FB031
+template 'grub_config' do
   only_if do
     node['platform_family'] == 'rhel' && node['fb_grub']['kernels'] &&
       node['fb_grub']['version'] == 1
@@ -82,7 +82,7 @@ end
   # to x86_64.
   efi_command = type == 'efi' && node.x64?
 
-  template "grub2_config_#{type}" do # ~FB031
+  template "grub2_config_#{type}" do
     only_if do
       (node['fb_grub']['kernels'] && node['fb_grub']['version'] == 2) &&
       (our_type || node['fb_grub']['force_both_efi_and_bios'])

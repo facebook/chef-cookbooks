@@ -31,6 +31,78 @@ module FB
 
     # 'size' from sysfs always assumes 512 byte blocks
     SECTOR_SIZE = 512
+
+    # Helper function to make string compatible for ODS
+    # by replacing special characters with _
+    def self.ods_compat(string)
+      string.gsub(/[^0-9a-zA-Z_-]/, '_')
+    end
+
+    # Helper function to get disk model
+    def self.get_disk_model(node, block_device_name)
+      device = node['block_device'][block_device_name]
+      if device
+        if device['model']
+          self.ods_compat(device['model'].to_s)
+        end
+      end
+    end
+
+    # Helper function to get disk firmware
+    def self.get_disk_firmware(node, block_device_name)
+      device = node['block_device'][block_device_name]
+      if device
+        # When mounted on SATA, firmware is stored on rev
+        if device['rev']
+          self.ods_compat(device['rev'].to_s)
+        # When mounted on NVME, firmware is stored on firmware_rev
+        elsif device['firmware_rev']
+          self.ods_compat(device['firmware_rev'].to_s)
+        end
+      end
+    end
+
+    # Helper function to get mdarray devices
+    def self.get_mdarray_devices(node, mdarray)
+      if node['mdadm']
+        if node['mdadm'][mdarray]
+          if node['mdadm'][mdarray]['members']
+            node['mdadm'][mdarray]['members']
+          end
+        end
+      end
+    end
+
+    # Helper function to extract sorted models and their
+    # relative firmwares of disks in mdarray with '__'
+    # delimiters
+    def self.get_mdarray_models_firmwares(node, mdarray)
+      disks_models = ''
+      disks_firmwares = ''
+      models_firmwares = []
+      devices = self.get_mdarray_devices(node, mdarray)
+      devices.each do |device|
+        disk_model = self.get_disk_model(node, device)
+        disk_firmware = self.get_disk_firmware(node, device)
+        if disk_model && disk_firmware
+          # Create a hash of model => firmware
+          model_firmware = {}
+          model_firmware[disk_model] = disk_firmware
+          # Add it to the hash array
+          models_firmwares << model_firmware
+        end
+      end
+      # Sort the hash array by model
+      models_firmwares.sort_by! { |model, _firmware| model.to_s }
+      models_firmwares.each do |model_firmware|
+        model_firmware.each do |model, firmware|
+          disks_models += model.to_s + '__'
+          disks_firmwares += firmware.to_s + '__'
+        end
+      end
+      return disks_models, disks_firmwares
+    end
+
     # Helper function for hybrid XFS users. Given the index (into
     # `eligible_devices` of the device to be used for metadata, and the number
     # of filesystems we expect to create, it will return the size of each
@@ -93,7 +165,9 @@ module FB
       to_skip.dup.each do |oot_dev|
         if oot_dev&.start_with?('md')
           Dir.glob("/sys/block/#{oot_dev}/slaves/*").each do |x|
-            to_skip << ::File.basename(x)
+            rawdev = '/dev/' + ::File.basename(x)
+            rawdev = device_name_from_existing_partition(rawdev)
+            to_skip << ::File.basename(rawdev)
           end
         end
       end
@@ -147,9 +221,9 @@ module FB
       "#{device}#{prefix}#{partnum}"
     end
 
-    # Given a device including a partiition, return just the device without
+    # Given a device including a partition, return just the device without
     # the partition. i.e.
-    #   /dev/sda1 -> /dev/sd
+    #   /dev/sda1 -> /dev/sda
     #   /dev/md0p0 -> /dev/md0
     #   /dev/nvme0n1p0 -> /dev/nvm0n1
     #
@@ -166,13 +240,40 @@ module FB
     # So, for devices that we *know* would require such
     # a thing, we also force them to use that regex, so if someone erroneously
     # passes in `/dev/md0`, we give them back `/dev/md0`.
+    # Special treatment is needed for /dev/loop0 because the trailing "p0" can trick the
+    # regexp and we return an invalid "/dev/loo" device.
     def self.device_name_from_partition(partition)
-      if partition =~ /[0-9]+p[0-9]+$/ || partition =~ %r{/(nvme|etherd|md|nbd)}
+      if partition =~ %r{/loop[0-9]+$}
+        return partition
+      end
+      if partition =~ /[0-9]+p[0-9]+$/ || partition =~ %r{/(nvme|etherd|md|nbd|ram|sr)}
         re = /p[0-9]+$/
       else
         re = /[0-9]+$/
       end
       partition.sub(re, '')
+    end
+
+    # Given a device including a partition, return just the device without
+    # the partition. i.e.
+    #   /dev/sda1 -> /dev/sda
+    #   /dev/md0p0 -> /dev/md0
+    #   /dev/nvme0n1p0 -> /dev/nvm0n1
+    #
+    # this works by looking for /sys/class/block/$dev/partition
+    # to ensure that the device is a partition, then using
+    # realpath on /sys/class/block/$dev/.. to get the disk,
+    # as in sysfs the partitions are represented as subdirectories
+    # of disk devices.
+    def self.device_name_from_existing_partition(partition)
+      sys = '/sys/class/block/' + File.basename(partition)
+
+      if !File.exist?(sys) || !File.exist?(sys + '/partition')
+        return partition
+      end
+
+      sys = File.realpath(sys + '/..')
+      '/dev/' + File.basename(sys)
     end
 
     # External automation can pass us disks to rebuild for hot-swap. In order
@@ -401,7 +502,7 @@ module FB
         fail 'fb_storage: Unknown persistent disk format ' +
           "specified: #{version}"
       end
-      File.open(PREVIOUS_DISK_ORDER, 'w') do |fd| # ~FB030
+      File.open(PREVIOUS_DISK_ORDER, 'w') do |fd| # rubocop:disable Chef/Meta/NoFileWrites
         Chef::Log.debug('fb_storage: Writing out disk order')
         fd.write(JSON.generate(data))
       end

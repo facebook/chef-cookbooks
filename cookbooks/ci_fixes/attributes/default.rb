@@ -28,9 +28,9 @@ if FB::Version.new(Chef::VERSION) < FB::Version.new('16.2.2')
         'Plugin Virtualization Monkeypatch: /proc/self/cgroup indicates ' +
         "#{$1} container. Detecting as #{$1} guest",
       )
-      node.automatic['virtualization']['system'] = $1 # ~FC047
-      node.automatic['virtualization']['role'] = 'guest' # ~FC047
-      node.automatic['virtualization']['systems'][$1.to_s] = 'guest' # ~FC047
+      node.automatic['virtualization']['system'] = $1 # rubocop:disable Chef/Meta/UseNodeDefault
+      node.automatic['virtualization']['role'] = 'guest' # rubocop:disable Chef/Meta/UseNodeDefault
+      node.automatic['virtualization']['systems'][$1.to_s] = 'guest' # rubocop:disable Chef/Meta/UseNodeDefault
     end
   end
 else

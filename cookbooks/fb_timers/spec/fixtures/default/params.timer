@@ -3,7 +3,6 @@
 
 [Unit]
 Description=Custom set description field
-Requires=params.service
 jkl=aaaaah
 
 [Install]

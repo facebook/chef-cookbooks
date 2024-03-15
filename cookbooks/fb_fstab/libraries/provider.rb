@@ -84,7 +84,7 @@ module FB
             'immutable mountpoint.  If you can see this, ' +
             "the mount is missing!\n"
           # rubocop:disable Chef/Meta/NoFileWrites
-          File.open(readme, 'w') do |f| # ~FB030
+          File.open(readme, 'w') do |f| # rubocop:disable Chef/Meta/NoFileWrites
             f.write(readme_body)
           end
           # rubocop:enable Chef/Meta/NoFileWrites
@@ -279,6 +279,8 @@ module FB
         node['fb_fstab']['umount_ignores']['mount_points'].dup
       mount_prefixes_to_skip =
         node['fb_fstab']['umount_ignores']['mount_point_prefixes'].dup
+      mount_regexes_to_skip =
+        node['fb_fstab']['umount_ignores']['mount_point_regexes'].dup
       fstypes_to_skip = node['fb_fstab']['umount_ignores']['types'].dup
 
       base_mounts = get_unmasked_base_mounts(:hash)
@@ -339,6 +341,14 @@ module FB
           Chef::Log.debug(
             "fb_fstab: Skipping umount check for #{mounted_data['device']} " +
             "(#{mounted_data['mount']}) - exempted mount_point prefix",
+          )
+          next
+        elsif mount_regexes_to_skip.any? do |i|
+          mounted_data['mount'] =~ /#{i}/
+        end
+          Chef::Log.debug(
+            "fb_fstab: Skipping umount check for #{mounted_data['device']} " +
+            "(#{mounted_data['mount']}) - exempted mount_point regex",
           )
           next
         end

@@ -31,6 +31,21 @@ module FB
           c.syntax = [:should, :expect]
         end
         config.cookbook_path = cookbook_path
+        if ENV['FB_RSPEC_PROFILING']
+          require 'ruby-prof'
+          config.before(:example) do
+            RubyProf.start
+          end
+          config.after(:example) do
+            result = RubyProf.stop
+            printer = RubyProf::GraphPrinter.new(result)
+            profile_name = "rspec_profile-#{DateTime.now.iso8601(4)}.out"
+            File.open(profile_name, 'w+') do |file|
+              printer.print(file)
+            end
+            puts "Rspec profiling dumped to #{profile_name}"
+          end
+        end
       end
       FB::Spec.configure do |config|
         config.default_platforms = platforms['default']

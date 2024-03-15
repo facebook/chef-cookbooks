@@ -81,6 +81,7 @@ include_recipe 'fb_systemd::journal-gatewayd'
 include_recipe 'fb_systemd::journal-remote'
 include_recipe 'fb_systemd::journal-upload'
 include_recipe 'fb_systemd::logind'
+include_recipe 'fb_systemd::homed'
 include_recipe 'fb_systemd::networkd'
 include_recipe 'fb_systemd::resolved'
 include_recipe 'fb_systemd::timesyncd'
@@ -96,8 +97,9 @@ end
 execute 'Ensure systemd-network user exists' do
   only_if do
     systemd_version = FB::Version.new(node['packages']['systemd']['version'])
-    # 'systemd-sysusers' was only introduced in v.215
-    systemd_version >= FB::Version.new('215')
+    # 'systemd-sysusers' was introduced in v.215, but the --inline flag was
+    # only added in 238.
+    systemd_version >= FB::Version.new('238')
   end
   # rubocop:disable Layout/LineLength
   command "#{systemd_prefix}/bin/systemd-sysusers --inline \"u systemd-network 192 \\\"systemd Network Management\\\"\""
@@ -130,7 +132,7 @@ template '/etc/tmpfiles.d/chef.conf' do
   owner 'root'
   group 'root'
   mode '0644'
-  notifies :run, 'execute[process tmpfiles]'
+  notifies :run, 'execute[process tmpfiles]', :immediately
 end
 
 execute 'load modules' do
@@ -152,12 +154,14 @@ template '/etc/systemd/system-preset/00-fb_systemd.preset' do
 end
 
 directory '/etc/systemd/user/default.target.wants' do
+  only_if { node['fb_systemd']['manage_default_target'] }
   owner 'root'
   group 'root'
   mode '0755'
 end
 
 execute 'set default target' do
+  only_if { node['fb_systemd']['manage_default_target'] }
   only_if do
     current = shell_out('systemctl get-default').stdout.strip
     is_ignored = node['fb_systemd']['ignore_targets'].include?(current)
@@ -172,6 +176,7 @@ execute 'set default target' do
 end
 
 link '/etc/systemd/system/default.target' do
+  only_if { node['fb_systemd']['manage_default_target'] }
   only_if do
     FB::Version.new(node['packages']['systemd'][
       'version']) < FB::Version.new('205')

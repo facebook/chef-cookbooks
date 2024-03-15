@@ -53,6 +53,9 @@ Controls whether to manage packages for `network-scripts`; defaults to `true`.
 Controls pause frame settings of the primary interface. Keys correspond to
 parameters of `ethtool -a/-A`, values: `nil` (don't care), `true`, `false`.
 
+#### `node['fb_network_scripts']['v6_default_gw']`
+Sets IPV6_DEFAULTGW in /etc/sysconfig/network.  Defaults to `nil`
+
 ### Interface Configs
 This cookbook also provides interface configuration:
 
@@ -289,7 +292,7 @@ node.default['fb_network_scripts']['ifup']['ethtool'] << {
 Would, on interface startup run:
 
 ```
-ethtool -L eth0 | egrep -i -A5 current | awk '/Combined:/{print $2}'
+ethtool -l eth0 | egrep -i -A5 current | awk '/Combined:/{print $2}'
 ```
 
 And compare that to `16`. If it was not `16` then it would run:

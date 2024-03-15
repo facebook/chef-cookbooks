@@ -18,6 +18,7 @@ Attributes
 * node['fb_fstab']['umount_ignores']['types']
 * node['fb_fstab']['umount_ignores']['mount_points']
 * node['fb_fstab']['umount_ignores']['mount_point_prefixes']
+* node['fb_fstab']['umount_ignores']['mount_point_regexes']
 * node['fb_fstab']['umount_delete_empty_mountdir']
 * node['fb_fstab']['mounts'][$NAME]['device']
 * node['fb_fstab']['mounts'][$NAME]['mount_point']

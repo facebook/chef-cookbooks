@@ -111,7 +111,7 @@ envfile = value_for_platform_family(
   'debian' => '/etc/default/cron',
   ['rhel', 'fedora'] => '/etc/sysconfig/crond',
 )
-if envfile # ~FC023
+if envfile
   template envfile do
     source 'crond_env.erb'
     owner 'root'
@@ -164,12 +164,12 @@ end
   'cron_deny' => '/etc/cron.deny',
   'cron_allow' => '/etc/cron.allow',
 }.each do |key, cronfile|
-  file cronfile do # this is an absolute path: ~FB031
+  file cronfile do
     only_if { node['fb_cron'][key].empty? }
     action :delete
   end
 
-  template cronfile do # this is an absolute path: ~FB031
+  template cronfile do
     not_if { node['fb_cron'][key].empty? }
     source 'fb_cron_allow_deny.erb'
     owner node.root_user

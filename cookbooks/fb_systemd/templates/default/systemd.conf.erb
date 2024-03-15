@@ -8,16 +8,19 @@
   else
     config = node['fb_systemd'][@config].to_hash
   end
+  sections = Hash.new
   if @section.is_a?(String)
-    sections = [@section]
+    sections[@section] = config
   else
-    sections = @section
+    @section.each do |s|
+      sections[s] = config.fetch(s, Hash.new)
+    end
   end
 
-  sections.each do |section|
+  sections.each do |section, section_config|
 %>
 
-<%=  FB::Systemd.to_ini({section => Hash[config.sort]}) -%>
+<%=  FB::Systemd.to_ini({section => Hash[section_config.sort]}) -%>
 <%
   end
 %>

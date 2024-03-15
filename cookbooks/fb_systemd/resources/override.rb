@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+unified_mode(false) if Chef::VERSION >= 18 # TODO(T144966423)
 property :override_name, String, :name_property => true
 property :unit_name, String, :required => true
 property :content, [String, Hash], :required => false
@@ -62,7 +63,7 @@ action :create do
     mode '0755'
   end
 
-  template ::File.join(override_dir, override_file) do # rubocop:disable Chef/Meta/AvoidCookbookProperty # ~FB031 ~FB032
+  template ::File.join(override_dir, override_file) do # rubocop:disable Chef/Meta/AvoidCookbookProperty
     # If source is specified, use it, otherwise use our template...
     if new_resource.source
       source new_resource.source

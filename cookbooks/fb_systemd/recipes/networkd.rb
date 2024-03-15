@@ -19,6 +19,7 @@
 #
 
 fb_helpers_gated_template '/etc/systemd/networkd.conf' do
+  only_if { node['fb_systemd']['networkd']['enable'] }
   allow_changes node.nw_changes_allowed?
   source 'systemd.conf.erb'
   owner node.root_user
@@ -29,6 +30,20 @@ fb_helpers_gated_template '/etc/systemd/networkd.conf' do
     :section => %w{Network DHCP},
   )
   notifies :restart, 'service[systemd-networkd.service]'
+end
+
+# We need systemd-networkd to wait for udev rules to run before starting at boot
+wait_for_udev = <<~EOF
+  [Unit]
+  After=systemd-udev-settle.service
+  Wants=systemd-udev-settle.service
+EOF
+
+fb_systemd_override 'systemd-networkd wait for udev' do
+  only_if { node['fb_systemd']['networkd']['enable'] }
+  unit_name 'systemd-networkd.service'
+  content wait_for_udev
+  action :create
 end
 
 service 'systemd-networkd.socket' do
@@ -61,4 +76,11 @@ service 'disable systemd-networkd.service' do
   not_if { node['fb_systemd']['networkd']['enable'] }
   service_name 'systemd-networkd.service'
   action [:stop, :disable]
+end
+
+# Get networkd to block network-online.target until interfaces are up
+service 'systemd-networkd-wait-online.service' do
+  only_if { node['fb_systemd']['networkd']['enable'] }
+  # This is a one-shot at boot time, no :start
+  action :enable
 end

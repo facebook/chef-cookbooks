@@ -260,7 +260,7 @@ module FB
       when 1
         return swap_mounts.keys[0]
       else
-        fail 'More than one swap mount found, this is not right.'
+        fail "More than one swap mount found, this is not right (found #{swap_mounts})."
       end
     end
 
@@ -293,8 +293,34 @@ module FB
       end
     end
 
+    def self._label(node)
+      device = self._device(node)
+      label = node.filesystem_data['by_device'][device] &&
+        node.filesystem_data['by_device'][device]['label']
+      if label && label.empty?
+        label = nil
+      end
+      label
+    end
+
     def self._swap_unit(node, type)
-      FB::Systemd.path_to_unit(self._path(node, type), 'swap')
+      if type == 'device'
+        label = self._label(node)
+        if label
+          # the kernel escapes slash characters in the label name, so we have to
+          # construct the by-label path with escapes, then resolve what path
+          # systemd will create via the generators
+          if label.start_with?('/')
+            label = label.sub('/', '\\x2f')
+          end
+          path = "/dev/disk/by-label/#{label}"
+          FB::Systemd.path_to_unit(path, 'swap')
+        else
+          FB::Systemd.path_to_unit(self._path(node, type), 'swap')
+        end
+      else
+        FB::Systemd.path_to_unit(self._path(node, type), 'swap')
+      end
     end
 
     def self._get_max_device_size_bytes(device)

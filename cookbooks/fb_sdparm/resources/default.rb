@@ -20,6 +20,7 @@
 default_action :set
 resource_name :fb_sdparm
 provides :fb_sdparm
+unified_mode(false) if Chef::VERSION >= 18 # TODO(T144966423)
 
 def get_sdparm_value(param, device)
   cmd = Mixlib::ShellOut.new("sdparm --get #{param} /dev/#{device}").run_command

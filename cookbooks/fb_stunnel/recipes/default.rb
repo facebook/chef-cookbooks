@@ -44,6 +44,12 @@ if node.centos? && node.systemd?
   end
 end
 
+directory '/etc/stunnel' do
+  owner 'root'
+  group 'root'
+  mode '0755'
+end
+
 template '/etc/stunnel/fb_tunnel.conf' do
   owner 'root'
   group 'root'
@@ -60,7 +66,7 @@ if node.debian? || node.ubuntu?
   end
 end
 
-template sysconfig do # ~FB031
+template sysconfig do
   source 'sysconfig.erb'
   owner 'root'
   group 'root'

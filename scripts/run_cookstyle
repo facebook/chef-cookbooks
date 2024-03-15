@@ -19,7 +19,7 @@
 
 set -eu
 
-default_config='.cookstyle.yml'
+default_config='.cookstyle_combined.yml'
 if bundle exec cookstyle --version > /dev/null 2>&1; then
   COOKSTYLE='bundle exec cookstyle'
 elif [ -x /opt/chef-workstation/embedded/bin/cookstyle ]; then

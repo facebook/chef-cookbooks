@@ -15,6 +15,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# RHEL 10 and later don't support hash maps anymore
+# https://src.fedoraproject.org/rpms/postfix/c/6a2621e4d73d59337dc64ba45922132286b841a1
+if node.el_min_version?(10) || node.eln?
+  map_type = 'lmdb'
+else
+  map_type = 'hash'
+end
+
 default['fb_postfix'] = {
   'enable' => true,
   'mask_service' => false,
@@ -32,7 +40,7 @@ default['fb_postfix'] = {
     'mail_owner' => 'postfix',
     'mynetworks' => '/etc/postfix/mynetworks',
     'relay_domains' => '/etc/postfix/relaydomains',
-    'alias_maps' => 'hash:/etc/postfix/aliases',
+    'alias_maps' => "#{map_type}:/etc/postfix/aliases",
     'recipient_delimiter' => '+',
     'smtpd_banner' => '$myhostname ESMTP',
     'debug_peer_level' => 2,
@@ -40,13 +48,13 @@ default['fb_postfix'] = {
       'PATH=/bin:/usr/bin:/usr/local/bin:/usr/X11R6/bin ' +
       'ddd $daemon_directory/$process_name $process_id & sleep 5',
     'newaliases_path' => '/usr/bin/newaliases.postfix',
-    'alias_database' => 'hash:/etc/postfix/aliases',
+    'alias_database' => "#{map_type}:/etc/postfix/aliases",
     'disable_vrfy_command' => 'yes',
     'smtpd_client_restrictions' =>
-      'hash:/etc/postfix/access, permit_mynetworks',
+      "#{map_type}:/etc/postfix/access, permit_mynetworks",
     'smtpd_helo_required' => 'yes',
     'smtpd_recipient_restrictions' =>
-      'check_recipient_access hash:/etc/postfix/local_access,' +
+      "check_recipient_access #{map_type}:/etc/postfix/local_access," +
       'permit_mynetworks, reject_unauth_destination',
     'biff' => 'no',
     'require_home_directory' => 'no',
@@ -95,7 +103,7 @@ default['fb_postfix'] = {
     'smtpd_hard_error_limit' => '10',
     'smtpd_recipient_limit' => '1000',
     'smtpd_sender_restrictions' =>
-      'reject_unknown_sender_domain, hash:/etc/postfix/access',
+      "reject_unknown_sender_domain, #{map_type}:/etc/postfix/access",
     'smtpd_soft_error_limit' => '5',
     'smtpd_timeout' => '120s',
     'smtp_sasl_auth_enable' => nil,

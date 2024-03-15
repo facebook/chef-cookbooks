@@ -3,7 +3,6 @@
 
 [Unit]
 Description=Run scheduled task multiple
-Requires=multiple.service
 
 [Install]
 WantedBy=timers.target

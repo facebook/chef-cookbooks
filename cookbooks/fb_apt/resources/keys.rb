@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+unified_mode(false) if Chef::VERSION >= 18 # TODO(T144966423)
 action :run do
   keyserver = node['fb_apt']['keyserver']
   desired_keys = node['fb_apt']['keys'].to_hash

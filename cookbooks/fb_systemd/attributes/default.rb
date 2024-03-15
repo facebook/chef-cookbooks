@@ -105,14 +105,20 @@ default['fb_systemd'] = {
     'enable' => false,
     'config' => {},
   },
+  'homed' => {
+    'enable' => false,
+  },
   'logind' => {
     'enable' => true,
     'config' => {},
   },
   'networkd' => {
     'enable' => enable_networkd,
-    'use_networkd_socket_with_networkd' => true,
+    'use_networkd_socket_with_networkd' => false,
     'config' => {},
+  },
+  'nspawn' => {
+    'enable' => false,
   },
   'resolved' => {
     'enable' => enable_resolved,
@@ -128,6 +134,7 @@ default['fb_systemd'] = {
   'tmpfiles_excluded_prefixes' => [],
   'preset' => {},
   'manage_systemd_packages' => true,
+  'manage_default_target' => true,
   'boot' => {
     'enable' => false,
     'path' => esp_path,

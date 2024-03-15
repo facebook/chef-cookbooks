@@ -19,6 +19,7 @@
 # This resource will change the template only when network changes
 # are allowed.  If it is not allowed, it will request permission to make
 # network changes.
+unified_mode(false) if Chef::VERSION >= 18 # TODO(T144966423)
 property :allow_changes, :kind_of => [TrueClass, FalseClass], :required => true
 property :path, [String, nil], :required => false
 property :source, String, :required => true
@@ -58,8 +59,14 @@ action :manage do
     if new_resource.allow_changes
       Chef::Log.info('fb_helpers: changes are allowed - updating ' +
                      new_resource.name.to_s)
-      converge_by("Updating template #{new_resource.name}") do
-        t.run_action(new_resource.gated_action)
+      template new_resource.name do
+        owner new_resource.owner
+        group new_resource.group
+        mode new_resource.mode
+        path new_resource.path if new_resource.path
+        source new_resource.source
+        variables new_resource.variables if new_resource.variables
+        action new_resource.gated_action
       end
     else
       Chef::Log.info('fb_helpers: not allowed to change configs for ' +

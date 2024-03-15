@@ -58,6 +58,14 @@ end
   end
 end
 
+# RHEL 10 and later don't support hash maps anymore
+# https://src.fedoraproject.org/rpms/postfix/c/6a2621e4d73d59337dc64ba45922132286b841a1
+if node.el_min_version?(10) || node.eln?
+  map_type = 'lmdb'
+else
+  map_type = 'hash'
+end
+
 # postfix remnant blocks running postalias if it exists
 file '/etc/postfix/__db.aliases.db' do
   action :delete
@@ -68,7 +76,7 @@ template '/etc/postfix/aliases' do
   owner 'root'
   group 'root'
   mode '0644'
-  notifies :run, 'execute[postalias /etc/postfix/aliases]', :immediately
+  notifies :run, "execute[postalias #{map_type}:/etc/postfix/aliases]", :immediately
   notifies :reload, 'service[postfix]'
 end
 
@@ -89,7 +97,7 @@ template '/etc/postfix/custom_headers.regexp' do
 end
 
 # setup aliases file & db
-execute 'postalias /etc/postfix/aliases' do
+execute "postalias #{map_type}:/etc/postfix/aliases" do
   action :nothing
 end
 
@@ -115,14 +123,14 @@ end
     else
       mode '0644'
     end
-    notifies :run, "execute[postmap #{text_map}]", :immediately
+    notifies :run, "execute[postmap #{map_type}:#{text_map}]", :immediately
     notifies :reload, 'service[postfix]'
     variables(
       :db_file => text_map_rel,
     )
   end
 
-  execute "postmap #{text_map}" do
+  execute "postmap #{map_type}:#{text_map}" do
     action :nothing
   end
 end
