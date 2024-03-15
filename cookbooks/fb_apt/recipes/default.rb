@@ -98,8 +98,11 @@ end
 execute 'apt-get update' do
   command(lazy do
     log_path = node['fb_apt']['apt_update_log_path']
-    cmd_suffix = " >>#{Shellwords.shellescape(log_path)} 2>&1" if log_path
-    "apt-get update#{cmd_suffix}"
+    strace_path = node['fb_apt']['apt_update_strace_path']
+    strace_flags = node['fb_apt']['apt_update_strace_flags']
+    cmd_suffix = " >>#{log_path.shellescape} 2>&1" if log_path
+    cmd_prefix = "strace #{strace_flags} -o #{strace_path.shellescape} " if strace_path && ::File.exist?('/usr/bin/strace')
+    "#{cmd_prefix}apt-get update#{cmd_suffix}"
   end)
   action :nothing
 end
