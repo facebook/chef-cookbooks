@@ -500,7 +500,7 @@ module FB
         when 'xfs'
           '-i size=2048'
         when 'btrfs'
-          '-l 16K -n 16K'
+          '-n 16K'
         when 'ext4'
           ''
         end
