@@ -33,5 +33,5 @@ dnf_packages = %w{
 
 package dnf_packages do
   only_if { node['fb_dnf']['manage_packages'] }
-  action :upgrade
+  action :install
 end
