@@ -419,7 +419,6 @@ used optimal partition layout, and so if we are told to add a device to an
 existing device without a proper layout, it can fail. This case is not handled,
 at all. Chef will fail and manual intervention is needed. The only time we can
 hit this is:
-  * The array was built with the old mdfio or some other chunk of code
   * Hot swap is enabled, and a card is replaced by external automation and we
     are told about that.
 This should be exceedingly rare.
@@ -556,8 +555,7 @@ are subclasses of `FB::Storage::Handler` and must implement the handler
 interface. Handler classes listed in `node['fb_storage']['_handlers']` will be
 queried in order, and the first one to match for a given device will be used.
 
-By default `fb_storage` provides handlers for FusionIO, MD (software RAID) and
-JBOD devices.
+By default `fb_storage` provides handlers for MD (software RAID) and JBOD devices.
 
 ### WARNINGS
 
