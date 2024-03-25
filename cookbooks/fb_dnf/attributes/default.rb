@@ -26,6 +26,7 @@ default['fb_dnf'] = {
       'skip_if_unavailable' => node.centos? ? false : true,
     },
   },
+  'disable_makecache_timer' => false,
   'manage_packages' => true,
   'modules' => {},
   'repos' => {},

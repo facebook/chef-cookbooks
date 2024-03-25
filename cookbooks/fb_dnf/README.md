@@ -7,6 +7,7 @@ Requirements
 Attributes
 ----------
 * node['fb_dnf']['config'][$SECTION][$KEY][$VALUE]
+* node['fb_dnf']['disable_makecache_timer']
 * node['fb_dnf']['manage_packages']
 * node['fb_dnf']['modules'][$MODULE][$CONFIG]
 * node['fb_dnf']['repos'][$GROUP]['repos'][$REPO][$KEY][$VALUE]
@@ -48,6 +49,13 @@ ways:
 
 These are not mutually exclusive and can be mixed as desired. See the README
 for `fb_yum_repos` for details on how to define repositories.
+
+### Disable dnf-makecache.timer
+
+The dnf RPM includes a default make cache timer. This is not always required
+depending how one wants to use dnf. Set
+`node['fb_dnf']['disable_makecache_timer']` API to `true` to stop this periodic
+refresh of the dnf metadata cache.
 
 ### Modularity support
 DNF supports modules which may need to be enabled, disabled, or default. You

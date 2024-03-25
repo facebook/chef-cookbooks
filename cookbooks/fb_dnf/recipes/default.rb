@@ -46,3 +46,5 @@ fb_dnf_modularity 'manage modularity' do
 end
 
 include_recipe 'fb_dnf::packages'
+# Need RPMs installed before we can disable/enable the makecache timer
+include_recipe 'fb_dnf::makecache'
