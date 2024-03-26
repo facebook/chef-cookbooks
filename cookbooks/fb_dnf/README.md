@@ -57,6 +57,11 @@ depending how one wants to use dnf. Set
 `node['fb_dnf']['disable_makecache_timer']` API to `true` to stop this periodic
 refresh of the dnf metadata cache.
 
+To rollback / renable *dnf-makecahce.timer* you also need a second API boolean set:
+- `node['fb_dnf']['enable_makecache_timer']` (set to `true`)
+This is to protect use cases where *dnf-mcachecache.timer* is being disabled/stopped
+another way.
+
 ### Modularity support
 DNF supports modules which may need to be enabled, disabled, or default. You
 can use `node['fb_dnf']['modules']` to configure modules. Do this via:
