@@ -990,7 +990,7 @@ class Chef
     end
 
     def root_user
-      value_for_platform(
+      @root_user ||= value_for_platform(
         'windows' => { 'default' => 'Administrator' },
         'default' => 'root',
       )
@@ -999,7 +999,7 @@ class Chef
     def root_group
       # rubocop:disable Chef/Correctness/InvalidPlatformValueForPlatformHelper
       # See the `macos?` method above
-      value_for_platform(
+      @root_group ||= value_for_platform(
         %w{openbsd freebsd mac_os_x macos} => { 'default' => 'wheel' },
         'windows' => { 'default' => 'Administrators' },
         'default' => 'root',
