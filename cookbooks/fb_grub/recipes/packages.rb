@@ -30,7 +30,7 @@ execute 'grub-install' do
   command lazy {
     cmd = value_for_platform_family(
       'debian' => 'grub-install',
-      'rhel' => 'grub2-install',
+      ['fedora', 'rhel'] => 'grub2-install',
     )
     # device of root-mount, strip off partition
     # note that this is a hack and it doesn't support properly dm devices
