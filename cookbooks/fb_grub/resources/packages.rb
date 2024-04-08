@@ -52,10 +52,6 @@ action :install do
     fail "fb_grub: unsupported grub version: #{node['fb_grub']['version']}"
   end
 
-  if node['fb_grub']['tboot']['enable']
-    packages << 'tboot'
-  end
-
   package 'grub packages' do
     package_name packages
     action :upgrade

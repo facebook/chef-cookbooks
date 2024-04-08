@@ -111,21 +111,6 @@ end
   end
 end
 
-# grub2 cannot read / if it's compressed with zstd, so hack around it
-node['fb_grub']['tboot']['_grub_modules'].each do |mod_file|
-  remote_file "Copy #{mod_file} file for grub" do
-    only_if do
-      node['fb_grub']['tboot']['enable'] &&
-      !node['fb_grub']['_grub2_copy_path'].nil?
-    end
-    path "/boot/#{mod_file}"
-    source lazy { "file://#{node['fb_grub']['_grub2_copy_path']}/#{mod_file}" }
-    owner 'root'
-    group 'root'
-    mode '0644'
-  end
-end
-
 # cleanup configs for the grub major version that we're not using
 ['_grub_config_bios', '_grub_config_efi'].each do |tpl_name|
   file "cleanup #{tpl_name}" do

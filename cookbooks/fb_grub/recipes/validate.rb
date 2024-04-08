@@ -44,13 +44,6 @@ whyrun_safe_ruby_block 'initialize_grub_locations' do
       end
 
       node.default['fb_grub']['_root_label'] = boot_label
-
-      # For tboot, we have to specify the full path to the modules.
-      # They are in /usr/lib/grub , so we need the label for the root disk
-      slash_label = node.filesystem_data['by_mountpoint']['/']['label']
-      if slash_label
-        node.default['fb_grub']['_module_label'] = slash_label
-      end
     elsif node['fb_grub']['use_uuids']
       if node['fb_grub']['version'] < 2
         fail 'fb_grub: Booting by label requires grub2.'
@@ -124,48 +117,6 @@ whyrun_safe_ruby_block 'initialize_grub_locations' do
       node.default['fb_grub']['rootfs_arg'] = "LABEL=#{label}"
     elsif uuid && !uuid.empty?
       node.default['fb_grub']['rootfs_arg'] = "UUID=#{uuid}"
-    end
-    # Set the correct grub module path for e.g. the tboot modules
-    if node.efi? && node['fb_grub']['version'] == 2 &&
-       node['fb_grub']['tboot']['enable']
-      if node['fb_grub']['_module_label']
-        module_path = "/usr/lib/grub/#{node['kernel']['machine']}-efi"
-      else
-        os_device = node.device_of_mount('/')
-        if os_device
-          m = os_device.match(/[0-9]+$/)
-          unless m
-            fail 'fb_grub: cannot parse the OS device!'
-          end
-        else
-          fail 'fb_grub: cannot find the OS device!'
-        end
-
-        # People can override the boot_disk if they have a good reason.
-        if node['fb_grub']['boot_disk']
-          boot_disk = node['fb_grub']['boot_disk']
-        elsif node['fb_grub']['root_device']
-          boot_disk = node['fb_grub']['root_device'].split(',')[0]
-        else
-          # This basically just happens if someone enables labels
-          # but doesn't override the boot_disk param and we don't use our new
-          # logic to figure out the boot disk
-          boot_disk = bootdisk_guess
-        end
-        os_part = "(#{boot_disk},#{m[0].to_i})"
-        module_path = "#{os_part}/usr/lib/grub/#{node['kernel']['machine']}-efi"
-      end
-      node.default['fb_grub']['_grub2_module_path'] = module_path
-
-      # So that we can use btrfs subvolumes and still insmod filesystems
-      if node.root_btrfs?
-        node.default['fb_grub']['_grub2_copy_path'] = node['fb_grub'][
-          '_grub2_module_path']
-        node.default['fb_grub']['_module_label'] = node['fb_grub'][
-          '_root_label']
-        node.default['fb_grub']['_grub2_module_path'] = node['fb_grub'][
-          'path_prefix']
-      end
     end
     node.default['fb_grub']['_decided_boot_disk'] = boot_disk
   end

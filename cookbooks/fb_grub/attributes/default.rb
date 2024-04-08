@@ -57,21 +57,6 @@ fb_grub = {
     'parity' => 'no',
     'stop' => 1,
   },
-  'tboot' => {
-    '_grub_modules' => [
-      'relocator.mod',
-      'multiboot2.mod',
-    ],
-    'enable' => false,
-    'kernel_extra_args' => [
-      'intel_iommu=on',
-      'noefi',
-    ],
-    'logging' => [
-      'memory',
-    ],
-    'tboot_extra_args' => [],
-  },
   'terminal' => [
     'console',
   ],
