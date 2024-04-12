@@ -19,7 +19,7 @@
 # limitations under the License.
 #
 
-if (node.centos? && !(node.centos7? || node.centos8?)) || node.fedora?
+if node.centos? && !(node.centos7? || node.centos8?)
   slowroll_name = 'iptables-legacy'
   node.default['fb_slowroll'][slowroll_name]['phases'] =
     FB::Slowroll::PhaseTemplates.slow_start(node)
@@ -30,7 +30,12 @@ if (node.centos? && !(node.centos7? || node.centos8?)) || node.fedora?
     notifies :run, 'execute[reload ip6tables]'
   end
 else
-  packages = ['iptables']
+  if node.fedora?
+    packages = ['iptables-legacy']
+  else
+    packages = ['iptables']
+  end
+
   if node.ubuntu?
     packages << 'iptables-persistent'
   else
