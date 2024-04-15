@@ -28,6 +28,7 @@ module FB
     FORCE_WRITE_CUSTOM_DISK_ORDER =
       '/var/chef/storage_force_write_custom_disk_order'.freeze
     DEV_ID_DIR = '/dev/disk/by-id'.freeze
+    DEV_PARTLABEL_DIR = '/dev/disk/by-partlabel'.freeze
 
     # 'size' from sysfs always assumes 512 byte blocks
     SECTOR_SIZE = 512
@@ -219,6 +220,31 @@ module FB
     def self.partition_device_name(device, partnum)
       prefix = /[0-9]$/.match(device) ? 'p' : ''
       "#{device}#{prefix}#{partnum}"
+    end
+
+    def self.get_partition_from_partlabel(partlabel)
+      unless Dir.exist?(DEV_PARTLABEL_DIR)
+        fail 'Host does not have a by-partlabel directory!'
+      end
+      path = File.join(DEV_PARTLABEL_DIR, partlabel.gsub('/', '\x2f'))
+      partition = File.realpath(path)
+      return partition
+    end
+
+    def self.get_partuuid(partition)
+      cmd = "lsblk -o name,partuuid -J #{partition}"
+      lsblk = Mixlib::ShellOut.new(cmd).run_command
+      lsblk.error!
+      blkinfo = JSON.parse(lsblk.stdout)
+      blkdevs = blkinfo['blockdevices']
+
+      fail "Partition #{partition} not found" if blkdevs.empty?
+
+      blkdev = blkdevs.pop
+      partuuid = blkdev['partuuid']
+      Chef::Log.debug("fb_storage: found partuuid #{partuuid} for partition: #{partition}")
+
+      return partuuid
     end
 
     # Given a device including a partition, return just the device without
