@@ -52,11 +52,10 @@ module Bookworm
       #   'Enable verbose mode',
       # )
 
-      # TODO(dcrosby) get ruby-prof working
-      # parser.on(
-      #   '--profiler',
-      #   '(WIP) Enable profiler for performance debugging',
-      # )
+      parser.on(
+        '--profiler',
+        'Enable profiler for performance debugging (requires ruby-prof)',
+      )
 
       parser.on(
         '--irb-config-step',
@@ -94,11 +93,12 @@ module Bookworm
 end
 parser = Bookworm::CLIParser.new
 options = parser.parse
-# TODO(dcrosby) get ruby-prof working
-# if options[:profiler]
-#   require 'ruby-prof'
-#   RubyProf.start
-# end
+
+if options[:profiler]
+  require 'ruby-prof'
+  Bookworm::Profile = RubyProf::Profile.new
+  Bookworm::Profile.start
+end
 
 # We require the libraries *after* the profiler has a chance to start,
 # also means faster `bookworm -h` response
@@ -299,9 +299,13 @@ if __FILE__ == $PROGRAM_NAME
   run.do_action
 end
 
-# TODO(dcrosby) get ruby-prof working
-# if options[:profiler]
-#   result = RubyProf.stop
-#   printer = RubyProf::FlatPrinter.new(result)
-#   printer.print($stdout)
-# end
+if options[:profiler]
+  result = Bookworm::Profile.stop
+  printer = RubyProf::GraphPrinter.new(result)
+  path = "#{Dir.tmpdir}/bookworm_profile-#{DateTime.now.iso8601(4)}.out"
+  printer = ::RubyProf::GraphPrinter.new(result)
+  File.open(path, 'w+') do |file|
+    printer.print(file)
+  end
+  puts "Wrote profiler output to #{path}"
+end
