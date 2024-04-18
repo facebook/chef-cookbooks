@@ -19,35 +19,22 @@
 # limitations under the License.
 #
 
-if node.centos? && !(node.centos7? || node.centos8?)
-  slowroll_name = 'iptables-legacy'
-  node.default['fb_slowroll'][slowroll_name]['phases'] =
-    FB::Slowroll::PhaseTemplates.slow_start(node)
-  node.default['fb_slowroll'][slowroll_name]['export_json'] = true
-
-  fb_slowroll slowroll_name do
-    notifies :run, 'execute[reload iptables]'
-    notifies :run, 'execute[reload ip6tables]'
-  end
+if (node.centos? && !(node.centos7? || node.centos8?)) || node.fedora?
+  packages = ['iptables-legacy']
 else
-  if node.fedora?
-    packages = ['iptables-legacy']
-  else
-    packages = ['iptables']
-  end
+  packages = ['iptables']
+end
+if node.ubuntu?
+  packages << 'iptables-persistent'
+else
+  packages << 'iptables-services'
+end
 
-  if node.ubuntu?
-    packages << 'iptables-persistent'
-  else
-    packages << 'iptables-services'
-  end
-
-  package packages do
-    only_if { node['fb_iptables']['manage_packages'] }
-    action :upgrade
-    notifies :run, 'execute[reload iptables]'
-    notifies :run, 'execute[reload ip6tables]'
-  end
+package packages do
+  only_if { node['fb_iptables']['manage_packages'] }
+  action :upgrade
+  notifies :run, 'execute[reload iptables]'
+  notifies :run, 'execute[reload ip6tables]'
 end
 
 execute 'reload iptables' do
