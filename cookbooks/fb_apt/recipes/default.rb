@@ -47,8 +47,8 @@ end
 # clobber that as several packages will drop configs there.
 template '/etc/apt/apt.conf' do
   source 'apt.conf.erb'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
   notifies :run, 'execute[apt-get update]'
 end
@@ -63,8 +63,8 @@ end
 
 template '/etc/apt/preferences' do
   source 'preferences.erb'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
 end
 

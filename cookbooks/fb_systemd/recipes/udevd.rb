@@ -42,15 +42,15 @@ execute 'update hwdb' do
 end
 
 directory '/etc/udev/hwdb.d' do
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0755'
 end
 
 template '/etc/udev/hwdb.d/00-chef.hwdb' do
   source 'hwdb.erb'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
   # we use :immediately here because this is a critical service
   notifies :run, 'execute[update hwdb]', :immediately
@@ -58,8 +58,8 @@ end
 
 template '/etc/udev/udev.conf' do
   source 'udev.conf.erb'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
   # we use :immediately here because this is a critical service
   notifies :run, 'execute[reload udev]', :immediately
@@ -71,8 +71,8 @@ end
 
 template '/etc/udev/rules.d/99-chef.rules' do
   source 'rules.erb'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
   # we use :immediately here because this is a critical service
   notifies :run, 'execute[reload udev]', :immediately

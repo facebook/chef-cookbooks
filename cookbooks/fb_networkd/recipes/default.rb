@@ -74,8 +74,8 @@ end
 if node.centos?
   directory '/dev/net' do
     only_if { node['fb_networkd']['enable_tun'] }
-    owner 'root'
-    group 'root'
+    owner node.root_user
+    group node.root_group
     mode '0755'
   end
 

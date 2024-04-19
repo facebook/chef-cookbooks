@@ -27,8 +27,8 @@ include_recipe 'fb_dracut::packages'
 template '/etc/dracut.conf.d/ZZ-chef.conf' do
   not_if { node['fb_dracut']['disable'] }
   source 'dracut.conf.erb'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
   notifies :run, 'execute[rebuild all initramfs]'
 end

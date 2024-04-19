@@ -23,8 +23,8 @@ directory 'loader path' do
     node['fb_systemd']['boot']['enable'] && node['fb_systemd']['boot']['path']
   end
   path lazy { "#{node['fb_systemd']['boot']['path']}/loader" }
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0755'
 end
 
@@ -34,8 +34,8 @@ template 'loader.conf' do
   end
   path lazy { "#{node['fb_systemd']['boot']['path']}/loader/loader.conf" }
   source 'loader.conf.erb'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
 end
 
@@ -44,8 +44,8 @@ directory 'loader entries path' do
     node['fb_systemd']['boot']['enable'] && node['fb_systemd']['boot']['path']
   end
   path lazy { "#{node['fb_systemd']['boot']['path']}/loader/entries" }
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0755'
 end
 

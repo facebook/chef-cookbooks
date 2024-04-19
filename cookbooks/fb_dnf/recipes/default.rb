@@ -29,8 +29,8 @@ end
 include_recipe 'fb_yum_repos'
 
 directory '/etc/dnf' do
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0755'
 end
 

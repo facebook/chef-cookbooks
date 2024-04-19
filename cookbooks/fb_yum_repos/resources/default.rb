@@ -46,8 +46,8 @@ action :run do
 
     template ::File.join(YUM_REPOS_D, "#{group}.repo") do
       source 'yum.repo.erb'
-      owner 'root'
-      group 'root'
+      owner node.root_user
+      group node.root_group
       mode '0644'
       variables(
         :group_name => group,

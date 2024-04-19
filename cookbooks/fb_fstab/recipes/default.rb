@@ -26,8 +26,8 @@ FB::Fstab.generate_base_fstab
 
 # ensure permissions
 file FB::Fstab::BASE_FILENAME do
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0444'
 end
 
@@ -110,8 +110,8 @@ end
 
 template '/etc/fstab' do
   source 'fstab.erb'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
   # On systemd hosts we use the generated mount units to mount filesystems
   # so it's important we ask it to regenerate them when we edit fstab

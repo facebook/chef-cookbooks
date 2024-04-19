@@ -20,7 +20,7 @@
 
 template '/etc/securetty' do
   source 'securetty.erb'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0600'
 end

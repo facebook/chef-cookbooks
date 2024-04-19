@@ -22,8 +22,8 @@ include_recipe 'fb_rsync::packages'
 include_recipe 'fb_rsync::stunnel'
 
 template '/usr/local/libexec/rsync-ssl-stunnel' do
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0755'
   source 'rsync-ssl-stunnel.erb'
 end

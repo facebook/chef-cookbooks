@@ -58,8 +58,8 @@ action :create do
   override_file = "#{FB::Systemd.sanitize(new_resource.override_name)}.conf"
 
   directory override_dir do
-    owner 'root'
-    group 'root'
+    owner node.root_user
+    group node.root_group
     mode '0755'
   end
 
@@ -71,8 +71,8 @@ action :create do
       cookbook 'fb_systemd'
       source 'systemd-override.conf.erb'
     end
-    owner 'root'
-    group 'root'
+    owner node.root_user
+    group node.root_group
     mode '0644'
     # ... and rely on content to populate the override
     unless new_resource.source

@@ -208,8 +208,8 @@ action :enable do
   t.run_action(:create)
 
   t = template "#{ifcfg_file}-range" do
-    owner 'root'
-    group 'root'
+    owner node.root_user
+    group node.root_group
     mode '0644'
     source 'ifcfg-range.erb'
     variables({

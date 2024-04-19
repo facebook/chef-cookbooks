@@ -37,22 +37,22 @@ end
 if node.centos? && node.systemd?
   cookbook_file '/etc/systemd/system/stunnel.service' do
     source 'stunnel.service'
-    owner 'root'
-    group 'root'
+    owner node.root_user
+    group node.root_group
     mode '0644'
     notifies :run, 'fb_systemd_reload[system instance]', :immediately
   end
 end
 
 directory '/etc/stunnel' do
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0755'
 end
 
 template '/etc/stunnel/fb_tunnel.conf' do
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
   notifies :restart, 'service[stunnel]'
 end
@@ -68,8 +68,8 @@ end
 
 template sysconfig do
   source 'sysconfig.erb'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
   notifies :restart, 'service[stunnel]'
 end

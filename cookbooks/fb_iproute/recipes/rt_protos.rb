@@ -21,16 +21,16 @@ rt_protos_d_dir = '/etc/iproute2/rt_protos.d'.freeze
 
 directory '/etc/iproute2' do
   only_if { node['fb_iproute']['rt_protos_ids'] }
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0755'
   action :create
 end
 
 directory rt_protos_d_dir do
   only_if { node['fb_iproute']['rt_protos_ids'] }
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0755'
   action :create
 end
@@ -38,7 +38,7 @@ end
 template "#{rt_protos_d_dir}/chef.conf" do
   only_if { node['fb_iproute']['rt_protos_ids'] }
   source 'rt_protos.erb'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
 end

@@ -22,8 +22,8 @@ include_recipe 'fb_nscd::packages'
 
 template '/etc/nscd.conf' do
   only_if { FB::Nscd.nscd_enabled?(node) }
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
   source 'nscd.conf.erb'
   notifies :restart, 'service[nscd]', :immediately

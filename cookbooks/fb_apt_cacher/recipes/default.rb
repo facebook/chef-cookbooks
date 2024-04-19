@@ -37,16 +37,16 @@ end
 
 template '/etc/default/apt-cacher-ng' do
   source 'apt-cacher-ng.erb'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
   notifies :restart, 'service[apt-cacher-ng]'
 end
 
 template '/etc/apt-cacher-ng/acng.conf' do
   source 'acng.conf.erb'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
   variables(
     :section => 'config',

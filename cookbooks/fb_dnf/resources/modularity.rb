@@ -24,8 +24,8 @@ action :run do
 
   node['fb_dnf']['modules'].each do |name, mod|
     template "#{DEFAULTS_DIR}/#{name}.yaml" do
-      owner 'root'
-      group 'root'
+      owner node.root_user
+      group node.root_group
       mode '0644'
       source 'fb_modules.yaml.erb'
       variables({ :name => name, :module => mod })
@@ -37,8 +37,8 @@ action :run do
           "for module '#{name}'"
       end
       template "#{MODS_DIR}/#{name}.module" do
-        owner 'root'
-        group 'root'
+        owner node.root_user
+        group node.root_group
         mode '0644'
         source 'fb_modules.module.erb'
         variables({ :name => name, :module => mod })

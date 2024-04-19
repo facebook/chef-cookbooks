@@ -40,8 +40,8 @@ include_recipe 'fb_systemd::default_packages'
 
 template '/etc/systemd/system.conf' do
   source 'systemd.conf.erb'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
   variables(
     :config => 'system',
@@ -52,8 +52,8 @@ end
 
 template '/etc/systemd/user.conf' do
   source 'systemd.conf.erb'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
   variables(
     :config => 'user',
@@ -64,8 +64,8 @@ end
 
 template '/etc/systemd/coredump.conf' do
   source 'systemd.conf.erb'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
   variables(
     :config => 'coredump',
@@ -129,8 +129,8 @@ end
 
 template '/etc/tmpfiles.d/chef.conf' do
   source 'tmpfiles.conf.erb'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
   notifies :run, 'execute[process tmpfiles]', :immediately
 end
@@ -141,22 +141,22 @@ execute 'load modules' do
 end
 
 directory '/etc/systemd/system-preset' do
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0755'
 end
 
 template '/etc/systemd/system-preset/00-fb_systemd.preset' do
   source 'preset.erb'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
 end
 
 directory '/etc/systemd/user/default.target.wants' do
   only_if { node['fb_systemd']['manage_default_target'] }
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0755'
 end
 

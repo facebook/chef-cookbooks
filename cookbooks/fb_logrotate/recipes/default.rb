@@ -109,8 +109,8 @@ end
 
 template '/etc/logrotate.d/fb_logrotate.conf' do
   source 'fb_logrotate.conf.erb'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
 end
 
@@ -131,8 +131,8 @@ if node['fb_logrotate']['systemd_timer'] && node.systemd?
   template service_logrotate do
     source 'logrotate.service.erb'
     mode '0644'
-    owner 'root'
-    group 'root'
+    owner node.root_user
+    group node.root_group
     notifies :run, 'execute[logrotate reload systemd]', :immediately
   end
 
@@ -140,8 +140,8 @@ if node['fb_logrotate']['systemd_timer'] && node.systemd?
   template timer_logrotate do
     source 'logrotate.timer.erb'
     mode '0644'
-    owner 'root'
-    group 'root'
+    owner node.root_user
+    group node.root_group
     notifies :run, 'execute[logrotate reload systemd]', :immediately
   end
 
@@ -161,15 +161,15 @@ else
     template cron_logrotate do
       source 'logrotate_rpm_cron_override.erb'
       mode '0755'
-      owner 'root'
-      group 'root'
+      owner node.root_user
+      group node.root_group
     end
   else
     # Fall back to the job RPM comes with CentOS7 RPM
     cookbook_file cron_logrotate do
       source 'logrotate.cron.daily'
-      owner 'root'
-      group 'root'
+      owner node.root_user
+      group node.root_group
       mode '0755'
       action :create
     end

@@ -25,8 +25,8 @@ end
 include_recipe 'fb_rpm::packages'
 
 directory '/etc/rpm' do
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0755'
 end
 
@@ -40,8 +40,8 @@ end
 template '/etc/rpm/macros' do
   source 'macros.erb'
   variables :overrides => {}
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
 end
 

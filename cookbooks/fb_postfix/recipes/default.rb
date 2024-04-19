@@ -33,8 +33,8 @@ end
 
 template '/etc/postfix/main.cf' do
   source 'main.cf.erb'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
   # We restart here instead of reloading because some main.cf changes require
   # a full restart (e.g. inet_interfaces)
@@ -48,8 +48,8 @@ end
 }.each do |file|
   template "/etc/postfix/#{file}" do
     source 'line_config.erb'
-    owner 'root'
-    group 'root'
+    owner node.root_user
+    group node.root_group
     mode '0644'
     notifies :reload, 'service[postfix]'
     variables(
@@ -73,8 +73,8 @@ end
 
 template '/etc/postfix/aliases' do
   source 'aliases.erb'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
   notifies :run, "execute[postalias #{map_type}:/etc/postfix/aliases]", :immediately
   notifies :reload, 'service[postfix]'
@@ -82,16 +82,16 @@ end
 
 template '/etc/postfix/master.cf' do
   mode '0644'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   source 'master.cf.erb'
   notifies :restart, 'service[postfix]'
 end
 
 template '/etc/postfix/custom_headers.regexp' do
   mode '0644'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   source 'custom_headers.regexp.erb'
   notifies :reload, 'service[postfix]'
 end
@@ -115,8 +115,8 @@ end
 
   template text_map do
     source 'db_file.erb'
-    owner 'root'
-    group 'root'
+    owner node.root_user
+    group node.root_group
     if text_map_rel == 'sasl_passwd'
       mode '0600'
       sensitive true

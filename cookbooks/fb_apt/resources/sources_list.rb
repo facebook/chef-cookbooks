@@ -82,8 +82,8 @@ action :run do
 
   template '/etc/apt/sources.list' do
     source 'sources.list.erb'
-    owner 'root'
-    group 'root'
+    owner node.root_user
+    group node.root_group
     mode '0644'
   end
 end

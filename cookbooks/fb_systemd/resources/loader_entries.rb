@@ -33,8 +33,8 @@ action :run do
   entries.each_key do |entry|
     template "#{esp_path}/loader/entries/fb_systemd_#{entry}.conf" do
       source 'loader-entry.conf.erb'
-      owner 'root'
-      group 'root'
+      owner node.root_user
+      group node.root_group
       mode '0644'
       variables(
         :entry => entry,

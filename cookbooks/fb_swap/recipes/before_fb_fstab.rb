@@ -35,8 +35,8 @@ end
 
 template '/usr/local/libexec/manage-additional-swap-file' do
   source 'manage-additional-swap-file.sh.erb'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   # read/execute for root, read only for everyone else.
   mode '0544'
   notifies :run, 'execute[manage-additional-swap-file]', :immediately
@@ -81,8 +81,8 @@ end
   manage_unit = "manage-swap-#{type}.service"
   template "/etc/systemd/system/#{manage_unit}" do
     source "#{manage_unit}.erb"
-    owner 'root'
-    group 'root'
+    owner node.root_user
+    group node.root_group
     mode '0644'
     notifies :run, 'fb_systemd_reload[system instance]', :immediately
     notifies :restart, "service[#{manage_unit}]"
@@ -148,8 +148,8 @@ end
 
 template '/usr/local/libexec/manage-swap-file' do
   source 'manage-swap-file.sh.erb'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   # read/execute for root, read only for everyone else.
   mode '0544'
   notifies :restart, 'service[manage-swap-file.service]', :immediately

@@ -41,8 +41,8 @@ end
 # So this is the bashrc from debian/ubuntu with that extra bit in there
 if node.debian? || node.ubuntu?
   cookbook_file '/etc/bash.bashrc' do
-    owner 'root'
-    group 'root'
+    owner node.root_user
+    group node.root_group
     mode '0644'
     source 'debian.bashrc'
   end

@@ -26,8 +26,8 @@ action_class do
     ipset_save_output.run_command.error!
 
     file state_file do
-      owner 'root'
-      group 'root'
+      owner node.root_user
+      group node.root_group
       mode '0600'
       content ipset_save_output.stdout
     end

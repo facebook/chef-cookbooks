@@ -76,8 +76,8 @@ end
       "#{node['fb_reprepro']['options']['basedir']}/conf/#{conffile}"
     end
     source 'config.erb'
-    owner 'root'
-    group 'root'
+    owner node.root_user
+    group node.root_group
     mode '0644'
     variables(
       :config => conffile,
@@ -91,7 +91,7 @@ template 'repository/conf/options' do
     "#{node['fb_reprepro']['options']['basedir']}/conf/options"
   end
   source 'options.erb'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
 end

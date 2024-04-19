@@ -45,8 +45,8 @@ whyrun_safe_ruby_block 'clean chef yum metadata' do
 end
 
 directory '/etc/yum.repos.d' do
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0755'
 end
 

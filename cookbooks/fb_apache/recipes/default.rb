@@ -118,16 +118,16 @@ end
 
 template sysconfig do
   source 'sysconfig.erb'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
   notifies :restart, 'service[apache]'
 end
 
 [moddir, sitesdir, confdir].uniq.each do |dir|
   directory dir do
-    owner 'root'
-    group 'root'
+    owner node.root_user
+    group node.root_group
     mode '0755'
   end
 end
@@ -155,32 +155,32 @@ end
 
 template "#{moddir}/fb_modules.conf" do
   not_if { node.centos6? }
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
   notifies :verify, 'fb_apache_verify_configs[doit]', :before
   notifies :restart, 'service[apache]'
 end
 
 template "#{sitesdir}/fb_sites.conf" do
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
   notifies :verify, 'fb_apache_verify_configs[doit]', :before
   notifies :reload, 'service[apache]'
 end
 
 template "#{confdir}/fb_apache.conf" do
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
   notifies :verify, 'fb_apache_verify_configs[doit]', :before
   notifies :reload, 'service[apache]'
 end
 
 template "#{moddir}/00-mpm.conf" do
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
   # MPM cannot be changed on reload, only restart
   notifies :verify, 'fb_apache_verify_configs[doit]', :before
@@ -190,8 +190,8 @@ end
 # We want to collect apache stats
 template "#{confdir}/status.conf" do
   source 'status.erb'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
   variables(:location => '/server-status')
   notifies :verify, 'fb_apache_verify_configs[doit]', :before

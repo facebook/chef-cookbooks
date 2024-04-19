@@ -24,15 +24,15 @@ grub2_base_dir = node['fb_grub']['_grub2_base_dir']
 directory 'efi_vendor_dir' do # rubocop:disable Chef/Meta/RequireOwnerGroupMode mode is controlled by mount options
   only_if { node.efi? }
   path lazy { node['fb_grub']['_efi_vendor_dir'] }
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
 end
 
 # GRUB 1
 directory grub_base_dir do
   only_if { node['fb_grub']['version'] == 1 }
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0755'
 end
 
@@ -43,8 +43,8 @@ template 'grub_config' do
   end
   path lazy { node['fb_grub']['_grub_config'] }
   source 'grub.conf.erb'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode node.efi? ? '0700' : '0644'
 end
 
@@ -57,16 +57,16 @@ template 'Additional grub.conf' do
   end
   path '/boot/grub/grub.conf'
   source 'grub.conf.erb'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode node.efi? ? '0700' : '0644'
 end
 
 # GRUB 2
 directory grub2_base_dir do
   only_if { node['fb_grub']['version'] == 2 }
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0755'
 end
 
@@ -89,8 +89,8 @@ end
     end
     path lazy { node['fb_grub']["_grub2_config_#{type}"] }
     source 'grub2.cfg.erb'
-    owner 'root'
-    group 'root'
+    owner node.root_user
+    group node.root_group
     # No "mode" for EFI since mode is determined by mount options,
     # not files
     if type == 'bios'

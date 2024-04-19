@@ -40,16 +40,16 @@ include_recipe 'fb_dbus::packages'
 
 directory '/usr/lib/systemd/scripts' do
   only_if { node['fb_dbus']['implementation'] == 'dbus-daemon' }
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0755'
 end
 
 # Drop in override to force a daemon-reload when dbus restarts (#10321854)
 cookbook_file '/usr/lib/systemd/scripts/dbus-restart-hack.sh' do
   only_if { node['fb_dbus']['implementation'] == 'dbus-daemon' }
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0755'
 end
 

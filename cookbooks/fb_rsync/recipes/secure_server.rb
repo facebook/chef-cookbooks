@@ -48,10 +48,10 @@ systemd_unit 'stunnel_rsyncd.service' do
 end
 
 template '/etc/stunnel/stunnel_rsyncd.conf' do
-  group 'root'
+  group node.root_group
   mode '0644'
   notifies :restart, 'service[stunnel_rsyncd start]'
-  owner 'root'
+  owner node.root_user
   source 'stunnel_rsyncd.conf.erb'
 end
 

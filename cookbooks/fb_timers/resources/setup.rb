@@ -140,8 +140,8 @@ action :run do
       template filename do
         source "#{type}.erb"
         mode '0644'
-        owner 'root'
-        group 'root'
+        owner node.root_user
+        group node.root_group
         # Use of variables within templates is heavily discouraged.
         # It's safe to use here since it's in a provider and isn't used
         # directly.
@@ -180,8 +180,8 @@ action :run do
       FB::Version.new(node['packages']['systemd'][
         'version']) <= FB::Version.new('201')
     end
-    owner 'root'
-    group 'root'
+    owner node.root_user
+    group node.root_group
     mode '0755'
   end
 
