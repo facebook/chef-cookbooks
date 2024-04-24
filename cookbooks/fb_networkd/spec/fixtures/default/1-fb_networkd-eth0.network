@@ -5,6 +5,8 @@
 Address = 2001:db00::1/64
 Address = 192.168.1.1/24
 Address = 2401:db00::1/64
+VLAN = eth0.4092
+VLAN = eth0.4088
 
 [Match]
 Name = eth0
@@ -16,3 +18,4 @@ PreferredLifetime = infinity
 [Address]
 Address = 2401:db00::1/64
 PreferredLifetime = 0
+

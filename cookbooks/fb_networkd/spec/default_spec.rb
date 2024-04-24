@@ -41,6 +41,10 @@ recipe 'fb_networkd::default', :unsupported => [:mac_os_x] do |tc|
                 '192.168.1.1/24',
                 '2401:db00::1/64',
               ],
+              'VLAN' => [
+                "#{iface}.4092",
+                "#{iface}.4088",
+              ],
             },
             'Address' => [
               {
@@ -54,8 +58,18 @@ recipe 'fb_networkd::default', :unsupported => [:mac_os_x] do |tc|
             ],
           },
         }
+
         node.default['fb_networkd']['links'][iface]['config']['Match'][
           'OriginalName'] = iface
+
+        node.default['fb_networkd']['devices']["#{iface}.4092"]['config']['NetDev'][
+          'Kind'] = 'vlan'
+        node.default['fb_networkd']['devices']["#{iface}.4088"]['config']['NetDev'][
+          'Kind'] = 'vlan'
+        node.default['fb_networkd']['devices']["#{iface}.4092"]['config']['VLAN'][
+          'Id'] = 4092
+        node.default['fb_networkd']['devices']["#{iface}.4088"]['config']['VLAN'][
+          'Id'] = 4088
 
         node.default['fb_networkd']['devices']['tap0']['config']['NetDev'][
           'Kind'] = 'tap'
@@ -69,6 +83,12 @@ recipe 'fb_networkd::default', :unsupported => [:mac_os_x] do |tc|
 
       expect(chef_run).to render_file("/etc/systemd/network/1-fb_networkd-#{iface}.link").
         with_content(tc.fixture("1-fb_networkd-#{iface}.link"))
+
+      expect(chef_run).to render_file("/etc/systemd/network/50-fb_networkd-#{iface}.4092.netdev").
+        with_content(tc.fixture("50-fb_networkd-#{iface}.4092.netdev"))
+
+      expect(chef_run).to render_file("/etc/systemd/network/50-fb_networkd-#{iface}.4088.netdev").
+        with_content(tc.fixture("50-fb_networkd-#{iface}.4088.netdev"))
 
       # default device priority is 50
       expect(chef_run).to render_file('/etc/systemd/network/50-fb_networkd-tap0.netdev').
