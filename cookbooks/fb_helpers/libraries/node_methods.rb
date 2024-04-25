@@ -98,6 +98,10 @@ class Chef
       self.rhel? && self['platform_version'].start_with?('8')
     end
 
+    def rhel8_8?
+      self.rhel? && self['platform_version'].start_with?('8.8')
+    end
+
     def rhel9?
       self.rhel? && self['platform_version'].start_with?('9')
     end

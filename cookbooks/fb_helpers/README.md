@@ -129,6 +129,9 @@ your node.
 * `node.rhel8?`
     Is Redhat Enterprise Linux 8
 
+* `node.rhel8_8?`
+    Is Redhat Enterprise Linux 8.8
+
 * `node.rhel9?`
     Is Redhat Enterprise Linux 9
 
