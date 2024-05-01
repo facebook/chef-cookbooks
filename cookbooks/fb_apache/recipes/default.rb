@@ -18,6 +18,8 @@
 # limitations under the License.
 #
 
+raise 'foobar'
+
 node.default['fb_apache']['module_packages']['wsgi'] =
   case node['platform_family']
   when 'rhel'
