@@ -29,7 +29,7 @@ module FB
         # choco.exe in $env:PATH it returns 'nil'
         # In this situtation lets also check the most likely location.
         which_path = which(file_name)
-        return which_path unless which_path.nil?
+        return which_path unless which_path.nil? || (which_path == false)
 
         expected_paths = [
           "C:\\ProgramData\\Chocolatey\\bin\\#{file_name}",
