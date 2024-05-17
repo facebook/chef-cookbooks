@@ -326,7 +326,7 @@ Note: `max_sectors_kb` sets the maximum IO sizes to the minimum of the device's
 `max_hw_sectors_kb` and the one provided.
 
 The `over_provisioning` attribute is provided for storage handlers to manage
-over provisioning, but are currently not used by `fb_storage` itself.
+over provisioning, but is currently not used by `fb_storage` itself.
 
 ### Software Raid
 
