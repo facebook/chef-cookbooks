@@ -15,9 +15,47 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+require 'ipaddr'
 
 unified_mode(false) if Chef::VERSION >= 18 # TODO(T144966423)
 default_action :manage
+
+action_class do
+  # TODO: A more reusable approach community-wise would be to create custom
+  # resources for the different networkd units and move this validation to those
+  # custom resources
+  def validate_network_addresses(conf)
+    return if !node.in_shard?(0)
+    conf.dig('config', 'Network', 'Address')&.each do |ip|
+      ::IPAddr.new(ip)
+    rescue ::IPAddr::Error
+      raise "Trying to use bad Network Address IP: '#{ip}' from conf: #{conf}"
+    end
+
+    conf.dig('config', 'Address')&.each do |addr|
+      if (ip = addr['Address'])
+        begin
+          ::IPAddr.new(ip)
+        rescue ::IPAddr::Error
+          raise "Trying to use bad Address IP: '#{ip}' from conf: #{conf}"
+        end
+      end
+    end
+
+    conf.dig('config', 'Route')&.each do |route|
+      ['Gateway', 'Destination', 'Source'].each do |route_type|
+        if route[route_type]
+          ip = route[route_type]
+          begin
+            ::IPAddr.new(ip)
+          rescue ::IPAddr::Error
+            raise "Trying to use bad route #{route_type} IP: '#{ip}' from route: #{route}"
+          end
+        end
+      end
+    end
+  end
+end
 
 action :manage do
   # There are some situations (i.e. changing the primary interface and
@@ -101,6 +139,8 @@ action :manage do
       FB::Networkd::BASE_CONFIG_PATH,
       "#{conf['priority']}-fb_networkd-#{conf['name']}.network",
     )
+
+    validate_network_addresses conf
 
     # Set up the template for this interface
     fb_helpers_gated_template conffile do

@@ -95,4 +95,153 @@ recipe 'fb_networkd::default', :unsupported => [:mac_os_x] do |tc|
         with_content(tc.fixture('50-fb_networkd-tap0.netdev'))
     end
   end
+
+  context 'use of bad ip addresses' do
+    it 'should fail the run with bad Network Address' do
+      expect do
+        tc.chef_run(
+          :step_into => ['fb_networkd', 'fb_helpers_gated_template'],
+        ) do |node|
+          allow(node).to receive(:systemd?).and_return(true)
+          allow(node).to receive(:in_shard?).and_return(true)
+
+          # These enable the fb_helpers_gated_template resources
+          allow(node).to receive(:interface_change_allowed?).and_return(true)
+          allow(Chef::Resource::Template).to receive(:updated_by_last_action?).and_call_original
+          allow_any_instance_of(Chef::Resource::Template).to receive(:updated_by_last_action?).and_return(true)
+        end.converge(described_recipe) do |node|
+          node.default['fb_networkd']['networks']['eth0'] = {
+            'priority' => 1,
+            'config' => {
+              'Network' => {
+                'Address' => [
+                  '2001::db00:1/64',
+                  '2001::bad1::1/64', # Extra colon
+                ],
+              },
+            },
+          }
+        end
+      end.to raise_error(RuntimeError, %r{fb_networkd:.*Trying to use bad Network Address IP: '2001::bad1::1/64'.*})
+    end
+
+    it 'should fail the run with bad Address Address' do
+      expect do
+        tc.chef_run(
+          :step_into => ['fb_networkd', 'fb_helpers_gated_template'],
+        ) do |node|
+          allow(node).to receive(:systemd?).and_return(true)
+          allow(node).to receive(:in_shard?).and_return(true)
+
+          # These enable the fb_helpers_gated_template resources
+          allow(node).to receive(:interface_change_allowed?).and_return(true)
+          allow(Chef::Resource::Template).to receive(:updated_by_last_action?).and_call_original
+          allow_any_instance_of(Chef::Resource::Template).to receive(:updated_by_last_action?).and_return(true)
+        end.converge(described_recipe) do |node|
+          node.default['fb_networkd']['networks']['eth0'] = {
+            'config' => {
+              'Address' => [
+                {
+                  'Address' => '2001:db00::1/64',
+                  'PreferredLifetime' => 'infinity',
+                },
+                {
+                  'Address' => '2001::bad1::1/64',
+                  'PreferredLifetime' => 'infinity',
+                },
+              ],
+            },
+          }
+        end
+      end.to raise_error(RuntimeError, %r{fb_networkd:.*Trying to use bad Address IP: '2001::bad1::1/64'.*})
+    end
+
+    it 'should fail the run with bad Route Gateway' do
+      expect do
+        tc.chef_run(
+          :step_into => ['fb_networkd', 'fb_helpers_gated_template'],
+        ) do |node|
+          allow(node).to receive(:systemd?).and_return(true)
+          allow(node).to receive(:in_shard?).and_return(true)
+
+          # These enable the fb_helpers_gated_template resources
+          allow(node).to receive(:interface_change_allowed?).and_return(true)
+          allow(Chef::Resource::Template).to receive(:updated_by_last_action?).and_call_original
+          allow_any_instance_of(Chef::Resource::Template).to receive(:updated_by_last_action?).and_return(true)
+        end.converge(described_recipe) do |node|
+          node.default['fb_networkd']['networks']['eth0'] = {
+            'priority' => 1,
+            'config' => {
+              'Route' => [
+                {
+                  'Gateway' => '2001::bad1::1',
+                  'Source' => '::/0',
+                  'Destination' => '::/0',
+                  'Metric' => '1',
+                },
+              ],
+            },
+          }
+        end
+      end.to raise_error(RuntimeError, /fb_networkd:.*Trying to use bad .*bad1.*/)
+    end
+    it 'should fail the run with bad Route Source' do
+      expect do
+        tc.chef_run(
+          :step_into => ['fb_networkd', 'fb_helpers_gated_template'],
+        ) do |node|
+          allow(node).to receive(:systemd?).and_return(true)
+          allow(node).to receive(:in_shard?).and_return(true)
+
+          # These enable the fb_helpers_gated_template resources
+          allow(node).to receive(:interface_change_allowed?).and_return(true)
+          allow(Chef::Resource::Template).to receive(:updated_by_last_action?).and_call_original
+          allow_any_instance_of(Chef::Resource::Template).to receive(:updated_by_last_action?).and_return(true)
+        end.converge(described_recipe) do |node|
+          node.default['fb_networkd']['networks']['eth0'] = {
+            'priority' => 1,
+            'config' => {
+              'Route' => [
+                {
+                  'Gateway' => '2001::db00:1',
+                  'Source' => '::/bad0',
+                  'Destination' => '::/0',
+                  'Metric' => '1',
+                },
+              ],
+            },
+          }
+        end
+      end.to raise_error(RuntimeError, /fb_networkd:.*Trying to use bad .*bad0.*/)
+    end
+    it 'should fail the run with bad Route Destination' do
+      expect do
+        tc.chef_run(
+          :step_into => ['fb_networkd', 'fb_helpers_gated_template'],
+        ) do |node|
+          allow(node).to receive(:systemd?).and_return(true)
+          allow(node).to receive(:in_shard?).and_return(true)
+
+          # These enable the fb_helpers_gated_template resources
+          allow(node).to receive(:interface_change_allowed?).and_return(true)
+          allow(Chef::Resource::Template).to receive(:updated_by_last_action?).and_call_original
+          allow_any_instance_of(Chef::Resource::Template).to receive(:updated_by_last_action?).and_return(true)
+        end.converge(described_recipe) do |node|
+          node.default['fb_networkd']['networks']['eth0'] = {
+            'priority' => 1,
+            'config' => {
+              'Route' => [
+                {
+                  'Gateway' => '2001::db00:1',
+                  'Source' => '::/0',
+                  'Destination' => '::/bad2',
+                  'Metric' => '1',
+                },
+              ],
+            },
+          }
+        end
+      end.to raise_error(RuntimeError, /fb_networkd:.*Trying to use bad .*bad2.*/)
+    end
+  end
 end
