@@ -103,7 +103,6 @@ recipe 'fb_networkd::default', :unsupported => [:mac_os_x] do |tc|
           :step_into => ['fb_networkd', 'fb_helpers_gated_template'],
         ) do |node|
           allow(node).to receive(:systemd?).and_return(true)
-          allow(node).to receive(:in_shard?).and_return(true)
 
           # These enable the fb_helpers_gated_template resources
           allow(node).to receive(:interface_change_allowed?).and_return(true)
@@ -131,7 +130,6 @@ recipe 'fb_networkd::default', :unsupported => [:mac_os_x] do |tc|
           :step_into => ['fb_networkd', 'fb_helpers_gated_template'],
         ) do |node|
           allow(node).to receive(:systemd?).and_return(true)
-          allow(node).to receive(:in_shard?).and_return(true)
 
           # These enable the fb_helpers_gated_template resources
           allow(node).to receive(:interface_change_allowed?).and_return(true)
@@ -162,7 +160,6 @@ recipe 'fb_networkd::default', :unsupported => [:mac_os_x] do |tc|
           :step_into => ['fb_networkd', 'fb_helpers_gated_template'],
         ) do |node|
           allow(node).to receive(:systemd?).and_return(true)
-          allow(node).to receive(:in_shard?).and_return(true)
 
           # These enable the fb_helpers_gated_template resources
           allow(node).to receive(:interface_change_allowed?).and_return(true)
@@ -191,7 +188,6 @@ recipe 'fb_networkd::default', :unsupported => [:mac_os_x] do |tc|
           :step_into => ['fb_networkd', 'fb_helpers_gated_template'],
         ) do |node|
           allow(node).to receive(:systemd?).and_return(true)
-          allow(node).to receive(:in_shard?).and_return(true)
 
           # These enable the fb_helpers_gated_template resources
           allow(node).to receive(:interface_change_allowed?).and_return(true)
@@ -220,7 +216,6 @@ recipe 'fb_networkd::default', :unsupported => [:mac_os_x] do |tc|
           :step_into => ['fb_networkd', 'fb_helpers_gated_template'],
         ) do |node|
           allow(node).to receive(:systemd?).and_return(true)
-          allow(node).to receive(:in_shard?).and_return(true)
 
           # These enable the fb_helpers_gated_template resources
           allow(node).to receive(:interface_change_allowed?).and_return(true)

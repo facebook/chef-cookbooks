@@ -25,7 +25,6 @@ action_class do
   # resources for the different networkd units and move this validation to those
   # custom resources
   def validate_network_addresses(conf)
-    return if !node.in_shard?(0)
     conf.dig('config', 'Network', 'Address')&.each do |ip|
       ::IPAddr.new(ip)
     rescue ::IPAddr::Error
