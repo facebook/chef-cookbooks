@@ -25,10 +25,19 @@ action_class do
   # resources for the different networkd units and move this validation to those
   # custom resources
   def validate_network_addresses(conf)
-    conf.dig('config', 'Network', 'Address')&.each do |ip|
-      ::IPAddr.new(ip)
-    rescue ::IPAddr::Error
-      raise "Trying to use bad Network Address IP: '#{ip}' from conf: #{conf}"
+    address = conf.dig('config', 'Network', 'Address')
+    if address.is_a?(String)
+      begin
+        ::IPAddr.new(address)
+      rescue ::IPAddr::Error
+        raise "Trying to use bad Network Address IP: '#{address}' from conf: #{conf}"
+      end
+    elsif address.is_a?(Array)
+      address.each do |ip|
+        ::IPAddr.new(ip)
+      rescue ::IPAddr::Error
+        raise "Trying to use bad Network Address IP: '#{ip}' from conf: #{conf}"
+      end
     end
 
     conf.dig('config', 'Address')&.each do |addr|

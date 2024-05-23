@@ -124,6 +124,54 @@ recipe 'fb_networkd::default', :unsupported => [:mac_os_x] do |tc|
       end.to raise_error(RuntimeError, %r{fb_networkd:.*Trying to use bad Network Address IP: '2001::bad1::1/64'.*})
     end
 
+    it 'should not fail the run with good Network Address as a string' do
+      expect do
+        tc.chef_run(
+          :step_into => ['fb_networkd', 'fb_helpers_gated_template'],
+        ) do |node|
+          allow(node).to receive(:systemd?).and_return(true)
+
+          # These enable the fb_helpers_gated_template resources
+          allow(node).to receive(:interface_change_allowed?).and_return(true)
+          allow(Chef::Resource::Template).to receive(:updated_by_last_action?).and_call_original
+          allow_any_instance_of(Chef::Resource::Template).to receive(:updated_by_last_action?).and_return(true)
+        end.converge(described_recipe) do |node|
+          node.default['fb_networkd']['networks']['eth0'] = {
+            'priority' => 1,
+            'config' => {
+              'Network' => {
+                'Address' => '2001::db00:1/64',
+              },
+            },
+          }
+        end
+      end
+    end
+
+    it 'should fail the run with bad Network Address as a string' do
+      expect do
+        tc.chef_run(
+          :step_into => ['fb_networkd', 'fb_helpers_gated_template'],
+        ) do |node|
+          allow(node).to receive(:systemd?).and_return(true)
+
+          # These enable the fb_helpers_gated_template resources
+          allow(node).to receive(:interface_change_allowed?).and_return(true)
+          allow(Chef::Resource::Template).to receive(:updated_by_last_action?).and_call_original
+          allow_any_instance_of(Chef::Resource::Template).to receive(:updated_by_last_action?).and_return(true)
+        end.converge(described_recipe) do |node|
+          node.default['fb_networkd']['networks']['eth0'] = {
+            'priority' => 1,
+            'config' => {
+              'Network' => {
+                'Address' => '2001::db0z:1/64',
+              },
+            },
+          }
+        end
+      end.to raise_error(RuntimeError, %r{fb_networkd:.*Trying to use bad Network Address IP: '2001::db0z:1/64'.*})
+    end
+
     it 'should fail the run with bad Address Address' do
       expect do
         tc.chef_run(
