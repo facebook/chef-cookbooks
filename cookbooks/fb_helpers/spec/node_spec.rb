@@ -149,9 +149,9 @@ describe 'Chef::Node' do
       expect(node.in_shard?(67)).to eq(true)
     end
     it 'should return false if we are not in shard' do
-      expect(node.in_shard?(65)).to eq(false)
+      expect(node.in_shard?(64)).to eq(false)
       # Should remain false on second calling
-      expect(node.in_shard?(65)).to eq(false)
+      expect(node.in_shard?(64)).to eq(false)
     end
     it 'should retain legacy overflow behaviour' do
       # avoid using literals so linters don't fire
