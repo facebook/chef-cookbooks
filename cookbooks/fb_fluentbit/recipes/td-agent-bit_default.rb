@@ -65,8 +65,8 @@ directory 'runtime state directory' do
   if node.windows?
     rights :full_control, 'Administrators'
   else
-    owner 'root'
-    group 'root'
+    owner node.root_user
+    group node.root_group
     mode '0755'
   end
 end
@@ -82,8 +82,8 @@ template 'plugins config' do
     rights :full_control, 'Administrators'
     notifies :restart, 'windows_service[FluentBit]'
   else
-    owner 'root'
-    group 'root'
+    owner node.root_user
+    group node.root_group
     mode '0600'
     notifies :restart, 'service[td-agent-bit]'
   end
@@ -97,8 +97,8 @@ template 'parsers config' do
     rights :full_control, 'Administrators'
     notifies :restart, 'windows_service[FluentBit]'
   else
-    owner 'root'
-    group 'root'
+    owner node.root_user
+    group node.root_group
     mode '0600'
     notifies :restart, 'service[td-agent-bit]'
   end
@@ -113,8 +113,8 @@ remote_file 'remote config' do
     rights :full_control, 'Administrators'
     notifies :restart, 'windows_service[FluentBit]'
   else
-    owner 'root'
-    group 'root'
+    owner node.root_user
+    group node.root_group
     mode '0600'
     notifies :restart, 'service[td-agent-bit]'
   end
@@ -129,8 +129,8 @@ template 'local config' do
     rights :full_control, 'Administrators'
     notifies :restart, 'windows_service[FluentBit]'
   else
-    owner 'root'
-    group 'root'
+    owner node.root_user
+    group node.root_group
     mode '0600'
     notifies :restart, 'service[td-agent-bit]'
   end
