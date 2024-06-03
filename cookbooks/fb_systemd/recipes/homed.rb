@@ -25,5 +25,6 @@ end
 
 service 'disable systemd-homed' do
   not_if { node['fb_systemd']['homed']['enable'] }
+  service_name 'systemd-homed'
   action [:stop, :disable]
 end
