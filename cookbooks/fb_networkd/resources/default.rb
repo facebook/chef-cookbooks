@@ -187,18 +187,15 @@ action :manage do
 
       on_host_networks.delete(path)
 
-      file path do
-        only_if { node.interface_change_allowed?(conf['name']) }
+      fb_helpers_gated_template path do
+        allow_changes node.interface_change_allowed?(conf['name'])
+        gated_action :delete
+        source 'networkd.conf.erb'
         owner node.root_user
         group node.root_group
         mode '0644'
-        action :delete
         notifies :run, 'execute[networkctl reload]', :immediately
         notifies :run, "execute[networkctl reconfigure #{conf['name']}]"
-      end
-
-      if !node.interface_change_allowed?(conf['name'])
-        FB::Helpers._request_nw_changes_permission(run_context, new_resource)
       end
     end
   end
@@ -266,17 +263,14 @@ action :manage do
     conflicting_links.each do |path|
       on_host_links.delete(path)
 
-      file path do
-        only_if { node.interface_change_allowed?(conf['name']) }
+      fb_helpers_gated_template path do
+        allow_changes node.interface_change_allowed?(conf['name'])
+        gated_action :delete
+        source 'networkd.conf.erb'
         owner node.root_user
         group node.root_group
         mode '0644'
-        action :delete
         notifies :run, "execute[udevadm trigger #{conf['name']}]"
-      end
-
-      if !node.interface_change_allowed?(conf['name'])
-        FB::Helpers._request_nw_changes_permission(run_context, new_resource)
       end
     end
   end
@@ -352,18 +346,15 @@ action :manage do
       # systemd-networkd.
       restart_for_new_vlan = false
 
-      file path do
-        only_if { node.interface_change_allowed?(conf['name']) }
+      fb_helpers_gated_template path do
+        allow_changes node.interface_change_allowed?(conf['name'])
+        gated_action :delete
+        source 'networkd.conf.erb'
         owner node.root_user
         group node.root_group
         mode '0644'
-        action :delete
         notifies :run, 'execute[networkctl reload]', :immediately
         notifies :run, "execute[networkctl reconfigure #{conf['name']}]"
-      end
-
-      if !node.interface_change_allowed?(conf['name'])
-        FB::Helpers._request_nw_changes_permission(run_context, new_resource)
       end
     end
 
@@ -384,15 +375,15 @@ action :manage do
         action :nothing
       end
 
-      file path do
-        only_if { node.interface_change_allowed?(iface) }
-        action :delete
+      fb_helpers_gated_template path do
+        allow_changes node.interface_change_allowed?(iface)
+        gated_action :delete
+        source 'networkd.conf.erb'
+        owner node.root_user
+        group node.root_group
+        mode '0644'
         notifies :run, "execute[networkctl down #{iface}]", :immediately
         notifies :run, 'execute[networkctl reload]'
-      end
-
-      unless node.interface_change_allowed?(iface)
-        FB::Helpers._request_nw_changes_permission(run_context, new_resource)
       end
     end
   end
@@ -408,14 +399,14 @@ action :manage do
         action :nothing
       end
 
-      file path do
-        only_if { node.interface_change_allowed?(iface) }
-        action :delete
+      fb_helpers_gated_template path do
+        allow_changes node.interface_change_allowed?(iface)
+        gated_action :delete
+        source 'networkd.conf.erb'
+        owner node.root_user
+        group node.root_group
+        mode '0644'
         notifies :run, "execute[udevadm trigger #{iface}]"
-      end
-
-      unless node.interface_change_allowed?(iface)
-        FB::Helpers._request_nw_changes_permission(run_context, new_resource)
       end
     end
   end
@@ -431,15 +422,15 @@ action :manage do
         action :nothing
       end
 
-      file path do
-        only_if { node.interface_change_allowed?(iface) }
-        action :delete
+      fb_helpers_gated_template path do
+        allow_changes node.interface_change_allowed?(iface)
+        gated_action :delete
+        source 'networkd.conf.erb'
+        owner node.root_user
+        group node.root_group
+        mode '0644'
         notifies :run, "execute[networkctl delete #{iface}]", :immediately
         notifies :run, 'execute[networkctl reload]'
-      end
-
-      unless node.interface_change_allowed?(iface)
-        FB::Helpers._request_nw_changes_permission(run_context, new_resource)
       end
     end
   end

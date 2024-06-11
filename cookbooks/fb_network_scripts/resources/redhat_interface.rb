@@ -190,7 +190,9 @@ action :enable do
       Chef::Log.info(
         "fb_network_scripts[#{interface}]: requesting nw change permission",
       )
-      FB::Helpers._request_nw_changes_permission(run_context, new_resource)
+      FB::Helpers._request_nw_changes_permission(
+        run_context, new_resource, "Would have enabled #{interface}"
+      )
     end
   end
 
@@ -392,7 +394,9 @@ action :start do
     Chef::Log.info(
       "fb_network_scripts[#{interface}]: requesting nw change permission",
     )
-    FB::Helpers._request_nw_changes_permission(run_context, new_resource)
+    FB::Helpers._request_nw_changes_permission(
+      run_context, new_resource, "Would have started #{interface}"
+    )
   end
 end
 
@@ -412,7 +416,9 @@ action :stop do
                       interface.to_s)
     Chef::Log.info("fb_network_scripts[#{interface}]: requesting nw change " +
                       'permission')
-    FB::Helpers._request_nw_changes_permission(run_context, new_resource)
+    FB::Helpers._request_nw_changes_permission(
+      run_context, new_resource, "Would have stopped #{interface}"
+    )
   end
 end
 
@@ -449,6 +455,8 @@ action :disable do
     Chef::Log.info(
       "fb_network_scripts[#{interface}]: requesting nw change permission",
     )
-    FB::Helpers._request_nw_changes_permission(run_context, new_resource)
+    FB::Helpers._request_nw_changes_permission(
+      run_context, new_resource, "Would have disabled #{interface}"
+    )
   end
 end

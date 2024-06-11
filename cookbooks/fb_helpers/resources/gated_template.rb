@@ -32,13 +32,15 @@ property :gated_action, Symbol, :required => false, :default => :create
 default_action :manage
 
 action_class do
+  attr_reader :saved_why_run
+
   # Copied from lib/chef/runner.rb
   def forced_why_run
-    saved = Chef::Config[:why_run]
+    @saved_why_run = Chef::Config[:why_run]
     Chef::Config[:why_run] = true
     yield
   ensure
-    Chef::Config[:why_run] = saved
+    Chef::Config[:why_run] = @saved_why_run
   end
 end
 
@@ -69,10 +71,20 @@ action :manage do
         action new_resource.gated_action
       end
     else
-      Chef::Log.info('fb_helpers: not allowed to change configs for ' +
-                     new_resource.name.to_s)
-      Chef::Log.info('fb_helpers: requesting nw change permission')
-      FB::Helpers._request_nw_changes_permission(run_context, new_resource)
+      unless saved_why_run
+        if t.respond_to? :diff
+          # spec mocks respond_to? but return nil
+          diff = t.diff || ''
+          diff_msg = ' would have changed: ' + diff
+        else
+          diff = nil
+          diff_msg = ''
+        end
+        Chef::Log.info('fb_helpers: not allowed to change configs for ' +
+                      new_resource.name.to_s + diff_msg)
+        Chef::Log.info('fb_helpers: requesting nw change permission')
+        FB::Helpers._request_nw_changes_permission(run_context, new_resource, diff)
+      end
     end
   end
 end

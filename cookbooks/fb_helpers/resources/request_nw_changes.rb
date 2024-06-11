@@ -21,7 +21,15 @@ default_action :request_nw_changes
 
 action :request_nw_changes do
   file FB::Helpers::NW_CHANGES_NEEDED do
+    owner node.root_user
+    group node.root_group
+    mode '0644'
     action :touch
+    content lazy {
+              node['fb_helpers']['_nw_perm_changes_requested'].map do |resource, diff|
+                "#{resource} requesting to change:\n#{diff}"
+              end.join("\n").gsub(/\\n/, "\n").concat("\n")
+            }
   end
 end
 

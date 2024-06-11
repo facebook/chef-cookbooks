@@ -640,13 +640,15 @@ If the has is specified, it takes one or more of the following keys:
       ::File.read(addrfile).strip.upcase
     end
 
-    def self._request_nw_changes_permission(run_context, new_resource)
+    def self._request_nw_changes_permission(run_context, new_resource, diff)
       run_context.node.default['fb_helpers']['_nw_perm_requested'] = true
       notification = Chef::Resource::Notification.new(
         'fb_helpers_request_nw_changes[manage]',
         :request_nw_changes,
         new_resource,
       )
+      run_context.node.default['fb_helpers']['_nw_perm_changes_requested'][
+        new_resource.name.to_s] = diff
       notification.fix_resource_reference(run_context.resource_collection)
       run_context.root_run_context.add_delayed_action(notification)
     end
@@ -654,7 +656,7 @@ If the has is specified, it takes one or more of the following keys:
     # readfile() safely reads file content in a variable,
     # removing the last line termination.
     # It is suitable to read a single-liners (sysctl settings or similar).
-    # It would return an empty string when the file is not avialable.
+    # It would return an empty string when the file is not available.
     #
     # Usage:
     #   readfile(path)
