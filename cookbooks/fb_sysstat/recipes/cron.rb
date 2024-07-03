@@ -33,8 +33,9 @@ if node.systemd?
       'command' => "#{sa_dir}/sa1 -S DISK,SNMP 1 1",
     },
     'sysstat_accounting_2' => {
-      'calendar' => '23:53',
+      'calendar' => 'daily',
       'command' => "#{sa_dir}/sa2 -A",
+      'splay' => '30m',
     },
   }.each do |k, v|
     node.default['fb_timers']['jobs'][k] = v
