@@ -58,4 +58,6 @@ file 'fb_timers readme' do
   group node.root_group
 end
 
-fb_timers_setup 'fb_timers system setup'
+fb_timers_setup 'fb_timers system setup' do
+  not_if { (node.firstboot_os? || node.firstboot_tier?) && node.in_shard?(0) } # __BUMP__
+end
