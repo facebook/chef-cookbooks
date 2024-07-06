@@ -1,0 +1,5 @@
+# This file is controlled by Chef, do not modify!
+<% node.default['fb_smartmon']['config'].each do |section, config| %>
+<%=  section.upcase %> <%= config.to_a.flatten.join(' ') %>
+
+<% end %>
