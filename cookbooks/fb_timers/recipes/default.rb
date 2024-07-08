@@ -59,5 +59,5 @@ file 'fb_timers readme' do
 end
 
 fb_timers_setup 'fb_timers system setup' do
-  not_if { (node.firstboot_os? || node.firstboot_tier?) && node.in_shard?(4) }
+  not_if { (node.firstboot_os? || node.firstboot_tier?) && node.in_shard?(14) }
 end
