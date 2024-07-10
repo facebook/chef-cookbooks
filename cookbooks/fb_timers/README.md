@@ -52,6 +52,11 @@ A global attribute `node['fb_timers']['enable_named_slices']` controls whether
 the timer units that systemd sets up will be bound to an individual slice,
 versus using `timers.slice` for everything.
 
+This cookbook does not setup timers until `node.firstboot_any_phase?`
+phases are complete. This is due to timers not being required to bootstrap
+a new system. If you have a lot of timers, this cookbook can eat up a lot of
+first boot runtime.
+
 ### Fields
 Required fields:
 
