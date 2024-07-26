@@ -17,6 +17,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Platforms and versions are defined here: https://fburl.com/gqlux2fx
 PLATFORMS = {
   'default' => {
     :centos8 => [
@@ -28,7 +29,7 @@ PLATFORMS = {
     :mac_os_x => [
       {
         'platform' => 'mac_os_x',
-        'version' => '10.15',
+        'version' => '12',
       },
     ],
   },
