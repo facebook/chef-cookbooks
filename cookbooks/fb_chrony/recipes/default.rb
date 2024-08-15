@@ -50,8 +50,20 @@ template 'chrony.conf' do
   notifies :restart, 'service[chrony]'
 end
 
+fb_systemd_override 'chronyd_override' do
+  unit_name 'chronyd.service'
+  content({
+            'Service' => {
+              'Restart' => 'always',
+            },
+          })
+end
+
 service 'chrony' do
   service_name chrony_svc
   action [:enable, :start]
-  subscribes :restart, 'package[chrony]'
+  subscribes :restart, [
+    'package[chrony]',
+    'fb_systemd_override[chronyd_override]',
+  ]
 end
