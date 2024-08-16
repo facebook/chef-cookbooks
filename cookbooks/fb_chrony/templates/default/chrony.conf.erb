@@ -1,7 +1,7 @@
 # This file is maintained by Chef. Do not edit, all changes will be
 # overwritten. See opsfiles/chef/cookbooks/core/fb_chrony
 
-<% 
+<%
   default_opts = node['fb_chrony']['default_options'].join(' ')
 
   if node['fb_chrony']['servers'].is_a?(Array)
@@ -21,12 +21,24 @@
   else
     pools = node['fb_chrony']['pools'].to_hash
   end
+
+  if node['fb_chrony']['refclocks'].is_a?(Array)
+    refclocks = {}
+    node['fb_chrony']['refclocks'].each do |refclock|
+      refclocks[refclock] = []
+    end
+  else
+    refclocks = node['fb_chrony']['refclocks'].to_hash
+  end
 %>
 <% servers.each do |server, opts| -%>
 server <%= server %> <%= opts && !opts.empty? ? opts.join(' ') : default_opts %>
 <% end -%>
 <% pools.each do |pool, opts| -%>
 pool <%= pool %> <%= opts && !opts.empty? ? opts.join(' ') : default_opts %>
+<% end -%>
+<% refclocks.each do |refclock, opts| -%>
+refclock <%= refclock %> <%= opts.join(' ')%>
 <% end -%>
 
 <% node['fb_chrony']['config'].to_hash.each do |key, val| %>
