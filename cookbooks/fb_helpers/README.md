@@ -115,10 +115,10 @@ your node.
     Is Redhat Enterprise Linux 10
 
 * `node.rhel_max_version?(v)`
-    Is Redhat Enterprise Linux with a maximum version number of v
+    Is Redhat Enterprise Linux with a maximum major version number of v
 
 * `node.rhel_min_version?(v)`
-    Is Redhat Enterprise Linux with a minimum version number of v
+    Is Redhat Enterprise Linux with a minimum major version number of v
 
 * `node.rhel?`
     Is Redhat Enterprise Linux

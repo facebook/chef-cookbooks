@@ -58,12 +58,12 @@ class Chef
 
     # Is this a RHEL-compatible OS with a minimum major version number of `version`
     def el_min_version?(version)
-      self.rhel_family? && self._self_version >= self._canonical_version(version)
+      self.rhel_family? && self._self_version[0] >= self._canonical_version(version)[0]
     end
 
     # Is this a RHEL-compatible OS with a maximum major version number of `version`
     def el_max_version?(version)
-      self.rhel_family? && self._self_version <= self._canonical_version(version)
+      self.rhel_family? && self._self_version[0] <= self._canonical_version(version)[0]
     end
 
     def rhel_family7?
