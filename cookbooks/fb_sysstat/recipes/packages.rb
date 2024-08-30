@@ -20,5 +20,6 @@
 #
 
 package 'sysstat' do
+  only_if { node['fb_sysstat']['manage_packages'] }
   action :upgrade
 end

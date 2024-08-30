@@ -11,5 +11,6 @@ unless node.centos?
 end
 
 package 'tcpdump' do
+  only_if { node['fb_tcpdump']['manage_packages'] }
   action :upgrade
 end

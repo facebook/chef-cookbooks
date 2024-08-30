@@ -18,4 +18,5 @@
 
 default['fb_ethers'] = {
   'entries' => {},
+  'manage_packages' => true,
 }

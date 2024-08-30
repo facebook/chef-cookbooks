@@ -9,6 +9,7 @@ Attributes
 ----------
 * node['fb_sdparm']['enforce']
 * node['fb_sdparm']['settings']
+* node['fb_sdparm']['manage_packages']
 
 Usage
 -----
@@ -56,3 +57,8 @@ node.default['fb_sdparm']['enforce'] = true
   end
 end
 ```
+
+### Packages
+By default this cookbook keeps the sdparm package up-to-date, but if you
+want to manage them locally, simply set
+`node['fb_sdparm']['manage_packages']` to false.

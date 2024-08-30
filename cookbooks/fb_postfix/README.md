@@ -26,6 +26,7 @@ Attributes
 * node['fb_postfix']['transport']
 * node['fb_postfix']['virtual']
 * node['fb_postfix']['custom_headers']
+* node['fb_postfix']['manage_packages']
 
 Usage
 -----
@@ -105,3 +106,8 @@ node.default['fb_postfix']['custom_headers']['some description'] = {
 
 *Note*: In `main.cf`, `header_checks` is by default pointed to
 `/etc/postfix/custom_headers.regexp`.
+
+### Packages
+By default this cookbook keeps the postfix package up-to-date, but if you
+want to manage them locally, simply set
+`node['fb_postfix']['manage_packages']` to false.

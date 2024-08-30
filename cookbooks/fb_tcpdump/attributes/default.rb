@@ -1,6 +1,3 @@
-# Cookbook Name:: fb_logrotate
-# Recipe:: packages
-#
 # vim: syntax=ruby:expandtab:shiftwidth=2:softtabstop=2:tabstop=2
 #
 # Copyright (c) 2016-present, Facebook, Inc.
@@ -18,8 +15,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-package ['logrotate', 'pigz'] do
-  only_if { node['fb_logrotate']['manage_packages'] }
-  action :upgrade
-end
+default['fb_tcpdump'] = {
+  'manage_packages' => true,
+}

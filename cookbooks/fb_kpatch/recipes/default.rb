@@ -23,6 +23,7 @@ if !node.centos? || node.centos7?
 end
 
 package 'kpatch-runtime' do
+  only_if { node['fb_kpatch']['manage_packages'] }
   action :upgrade
 end
 

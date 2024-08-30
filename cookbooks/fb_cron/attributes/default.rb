@@ -34,4 +34,5 @@ default['fb_cron'] = {
   # This is a hidden attribute because people shouldn't change this unless
   # they know what they're doing.
   '_crontab_path' => '/etc/cron.d/fb_crontab',
+  'manage_packages' => true,
 }

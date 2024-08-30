@@ -115,6 +115,7 @@ default['fb_postfix'] = {
     # Postfix will interpret this to be hostname
     'smtp_helo_name' => '$myhostname',
   },
+  'manage_packages' => true,
   # master.cf as per http://www.postfix.org/master.5.html
   # In master.cf, unique by service:type and not just service.
   'master.cf' => {

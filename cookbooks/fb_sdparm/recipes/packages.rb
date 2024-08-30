@@ -19,5 +19,6 @@
 #
 
 package 'sdparm' do
+  only_if { node['fb_sdparm']['manage_packages'] }
   action :upgrade
 end

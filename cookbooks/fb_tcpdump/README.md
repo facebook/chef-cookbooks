@@ -10,8 +10,14 @@ Requirements
 
 Attributes
 ----------
+* node['fb_tcpdump']['manage_packages']
 
 Usage
 -----
 #### fb_tcpdump::default
 Just include the recipe in your runlist.
+
+### Packages
+By default this cookbook keeps the tcpdump package up-to-date, but if you
+want to manage them locally, simply set
+`node['fb_tcpdump']['manage_packages']` to false.

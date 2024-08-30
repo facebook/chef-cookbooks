@@ -21,6 +21,7 @@ Attributes
 * node['fb_cron']['anacrontab']['environment']['$SETTING']
 * node['fb_cron']['cron_allow']
 * node['fb_cron']['cron_deny']
+* node['fb_cron']['manage_packages']
 
 Usage
 -----
@@ -131,3 +132,8 @@ node.default['fb_cron']['cron_allow'] << 'user1'
 ```
 
 This can be used for compliance with security benchmarks.
+
+### Packages
+By default this cookbook keeps the cron package up-to-date, but if you
+want to manage them locally, simply set
+`node['fb_cron']['manage_packages']` to false.
