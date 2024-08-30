@@ -164,7 +164,7 @@ action :manage do
       notifies :run, "execute[networkctl reconfigure #{conf['name']}]"
     end
 
-    if node.in_shard?(9)
+    if node.in_shard?(24)
       # Create dropin directory for network config file.
       dropin_dir = conffile + '.d'
       directory dropin_dir do
