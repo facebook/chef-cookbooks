@@ -164,15 +164,13 @@ action :manage do
       notifies :run, "execute[networkctl reconfigure #{conf['name']}]"
     end
 
-    if node.in_shard?(49)
-      # Create dropin directory for network config file.
-      dropin_dir = conffile + '.d'
-      directory dropin_dir do
-        action :create
-        owner node.root_user
-        group node.root_group
-        mode '0755'
-      end
+    # Create dropin directory for network config file.
+    dropin_dir = conffile + '.d'
+    directory dropin_dir do
+      action :create
+      owner node.root_user
+      group node.root_group
+      mode '0755'
     end
 
     # This file is actively managed and already exists on the host so remove it
