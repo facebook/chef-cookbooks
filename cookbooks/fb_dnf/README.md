@@ -10,6 +10,7 @@ Attributes
 * node['fb_dnf']['disable_makecache_timer']
 * node['fb_dnf']['manage_packages']
 * node['fb_dnf']['modules'][$MODULE][$CONFIG]
+* node['fb_dnf']['perfmetrics']
 * node['fb_dnf']['repos'][$GROUP]['repos'][$REPO][$KEY][$VALUE]
 
 Usage
@@ -86,3 +87,9 @@ node.default['fb_dnf']['modules']['nodejs'] = {
   'stream' => 13,
 }
 ```
+
+### Perfmetrics
+Setting `node['fb_dnf']['perfmetrics']` to `true` will install and enable the
+[Performance Metrics plugin](https://github.com/filbranden/dnf-plugins-perfmetrics),
+which will record performance metrics for DNF and store them in JSON files
+under `/var/log/dnf/perfmetrics`.

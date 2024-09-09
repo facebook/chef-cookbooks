@@ -31,4 +31,5 @@ default['fb_dnf'] = {
   'manage_packages' => true,
   'modules' => {},
   'repos' => {},
+  'perfmetrics' => false,
 }
