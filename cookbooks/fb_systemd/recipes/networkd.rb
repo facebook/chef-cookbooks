@@ -51,13 +51,11 @@ extend_dbus_timeout = <<~EOF
   Environment=SYSTEMD_BUS_TIMEOUT=50
 EOF
 
-if node.in_shard?(20)
-  fb_systemd_override 'systemd-networkd extend dbus timeout' do
-    only_if { node['fb_systemd']['networkd']['enable'] }
-    unit_name 'systemd-networkd.service'
-    content extend_dbus_timeout
-    action :create
-  end
+fb_systemd_override 'systemd-networkd extend dbus timeout' do
+  only_if { node['fb_systemd']['networkd']['enable'] }
+  unit_name 'systemd-networkd.service'
+  content extend_dbus_timeout
+  action :create
 end
 
 service 'systemd-networkd.socket' do
