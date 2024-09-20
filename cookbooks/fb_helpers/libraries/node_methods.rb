@@ -540,6 +540,10 @@ class Chef
       self.aristaeos? && self._self_version >= self._canonical_version('4.30')
     end
 
+    def aristaeos_4_32_or_newer?
+      self.aristaeos? && self._self_version >= self._canonical_version('4.32')
+    end
+
     def embedded?
       self.aristaeos?
     end
