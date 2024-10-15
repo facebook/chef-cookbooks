@@ -24,4 +24,5 @@ default['fb_swap'] = {
   'swapoff_allowed_because' => nil,
   'strict' => true,
   'allow_unmanaged' => false,
+  'use_persistent_paths' => false,
 }

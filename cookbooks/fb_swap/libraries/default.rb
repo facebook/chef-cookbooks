@@ -18,6 +18,8 @@
 
 module FB
   module FbSwap
+    DEV_ID_DIR = '/dev/disk/by-id'.freeze
+
     def self._validate(node)
       device = self._device(node)
       file = self._file(node)
@@ -261,6 +263,36 @@ module FB
         return swap_mounts.keys[0]
       else
         fail "More than one swap mount found, this is not right (found #{swap_mounts})."
+      end
+    end
+
+    def self._device_id_map
+      # Create an ID map from device names to identifiers
+      # Sort resolvers to ensure idempotency, as there can be
+      # multiple symlinks pointing to the same raw device
+      id_map = {}
+
+      Dir.open(DEV_ID_DIR).sort.each do |entry|
+        next if %w{. ..}.include?(entry)
+
+        p = "#{DEV_ID_DIR}/#{entry}"
+        id_map[File.basename(File.readlink(p))] = entry
+      end
+      return id_map
+    end
+
+    # Not using persistent paths is sensitive to
+    # changes in device enumeration. The kernel
+    # provides no guarantees here
+    def self._get_persistent_device_path(node)
+      device = self._device(node)
+      if node['fb_swap']['use_persistent_paths']
+        swap_dev = device.delete_prefix('/dev/')
+        device_id_map = self._device_id_map
+        device_id = device_id_map[swap_dev]
+        return "#{DEV_ID_DIR}/#{device_id}"
+      else
+        return device
       end
     end
 

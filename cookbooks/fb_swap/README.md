@@ -24,6 +24,7 @@ Attributes
 * node['fb_swap']['filesystem']
 * node['fb_swap']['strict']
 * node['fb_swap']['allow_unmanaged']
+* node['fb_swap']['use_persistent_paths']
 
 Usage
 -----
@@ -97,3 +98,7 @@ You can disable the sanity check which looks for unmanaged swap devices via:
 ```ruby
 node.default['fb_swap']['allow_unmanaged'] = true
 ```
+
+### use_persistent_paths
+When set to true, we will persist drive identifiers that can survive a reboot
+based on `/dev/disk/by-id`
