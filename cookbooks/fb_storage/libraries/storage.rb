@@ -1350,6 +1350,32 @@ module FB
       fstab
     end
 
+    def self.oly2_host?(node)
+      node.in_fbwhoami?('server_type', 'TYPE_VIII_MATER') && node.in_fbwhoami?('CPU_ARCHITECTURE', 'sierraforest')
+    end
+
+    def self.get_t10dix_lbaf(device)
+      nsid_out = Mixlib::ShellOut.new("nvme id-ns #{device} -ojson").run_command
+      nsid_out.error!
+      nsid_json = JSON.parse(nsid_out.stdout)
+
+      # Details about output of the nvme id-ns command and it's associated structures/sub-structures can be found here:
+      # https://manpages.ubuntu.com/manpages/oracular/en/man2/nvme_id_ns.2.html
+      # More details about the bitmask values used can be bound here:
+      # https://github.com/torvalds/linux/blob/master/include/linux/nvme.h
+
+      # Find LBA format with metadata size 64 bytes and data size 2^12 = 4KB
+      lbaf = nsid_json['lbafs'].find_index { |item| item['ms'] == 64 && item['ds'] == 12 }
+      # Ensure Protection Information (PI) Type 3 is supported and PI is transferred as the last 8 bytes of the metadata
+      dpc_valid = (nsid_json['dpc'] & (1 << 2) != 0 && nsid_json['dpc'] & (1 << 4) != 0)
+
+      if lbaf != -1 && dpc_valid
+        return lbaf
+      else
+        return -1
+      end
+    end
+
     private
 
     # we make an instance method that calls a class method for easier testing
