@@ -1376,6 +1376,38 @@ module FB
       end
     end
 
+    def self.t10dix_enabled?(device)
+      nsid_out = Mixlib::ShellOut.new("nvme id-ns #{device} -ojson").run_command
+      nsid_out.error!
+      nsid_json = JSON.parse(nsid_out.stdout)
+
+      # Details about output of the nvme id-ns command and it's associated structures/sub-structures can be found here:
+      # https://manpages.ubuntu.com/manpages/oracular/en/man2/nvme_id_ns.2.html
+      # More details about the bitmask values used can be bound here:
+      # https://github.com/torvalds/linux/blob/master/include/linux/nvme.h
+
+      # Check if the drive is formatted with the expected LBAF, if supported: metadata size 64 bytes and data size 4KB
+      current_lbaf = (nsid_json['flbas'] & 0xf) | ((nsid_json['flbas'] & 0x60) >> 1)
+      expected_lbaf = nsid_json['lbafs'].find_index { |item| item['ms'] == 64 && item['ds'] == 12 }
+      if current_lbaf != expected_lbaf
+        return false
+      end
+
+      # Ensure LBA is not extended i.e. metadata is transferred as a separate buffer and not at the end of data buffer
+      extended_data_lba = nsid_json['flbas'] & (1 << 5) != 0
+      if extended_data_lba
+        return false
+      end
+
+      # Ensure Protection Information (PI) Type 3 is enabled and PI is transferred as the last 8 bytes of metadata
+      dps_valid = (nsid_json['dps'] & 0x7 == 3 && nsid_json['dps'] & (1 << 3) == 0)
+      if !dps_valid
+        return false
+      end
+
+      return true
+    end
+
     private
 
     # we make an instance method that calls a class method for easier testing
