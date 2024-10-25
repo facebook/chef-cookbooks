@@ -1366,8 +1366,11 @@ module FB
 
       # Find LBA format with metadata size 64 bytes and data size 2^12 = 4KB
       lbaf = nsid_json['lbafs'].find_index { |item| item['ms'] == 64 && item['ds'] == 12 }
+
       # Ensure Protection Information (PI) Type 3 is supported and PI is transferred as the last 8 bytes of the metadata
-      dpc_valid = (nsid_json['dpc'] & (1 << 2) != 0 && nsid_json['dpc'] & (1 << 4) != 0)
+      # TODO: Enable dpc check after firmware bug affecting some dpc values in some drives is fixed
+      # dpc_valid = (nsid_json['dpc'] & (1 << 2) != 0 && nsid_json['dpc'] & (1 << 4) != 0)
+      dpc_valid = true
 
       if lbaf != -1 && dpc_valid
         return lbaf
