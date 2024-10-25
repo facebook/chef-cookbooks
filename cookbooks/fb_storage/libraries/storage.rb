@@ -1350,10 +1350,6 @@ module FB
       fstab
     end
 
-    def self.oly2_host?(node)
-      node.in_fbwhoami?('server_type', 'TYPE_VIII_MATER') && node.in_fbwhoami?('CPU_ARCHITECTURE', 'sierraforest')
-    end
-
     def self.get_t10dix_lbaf(device)
       nsid_out = Mixlib::ShellOut.new("nvme id-ns #{device} -ojson").run_command
       nsid_out.error!
