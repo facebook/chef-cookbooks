@@ -1376,7 +1376,7 @@ module FB
       # dpc_valid = (nsid_json['dpc'] & (1 << 2) != 0 && nsid_json['dpc'] & (1 << 4) != 0)
       dpc_valid = true
 
-      if lbaf != -1 && dpc_valid
+      if !lbaf.nil? && dpc_valid
         return lbaf
       else
         return -1
