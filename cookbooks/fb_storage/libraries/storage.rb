@@ -182,8 +182,12 @@ module FB
       # Legacy. We should probably fail hard here
       return [] if devices_to_skip.length.zero?
 
+      non_eligle = ['ram', 'loop', 'dm-', 'sr', 'md']
+      if node&.dig('fb_storage', '_skip_extra_devices')
+        non_eligle += node['fb_storage']['_skip_extra_devices']
+      end
       node['block_device'].to_hash.reject do |x, _y|
-        ['ram', 'loop', 'dm-', 'sr', 'md'].include?(x.delete('0-9')) ||
+        non_eligle.include?(x.delete('0-9')) ||
         devices_to_skip.include?(x)
       end.keys
     end
@@ -493,6 +497,10 @@ module FB
       id_map = {}
       Dir.open(DEV_ID_DIR).each do |entry|
         next if %w{. ..}.include?(entry)
+
+        if ::Chef.node&.dig('fb_storage', '_skip_persistency')
+          next if ::Chef.node['fb_storage']['_skip_persistency'].any? { |element| entry.include?(element) }
+        end
 
         p = "#{DEV_ID_DIR}/#{entry}"
         id_map[File.basename(File.readlink(p))] = entry

@@ -49,4 +49,6 @@ default['fb_storage'] = {
   ],
   '_clowntown_device_order_method' => nil,
   '_clowntown_override_file_method' => nil,
+  '_skip_persistency' => [],
+  '_skip_extra_devices' => [],
 }
