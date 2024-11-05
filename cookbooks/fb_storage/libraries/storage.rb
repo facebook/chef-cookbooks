@@ -1383,6 +1383,25 @@ module FB
       end
     end
 
+    def self.get_non_t10dix_lbaf(device)
+      nsid_out = Mixlib::ShellOut.new("nvme id-ns #{device} -ojson").run_command
+      nsid_out.error!
+      nsid_json = JSON.parse(nsid_out.stdout)
+
+      # Details about output of the nvme id-ns command and it's associated structures/sub-structures can be found here:
+      # https://manpages.ubuntu.com/manpages/oracular/en/man2/nvme_id_ns.2.html
+      # More details about the bitmask values used can be bound here:
+      # https://github.com/torvalds/linux/blob/master/include/linux/nvme.h
+
+      # Find LBA format with data size 2^12 = 4KB
+      lbaf = nsid_json['lbafs'].find_index { |item| item['ds'] == 12 }
+
+      if !lbaf.nil?
+        return lbaf
+      end
+      return -1
+    end
+
     def self.t10dix_enabled?(device)
       nsid_out = Mixlib::ShellOut.new("nvme id-ns #{device} -ojson").run_command
       nsid_out.error!
