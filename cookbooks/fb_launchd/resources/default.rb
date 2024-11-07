@@ -22,9 +22,9 @@ unified_mode(false) if Chef::VERSION >= 18 # TODO(T144966423)
 default_action :run
 
 # Attributes that circumvent or defeat the purpose of using launchd as a node
-# API. Blacklist them so that this blows up when they're used. If you really
+# API. Blocklist them so that this blows up when they're used. If you really
 # want to use these, just make a launchd resource instead.
-BLACKLISTED_ATTRIBUTES = %w{
+BLOCKLISTED_ATTRIBUTES = %w{
   label
   path
 }.freeze
@@ -56,9 +56,9 @@ action :run do
 
   # Set up current jobs.
   node['fb_launchd']['jobs'].each do |name, attrs|
-    if attrs.keys.any? { |k| BLACKLISTED_ATTRIBUTES.include?(k) }
-      fail "fb_launchd[#{name}]: uses a blacklisted attribute (one of " +
-        "#{BLACKLISTED_ATTRIBUTES}). If you want to use them, create a " +
+    if attrs.keys.any? { |k| BLOCKLISTED_ATTRIBUTES.include?(k) }
+      fail "fb_launchd[#{name}]: uses a blocklisted attribute (one of " +
+        "#{BLOCKLISTED_ATTRIBUTES}). If you want to use them, create a " +
         "'launchd' resource instead"
     end
 
