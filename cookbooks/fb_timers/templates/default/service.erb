@@ -26,7 +26,7 @@ EnvironmentFile=<%= @conf['envfile'] %>
 Slice=system-timers-<%= @conf['name'] %>.slice
 <% end %>
 <% @conf['commands'].each do |command| %>
-ExecStart=<%= command %>
+ExecStart=<%= if command.instance_of?(Proc) then command.call() else command end %>
 <% end %>
 <% if @conf['timeout'] %>
 TimeoutStartSec=<%= @conf['timeout'] %>
