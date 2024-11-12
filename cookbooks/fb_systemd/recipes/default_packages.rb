@@ -23,6 +23,10 @@ systemd_packages = ['systemd', 'systemd-sysv']
 case node['platform_family']
 when 'rhel', 'fedora'
   systemd_packages << 'systemd-libs'
+  # Starting with Fedora 41, systemd-sysv is no longer supported and does not exist in the repo
+  if node.fedora? && node.os_at_least?('41')
+    systemd_packages.delete('systemd-sysv')
+  end
 when 'debian'
   systemd_packages += %w{
     libpam-systemd
