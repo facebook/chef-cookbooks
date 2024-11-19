@@ -1149,7 +1149,7 @@ class Chef
       if cls
         m = cls.to_s.match(/Chef::Resource::(\w+)Package/)
         if m[1]
-          m[1].downcase
+          m[1] == 'FbDnf' ? 'dnf' : m[1].downcase
         else
           fail "fb_helpers: unknown package manager resource class: #{cls}"
         end
