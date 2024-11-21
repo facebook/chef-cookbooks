@@ -558,7 +558,7 @@ If the has is specified, it takes one or more of the following keys:
     end
 
     def self.windows?
-      RUBY_PLATFORM =~ /mswin|mingw32|windows/
+      RUBY_PLATFORM =~ /mswin|mingw|windows/
     end
 
     # mountpoint? determines if a path string represents a mountpoint
