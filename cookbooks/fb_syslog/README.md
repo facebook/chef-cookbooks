@@ -8,6 +8,7 @@ Requirements
 Attributes
 ----------
 * node['fb_syslog']['manage_packages']
+* node['fb_syslog']['enable_imklog_permitnonkernelfacility']
 * node['fb_syslog']['syslog-entries']
 * node['fb_syslog']['rsyslog_server']
 * node['fb_syslog']['rsyslog_server_address']
@@ -34,6 +35,17 @@ Usage
 ### Packages
 This cookbook will install and manage the `rsyslog` package unless the
 `node['fb_syslog']['manage_packages]` attribute is set to `false`.
+
+### enable_imklog_permitnonkernelfacility
+The `enable_imklog_permitnonkernelfacility` option allows the `imklog` module
+to capture logs from non-kernel facilities. By default, `imklog` only
+processes logs from the kernel (kernel facility). However, user-space
+applications can also write valuable system-level events, such as
+reboot events, to the kernel(`/dev/kmsg`). When this option is enabled,
+all logs sent to the kernel will be captured by `imklog` and recorded in
+`/var/log/messages`.
+`false` by default
+https://www.rsyslog.com/doc/configuration/modules/imklog.html#permitnonkernelfacility
 
 ### syslog-compatible entries
 The `node['fb_syslog']['syslog-entries']` is used to populate all lines
@@ -245,4 +257,3 @@ node.default['fb_syslog']['sysconfig']['vars']['SYSLOGD_OPTIONS'] =
 
 But the `extra_lines` array is also available for forcing arbitrary stuff like
 `ulimit` calls.
-

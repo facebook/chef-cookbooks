@@ -13,7 +13,7 @@ $PreserveFQDN on
 # Provides support for local system logging (e.g. via logger command)
 $ModLoad imuxsock
 # Provides kernel logging support (previously done by rklogd)
-$ModLoad imklog
+module(load="imklog")
 
 #### GLOBAL DIRECTIVES ####
 
@@ -29,5 +29,3 @@ $FileGroup root
 $FileCreateMode 0644
 $DirCreateMode 0755
 $Umask 0002
-
-

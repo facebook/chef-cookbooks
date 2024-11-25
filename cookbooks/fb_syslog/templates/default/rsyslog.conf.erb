@@ -16,7 +16,11 @@ $ModLoad imuxsock
 $OmitLocalLogging off
 <% end -%>
 # Provides kernel logging support (previously done by rklogd)
-$ModLoad imklog
+<% if node['fb_syslog']['enable_imklog_permitnonkernelfacility'] -%>
+module(load="imklog" permitnonkernelfacility="on")
+<% else %>
+module(load="imklog")
+<% end -%>
 <% if node['fb_syslog']['rsyslog_use_omprog'] -%>
 # Provides logging to external programs.
 module(load="omprog")

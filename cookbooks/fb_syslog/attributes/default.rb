@@ -100,4 +100,5 @@ default['fb_syslog'] = {
   'sysconfig' => sysconfig,
   '_enable_syslog_socket_override' => true,
   'manage_packages' => true,
+  'enable_imklog_permitnonkernelfacility' => false,
 }
