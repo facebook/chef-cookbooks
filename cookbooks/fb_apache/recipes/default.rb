@@ -46,7 +46,11 @@ apache_version =
     when 'ubuntu'
       node['platform_version'].to_f >= 13.10 ? '2.4' : '2.2'
     when 'debian'
-      node['platform_version'].to_f >= 8.0 ? '2.4' : '2.2'
+      if node['platform_version'].end_with?('/sid')
+        '2.4'
+      else
+        node['platform_version'].to_f >= 8.0 ? '2.4' : '2.2'
+      end
     else
       '2.4'
     end
