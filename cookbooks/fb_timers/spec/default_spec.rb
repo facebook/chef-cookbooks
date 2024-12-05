@@ -156,6 +156,10 @@ recipe 'fb_timers::default', :unsupported => [:mac_os_x] do |tc|
             'command' => '/usr/local/bin/foobar.sh',
             'timer_options' => { 'OnBootSec' => '1s' },
           },
+          'lazy' => {
+            'calendar' => '*:0/15:0',
+            'command' => proc { '/usr/local/bin/foobar.sh' },
+          },
         }
       end
     end

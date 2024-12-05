@@ -1,0 +1,12 @@
+# This file managed by chef.
+# Local changes to this file will be overwritten.
+
+[Unit]
+Description=Run scheduled task lazy
+After=network.target
+
+[Service]
+Type=oneshot
+Slice=system-timers-lazy.slice
+ExecStart=/usr/local/bin/foobar.sh
+TimeoutStopSec=90s

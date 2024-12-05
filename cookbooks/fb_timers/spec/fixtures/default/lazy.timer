@@ -1,0 +1,15 @@
+# This file managed by chef.
+# Local changes to this file will be overwritten.
+
+[Unit]
+Description=Run scheduled task lazy
+
+[Install]
+WantedBy=timers.target
+
+[Timer]
+OnCalendar=*:0/15:0
+AccuracySec=1s
+Persistent=false
+RandomizedDelaySec=0s
+Unit=lazy.service
