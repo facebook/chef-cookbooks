@@ -13,66 +13,62 @@ version '0.0.1'
 }.each do |p|
   supports p
 end
-[
-  'fb_apt',
-  'fb_apcupsd',
-  'fb_chrony',
-  'fb_collectd',
-  'fb_cron',
-  'fb_dnsmasq',
-  'fb_dracut',
-  'fb_e2fsprogs',
-  'fb_ebtables',
-  'fb_ethers',
-  'fb_ethtool',
-  'fb_fstab',
-  'fb_grub',
-  'fb_grubby',
-  'fb_hdparm',
-  'fb_hddtemp',
-  'fb_helpers',
-  'fb_hostconf',
-  'fb_hostname',
-  'fb_hosts',
-  # no recipe, but we want the provider included
-  # for the tests
-  'fb_ipc',
-  'fb_ipset',
-  'fb_iptables',
-  'fb_iproute',
-  'fb_launchd',
-  'fb_ldconfig',
-  'fb_less',
-  'fb_limits',
-  'fb_logrotate',
-  'fb_mlocate',
-  'fb_modprobe',
-  'fb_motd',
-  'fb_nscd',
-  'fb_nsswitch',
-  'fb_postfix',
-  'fb_profile',
-  'fb_rpm',
-  'fb_rsync',
-  'fb_screen',
-  'fb_sdparm',
-  'fb_securetty',
-  'fb_smartmon',
-  'fb_storage',
-  'fb_stunnel',
-  'fb_sudo',
-  'fb_swap',
-  'fb_sysctl',
-  # no recipe, but we want the provider included
-  # for the tests
-  'fb_sysfs',
-  'fb_syslog',
-  'fb_sysstat',
-  'fb_systemd',
-  'fb_timers',
-  'fb_tmpclean',
-  'fb_util_linux',
-  'fb_users',
-].each do |cb|
-  depends cb
-end
+depends 'fb_apcupsd'
+depends 'fb_apt'
+depends 'fb_chrony'
+depends 'fb_collectd'
+depends 'fb_cron'
+depends 'fb_dnsmasq'
+depends 'fb_dracut'
+depends 'fb_e2fsprogs'
+depends 'fb_ebtables'
+depends 'fb_ethers'
+depends 'fb_ethtool'
+depends 'fb_fstab'
+depends 'fb_grub'
+depends 'fb_grubby'
+depends 'fb_hddtemp'
+depends 'fb_hdparm'
+depends 'fb_helpers'
+depends 'fb_hostconf'
+depends 'fb_hostname'
+depends 'fb_hosts'
+# no recipe but we want the provider included
+# for the tests
+depends 'fb_ipc'
+depends 'fb_iproute'
+depends 'fb_ipset'
+depends 'fb_iptables'
+depends 'fb_launchd'
+depends 'fb_ldconfig'
+depends 'fb_less'
+depends 'fb_limits'
+depends 'fb_logrotate'
+depends 'fb_mlocate'
+depends 'fb_modprobe'
+depends 'fb_motd'
+depends 'fb_nscd'
+depends 'fb_nsswitch'
+depends 'fb_postfix'
+depends 'fb_profile'
+depends 'fb_rpm'
+depends 'fb_rsync'
+depends 'fb_screen'
+depends 'fb_sdparm'
+depends 'fb_securetty'
+depends 'fb_smartmon'
+depends 'fb_storage'
+depends 'fb_stunnel'
+depends 'fb_sudo'
+depends 'fb_swap'
+depends 'fb_sysctl'
+# no recipe but we want the provider included
+# for the tests
+depends 'fb_sysfs'
+depends 'fb_syslog'
+depends 'fb_sysstat'
+depends 'fb_systemd'
+depends 'fb_timers'
+depends 'fb_tmpclean'
+depends 'fb_users'
+depends 'fb_util_linux'
