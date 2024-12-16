@@ -1,0 +1,105 @@
+#!/bin/bash
+#
+# Execute the kpatch script to load the next kernel live patch hotfix,
+# and log the output of the kpatch script to scribe.
+# This also execute /usr/local/bin/klp_netcons.sh to populate the netconsole
+# dictionary
+
+# You probably want to call kpatch directly
+if [ -z "$1" ] || [ "$1" == "--help" ] || [ "$1" == "help" ] || [ "$1" == "-h" ] ; then
+    echo "$0 is a wrapper for kpatch, used from chef to log results to"
+    echo "kernel_livepatch logview. Please use kpatch directly from the shell."
+    exit 0
+fi
+
+function report_to_scuba {
+  # Logs can be found in `journalctl -t kpatch.service`. Beware of the aggressive journal
+  # rotation settings. It might throw away these logs pretty quickly.
+  local JSON=$1
+  local TIMEOUT=${2:-600}
+  local START_TIME
+  START_TIME=$(/bin/date +%s)
+  echo Attempt to submit data to scribe | systemd-cat -t kpatch.service
+  until echo "$JSON" | /usr/local/bin/scribe_cat --sync --check-non-ok-result errorlog_kpatch; do
+    trying_for_seconds=$(($(/bin/date +%s)-START_TIME))
+    echo Failed to submit data, sleeping. | systemd-cat -t kpatch.service
+    sleep 1;
+    if [ "${trying_for_seconds}" -gt "$TIMEOUT" ]; then
+      echo Timeout reached for data submission. Failing. | systemd-cat -t kpatch.service
+      break
+    fi
+  done
+
+}
+
+# Gather some basic information
+HOSTNAME=$(hostname)
+KVER=$(uname -r)
+TIME=$(/bin/date +%s)
+KLPNETCONS="/usr/local/bin/klp_netcons.sh"
+
+# Get the hardware type.
+. /etc/fbwhoami
+if [ -n "${MODEL_NAME}" ] ; then
+    HARDWARE=${MODEL_NAME}
+else
+    HARDWARE="UNKNOWN"
+fi
+
+# Attempt to load the KLP and get the status of that attempt
+KPATCHOUT=$(/usr/sbin/kpatch "$@" 2>&1)
+STATUS=${PIPESTATUS[0]}
+
+OUTESCAPED=$(echo "$KPATCHOUT" | jq -asR)
+
+HOTFIXES=""
+MODULESDIR="/var/lib/kpatch/${KVER}"
+if [ -d "${MODULESDIR}" ]
+then
+  HOTFIXES=$(modinfo -Fname "${MODULESDIR}"/*ko | sed 's/^.*_hotfix/hotfix/')
+fi
+
+MESSAGE=$(cat << EOF
+{
+  "command": "kpatch $@",
+  "exit_status": "$STATUS",
+  "hardware": "$HARDWARE",
+  "hostname": "$HOSTNAME",
+  "kernel": "$KVER",
+  "time": "$TIME",
+  "output": $OUTESCAPED,
+  "hotfixes": "$HOTFIXES"
+}
+EOF
+)
+
+JSON=$(jq -c -n "$MESSAGE")
+
+# Scuba submission should run in background detached from this process.
+# Because this starts very early during boot and network/scribed is not yet
+# available.
+( # () makes a group (manual: https://fburl.com/n84qccbx). This gives us 2 things we need
+  # here. A separate process to run and io redirection of the whole group.
+  trap '' HUP INT  # ignore these signals. We will get them if the parent exits first
+  report_to_scuba "$JSON"
+) </dev/null 2>&1 1>/dev/null &  # throw out in/out/err. & makes it run in the background
+
+if [ "${STATUS}" -ne "0" ]; then
+    echo kpatch failed with exit status "${STATUS}"
+#    exit "${STATUS}"
+# Pretend the KLP load was successful. If it was not we will
+# try again at the next chef run. KLP load success & failure
+# are monitored separately, and the kernel team is working on
+# reducing the failure rate to the point where we can pass
+# errors to chef again without breaking the fleet.
+fi
+
+# Update the netconsole cmdline dictionary after every successful
+# operation
+
+if [ -x ${KLPNETCONS} ]
+then
+	${KLPNETCONS}
+fi
+
+exit 0
