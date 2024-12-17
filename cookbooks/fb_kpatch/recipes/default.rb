@@ -27,6 +27,11 @@ package 'kpatch-runtime' do
   action :upgrade
 end
 
+service 'kpatch' do
+  only_if { node['fb_kpatch']['enable'] }
+  action [:enable, :start]
+end
+
 service 'disable kpatch' do
   not_if { node['fb_kpatch']['enable'] }
   service_name 'kpatch'
@@ -42,15 +47,6 @@ fb_systemd_override 'before-remount-fs' do
             },
           })
 end
-
-# Script to log kpatch results to scribe
-cookbook_file '/usr/local/bin/fbkpatch' do
-  source 'fbkpatch'
-  owner node.root_user
-  group node.root_group
-  mode '0755'
-end
-
 fb_systemd_override 'fbkpatch' do
   unit_name 'kpatch.service'
   content({
@@ -60,9 +56,4 @@ fb_systemd_override 'fbkpatch' do
               'ExecStart' => ['', '/usr/local/bin/fbkpatch load --all'],
             },
           })
-end
-
-service 'kpatch' do
-  only_if { node['fb_kpatch']['enable'] }
-  action [:enable, :start]
 end
