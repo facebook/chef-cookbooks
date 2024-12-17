@@ -47,13 +47,3 @@ fb_systemd_override 'before-remount-fs' do
             },
           })
 end
-fb_systemd_override 'fbkpatch' do
-  unit_name 'kpatch.service'
-  content({
-            'Service' => {
-              # Empty record is required! It tells systemd to clean existing
-              # values, as it appends values from drop ins.
-              'ExecStart' => ['', '/usr/local/bin/fbkpatch load --all'],
-            },
-          })
-end
