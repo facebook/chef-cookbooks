@@ -53,7 +53,7 @@ in a `syslog.conf`, and all syslog-style entries in `rsyslog.conf`.
 
 Each generated rule is composed of a hash entry:
 
-```
+```ruby
 'name' => {
   comment => 'Associated comment',
   selector => '<facility>.<priority>',
@@ -87,7 +87,7 @@ define them in `node['fb_syslog']['rsyslog_rulesets']`.  This will also
 open up the required network ports for listening and bind them to the RuleSet.
 Here is an example for usage, also see fb_rlog recipe for a larger example:
 
-```
+```ruby
 node.default['fb_syslog']['rsyslog_rulesets'] = {
   'incoming_music' => {
     'proto' => 'udp',
@@ -110,7 +110,7 @@ node.default['fb_syslog']['rsyslog_rulesets'] = {
 
 The output of the above example would yield:
 
-```
+```text
 $RuleSet incoming_music
 # Metallica
 :programname, isequal, "RideTheLightning" /var/log/metallica.log
@@ -139,7 +139,7 @@ The most common use for this will be if you need to open ports to pass health
 checks that are not already opened from your ruleset.
 Here is an example:
 
-```
+```ruby
 node.default['fb_syslog']['rsyslog_nonruleset_ports'] = {
   'tcp' => [
     '514',
@@ -153,7 +153,7 @@ node.default['fb_syslog']['rsyslog_nonruleset_ports'] = {
 
 The output of the above example would yield:
 
-```
+```text
 $InputTCPServerRun 514
 $InputTCPServerRun 5140
 $InputUDPServerRun 514
@@ -170,7 +170,7 @@ If messages entering the syslog system contain control characters and it's
 causing you problems, you can enable escaping of non-printable characters by
 enabling the `node['fb_syslog']['rsyslog_escape_cchars']` attribute:
 
-```
+```ruby
 node.default['fb_syslog']['rsyslog_escape_cchars'] = true
 ```
 
@@ -179,13 +179,13 @@ If you need to have /dev/log inside chroots, you'll need to have rsyslog
 listening to additional sockets in a directory that can be bind mounted inside
 the chroot. Rsyslog will create any missing directory for you.
 
-```
+```ruby
 node.default['fb_syslog']['rsyslog_additional_sockets'] << '/dev/rsyslog/log'
 ```
 
 The output of the above example would yield:
 
-```
+```text
 $InputUnixListenSocketCreatePath on
 $AddUnixListenSocket /dev/rsyslog/log
 ```
@@ -198,7 +198,7 @@ If you set `node['fb_syslog']['rsyslog_upstream']`, then any facilities you add
 to `node['fb_syslog']['rsyslog_facilities_sent_to_remote']` will be sent to that
 upstream. For example:
 
-```
+```ruby
 node.default['fb_syslog']['rsyslog_facilities_sent_to_remote'] << 'auth.*'
 node.default['fb_syslog']['rsyslog_upstream'] << 'syslog.mydomain.com'
 ```
@@ -211,7 +211,7 @@ You will need to specify the binary to forward syslog messages to in
 in `node['fb_syslog']['rsyslog_facilities_sent_to_remote']` will be forwarded to
 that binary. For example:
 
-```
+```ruby
 node.default['fb_syslog']['rsyslog_facilities_sent_to_remote'] << 'auth.*'
 node.default['fb_syslog']['rsyslog_use_omprog'] = true
 node.default['fb_syslog']['rsyslog_omprog_binary'] = '/usr/bin/myprogram'
@@ -223,7 +223,7 @@ By default, program forwarding (omprog) will only be enabled if
 `node['fb_syslog']['rsyslog_use_omprog_force']` to enable program forwarding
 and a rsyslog server simultaneously. For example:
 
-```
+```ruby
 node.default['fb_syslog']['rsyslog_use_omprog_force'] = true
 ```
 
@@ -250,7 +250,7 @@ to setup `/etc/sysconfig/rsyslog` (for RedHat machines) or
 `/etc/default/rsyslog` (for Debian or Ubuntu). In general you should use it
 like this:
 
-```
+```ruby
 node.default['fb_syslog']['sysconfig']['vars']['SYSLOGD_OPTIONS'] =
   '-c'
 ```
