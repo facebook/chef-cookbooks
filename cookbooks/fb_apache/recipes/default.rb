@@ -99,24 +99,9 @@ sysconfig = value_for_platform_family(
   'debian' => '/etc/default/apache2',
 )
 
-pkgs = value_for_platform_family(
-  'rhel' => ['httpd', 'mod_ssl'],
-  'debian' => ['apache2'],
-)
-
-svc = value_for_platform_family(
-  'rhel' => 'httpd',
-  'debian' => 'apache2',
-)
-
-package pkgs do
+package 'apache packages' do
   only_if { node['fb_apache']['manage_packages'] }
-  package_name lazy {
-    pkgs + FB::Apache.get_module_packages(
-      node['fb_apache']['modules'],
-      node['fb_apache']['module_packages'],
-    )
-  }
+  package_name lazy { FB::Apache.packages(node) }
   action :upgrade
 end
 
@@ -229,6 +214,7 @@ if node['platform_family'] == 'debian'
 end
 
 service 'apache' do
-  service_name svc
+  only_if { node['fb_apache']['manage_service'] }
+  service_name FB::Apache.service(node)
   action [:enable, :start]
 end
