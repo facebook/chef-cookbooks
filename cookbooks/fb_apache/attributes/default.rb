@@ -128,6 +128,7 @@ default['fb_apache'] = {
     'env' => 'mod_env.so',
     'expires' => 'mod_expires.so',
     'ext_filter' => 'mod_ext_filter.so',
+    'fcgid' => 'mod_fcgid.so',
     'filter' => 'mod_filter.so',
     'headers' => 'mod_headers.so',
     'ident' => 'mod_ident.so',
@@ -146,6 +147,7 @@ default['fb_apache'] = {
     'proxy_ajp' => 'mod_proxy_ajp.so',
     'proxy_balancer' => 'mod_proxy_balancer.so',
     'proxy_connect' => 'mod_proxy_connect.so',
+    'proxy_fcgi' => 'mod_proxy_fcgi.so',
     'proxy_ftp' => 'mod_proxy_ftp.so',
     'proxy_http' => 'mod_proxy_http.so',
     'proxy_scgi' => 'mod_proxy_scgi.so',
@@ -178,6 +180,9 @@ default['fb_apache'] = {
     ),
     'php7' => value_for_platform_family(
       'rhel' => 'mod_php',
+    ),
+    'fcgid' => value_for_platform_family(
+      'rhel' => 'mod_fcgid',
     ),
     'ssl' => value_for_platform_family(
       'rhel' => 'mod_ssl',
