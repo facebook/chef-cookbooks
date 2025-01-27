@@ -21,3 +21,5 @@ RSpec.configure do |config|
   config.filter_run(:focus)
   config.order = :random
 end
+
+$LOAD_PATH.unshift("#{__dir__}/../lib")

@@ -1,3 +1,4 @@
+# rubocop:disable Chef/Meta/SpecFilename
 # Copyright (c) 2022-present, Meta Platforms, Inc. and affiliates
 # All rights reserved.
 #
@@ -13,15 +14,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 require 'pathname'
-require_relative '../../crawler'
-require_relative '../../exceptions'
-require_relative '../../infer_engine'
+require 'bookworm/crawler'
+require 'bookworm/exceptions'
+require 'bookworm/infer_engine'
 
 # Load all rule files
-files = Dir.glob("#{__dir__}/../../rules/*.rb")
+files = Dir.glob("#{__dir__}/../../lib/bookworm/rules/*.rb")
 files.each do |f|
   name = Pathname(f).basename.to_s.gsub('.rb', '')
-  ::Bookworm.load_rule_class name, :dir => "#{__dir__}/../../rules"
+  ::Bookworm.load_rule_class name, :dir => "#{__dir__}/../../lib/bookworm/rules"
 end
 
 require_relative '../spec_helper'

@@ -103,13 +103,13 @@ end
 # We require the libraries *after* the profiler has a chance to start,
 # also means faster `bookworm -h` response
 require 'set'
-require_relative '../exceptions'
-require_relative '../keys'
-require_relative '../configuration'
-require_relative '../crawler'
-require_relative '../knowledge_base'
-require_relative '../infer_engine'
-require_relative '../report_builder'
+require 'bookworm/exceptions'
+require 'bookworm/keys'
+require 'bookworm/configuration'
+require 'bookworm/crawler'
+require 'bookworm/knowledge_base'
+require 'bookworm/infer_engine'
+require 'bookworm/report_builder'
 
 module Bookworm
   class ClassLoadError < RuntimeError; end
@@ -189,11 +189,12 @@ module Bookworm
     end
 
     def load_src_dirs
-      @report_src_dirs = ["#{__dir__}/../reports/"]
+      require 'bookworm/load_hack'
+      @report_src_dirs = [::Bookworm::BUILTIN_REPORTS_DIR]
       if Dir.exist? "#{@config.system_contrib_dir}/reports"
         @report_src_dirs.append "#{@config.system_contrib_dir}/reports"
       end
-      @rule_src_dirs = ["#{__dir__}/../rules/"]
+      @rule_src_dirs = [::Bookworm::BUILTIN_RULES_DIR]
       if Dir.exist? "#{@config.system_contrib_dir}/rules/"
         @rule_src_dirs.append "#{@config.system_contrib_dir}/rules/"
       end

@@ -13,8 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require_relative 'knowledge_base'
-require_relative 'infer_base_classes'
+require 'bookworm/knowledge_base'
+require 'bookworm/infer_base_classes'
 
 module Bookworm
   # The InferEngine class takes a KnowledgeBase object, and then runs the given

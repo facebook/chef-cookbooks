@@ -1,5 +1,4 @@
-#!/opt/chef-workstation/embedded/bin/ruby
-# Copyright (c) 2024-present, Meta Platforms, Inc. and affiliates
+# Copyright (c) 2022-present, Meta Platforms, Inc. and affiliates
 # All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,9 +12,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-# Wrapper so that we can have ruby load path hackery from the fb_bookworm cookbook
-# I'd like to believe this won't be permanent, but these things last for years...
 
-$LOAD_PATH.unshift("#{__dir__}/lib")
-load 'bin/bookworm'
+# TODO: This is gross, and I seem to recall there was some way to get a gem's
+# library directory, but this should work for now.
+module Bookworm
+  BUILTIN_REPORTS_DIR = "#{__dir__}/reports/".freeze
+  BUILTIN_RULES_DIR = "#{__dir__}/rules/".freeze
+end
