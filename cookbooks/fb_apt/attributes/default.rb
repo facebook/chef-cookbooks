@@ -25,21 +25,24 @@ elsif node.ubuntu?
 end
 
 default['fb_apt'] = {
+  'allow_modified_pkg_keyrings' => false,
+  'apt_update_log_path' => nil,
   'config' => {},
-  'repos' => [],
+  'distro' => nil,
+  'keymap' => {},
+  # deprecated, use keymap instead
+  'keys' => {},
   'keyserver' => 'keys.gnupg.net',
   'mirror' => mirror,
-  'security_mirror' => security_mirror,
   'preferences' => {},
   'preserve_sources_list_d' => false,
+  'preserve_unknown_keyrings' => false,
+  # deprecated, use sources instead
+  'repos' => [],
+  'security_mirror' => security_mirror,
+  'sources' => {},
   'update_delay' => 86400,
   'want_backports' => false,
   'want_non_free' => false,
   'want_source' => false,
-  'preserve_unknown_keyrings' => false,
-  'allow_modified_pkg_keyrings' => false,
-  'apt_update_log_path' => nil,
 }
-# fb_apt must be defined for this to work...
-keys = FB::Apt.get_official_keyids(node).map { |id| [id, nil] }.to_h
-default['fb_apt']['keys'] = keys
