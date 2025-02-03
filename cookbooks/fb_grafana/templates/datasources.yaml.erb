@@ -1,0 +1,10 @@
+# This file is managed by Chef, do not touch!
+<%
+  cfg = {'datasources' => [], 'apiVersion' => 2}
+  node['fb_grafana']['datasources'].each do |name, source|
+    ds = source.to_hash
+    ds['name'] = name
+    cfg['datasources'] << ds
+  end
+%>
+<%= cfg.to_yaml %>
