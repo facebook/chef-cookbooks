@@ -34,6 +34,7 @@ if node.debian? || (node.ubuntu? && !node.ubuntu16?)
   end
   node.default['fb_ejabberd']['config']['hosts'] << 'sample.com'
   include_recipe 'fb_ejabberd'
+  include_recipe 'fb_influxdb'
 end
 
 include_recipe 'fb_spamassassin'
