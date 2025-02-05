@@ -21,6 +21,19 @@ default_action :run
 action :run do
   log = node['fb_system_upgrade']['log']
 
+  # We don't want this cookbook to take a dependency on fb_dnf_settings,
+  # so check if it's loaded in the run.
+  fb_dnf_settings = FB.const_defined?(:DnfSettings)
+
+  ruby_block 'optionally enable rou repos' do
+    # Restore ROU repos before the upgrade and swap resources below.
+    block do
+      if fb_dnf_settings && node['fb_dnf_settings']['disable_default_rou_repos']
+        FB::DnfSettings.update_dnf_conf(node, false)
+      end
+    end
+  end
+
   to_upgrade = []
   node['fb_system_upgrade']['early_upgrade_packages'].each do |p|
     if node.rpm_version(p)
@@ -37,7 +50,7 @@ action :run do
 
   to_remove = node['fb_system_upgrade']['early_remove_packages']
   unless to_remove.empty?
-    Chef::Log.info("fb_system_upgrade: early remove for #{to_upgrade}")
+    Chef::Log.info("fb_system_upgrade: early remove for #{to_remove}")
     package to_remove do
       action :remove
     end
@@ -58,6 +71,10 @@ action :run do
         cmd,
         :timeout => node['fb_system_upgrade']['timeout'],
       ).run_command
+      if fb_dnf_settings && node['fb_dnf_settings']['disable_default_rou_repos']
+        # Disable ROU repos before reporting success / failure.
+        FB::DnfSettings.update_dnf_conf(node)
+      end
       if s.exitstatus.zero?
         if node['fb_system_upgrade']['success_callback_method']
           Chef::Log.info('fb_system_upgrade: Running success callback')
