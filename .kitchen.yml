@@ -35,11 +35,11 @@ platforms:
   - name: debian-9
     driver:
       image: dokken/debian-9
-      pid_one_commmand: /bin/systemd
+      pid_one_command: /bin/systemd
   - name: debian-10
     driver:
       image: dokken/debian-10
-      pid_one_commmand: /bin/systemd
+      pid_one_command: /bin/systemd
 
 provisioner:
   name: dokken
