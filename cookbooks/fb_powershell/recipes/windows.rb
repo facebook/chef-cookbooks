@@ -22,6 +22,22 @@
 
 # Windows will has WindowsPowershell plus it can also run Pwsh 6+ (open source)
 
+# Remove PowerShell v2
+windows_feature_dism 'powershell2' do
+  only_if do
+    node['fb_powershell']['powershell']['disable_v2'] &&
+    registry_key_exists?('HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\PowerShell\2')
+  end
+  feature_name 'MicrosoftWindowsPowerShellV2Root'
+  action :remove
+end
+
+# Manage Telemtry
+windows_env 'POWERSHELL_TELEMETRY_OPTOUT' do
+  not_if { node['fb_powershell']['disable_telemetry'].nil? }
+  value (node['fb_powershell']['disable_telemetry']).to_s
+end
+
 # Windows Powershell
 # Upgrade to latest package if no specific version given
 chocolatey_package 'upgrade windows powershell' do

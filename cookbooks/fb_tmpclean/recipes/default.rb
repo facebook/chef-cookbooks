@@ -47,11 +47,11 @@ template config do
 end
 
 if node.macos?
-  # TODO T68640353 clean up once this is fully rolled out
-  file '/usr/bin/fb_tmpreaper' do
-    action :delete
+  unless node.in_shard?(0)
+    file '/usr/bin/fb_tmpreaper' do
+      action :delete
+    end
   end
-
   launchd 'com.facebook.tmpreaper' do
     action :enable
     program config

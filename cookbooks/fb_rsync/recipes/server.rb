@@ -24,18 +24,18 @@ include_recipe 'fb_rsync::client'
 # In lieu of running rsync via xinetd we use a simple init script
 cookbook_file '/etc/init.d/rsyncd' do
   not_if { node.systemd? }
-  group 'root'
+  group node.root_group
   mode '0755'
-  owner 'root'
+  owner node.root_user
   source 'rsyncd.init'
 end
 
 # This is the default config everywhere
 template '/etc/rsyncd.conf' do
-  group 'root'
+  group node.root_group
   mode '0644'
   notifies :restart, 'service[rsyncd start]'
-  owner 'root'
+  owner node.root_user
   source 'rsyncd.conf.erb'
 end
 

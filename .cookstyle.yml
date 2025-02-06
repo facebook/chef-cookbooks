@@ -5,7 +5,11 @@ AllCops:
   # new cops and make upgrades easier (ie not dealing with a bunch of noise
   # each Cookstyle update)
   DisabledByDefault: true
-  TargetChefVersion: 13.10.0
+  TargetChefVersion: 16.18.0
+
+# NOTE: this is also handled in regular RuboCop. T114949895
+Lint/Syntax:
+  Enabled: true
 
 Chef/Correctness/BlockGuardWithOnlyString:
   Enabled: true
@@ -18,6 +22,8 @@ Chef/Correctness/CookbookUsesNodeSave:
 Chef/Correctness/DnfPackageAllowDowngrades:
   Enabled: true
 Chef/Correctness/IncorrectLibraryInjection:
+  Enabled: true
+Chef/Correctness/InvalidCookbookName:
   Enabled: true
 Chef/Correctness/InvalidDefaultAction:
   Enabled: true
@@ -43,7 +49,11 @@ Chef/Correctness/MacosUserdefaultsInvalidType:
   Enabled: true
 Chef/Correctness/MalformedPlatformValueForPlatformHelper:
   Enabled: true
+Chef/Correctness/MetadataMalformedDepends:
+  Enabled: true
 Chef/Correctness/MetadataMissingName:
+  Enabled: true
+Chef/Correctness/MetadataMissingVersion:
   Enabled: true
 Chef/Correctness/NodeNormal:
   Enabled: true
@@ -54,6 +64,8 @@ Chef/Correctness/NotifiesActionNotSymbol:
 Chef/Correctness/OctalModeAsString:
   Enabled: true
 Chef/Correctness/OpenSSLPasswordHelpers:
+  Enabled: true
+Chef/Correctness/PowershellFileExists:
   Enabled: true
 Chef/Correctness/PowershellScriptDeleteFile:
   Enabled: true
@@ -86,6 +98,8 @@ Chef/Deprecations/ChefSpecCoverageReport:
   Enabled: true
 Chef/Deprecations/ChefSpecLegacyRunner:
   Enabled: true
+Chef/Deprecations/ChefSugarHelpers:
+  Enabled: true
 Chef/Deprecations/ChefWindowsPlatformHelper:
   Enabled: true
 Chef/Deprecations/Cheffile:
@@ -100,9 +114,17 @@ Chef/Deprecations/CookbookDependsOnPoise:
   Enabled: true
 Chef/Deprecations/CookbooksDependsOnSelf:
   Enabled: true
+Chef/Deprecations/DependsOnChefNginxCookbook:
+  Enabled: true
+Chef/Deprecations/DependsOnChefReportingCookbook:
+  Enabled: true
+Chef/Deprecations/DependsOnOmnibusUpdaterCookbook:
+  Enabled: true
 Chef/Deprecations/DeprecatedPlatformMethods:
   Enabled: true
 Chef/Deprecations/DeprecatedShelloutMethods:
+  Enabled: true
+Chef/Deprecations/DeprecatedSudoActions:
   Enabled: true
 Chef/Deprecations/DeprecatedWindowsVersionCheck:
   Enabled: true
@@ -120,7 +142,11 @@ Chef/Deprecations/ExecutePathProperty:
   Enabled: true
 Chef/Deprecations/ExecuteRelativeCreatesWithoutCwd:
   Enabled: true
+Chef/Deprecations/FoodcriticFile:
+  Enabled: true
 Chef/Deprecations/HWRPWithoutProvides:
+  Enabled: true
+Chef/Deprecations/HWRPWithoutUnifiedTrue:
   Enabled: true
 Chef/Deprecations/IncludingXMLRubyRecipe:
   Enabled: true
@@ -137,7 +163,7 @@ Chef/Deprecations/LibrarianChefSpec:
 Chef/Deprecations/LocaleDeprecatedLcAllProperty:
   Enabled: true
 Chef/Deprecations/LogResourceNotifications:
-  Enabled: true
+  Enabled: false # TODO(T158851402) ratchet back in
 Chef/Deprecations/MacosUserdefaultsGlobalProperty:
   Enabled: true
 Chef/Deprecations/NamePropertyWithDefaultValue:
@@ -155,6 +181,8 @@ Chef/Deprecations/PartialSearchClassUsage:
 Chef/Deprecations/PartialSearchHelperUsage:
   Enabled: true
 Chef/Deprecations/PoiseArchiveUsage:
+  Enabled: true
+Chef/Deprecations/PolicyfileCommunitySource:
   Enabled: true
 Chef/Deprecations/PowershellCookbookHelpers:
   Enabled: true
@@ -201,6 +229,27 @@ Chef/Deprecations/WindowsTaskChangeAction:
 Chef/Deprecations/WindowsVersionHelpers:
   Enabled: true
 
+# These cookbooks don't follow the Effortless Pattern
+# See https://docs.chef.io/effortless/
+Chef/Effortless/Berksfile:
+  Enabled: false
+Chef/Effortless/ChefVaultUsed:
+  Enabled: false
+Chef/Effortless/CookbookUsesDatabags:
+  Enabled: false
+Chef/Effortless/CookbookUsesEnvironments:
+  Enabled: false
+Chef/Effortless/CookbookUsesPolicygroups:
+  Enabled: false
+Chef/Effortless/CookbookUsesRoles:
+  Enabled: false
+Chef/Effortless/CookbookUsesSearch:
+  Enabled: false
+Chef/Effortless/DependsChefVault:
+  Enabled: false
+Chef/Effortless/SearchForEnvironmentsOrRoles:
+  Enabled: false
+
 Chef/Modernize/ActionMethodInResource:
   Enabled: true
 Chef/Modernize/AllowedActionsFromInitialize:
@@ -217,9 +266,25 @@ Chef/Modernize/CustomResourceWithAttributes:
   Enabled: true
 Chef/Modernize/DatabagHelpers:
   Enabled: true
+Chef/Modernize/DeclareActionClass:
+  Enabled: true
 Chef/Modernize/DefaultActionFromInitialize:
   Enabled: true
 Chef/Modernize/Definitions:
+  Enabled: true
+Chef/Modernize/DependsOnChefVaultCookbook:
+  Enabled: true
+Chef/Modernize/DependsOnChocolateyCookbooks:
+  Enabled: true
+Chef/Modernize/DependsOnKernelModuleCookbook:
+  Enabled: true
+Chef/Modernize/DependsOnLocaleCookbook:
+  Enabled: true
+Chef/Modernize/DependsOnOpensslCookbook:
+  Enabled: true
+Chef/Modernize/DependsOnTimezoneLwrpCookbook:
+  Enabled: true
+Chef/Modernize/DependsOnWindowsFirewallCookbook:
   Enabled: true
 Chef/Modernize/DependsOnZypperCookbook:
   Enabled: true
@@ -236,6 +301,8 @@ Chef/Modernize/ExecuteSleep:
 Chef/Modernize/ExecuteSysctl:
   Enabled: true
 Chef/Modernize/ExecuteTzUtil:
+  Enabled: true
+Chef/Modernize/FoodcriticComments:
   Enabled: true
 Chef/Modernize/IfProvidesDefaultAction:
   Enabled: true
@@ -295,9 +362,15 @@ Chef/Modernize/SysctlParamResource:
   Enabled: true
 Chef/Modernize/UnnecessaryDependsChef14:
   Enabled: true
+Chef/Modernize/UnnecessaryDependsChef15:
+  Enabled: true
 Chef/Modernize/UnnecessaryMixlibShelloutRequire:
   Enabled: true
 Chef/Modernize/UseBuildEssentialResource:
+  Enabled: true
+Chef/Modernize/UseChefLanguageEnvHelpers:
+  Enabled: true
+Chef/Modernize/UseChefLanguageSystemdHelper:
   Enabled: true
 Chef/Modernize/UseMultipackageInstalls:
   Enabled: true
@@ -361,16 +434,19 @@ Chef/RedundantCode/UnnecessaryNameProperty:
 Chef/RedundantCode/UseCreateIfMissing:
   Enabled: true
 
+Chef/Security/SshPrivateKey:
+  Enabled: true
+
 Chef/Sharing/DefaultMetadataMaintainer:
   Enabled: true
 Chef/Sharing/EmptyMetadataField:
   Enabled: true
 Chef/Sharing/IncludePropertyDescriptions:
-  Enabled: true
+  Enabled: false # TODO(T158836638) ratchet back in
 Chef/Sharing/IncludeResourceDescriptions:
-  Enabled: true
+  Enabled: false # TODO(T158836638) ratchet back in
 Chef/Sharing/IncludeResourceExamples:
-  Enabled: true
+  Enabled: false # TODO(T158836638) ratchet back in
 Chef/Sharing/InsecureCookbookURL:
   Enabled: true
 Chef/Sharing/InvalidLicenseString:
@@ -378,8 +454,14 @@ Chef/Sharing/InvalidLicenseString:
 
 Chef/Style/AttributeKeys:
   Enabled: true
+Chef/Style/ChefWhaaat:
+  Enabled: false # Turned off intentionally, too opinionated/noisy
+Chef/Style/CommentFormat:
+  Enabled: false # Turned off intentionally, too opinionated/noisy
 Chef/Style/CommentSentenceSpacing:
-  Enabled: true
+  Enabled: false # Turned off intentionally, too opinionated/noisy
+Chef/Style/CopyrightCommentFormat:
+  Enabled: false # Turned off intentionally, too opinionated/noisy
 Chef/Style/DefaultCopyrightComments:
   Enabled: true
 Chef/Style/FileMode:

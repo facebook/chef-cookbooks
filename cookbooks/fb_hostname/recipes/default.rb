@@ -47,8 +47,8 @@ end
 
 file '/etc/hostname' do
   only_if { node.linux? && node['fb_hostname']['hostname'] }
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
   content lazy { node['fb_hostname']['hostname'] }
 end

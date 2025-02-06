@@ -15,6 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+unified_mode(false) if Chef::VERSION >= 18 # TODO(T144966423)
 property :state_file, String
 
 default_action :update
@@ -25,8 +26,8 @@ action_class do
     ipset_save_output.run_command.error!
 
     file state_file do
-      owner 'root'
-      group 'root'
+      owner node.root_user
+      group node.root_group
       mode '0600'
       content ipset_save_output.stdout
     end

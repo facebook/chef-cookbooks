@@ -94,16 +94,16 @@ template 'fb_cron crontab' do
     node['fb_cron']['_crontab_path']
   }
   source 'fb_crontab.erb'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
 end
 
 template '/etc/anacrontab' do
   only_if { node['platform_family'] == 'rhel' }
   source 'anacrontab.erb'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
 end
 
@@ -111,11 +111,11 @@ envfile = value_for_platform_family(
   'debian' => '/etc/default/cron',
   ['rhel', 'fedora'] => '/etc/sysconfig/crond',
 )
-if envfile # ~FC023
+if envfile
   template envfile do
     source 'crond_env.erb'
-    owner 'root'
-    group 'root'
+    owner node.root_user
+    group node.root_group
     mode '0644'
     notifies :restart, 'service[cron]'
   end
@@ -142,16 +142,16 @@ end
 
 cookbook_file '/usr/local/bin/exclusive_cron.sh' do
   source 'exclusive_cron.sh'
-  owner 'root'
-  group 0
+  owner node.root_user
+  group node.root_group
   mode '0755'
 end
 
 if node.macos?
   cookbook_file '/usr/local/bin/osx_make_crond.sh' do
     source 'osx_make_crond.sh'
-    owner 'root'
-    group 0
+    owner node.root_user
+    group node.root_group
     mode '0755'
   end
 
@@ -164,12 +164,12 @@ end
   'cron_deny' => '/etc/cron.deny',
   'cron_allow' => '/etc/cron.allow',
 }.each do |key, cronfile|
-  file cronfile do # this is an absolute path: ~FB031
+  file cronfile do
     only_if { node['fb_cron'][key].empty? }
     action :delete
   end
 
-  template cronfile do # this is an absolute path: ~FB031
+  template cronfile do
     not_if { node['fb_cron'][key].empty? }
     source 'fb_cron_allow_deny.erb'
     owner node.root_user

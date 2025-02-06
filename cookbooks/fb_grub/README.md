@@ -16,8 +16,6 @@ Attributes
 * node['fb_grub']['serial']['word']
 * node['fb_grub']['serial']['parity']
 * node['fb_grub']['serial']['stop']
-* node['fb_grub']['tboot']['enable']
-* node['fb_grub']['tboot']['logging']
 * node['fb_grub']['terminal']
 * node['fb_grub']['version']
 * node['fb_grub']['use_labels']
@@ -74,21 +72,6 @@ the grub config file. This can be problematic for cases were the EFI directory
 may not exist so this behavior may be disabled by setting
 `force_both_efi_and_bios` to false. This default is mostly an artifact of
 Facebook history - you probably want to disable it.
-
-### tboot
-This cookbook optionally supports enabling tboot. This is only supported for
-GRUB 2 and is disabled by default. It can be controlled with the attribute
-`node['fb_grub']['tboot']['enable']`. If desired, tboot logging output can be
-controlled with `node['fb_grub']['tboot']['logging']` (defaults to `memory`).
-If `serial` output is requested, it will reuse `node['fb_grub']['serial']` for
-its settings.
-
-When tboot is enabled, two menu entries are created for each kernel: one with
-tboot as the MLE before launching the kernel, and one launching the kernel
-directly without tboot.
-
-NOTE: tboot is not compatible with Secure Boot enabled. Please see the RedHat
-bug report for more information: https://bugzilla.redhat.com/show_bug.cgi?id=1318667
 
 ### Boot Loader Specification support
 Set `node['fb_grub']['enable_bls']` to `true` to enable automatic parsing and

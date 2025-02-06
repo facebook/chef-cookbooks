@@ -17,40 +17,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-PLATFORMS = if Fauxhai::VERSION.start_with?('6')
-              {
-                'default' => {
-                  :centos7 => [
-                    {
-                      'platform' => 'centos',
-                      'version' => '7.3.1611',
-                    },
-                  ],
-                  :mac_os_x => [
-                    {
-                      'platform' => 'mac_os_x',
-                      'version' => '10.12',
-                    },
-                  ],
-                },
-                'extra' => {},
-              }.freeze
-            else
-              {
-                'default' => {
-                  :centos8 => [
-                    {
-                      'platform' => 'centos',
-                      'version' => '8',
-                    },
-                  ],
-                  :mac_os_x => [
-                    {
-                      'platform' => 'mac_os_x',
-                      'version' => '10.15',
-                    },
-                  ],
-                },
+# Platforms and versions are defined here: https://fburl.com/gqlux2fx
+PLATFORMS = {
+  'default' => {
+    :centos8 => [
+      {
+        'platform' => 'centos',
+        'version' => '8',
+      },
+    ],
+    :mac_os_x => [
+      {
+        'platform' => 'mac_os_x',
+        'version' => '12',
+      },
+    ],
+  },
                 'extra' => {
                   :centos7 => [
                     {
@@ -59,5 +41,4 @@ PLATFORMS = if Fauxhai::VERSION.start_with?('6')
                     },
                   ],
                 },
-              }.freeze
-            end
+}.freeze

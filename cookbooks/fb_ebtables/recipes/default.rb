@@ -40,7 +40,7 @@ end
 
 template '/etc/sysconfig/ebtables-config' do
   source 'ebtables-config.erb'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0600'
 end

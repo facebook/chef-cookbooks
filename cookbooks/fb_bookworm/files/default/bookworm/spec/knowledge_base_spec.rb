@@ -1,4 +1,4 @@
-# Copyright (c) 2022-present, Meta, Inc.
+# Copyright (c) 2022-present, Meta Platforms, Inc. and affiliates
 # All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,8 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 require_relative 'spec_helper'
-require_relative '../keys'
-require_relative '../knowledge_base'
+require 'bookworm/keys'
+require 'bookworm/knowledge_base'
 
 describe Bookworm::KnowledgeBase do
   it 'holds all yer roles' do

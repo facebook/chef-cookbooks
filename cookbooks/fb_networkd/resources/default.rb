@@ -15,8 +15,55 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+require 'ipaddr'
 
+unified_mode(false) if Chef::VERSION >= 18 # TODO(T144966423)
 default_action :manage
+
+action_class do
+  # TODO: A more reusable approach community-wise would be to create custom
+  # resources for the different networkd units and move this validation to those
+  # custom resources
+  def validate_network_addresses(conf)
+    address = conf.dig('config', 'Network', 'Address')
+    if address.is_a?(String)
+      begin
+        ::IPAddr.new(address)
+      rescue ::IPAddr::Error
+        raise "Trying to use bad Network Address IP: '#{address}' from conf: #{conf}"
+      end
+    elsif address.is_a?(Array)
+      address.each do |ip|
+        ::IPAddr.new(ip)
+      rescue ::IPAddr::Error
+        raise "Trying to use bad Network Address IP: '#{ip}' from conf: #{conf}"
+      end
+    end
+
+    conf.dig('config', 'Address')&.each do |addr|
+      if (ip = addr['Address'])
+        begin
+          ::IPAddr.new(ip)
+        rescue ::IPAddr::Error
+          raise "Trying to use bad Address IP: '#{ip}' from conf: #{conf}"
+        end
+      end
+    end
+
+    conf.dig('config', 'Route')&.each do |route|
+      ['Gateway', 'Destination', 'Source'].each do |route_type|
+        if route[route_type]
+          ip = route[route_type]
+          begin
+            ::IPAddr.new(ip)
+          rescue ::IPAddr::Error
+            raise "Trying to use bad route #{route_type} IP: '#{ip}' from route: #{route}"
+          end
+        end
+      end
+    end
+  end
+end
 
 action :manage do
   # There are some situations (i.e. changing the primary interface and
@@ -101,8 +148,10 @@ action :manage do
       "#{conf['priority']}-fb_networkd-#{conf['name']}.network",
     )
 
+    validate_network_addresses conf
+
     # Set up the template for this interface
-    fb_helpers_gated_template conffile do # ~FB031
+    fb_helpers_gated_template conffile do
       allow_changes node.interface_change_allowed?(conf['name'])
       source 'networkd.conf.erb'
       owner node.root_user
@@ -113,6 +162,15 @@ action :manage do
       )
       notifies :run, 'execute[networkctl reload]', :immediately
       notifies :run, "execute[networkctl reconfigure #{conf['name']}]"
+    end
+
+    # Create dropin directory for network config file.
+    dropin_dir = conffile + '.d'
+    directory dropin_dir do
+      action :create
+      owner node.root_user
+      group node.root_group
+      mode '0755'
     end
 
     # This file is actively managed and already exists on the host so remove it
@@ -138,18 +196,15 @@ action :manage do
 
       on_host_networks.delete(path)
 
-      file path do
-        only_if { node.interface_change_allowed?(conf['name']) }
+      fb_helpers_gated_template path do
+        allow_changes node.interface_change_allowed?(conf['name'])
+        gated_action :delete
+        source 'networkd.conf.erb'
         owner node.root_user
         group node.root_group
         mode '0644'
-        action :delete
         notifies :run, 'execute[networkctl reload]', :immediately
         notifies :run, "execute[networkctl reconfigure #{conf['name']}]"
-      end
-
-      if !node.interface_change_allowed?(conf['name'])
-        FB::Helpers._request_nw_changes_permission(run_context, new_resource)
       end
     end
   end
@@ -180,7 +235,7 @@ action :manage do
     )
 
     # Set up the template for this interface
-    fb_helpers_gated_template conffile do # ~FB031
+    fb_helpers_gated_template conffile do
       allow_changes node.interface_change_allowed?(conf['name'])
       source 'networkd.conf.erb'
       owner node.root_user
@@ -217,22 +272,20 @@ action :manage do
     conflicting_links.each do |path|
       on_host_links.delete(path)
 
-      file path do
-        only_if { node.interface_change_allowed?(conf['name']) }
+      fb_helpers_gated_template path do
+        allow_changes node.interface_change_allowed?(conf['name'])
+        gated_action :delete
+        source 'networkd.conf.erb'
         owner node.root_user
         group node.root_group
         mode '0644'
-        action :delete
         notifies :run, "execute[udevadm trigger #{conf['name']}]"
-      end
-
-      if !node.interface_change_allowed?(conf['name'])
-        FB::Helpers._request_nw_changes_permission(run_context, new_resource)
       end
     end
   end
 
   node['fb_networkd']['devices'].each do |name, defconf|
+    restart_for_new_vlan = false
     conf = defconf.dup
     conf['name'] = name
 
@@ -262,7 +315,7 @@ action :manage do
     )
 
     # Set up the template for this interface
-    fb_helpers_gated_template conffile do # ~FB031
+    fb_helpers_gated_template conffile do
       allow_changes node.interface_change_allowed?(conf['name'])
       source 'networkd.conf.erb'
       owner node.root_user
@@ -273,6 +326,13 @@ action :manage do
       )
       notifies :run, 'execute[networkctl reload]', :immediately
       notifies :run, "execute[networkctl reconfigure #{conf['name']}]"
+
+      # If we are making a new VLAN, we must restart systemd-networkd for it to
+      # be created. Detect this case and set the restart flag.
+      if !on_host_networks.include?(conffile) &&
+          conf['config']['NetDev']['Kind'] == 'vlan'
+        restart_for_new_vlan = true
+      end
     end
 
     # This file is actively managed and already exists on the host so remove it
@@ -291,20 +351,23 @@ action :manage do
     conflicting_netdevs.each do |path|
       on_host_netdevs.delete(path)
 
-      file path do
-        only_if { node.interface_change_allowed?(conf['name']) }
+      # This was managed under a different file name so don't restart
+      # systemd-networkd.
+      restart_for_new_vlan = false
+
+      fb_helpers_gated_template path do
+        allow_changes node.interface_change_allowed?(conf['name'])
+        gated_action :delete
+        source 'networkd.conf.erb'
         owner node.root_user
         group node.root_group
         mode '0644'
-        action :delete
         notifies :run, 'execute[networkctl reload]', :immediately
         notifies :run, "execute[networkctl reconfigure #{conf['name']}]"
       end
-
-      if !node.interface_change_allowed?(conf['name'])
-        FB::Helpers._request_nw_changes_permission(run_context, new_resource)
-      end
     end
+
+    restart_networkd ||= restart_for_new_vlan
   end
 
   # For each remaining file, check if we can make network changes on the
@@ -321,15 +384,15 @@ action :manage do
         action :nothing
       end
 
-      file path do # ~FC022
-        only_if { node.interface_change_allowed?(iface) }
-        action :delete
+      fb_helpers_gated_template path do
+        allow_changes node.interface_change_allowed?(iface)
+        gated_action :delete
+        source 'networkd.conf.erb'
+        owner node.root_user
+        group node.root_group
+        mode '0644'
         notifies :run, "execute[networkctl down #{iface}]", :immediately
         notifies :run, 'execute[networkctl reload]'
-      end
-
-      unless node.interface_change_allowed?(iface)
-        FB::Helpers._request_nw_changes_permission(run_context, new_resource)
       end
     end
   end
@@ -345,14 +408,14 @@ action :manage do
         action :nothing
       end
 
-      file path do # ~FC022
-        only_if { node.interface_change_allowed?(iface) }
-        action :delete
+      fb_helpers_gated_template path do
+        allow_changes node.interface_change_allowed?(iface)
+        gated_action :delete
+        source 'networkd.conf.erb'
+        owner node.root_user
+        group node.root_group
+        mode '0644'
         notifies :run, "execute[udevadm trigger #{iface}]"
-      end
-
-      unless node.interface_change_allowed?(iface)
-        FB::Helpers._request_nw_changes_permission(run_context, new_resource)
       end
     end
   end
@@ -368,15 +431,15 @@ action :manage do
         action :nothing
       end
 
-      file path do # ~FC022
-        only_if { node.interface_change_allowed?(iface) }
-        action :delete
+      fb_helpers_gated_template path do
+        allow_changes node.interface_change_allowed?(iface)
+        gated_action :delete
+        source 'networkd.conf.erb'
+        owner node.root_user
+        group node.root_group
+        mode '0644'
         notifies :run, "execute[networkctl delete #{iface}]", :immediately
         notifies :run, 'execute[networkctl reload]'
-      end
-
-      unless node.interface_change_allowed?(iface)
-        FB::Helpers._request_nw_changes_permission(run_context, new_resource)
       end
     end
   end

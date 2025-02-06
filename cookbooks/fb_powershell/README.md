@@ -13,9 +13,13 @@ Attributes
 
 * node['fb_powershell']['powershell']['manage']
 * node['fb_powershell']['powershell']['version']
+* node['fb_powershell']['powershell']['disable_v2']
 * node['fb_powershell']['pwsh']['manage']
 * node['fb_powershell']['pwsh']['version']
-* node['fb_powershell']['pwsh']['version']
+* node['fb_powershell']['manage_config']
+* node['fb_powershell']['config']
+* node['fb_powershell']['disable_telemetry']
+* node['fb_powershell']['manage_profiles']
 * node['fb_powershell']['profiles']['AllUsersAllHosts']
 * node['fb_powershell']['profiles']['AllUsersCurrentHost']
 * node['fb_powershell']['profiles']['CurrentUserAllHosts']
@@ -25,6 +29,31 @@ Usage
 -----
 If you include the cookbook, it won't manage anything by default. You'll need
 to set the appropriate attributes depending on your OS.
+
+### Disable PowerShell v2
+
+This should be the first thing you set. PowerShell v2 is a huge security risk.
+
+```
+node.default['fb_powershell']['powershell']['disable_v2'] = true
+```
+
+### Disabling Telemetry for PowerShell (pwsh)
+
+If you wish to disable telemetry at your organization you can set the following
+node attribute. By default, it won't manage the environment variable.
+
+```
+node.default['fb_powershell']['disable_telemetry'] = true
+```
+
+To enable it you can set it to:
+
+```
+node.default['fb_powershell']['disable_telemetry'] = false
+```
+
+Learn more: https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_telemetry?view=powershell-7.3
 
 ### powershell vs pwsh
 

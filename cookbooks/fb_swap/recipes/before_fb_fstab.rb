@@ -35,8 +35,8 @@ end
 
 template '/usr/local/libexec/manage-additional-swap-file' do
   source 'manage-additional-swap-file.sh.erb'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   # read/execute for root, read only for everyone else.
   mode '0544'
   notifies :run, 'execute[manage-additional-swap-file]', :immediately
@@ -59,9 +59,16 @@ end
     only_if { node['fb_swap']['_calculated']["#{type}_size_bytes"].positive? }
     block do
       # ask fb_fstab to create the unit
+      device = FB::FbSwap._path(node, type)
+      if type == 'device'
+        label = FB::FbSwap._label(node)
+        if label
+          device = "LABEL=#{label}"
+        end
+      end
       node.default['fb_fstab']['mounts']["swap_#{type}"] = {
         'mount_point' => 'swap',
-        'device' => FB::FbSwap._path(node, type),
+        'device' => device,
         'type' => 'swap',
         # prioritize swap file in case that swap partition is on a spinning disk
         'opts' => type == 'device' ? 'pri=5' : 'pri=10',
@@ -74,8 +81,8 @@ end
   manage_unit = "manage-swap-#{type}.service"
   template "/etc/systemd/system/#{manage_unit}" do
     source "#{manage_unit}.erb"
-    owner 'root'
-    group 'root'
+    owner node.root_user
+    group node.root_group
     mode '0644'
     notifies :run, 'fb_systemd_reload[system instance]', :immediately
     notifies :restart, "service[#{manage_unit}]"
@@ -83,7 +90,7 @@ end
 
   # Note: FC022 is masked because the unit name is derived from the type
   # variable in the loop
-  service manage_unit do # ~FC022
+  service manage_unit do
     # we can get restarted, but we don't need to enable/start this explicitly
     # due to the use of BindsTo on the swap unit
     action :nothing
@@ -141,8 +148,8 @@ end
 
 template '/usr/local/libexec/manage-swap-file' do
   source 'manage-swap-file.sh.erb'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   # read/execute for root, read only for everyone else.
   mode '0544'
   notifies :restart, 'service[manage-swap-file.service]', :immediately

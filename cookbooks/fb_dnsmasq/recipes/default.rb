@@ -28,8 +28,8 @@ end
 
 template '/etc/dnsmasq.conf' do
   source 'dnsmasq.conf.erb'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
   verify 'dnsmasq --test -C %{path}'
   notifies :restart, 'service[dnsmasq]'

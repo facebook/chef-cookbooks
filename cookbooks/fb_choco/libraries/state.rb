@@ -26,9 +26,40 @@ module FB
         SOURCES  = '//sources/source'.freeze
         FEATURES = '//features/feature'.freeze
         CONFIG_LOC = 'C:\ProgramData\chocolatey\config\chocolatey.config'.freeze
+        DEFAULT_CONFIG = <<-EOF.strip.freeze
+        <?xml version="1.0" encoding="utf-8" ?>
+        <chocolatey>
+          <config>
+            <add key="cacheLocation" value="" />
+            <add key="containsLegacyPackageInstalls" value="true" />
+            <add key="commandExecutionTimeoutSeconds" value="2700" />
+            <add key="proxy" value="" />
+            <add key="proxyUser" value="" />
+            <add key="proxyPassword" value="" />
+          </config>
+          <sources>
+            <source id="chocolatey" value="https://community.chocolatey.org/api/v2/" />
+          </sources>
+          <features>
+            <feature name="checksumFiles" enabled="true" />
+            <feature name="autoUninstaller" enabled="false" />
+            <feature name="allowGlobalConfirmation" enabled="false" />
+            <feature name="failOnAutoUninstaller" enabled="false" />
+            <feature name="failOnStandardError" enabled="false" />
+          </features>
+        </chocolatey>
+        EOF
 
         def config_state
           @config_state ||= REXML::Document.new(@raw_config)
+        rescue StandardError => e
+          Chef::Log.warn(
+            "[fb_choco] Failed to parse chocolatey config due to #{e.to_s[0..300]}\n Using default config instead",
+          )
+          f = File.new(CONFIG_LOC, 'w')
+          f.write(DEFAULT_CONFIG)
+          f.close
+          @config_state = REXML::Document.new(DEFAULT_CONFIG)
         end
 
         def load_config

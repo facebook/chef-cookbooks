@@ -29,8 +29,8 @@ end
 include_recipe 'fb_yum_repos'
 
 directory '/etc/dnf' do
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0755'
 end
 
@@ -41,6 +41,10 @@ fb_yum_repos_config '/etc/dnf/dnf.conf' do
   notifies :run, 'whyrun_safe_ruby_block[clean chef yum metadata]', :immediately
 end
 
-fb_dnf_modularity 'manage modularity'
+fb_dnf_modularity 'manage modularity' do
+  not_if { node['fb_dnf']['modules'].empty? }
+end
 
 include_recipe 'fb_dnf::packages'
+# Need RPMs installed before we can disable/enable the makecache timer
+include_recipe 'fb_dnf::makecache'

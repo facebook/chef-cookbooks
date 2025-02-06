@@ -21,7 +21,7 @@
 template '/etc/host.conf' do
   only_if { node.centos? }
   source 'host.conf.erb'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
 end

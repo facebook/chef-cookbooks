@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 
+unified_mode(false) if Chef::VERSION >= 18 # TODO(T144966423)
 property :path, String, :name_property => true
 property :config, Hash, :required => true
 property :repos, Hash, :required => true
@@ -22,7 +23,7 @@ property :repos, Hash, :required => true
 default_action :create
 
 action :create do
-  template new_resource.path do # rubocop:disable Chef/Meta/AvoidCookbookProperty # ~FB031 ~FB032
+  template new_resource.path do # rubocop:disable Chef/Meta/AvoidCookbookProperty
     cookbook 'fb_yum_repos'
     source 'yum.conf.erb'
     owner node.root_user

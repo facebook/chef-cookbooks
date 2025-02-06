@@ -15,6 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+unified_mode(false) if Chef::VERSION >= 18 # TODO(T144966423)
 property :do_reprobe, [true, false]
 
 action_class do
@@ -86,7 +87,7 @@ action :run do
   storage.config.each_key do |device|
     dev = FB::Storage.device_name_from_path(device)
 
-    if node['fb_storage']['tuning']['scheduler'] # ~FC023
+    if node['fb_storage']['tuning']['scheduler']
       fb_sysfs "/sys/block/#{dev}/queue/scheduler" do
         # Kernels prior to 4.11 do not have multi-queue support - t19377518
         not_if { dev.start_with?('nvme') && !kernel_has_mq }
@@ -95,14 +96,14 @@ action :run do
       end
     end
 
-    if node['fb_storage']['tuning']['queue_depth'] # ~FC023
+    if node['fb_storage']['tuning']['queue_depth']
       fb_sysfs "/sys/block/#{dev}/device/queue_depth" do
         type :int
         value node['fb_storage']['tuning']['queue_depth']
       end
     end
 
-    if node['fb_storage']['tuning']['discard_max_bytes'] # ~FC023
+    if node['fb_storage']['tuning']['discard_max_bytes']
       fname = "/sys/block/#{dev}/device/discard_max_bytes"
       fb_sysfs fname do
         only_if do
@@ -166,6 +167,9 @@ action :run do
       end
 
       fb_sysfs "/sys/block/#{dev}/queue/max_sectors_kb" do
+        # Due to a bug the kernel will override user settings every time the
+        # driver revalidates the namespace, so don't bother with nvme devs
+        not_if { dev.start_with?('nvme') && max_hw_sectors_kb >= 1024 }
         type :int
         value max_sectors_kb
         ignore_failure ignore_failure

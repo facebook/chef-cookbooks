@@ -18,6 +18,8 @@
 
 module FB
   module FbSwap
+    DEV_ID_DIR = '/dev/disk/by-id'.freeze
+
     def self._validate(node)
       device = self._device(node)
       file = self._file(node)
@@ -260,7 +262,37 @@ module FB
       when 1
         return swap_mounts.keys[0]
       else
-        fail 'More than one swap mount found, this is not right.'
+        fail "More than one swap mount found, this is not right (found #{swap_mounts})."
+      end
+    end
+
+    def self._device_id_map
+      # Create an ID map from device names to identifiers
+      # Sort resolvers to ensure idempotency, as there can be
+      # multiple symlinks pointing to the same raw device
+      id_map = {}
+
+      Dir.open(DEV_ID_DIR).sort.each do |entry|
+        next if %w{. ..}.include?(entry)
+
+        p = "#{DEV_ID_DIR}/#{entry}"
+        id_map[File.basename(File.readlink(p))] = entry
+      end
+      return id_map
+    end
+
+    # Not using persistent paths is sensitive to
+    # changes in device enumeration. The kernel
+    # provides no guarantees here
+    def self._get_persistent_device_path(node)
+      device = self._device(node)
+      if node['fb_swap']['use_persistent_paths']
+        swap_dev = device.delete_prefix('/dev/')
+        device_id_map = self._device_id_map
+        device_id = device_id_map[swap_dev]
+        return "#{DEV_ID_DIR}/#{device_id}"
+      else
+        return device
       end
     end
 
@@ -293,8 +325,34 @@ module FB
       end
     end
 
+    def self._label(node)
+      device = self._device(node)
+      label = node.filesystem_data['by_device'][device] &&
+        node.filesystem_data['by_device'][device]['label']
+      if label && label.empty?
+        label = nil
+      end
+      label
+    end
+
     def self._swap_unit(node, type)
-      FB::Systemd.path_to_unit(self._path(node, type), 'swap')
+      if type == 'device'
+        label = self._label(node)
+        if label
+          # the kernel escapes slash characters in the label name, so we have to
+          # construct the by-label path with escapes, then resolve what path
+          # systemd will create via the generators
+          if label.start_with?('/')
+            label = label.sub('/', '\\x2f')
+          end
+          path = "/dev/disk/by-label/#{label}"
+          FB::Systemd.path_to_unit(path, 'swap')
+        else
+          FB::Systemd.path_to_unit(self._path(node, type), 'swap')
+        end
+      else
+        FB::Systemd.path_to_unit(self._path(node, type), 'swap')
+      end
     end
 
     def self._get_max_device_size_bytes(device)

@@ -18,6 +18,8 @@
 # limitations under the License.
 #
 
+require 'shellwords'
+
 unless node.debian? || node.ubuntu?
   fail 'fb_apt is only supported on Debian and Ubuntu.'
 end
@@ -45,8 +47,8 @@ end
 # clobber that as several packages will drop configs there.
 template '/etc/apt/apt.conf' do
   source 'apt.conf.erb'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
   notifies :run, 'execute[apt-get update]'
 end
@@ -61,8 +63,8 @@ end
 
 template '/etc/apt/preferences' do
   source 'preferences.erb'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
 end
 
@@ -94,7 +96,11 @@ fb_apt_sources_list 'populate sources list' do
 end
 
 execute 'apt-get update' do
-  command 'apt-get update'
+  command(lazy do
+    log_path = node['fb_apt']['apt_update_log_path']
+    cmd_suffix = " >>#{Shellwords.shellescape(log_path)} 2>&1" if log_path
+    "apt-get update#{cmd_suffix}"
+  end)
   action :nothing
 end
 

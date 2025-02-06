@@ -15,10 +15,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require 'chef'
+require './spec/spec_helper'
 require_relative '../libraries/fb_helpers'
 
-describe FB::Helpers do
+recipe 'fb_helpers::spec' do
+  let(:node) { Chef::Node.new }
+
   context 'evaluate_lazy_enumerable' do
     before do
       stub_const('Chef::VERSION', '17.0.42')

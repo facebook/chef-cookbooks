@@ -67,6 +67,7 @@ default['fb_fstab'] = {
       # Core OS stuff to never umount...
       '/dev/shm',
       '/run',
+      '/sys/fs/bpf',
       '/sys/fs/cgroup',
       '/sys/fs/selinux',
       # Debian-isms
@@ -80,6 +81,7 @@ default['fb_fstab'] = {
     'mount_point_prefixes' => [
       '/run/user',
     ],
+    'mount_point_regexes' => [],
   },
   'type_normalization_map' => {
     # Gluster is mounted as '-t gluster', but shows up as 'fuse.gluster'

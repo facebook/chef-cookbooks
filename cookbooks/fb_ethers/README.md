@@ -9,6 +9,7 @@ Requirements
 Attributes
 ----------
 * node['fb_ethers']['entries']
+* node['fb_ethers']['manage_packages']
 
 Usage
 -----
@@ -22,3 +23,8 @@ node.default['fb_ethers']['entries'] = {
   '50:e5:49:2f:75:c6' => 'foo03',
 }
 ```
+
+### Packages
+By default this cookbook keeps the net-tools package up-to-date, but if you
+want to manage them locally, simply set
+`node['fb_ethers']['manage_packages']` to false.

@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+unified_mode(false) if Chef::VERSION >= 18 # TODO(T144966423)
 action :run do
   installed_versions = []
   node['packages']['kernel']['versions'].each do |v|

@@ -16,6 +16,7 @@ Attributes
 * node['fb_networkd']['links'][$LINK]['config']
 * node['fb_networkd']['devices'][$DEVICE]['priority']
 * node['fb_networkd']['devices'][$DEVICE]['config']
+* node['fb_networkd']['notify_resources']
 
 Usage
 -----
@@ -138,6 +139,32 @@ Refer to the upstream documentation for more details on how to configure
 [networks](https://www.freedesktop.org/software/systemd/man/systemd.network.html),
 [links](https://www.freedesktop.org/software/systemd/man/systemd.link.html) and
 [virtual network devices](https://www.freedesktop.org/software/systemd/man/systemd.netdev.html).
+
+### Notifications
+If the networkd configuration is changed, `fb_networkd` will fire delayed
+notifications for resources listed in `node['fb_networkd']['notify_resources']`.
+This is a `Hash` in the `resource` => `action` format. For example, setting:
+
+```ruby
+node.default['fb_networkd']['notify_resources'] = {
+   'service[some_service]' => :restart,
+}
+```
+
+will result in:
+
+```
+notifies :restart, 'service[some_service]'
+```
+
+If you need to stop a service before a networkd change is made (and then start
+it against afterwards) you can use `node['fb_networkd']['stop_before']`.
+This is a list of resource names which will be issued a :stop before the
+networkd change is made, than a :start at the end of the run.
+
+```ruby
+node.default['fb_networkd']['stop_before'] << 'service[cool_service]'
+```
 
 ### When can Chef make network changes
 Network changes can be disruptive and have potential for major impact. To

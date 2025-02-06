@@ -44,7 +44,7 @@ module FB
           info = {}
         end
         node['fb_storage']['_handlers'].each do |handler|
-          unless handler.superclass == FB::Storage::Handler
+          unless handler.ancestors.include?(FB::Storage::Handler)
             fail "fb_storage: handler #{handler.name} is not a subclass of " +
                  'FB::Storage::Handler, aborting!'
           end
@@ -253,7 +253,7 @@ module FB
               'filesystem',
             )
             limit = File.read(limit_file)
-            File.write(limit_file, "0\n") # ~FB030
+            File.write(limit_file, "0\n") # rubocop:disable Chef/Meta/NoFileWrites
           end
 
           mkfs = Mixlib::ShellOut.new(cmd, :timeout => timeout)
@@ -264,7 +264,7 @@ module FB
               'fb_storage: Resuming md resyncing after creating ' +
               'filesystem',
             )
-            File.write(limit_file, limit) # ~FB030
+            File.write(limit_file, limit) # rubocop:disable Chef/Meta/NoFileWrites
           end
         end
       end
@@ -479,7 +479,7 @@ module FB
       def existing_partitions
         @existing_partitions ||=
           @node.filesystem_data['by_device'].keys.select do |x|
-            x.start_with?(@device) && x != @device
+            x =~ /^#{@device}((?<=\dn\d)p)?\d+/
           end
       end
 
@@ -500,7 +500,7 @@ module FB
         when 'xfs'
           '-i size=2048'
         when 'btrfs'
-          '-l 16K -n 16K'
+          '-n 16K'
         when 'ext4'
           ''
         end

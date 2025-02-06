@@ -19,5 +19,6 @@
 #
 
 package 'postfix' do
+  only_if { node['fb_postfix']['manage_packages'] }
   action :upgrade
 end

@@ -18,6 +18,7 @@
 
 resource_name :fb_choco_bootstrap
 provides :fb_choco_bootstrap
+unified_mode(false) if Chef::VERSION >= 18 # TODO(T144966423)
 default_action :install
 
 property :version, :kind_of => String
@@ -74,7 +75,7 @@ action_class do
         node['fb_choco']['bootstrap']['use_windows_compression'].to_s,
     }
 
-    cookbook_file 'chocolatey_install script' do # ~FB031
+    cookbook_file 'chocolatey_install script' do
       path choco_install_ps1
       source 'choco_install/install.ps1'
       owner 'Administrators'

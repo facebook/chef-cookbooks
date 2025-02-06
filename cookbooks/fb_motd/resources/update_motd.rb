@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+unified_mode(false) if Chef::VERSION >= 18 # TODO(T144966423)
 action :run do
   settings = node['fb_motd']['update_motd']
   Dir.glob('/etc/update-motd.d/*').each do |motd|
@@ -40,8 +41,8 @@ action :run do
     end
 
     file motd do
-      owner 'root'
-      group 'root'
+      owner node.root_user
+      group node.root_group
       mode allow ? '0755' : '0644'
     end
   end

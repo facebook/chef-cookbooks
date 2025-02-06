@@ -29,8 +29,8 @@ end
 }.each do |cmd|
   template "/etc/#{cmd}.conf" do
     source 'e2fsprogs.conf.erb'
-    owner 'root'
-    group 'root'
+    owner node.root_user
+    group node.root_group
     mode '0644'
     variables(
       :command => cmd,

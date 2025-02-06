@@ -3,7 +3,6 @@
 
 [Unit]
 Description=Run scheduled task complex
-Requires=complex.service
 
 [Install]
 WantedBy=timers.target

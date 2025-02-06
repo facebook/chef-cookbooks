@@ -47,7 +47,7 @@ Contains an actual copy of [IETF Leap Seconds file](https://www.ietf.org/timezon
 The file should be updated twice a year. We will get notification in
 ntp-notify@fb.com mailing list before it happens, and you will need to update
 this file in the cookbook. If you want to add fake leap second for testing or
-debug purposes, you will can use 'ntpchkng utils fakeseconds' to generate
+debug purposes, you will can use 'ntpcheck utils fakeseconds' to generate
 fake leap seconds and update checksums in this file. Make sure that
 the production version of the file contains only real leap seconds!
 `node['fb_ntp']['leapsmearinterval']` should be set only on Stratum 2 servers.

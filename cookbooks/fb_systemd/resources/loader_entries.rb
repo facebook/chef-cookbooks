@@ -16,13 +16,14 @@
 # limitations under the License.
 #
 
+unified_mode(false) if Chef::VERSION >= 18 # TODO(T144966423)
 action :run do
   esp_path = node['fb_systemd']['boot']['path']
   entries = node['fb_systemd']['boot']['entries'].to_hash
 
   Dir.glob("#{esp_path}/loader/entries/fb_systemd_*.conf").each do |path|
     entry = /^fb_systemd_(\w+)\.conf$/.match(::File.basename(path))
-    if entry && !entries.include?(entry[1]) # ~FC023
+    if entry && !entries.include?(entry[1])
       file path do
         action :delete
       end
@@ -32,8 +33,8 @@ action :run do
   entries.each_key do |entry|
     template "#{esp_path}/loader/entries/fb_systemd_#{entry}.conf" do
       source 'loader-entry.conf.erb'
-      owner 'root'
-      group 'root'
+      owner node.root_user
+      group node.root_group
       mode '0644'
       variables(
         :entry => entry,

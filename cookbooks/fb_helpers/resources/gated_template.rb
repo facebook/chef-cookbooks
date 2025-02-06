@@ -19,6 +19,7 @@
 # This resource will change the template only when network changes
 # are allowed.  If it is not allowed, it will request permission to make
 # network changes.
+unified_mode(false) if Chef::VERSION >= 18 # TODO(T144966423)
 property :allow_changes, :kind_of => [TrueClass, FalseClass], :required => true
 property :path, [String, nil], :required => false
 property :source, String, :required => true
@@ -31,13 +32,15 @@ property :gated_action, Symbol, :required => false, :default => :create
 default_action :manage
 
 action_class do
+  attr_reader :saved_why_run
+
   # Copied from lib/chef/runner.rb
   def forced_why_run
-    saved = Chef::Config[:why_run]
+    @saved_why_run = Chef::Config[:why_run]
     Chef::Config[:why_run] = true
     yield
   ensure
-    Chef::Config[:why_run] = saved
+    Chef::Config[:why_run] = @saved_why_run
   end
 end
 
@@ -58,14 +61,30 @@ action :manage do
     if new_resource.allow_changes
       Chef::Log.info('fb_helpers: changes are allowed - updating ' +
                      new_resource.name.to_s)
-      converge_by("Updating template #{new_resource.name}") do
-        t.run_action(new_resource.gated_action)
+      template new_resource.name do
+        owner new_resource.owner
+        group new_resource.group
+        mode new_resource.mode
+        path new_resource.path if new_resource.path
+        source new_resource.source
+        variables new_resource.variables if new_resource.variables
+        action new_resource.gated_action
       end
     else
-      Chef::Log.info('fb_helpers: not allowed to change configs for ' +
-                     new_resource.name.to_s)
-      Chef::Log.info('fb_helpers: requesting nw change permission')
-      FB::Helpers._request_nw_changes_permission(run_context, new_resource)
+      unless saved_why_run
+        if t.respond_to? :diff
+          # spec mocks respond_to? but return nil
+          diff = t.diff || ''
+          diff_msg = ' would have changed: ' + diff
+        else
+          diff = nil
+          diff_msg = ''
+        end
+        Chef::Log.info('fb_helpers: not allowed to change configs for ' +
+                      new_resource.name.to_s + diff_msg)
+        Chef::Log.info('fb_helpers: requesting nw change permission')
+        FB::Helpers._request_nw_changes_permission(run_context, new_resource, diff)
+      end
     end
   end
 end

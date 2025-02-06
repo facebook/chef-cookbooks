@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+unified_mode(false) if Chef::VERSION >= 18 # TODO(T144966423)
 action :install do
   packages = []
   case node['fb_grub']['version']
@@ -49,10 +50,6 @@ action :install do
     end
   else
     fail "fb_grub: unsupported grub version: #{node['fb_grub']['version']}"
-  end
-
-  if node['fb_grub']['tboot']['enable']
-    packages << 'tboot'
   end
 
   package 'grub packages' do

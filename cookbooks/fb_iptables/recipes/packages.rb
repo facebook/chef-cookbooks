@@ -19,7 +19,8 @@
 # limitations under the License.
 #
 
-if (node.centos? && !(node.centos7? || node.centos8?)) || node.fedora?
+# c10s is opted out until EPEL 10 becomes available
+if (node.centos? && !(node.centos7? || node.centos8? || node.centos10?)) || node.fedora?
   packages = ['iptables-legacy']
 else
   packages = ['iptables']

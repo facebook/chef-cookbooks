@@ -149,9 +149,9 @@ describe 'Chef::Node' do
       expect(node.in_shard?(67)).to eq(true)
     end
     it 'should return false if we are not in shard' do
-      expect(node.in_shard?(65)).to eq(false)
+      expect(node.in_shard?(64)).to eq(false)
       # Should remain false on second calling
-      expect(node.in_shard?(65)).to eq(false)
+      expect(node.in_shard?(64)).to eq(false)
     end
     it 'should retain legacy overflow behaviour' do
       # avoid using literals so linters don't fire
@@ -312,6 +312,30 @@ describe 'Chef::Node' do
       expect do
         node.validate_and_fail_on_dynamic_addresses
       end.to raise_error(RuntimeError)
+    end
+  end
+
+  context 'Chef::Node.disruptable?' do
+    it 'is not disruptable by default' do
+      expect(node.disruptable?).to be(false)
+    end
+
+    it 'is not disruptable unless in provisioning or upon boot' do
+      allow(node).to receive(:firstboot_any_phase?).and_return(false)
+      ENV.stub(:[]).with('CHEF_BOOT_SERVICE').and_return ''
+      expect(node.disruptable?).to be(false)
+    end
+
+    it 'is disruptable when in provisioning' do
+      allow(node).to receive(:firstboot_any_phase?).and_return(true)
+      ENV.stub(:[]).with('CHEF_BOOT_SERVICE').and_return ''
+      expect(node.disruptable?).to be(true)
+    end
+
+    it 'is disruptable when booting' do
+      allow(node).to receive(:firstboot_any_phase?).and_return(false)
+      ENV.stub(:[]).with('CHEF_BOOT_SERVICE').and_return 'true'
+      expect(node.disruptable?).to be(true)
     end
   end
 end

@@ -58,58 +58,58 @@ directory 'consul data dir' do
   end
   path lazy { node['fb_consul']['config']['data_dir'] }
   owner 'consul'
-  group 'root'
+  group node.root_group
   mode '0770'
 end
 
 directory '/etc/consul' do
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0755'
 end
 
 cookbook_file '/etc/default/consul' do
   source 'consul.default'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
 end
 
-cookbook_file '/etc/consul/consul-agent-ca.pem' do # ~FB032
+cookbook_file '/etc/consul/consul-agent-ca.pem' do # rubocop:disable Chef/Meta/AvoidCookbookProperty
   only_if { node['fb_consul']['certificate_cookbook'] }
   cookbook lazy { node['fb_consul']['certificate_cookbook'] }
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
   notifies :restart, 'service[consul]'
 end
 
-cookbook_file '/etc/consul/consul-agent-ca-key.pem' do # ~FB032
+cookbook_file '/etc/consul/consul-agent-ca-key.pem' do # rubocop:disable Chef/Meta/AvoidCookbookProperty
   only_if do
     node['fb_consul']['config']['server'] &&
     node['fb_consul']['certificate_cookbook']
   end
   cookbook lazy { node['fb_consul']['certificate_cookbook'] }
   owner 'consul'
-  group 'root'
+  group node.root_group
   mode '0600'
   notifies :restart, 'service[consul]'
 end
 
-cookbook_file '/etc/consul/consul-server.pem' do # ~FB032
+cookbook_file '/etc/consul/consul-server.pem' do # rubocop:disable Chef/Meta/AvoidCookbookProperty
   only_if do
     node['fb_consul']['config']['server'] &&
     node['fb_consul']['certificate_cookbook']
   end
   cookbook lazy { node['fb_consul']['certificate_cookbook'] }
   source "consul-server-#{node['hostname']}.pem"
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
   notifies :restart, 'service[consul]'
 end
 
-cookbook_file '/etc/consul/consul-server-key.pem' do # ~FB032
+cookbook_file '/etc/consul/consul-server-key.pem' do # rubocop:disable Chef/Meta/AvoidCookbookProperty
   only_if do
     node['fb_consul']['config']['server'] &&
     node['fb_consul']['certificate_cookbook']
@@ -117,7 +117,7 @@ cookbook_file '/etc/consul/consul-server-key.pem' do # ~FB032
   cookbook lazy { node['fb_consul']['certificate_cookbook'] }
   source "consul-server-key-#{node['hostname']}.pem"
   owner 'consul'
-  group 'root'
+  group node.root_group
   mode '0600'
   notifies :restart, 'service[consul]'
 end
@@ -137,8 +137,8 @@ whyrun_safe_ruby_block 'add crypto options' do
 end
 
 template '/etc/consul/consul.json' do
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
   source 'consul.json.erb'
   verify '/usr/bin/consul validate %{path}'

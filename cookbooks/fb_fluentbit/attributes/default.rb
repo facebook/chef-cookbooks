@@ -54,4 +54,11 @@ default['fb_fluentbit'] = {
 
   # Set custom restart commands for service resource
   'custom_svc_restart_command' => nil,
+
+  # Keep service on Windows alive
+  'keep_alive' => nil,
+
+  # if you want to continue using old td-agent-bit name set
+  # adopt_package_name_fluent-bit to false
+  'adopt_package_name_fluent-bit' => true,
 }

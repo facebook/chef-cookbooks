@@ -25,7 +25,7 @@ module FB
     end
 
     def self.kernels
-      @kernels ||= begin
+      @kernels ||= begin # rubocop:todo Style/RedundantBegin
         ::Dir.glob('/boot/vmlinuz-*-*.*.*').sort
       end
     end

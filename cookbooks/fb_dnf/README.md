@@ -7,8 +7,10 @@ Requirements
 Attributes
 ----------
 * node['fb_dnf']['config'][$SECTION][$KEY][$VALUE]
+* node['fb_dnf']['disable_makecache_timer']
 * node['fb_dnf']['manage_packages']
 * node['fb_dnf']['modules'][$MODULE][$CONFIG]
+* node['fb_dnf']['perfmetrics']
 * node['fb_dnf']['repos'][$GROUP]['repos'][$REPO][$KEY][$VALUE]
 
 Usage
@@ -49,6 +51,18 @@ ways:
 These are not mutually exclusive and can be mixed as desired. See the README
 for `fb_yum_repos` for details on how to define repositories.
 
+### Disable dnf-makecache.timer
+
+The dnf RPM includes a default make cache timer. This is not always required
+depending how one wants to use dnf. Set
+`node['fb_dnf']['disable_makecache_timer']` API to `true` to stop this periodic
+refresh of the dnf metadata cache.
+
+To rollback / renable *dnf-makecahce.timer* you also need a second API boolean set:
+- `node['fb_dnf']['enable_makecache_timer']` (set to `true`)
+This is to protect use cases where *dnf-mcachecache.timer* is being disabled/stopped
+another way.
+
 ### Modularity support
 DNF supports modules which may need to be enabled, disabled, or default. You
 can use `node['fb_dnf']['modules']` to configure modules. Do this via:
@@ -73,3 +87,9 @@ node.default['fb_dnf']['modules']['nodejs'] = {
   'stream' => 13,
 }
 ```
+
+### Perfmetrics
+Setting `node['fb_dnf']['perfmetrics']` to `true` will install and enable the
+[Performance Metrics plugin](https://github.com/filbranden/dnf-plugins-perfmetrics),
+which will record performance metrics for DNF and store them in JSON files
+under `/var/log/dnf/perfmetrics`.

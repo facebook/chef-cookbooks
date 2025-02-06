@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+unified_mode(false) if Chef::VERSION >= 18 # TODO(T144966423)
 property :override_name, String, :name_property => true
 property :unit_name, String, :required => true
 property :content, [String, Hash], :required => false
@@ -57,12 +58,12 @@ action :create do
   override_file = "#{FB::Systemd.sanitize(new_resource.override_name)}.conf"
 
   directory override_dir do
-    owner 'root'
-    group 'root'
+    owner node.root_user
+    group node.root_group
     mode '0755'
   end
 
-  template ::File.join(override_dir, override_file) do # rubocop:disable Chef/Meta/AvoidCookbookProperty # ~FB031 ~FB032
+  template ::File.join(override_dir, override_file) do # rubocop:disable Chef/Meta/AvoidCookbookProperty
     # If source is specified, use it, otherwise use our template...
     if new_resource.source
       source new_resource.source
@@ -70,8 +71,8 @@ action :create do
       cookbook 'fb_systemd'
       source 'systemd-override.conf.erb'
     end
-    owner 'root'
-    group 'root'
+    owner node.root_user
+    group node.root_group
     mode '0644'
     # ... and rely on content to populate the override
     unless new_resource.source

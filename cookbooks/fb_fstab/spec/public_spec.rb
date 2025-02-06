@@ -1156,4 +1156,108 @@ describe 'FB::FstabProvider', :include_provider do
       expect(mount(desired_mount, [], [])).to eq(true)
     end
   end
+
+  context 'check_unwanted_filesystems' do
+    base_contents = <<EOF
+    /dev/sda1 /                       ext4    defaults        1 1
+    /dev/sda2 /boot                   ext3    defaults        1 2
+    /dev/sda3 swap                    swap    defaults        0 0
+EOF
+
+    before(:each) do
+      node.default['fb_fstab']['enable_unmount'] = true
+      node.default['fb_fstab']['umount_ignores']['device_prefixes'] = []
+      node.default['fb_fstab']['umount_ignores']['devices'] = []
+      node.default['fb_fstab']['umount_ignores']['mount_point_prefixes'] = []
+      node.default['fb_fstab']['umount_ignores']['mount_point_regexes'] = []
+      node.default['fb_fstab']['umount_ignores']['mount_points'] = []
+      node.default['fb_fstab']['umount_ignores']['types'] = []
+      node.default['fb_fstab']['mounts'] = {}
+      node.default[attr_name]['by_pair'] = {
+        '/dev/sda1,/' => {
+          'device' => '/dev/sda1',
+          'mount' => '/',
+          'fs_type' => 'ext4',
+        },
+        '/dev/sda2,/boot' => {
+          'device' => '/dev/sda2',
+          'mount' => '/boot',
+          'fs_type' => 'ext3',
+        },
+        '/dev/sda3,' => {
+          'device' => '/dev/sda3',
+          'fs_type' => 'swap',
+        },
+        '/dev/sdb1,/foo' => {
+          'device' => '/dev/sdb1',
+          'mount' => '/foo',
+          'fs_type' => 'xfs',
+        },
+      }
+      node.default[attr_name]['by_device'] = {
+        '/dev/sda1' => {
+          'mounts' => ['/'],
+          'fs_type' => 'ext4',
+          'label' => '/',
+        },
+        '/dev/sda2' => {
+          'mounts' => ['/boot'],
+          'fs_type' => 'ext3',
+          'label' => '/boot',
+        },
+        '/dev/sda3' => {
+          'fs_type' => 'swap',
+          'label' => '/swap',
+        },
+        '/dev/sdb1' => {
+          'mounts' => ['/foo'],
+          'fs_type' => 'xfs',
+          'label' => '/foo',
+        },
+      }
+      expect(File).to receive(:read).with(FB::Fstab::BASE_FILENAME).
+        and_return(base_contents)
+    end
+
+    it 'should unmount unknown mounts' do
+      expect_any_instance_of(FB::FstabProvider).to receive(:converge_by).with('unmount /foo')
+      check_unwanted_filesystems
+    end
+
+    it 'should not unmount ignored device prefixes' do
+      node.default['fb_fstab']['umount_ignores']['device_prefixes'] = ['/dev/sdb']
+      expect_any_instance_of(FB::FstabProvider).not_to receive(:converge_by)
+      check_unwanted_filesystems
+    end
+
+    it 'should not unmount ignored devices' do
+      node.default['fb_fstab']['umount_ignores']['devices'] = ['/dev/sdb1']
+      expect_any_instance_of(FB::FstabProvider).not_to receive(:converge_by)
+      check_unwanted_filesystems
+    end
+
+    it 'should not unmount ignored mount point prefixes' do
+      node.default['fb_fstab']['umount_ignores']['mount_point_prefixes'] = ['/fo']
+      expect_any_instance_of(FB::FstabProvider).not_to receive(:converge_by)
+      check_unwanted_filesystems
+    end
+
+    it 'should not unmount ignored mount point regexes' do
+      node.default['fb_fstab']['umount_ignores']['mount_point_regexes'] = ['^\/foo$']
+      expect_any_instance_of(FB::FstabProvider).not_to receive(:converge_by)
+      check_unwanted_filesystems
+    end
+
+    it 'should not unmount ignored mount points' do
+      node.default['fb_fstab']['umount_ignores']['mount_points'] = ['/foo']
+      expect_any_instance_of(FB::FstabProvider).not_to receive(:converge_by)
+      check_unwanted_filesystems
+    end
+
+    it 'should not unmount ignored types' do
+      node.default['fb_fstab']['umount_ignores']['types'] = ['xfs']
+      expect_any_instance_of(FB::FstabProvider).not_to receive(:converge_by)
+      check_unwanted_filesystems
+    end
+  end
 end

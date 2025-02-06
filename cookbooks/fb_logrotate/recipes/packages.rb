@@ -20,5 +20,6 @@
 #
 
 package ['logrotate', 'pigz'] do
+  only_if { node['fb_logrotate']['manage_packages'] }
   action :upgrade
 end

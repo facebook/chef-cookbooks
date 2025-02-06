@@ -1,5 +1,6 @@
 # Copyright (c) 2018-present, Facebook, Inc.
 
+unified_mode(false) if Chef::VERSION >= 18 # TODO(T144966423)
 default_action :apply
 
 def set_sysctl(node, name, val)
@@ -20,7 +21,7 @@ action :apply do
     FB::Sysctl.current_settings(node),
     node['fb_sysctl'].to_hash,
   )
-  unless bad_settings.empty? # ~FC023
+  unless bad_settings.empty?
     converge_by 'Converging sysctls' do
       messages = bad_settings.map do |k, v|
         "#{k} (#{v} -> #{node['fb_sysctl'][k]})"

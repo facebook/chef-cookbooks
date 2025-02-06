@@ -25,8 +25,8 @@ end
 
 # The default timer location
 directory '/etc/systemd/timers' do
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0755'
   action :create
 end
@@ -38,8 +38,8 @@ directory 'timer path' do
   path lazy {
     node['fb_timers']['_timer_path']
   }
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0755'
   action :create
   only_if do
@@ -54,8 +54,10 @@ file 'fb_timers readme' do
   content "This directory is managed by the chef cookbook fb_timers.\n" +
           'DO NOT put unit files here; they will be deleted.'
   mode '0644'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
 end
 
-fb_timers_setup 'fb_timers system setup'
+fb_timers_setup 'fb_timers system setup' do
+  not_if { node.firstboot_os? || node.firstboot_tier? }
+end

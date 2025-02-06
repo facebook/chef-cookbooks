@@ -19,7 +19,7 @@
 #
 
 packages = value_for_platform(
-  'ubuntu' => { :default => %w{fcgiwrap smokeping} },
+  ['debian', 'ubuntu'] => { :default => %w{fcgiwrap smokeping} },
 )
 
 package packages do
@@ -40,7 +40,7 @@ node.default['fb_users']['users']['smokeping'] = {
 directory '/var/run/smokeping' do
   mode '0755'
   owner 'smokeping'
-  group 'root'
+  group node.root_group
 end
 
 directory '/var/lib/smokeping' do
@@ -66,8 +66,8 @@ end
 
 cookbook_file '/etc/smokeping/config' do
   mode '0644'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
 end
 
 directory '/etc/smokeping/config.d' do
@@ -89,8 +89,8 @@ end
   template "/etc/smokeping/config.d/#{config}" do
     source "#{config}.erb"
     mode '0644'
-    owner 'root'
-    group 'root'
+    owner node.root_user
+    group node.root_group
     notifies :restart, 'service[smokeping]'
   end
 end

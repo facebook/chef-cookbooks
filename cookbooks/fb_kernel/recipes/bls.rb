@@ -21,16 +21,16 @@
 directory 'loader' do
   only_if { node['fb_kernel']['manage_bls_configs'] }
   path lazy { File.join(node['fb_kernel']['boot_path'], 'loader') }
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0755'
 end
 
 directory 'loader/entries' do
   only_if { node['fb_kernel']['manage_bls_configs'] }
   path lazy { File.join(node['fb_kernel']['boot_path'], 'loader', 'entries') }
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0755'
 end
 

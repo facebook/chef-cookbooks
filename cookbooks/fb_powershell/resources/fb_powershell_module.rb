@@ -1,4 +1,4 @@
-# vim: syntax=ruby:expandtab:shiftwidth=2:softtabstop=2:tabstop=2
+require 'chef/mixin/powershell_exec' unless defined?(Chef::Mixin::PowershellExec)
 unified_mode true
 
 resource_name :fb_powershell_module
@@ -9,25 +9,52 @@ default_action :upgrade
 property :module_name,
          String,
          :required => true,
-         :name_property => true
+         :name_property => true,
+         :description => <<~DOC
+         Specifies the exact names of the module to manage from the repository.
+         DOC
 property :version,
          [Integer, String, Array],
          :coerce => proc { |m| Array(m) },
-         :default => '0'
-property :repository,
+         :default => '0',
+         :description => <<~DOC
+         Specifies the version(s) of a single module to install. If there is no match in the repository for the specified version, an error is displayed.
+         If given a major version it will attempt to get the latest the matches. And so on for minor and release.
+         See https://learn.microsoft.com/en-us/powershell/module/powershellget/install-module?view=powershellget-2.x#-requiredversion
+         DOC
+property :repository, # rubocop:todo Chef/RedundantCode/PropertyWithRequiredAndDefault
          String,
          :required => true,
-         :default => 'PSGallery'
+         :default => 'PSGallery',
+         :description => <<~DOC
+         Use the Repository parameter to specify the name of repository from which to download and install a module. Used when multiple repositories are registered.
+         See https://learn.microsoft.com/en-us/powershell/module/powershellget/install-module?view=powershellget-2.x#-repository
+         DOC
 property :skip_publisher_check,
          [true, false],
-         :default => false
+         :default => false,
+         :description => <<~DOC
+         Allows you to install a newer version of a module that already exists on your computer. For example, when an existing module is digitally signed by a trusted publisher but the new version isn't digitally signed by a trusted publisher.
+         See https://learn.microsoft.com/en-us/powershell/module/powershellget/install-module?view=powershellget-2.x#-skippublishercheck
+         DOC
+property :allow_clobber,
+         [true, false],
+         :default => false,
+         :description => <<~DOC
+         Overrides warning messages about installation conflicts about existing commands on a computer. Overwrites existing commands that have the same name as commands being installed by a module.
+         See https://learn.microsoft.com/en-us/powershell/module/powershellget/install-module?view=powershellget-2.x#-allowclobber
+         DOC
 property :scope,
-         String,
-         :default => 'AllUsers'
+         ['AllUsers', 'CurrentUser'],
+         :default => 'AllUsers',
+         :description => <<~DOC
+         Specifies the installation scope of the module.
+         See https://learn.microsoft.com/en-us/powershell/module/powershellget/install-module?view=powershellget-2.x#-scope
+         DOC
 
 load_current_value do |new_resource|
   # Returns an array
-  version powershell_out!(
+  version powershell_exec(
     <<-EOH,
     $splat = @{
       Name = '#{new_resource.name}'
@@ -35,7 +62,7 @@ load_current_value do |new_resource|
     }
     (Get-Module @splat).Version.ForEach({$_.ToString()})
     EOH
-  ).stdout.chomp.split("\r\n").map { |v| Gem::Version.new(v) }
+  ).result.map { |v| Gem::Version.new(v) }
 end
 
 action :upgrade do
@@ -98,6 +125,9 @@ action :upgrade do
       if new_resource.skip_publisher_check
         splat['SkipPublisherCheck'] = true
       end
+      if new_resource.allow_clobber
+        splat['AllowClobber'] = true
+      end
 
       psscript = <<-EOH
       $splat = @{
@@ -111,7 +141,8 @@ action :upgrade do
       }
       Install-Module @splat
       EOH
-      powershell_out!(psscript)
+      psexec = powershell_exec(psscript)
+      psexec.error! # Throw if there's an error
     end
   end
 end
@@ -160,7 +191,8 @@ action :install do
       Install-Module @splat
       EOH
 
-      powershell_out!(psscript)
+      psexec = powershell_exec(psscript)
+      psexec.error! # Throw if there's an error
     end
   end
 end
@@ -197,7 +229,7 @@ action_class do
       "Fetching all versions of #{new_resource.module_name} " +
       "from #{new_resource.repository}.",
     )
-    latest = powershell_out!(
+    psexec = powershell_exec(
       <<-EOH,
       $splat = @{
         Name = "#{new_resource.module_name}"
@@ -206,7 +238,8 @@ action_class do
       }
       (Find-Module @splat).Version.ForEach({$_.ToString()})
       EOH
-    ).stdout.to_s.chomp.split("\r\n")
+    ).error!
+    latest = psexec.result
     Chef::Log.debug("Available versions: #{latest.join(', ')}")
 
     return latest.map { |v| Gem::Version.new(v) }

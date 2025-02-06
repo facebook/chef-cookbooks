@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+unified_mode(false) if Chef::VERSION >= 18 # TODO(T144966423)
 default_action :nothing
 property :interface, :kind_of => String, :name_attribute => true
 property :config, :kind_of => Hash
@@ -60,7 +61,7 @@ def stop(interface)
   s.error!
 end
 
-action :enable do # ~FC017
+action :enable do
   requires_full_restart = false
   to_converge = []
   interface = new_resource.interface
@@ -189,7 +190,9 @@ action :enable do # ~FC017
       Chef::Log.info(
         "fb_network_scripts[#{interface}]: requesting nw change permission",
       )
-      FB::Helpers._request_nw_changes_permission(run_context, new_resource)
+      FB::Helpers._request_nw_changes_permission(
+        run_context, new_resource, "Would have enabled #{interface}"
+      )
     end
   end
 
@@ -207,8 +210,8 @@ action :enable do # ~FC017
   t.run_action(:create)
 
   t = template "#{ifcfg_file}-range" do
-    owner 'root'
-    group 'root'
+    owner node.root_user
+    group node.root_group
     mode '0644'
     source 'ifcfg-range.erb'
     variables({
@@ -325,7 +328,7 @@ action :enable do # ~FC017
   end
 end
 
-action :update_ips do # ~FC017
+action :update_ips do
   interface = new_resource.interface
   if Helpers.will_restart_network?(run_context)
     Chef::Log.info("Ignoring #{interface} update_ips, network restart queued")
@@ -391,7 +394,9 @@ action :start do
     Chef::Log.info(
       "fb_network_scripts[#{interface}]: requesting nw change permission",
     )
-    FB::Helpers._request_nw_changes_permission(run_context, new_resource)
+    FB::Helpers._request_nw_changes_permission(
+      run_context, new_resource, "Would have started #{interface}"
+    )
   end
 end
 
@@ -411,7 +416,9 @@ action :stop do
                       interface.to_s)
     Chef::Log.info("fb_network_scripts[#{interface}]: requesting nw change " +
                       'permission')
-    FB::Helpers._request_nw_changes_permission(run_context, new_resource)
+    FB::Helpers._request_nw_changes_permission(
+      run_context, new_resource, "Would have stopped #{interface}"
+    )
   end
 end
 
@@ -448,6 +455,8 @@ action :disable do
     Chef::Log.info(
       "fb_network_scripts[#{interface}]: requesting nw change permission",
     )
-    FB::Helpers._request_nw_changes_permission(run_context, new_resource)
+    FB::Helpers._request_nw_changes_permission(
+      run_context, new_resource, "Would have disabled #{interface}"
+    )
   end
 end

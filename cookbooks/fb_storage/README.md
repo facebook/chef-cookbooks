@@ -17,7 +17,6 @@ Attributes
 * node['fb_storage']['tuning']['queue_depth']
 * node['fb_storage']['tuning']['discard_max_bytes']
 * node['fb_storage']['tuning']['over_provisioning']
-* node['fb_storage']['tuning']['over_provisioning_mapping']
 * node['fb_storage']['tuning']['max_sectors_kb']
 * node['fb_storage']['fstab_use_labels']
 * node['fb_storage']['manage_packages']
@@ -326,9 +325,8 @@ storage controlled by this API: `queue_depth`, `scheduler`,
 Note: `max_sectors_kb` sets the maximum IO sizes to the minimum of the device's
 `max_hw_sectors_kb` and the one provided.
 
-The `over_provisioning` and `over_provisioning_mapping` attributes are provided
-for storage handlers to manage over provisioning, but are currently not used
-by `fb_storage` itself.
+The `over_provisioning` attribute is provided for storage handlers to manage
+over provisioning, but is currently not used by `fb_storage` itself.
 
 ### Software Raid
 
@@ -419,7 +417,6 @@ used optimal partition layout, and so if we are told to add a device to an
 existing device without a proper layout, it can fail. This case is not handled,
 at all. Chef will fail and manual intervention is needed. The only time we can
 hit this is:
-  * The array was built with the old mdfio or some other chunk of code
   * Hot swap is enabled, and a card is replaced by external automation and we
     are told about that.
 This should be exceedingly rare.
@@ -556,8 +553,7 @@ are subclasses of `FB::Storage::Handler` and must implement the handler
 interface. Handler classes listed in `node['fb_storage']['_handlers']` will be
 queried in order, and the first one to match for a given device will be used.
 
-By default `fb_storage` provides handlers for FusionIO, MD (software RAID) and
-JBOD devices.
+By default `fb_storage` provides handlers for MD (software RAID) and JBOD devices.
 
 ### WARNINGS
 

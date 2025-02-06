@@ -16,11 +16,114 @@
 # limitations under the License.
 #
 
+# Reference: Chef platform_family values
+# https://docs.chef.io/infra_language/checking_platforms/#platform_family-values
+
 class Chef
   # Our extensions of the node object
   class Node
+
+    def linux?
+      self['os'] == 'linux'
+    end
+
+    def major_platform_version
+      self['platform_version'].split('.')[0]
+    end
+
+    def rhel_family?
+      self['platform_family'] == 'rhel'
+    end
+
+    def _canonical_version(version)
+      @canonical_version ||= {}
+
+      @canonical_version.fetch(version) do |ver|
+        @canonical_version[ver] =
+          if ver.class == Integer
+            FB::Version.new(version.to_s)
+          elsif ver.class == String
+            FB::Version.new(version)
+          elsif ver.class == FB::Version
+            version
+          else
+            fail 'fb_helpers: EL Version comparison can only be performed with strings and integers'
+          end
+      end
+    end
+
+    def _self_version
+      @self_version ||= FB::Version.new(self['platform_version'])
+    end
+
+    # Is this a RHEL-compatible OS with a minimum major version number of `version`
+    def el_min_version?(version)
+      self.rhel_family? && self._self_version[0] >= self._canonical_version(version)[0]
+    end
+
+    # Is this a RHEL-compatible OS with a maximum major version number of `version`
+    def el_max_version?(version)
+      self.rhel_family? && self._self_version[0] <= self._canonical_version(version)[0]
+    end
+
+    def rhel_family7?
+      self.rhel_family? && self['platform_version'].start_with?('7')
+    end
+
+    def rhel_family8?
+      self.rhel_family? && self['platform_version'].start_with?('8')
+    end
+
+    def rhel_family9?
+      self.rhel_family? && self['platform_version'].start_with?('9')
+    end
+
+    def rhel?
+      self.rhel_family?
+    end
+
+    def rhel_min_version?(version)
+      self.rhel? && self.el_min_version?(version)
+    end
+
+    def rhel_max_version?(version)
+      self.rhel? && self.el_max_version?(version)
+    end
+
+    def rhel7?
+      self.rhel? && self['platform_version'].start_with?('7')
+    end
+
+    def rhel8?
+      self.rhel? && self['platform_version'].start_with?('8')
+    end
+
+    def rhel8_8?
+      self.rhel? && self['platform_version'].start_with?('8.8')
+    end
+
+    def rhel9?
+      self.rhel? && self['platform_version'].start_with?('9')
+    end
+
+    def rhel10?
+      self.rhel? && self['platform_version'].start_with?('10')
+    end
+
+    def centos_min_version?(version)
+      self.centos? && self.el_min_version?(version)
+    end
+
+    def centos_max_version?(version)
+      self.centos? && self.el_max_version?(version)
+    end
+
     def centos?
       self['platform'] == 'centos'
+    end
+
+    def centos10?
+      self.centos? && self['platform_version'].start_with?('10')
     end
 
     def centos9?
@@ -47,8 +150,80 @@ class Chef
       self['platform'] == 'rocky'
     end
 
-    def major_platform_version
-      self['platform_version'].split('.')[0]
+    def rocky_min_version?(version)
+      self.rocky? && self.el_min_version?(version)
+    end
+
+    def rocky_max_version?(version)
+      self.rocky? && self.el_max_version?(version)
+    end
+
+    def redhat?
+      self['platform'] == 'redhat'
+    end
+
+    def redhat_min_version?(version)
+      self.redhat? && self.el_min_version?(version)
+    end
+
+    def redhat_max_version?(version)
+      self.redhat? && self.el_max_version?(version)
+    end
+
+    def redhat6?
+      self.redhat? && self['platform_version'].start_with?('6')
+    end
+
+    def redhat7?
+      self.redhat? && self['platform_version'].start_with?('7')
+    end
+
+    def redhat8?
+      self.redhat? && self['platform_version'].start_with?('8')
+    end
+
+    def redhat9?
+      self.redhat? && self['platform_version'].start_with?('9')
+    end
+
+    def redhat10?
+      self.redhat? && self['platform_version'].start_with?('10')
+    end
+
+    def oracle?
+      self['platform'] == 'oracle'
+    end
+
+    def oracle_min_version?(version)
+      self.oracle? && self.el_min_version?(version)
+    end
+
+    def oracle_max_version?(version)
+      self.oracle? && self.el_max_version?(version)
+    end
+
+    def oracle9?
+      self.oracle? && self['platform_version'].start_with?('9')
+    end
+
+    def oracle8?
+      self.oracle? && self['platform_version'].start_with?('8')
+    end
+
+    def oracle7?
+      self.oracle? && self['platform_version'].start_with?('7')
+    end
+
+    def oracle6?
+      self.oracle? && self['platform_version'].start_with?('6')
+    end
+
+    def oracle5?
+      self.oracle? && self['platform_version'].start_with?('5')
+    end
+
+    def fedora_family?
+      self['platform_family'] == 'fedora'
     end
 
     def fedora?
@@ -95,6 +270,22 @@ class Chef
       self.fedora? && self['platform_version'] == '36'
     end
 
+    def fedora37?
+      self.fedora? && self['platform_version'] == '37'
+    end
+
+    def fedora38?
+      self.fedora? && self['platform_version'] == '38'
+    end
+
+    def fedora39?
+      self.fedora? && self['platform_version'] == '39'
+    end
+
+    def fedora40?
+      self.fedora? && self['platform_version'] == '40'
+    end
+
     def eln?
       self['platform'] == 'fedora' &&
         self['os_release'] &&
@@ -102,60 +293,8 @@ class Chef
         self['os_release']['variant_id'] == 'eln'
     end
 
-    def redhat?
-      self['platform'] == 'redhat'
-    end
-
-    def redhat6?
-      self.redhat? && self['platform_version'].start_with?('6')
-    end
-
-    def redhat7?
-      self.redhat? && self['platform_version'].start_with?('7')
-    end
-
-    def redhat8?
-      self.redhat? && self['platform_version'].start_with?('8')
-    end
-
-    def redhat9?
-      self.redhat? && self['platform_version'].start_with?('9')
-    end
-
-    def rhel?
-      self['platform_family'] == 'rhel'
-    end
-
-    def rhel7?
-      self.rhel? && self['platform_version'].start_with?('7')
-    end
-
-    def rhel8?
-      self.rhel? && self['platform_version'].start_with?('8')
-    end
-
-    def rhel9?
-      self.rhel? && self['platform_version'].start_with?('9')
-    end
-
-    def oracle?
-      self['platform'] == 'oracle'
-    end
-
-    def oracle8?
-      self.oracle? && self['platform_version'].start_with?('8')
-    end
-
-    def oracle7?
-      self.oracle? && self['platform_version'].start_with?('7')
-    end
-
-    def oracle6?
-      self.oracle? && self['platform_version'].start_with?('6')
-    end
-
-    def oracle5?
-      self.oracle? && self['platform_version'].start_with?('5')
+    def debian_family?
+      self['platform_family'] == 'debian'
     end
 
     def debian?
@@ -214,24 +353,12 @@ class Chef
       self['platform'] == 'linuxmint'
     end
 
-    def linux?
-      self['os'] == 'linux'
-    end
-
-    def arch?
-      self['platform'] == 'arch'
-    end
-
-    def debian_family?
-      self['platform_family'] == 'debian'
-    end
-
     def arch_family?
       self['platform_family'] == 'arch'
     end
 
-    def fedora_family?
-      self['platform_family'] == 'fedora'
+    def arch?
+      self['platform'] == 'arch'
     end
 
     def macos?
@@ -241,79 +368,99 @@ class Chef
     alias macosx? macos?
 
     def macos10?
-      macos? && node['platform_version'].start_with?('10.')
+      macos? && self['platform_version'].start_with?('10.')
     end
 
     def macos11?
-      macos? && node['platform_version'].start_with?('11.')
+      macos? && self['platform_version'].start_with?('11.')
     end
 
     def macos12?
-      macos? && node['platform_version'].start_with?('12.')
+      macos? && self['platform_version'].start_with?('12.')
     end
 
     def macos13?
-      macos? && node['platform_version'].start_with?('13.')
+      macos? && self['platform_version'].start_with?('13.')
     end
 
-    def mac_mini_2014?
-      macos? && node['hardware']['machine_model'] == 'Macmini7,1'
+    def macos14?
+      macos? && self['platform_version'].start_with?('14.')
+    end
+
+    def macos15?
+      macos? && self['platform_version'].start_with?('15.')
     end
 
     def mac_mini_2018?
-      macos? && node['hardware']['machine_model'] == 'Macmini8,1'
+      macos? && self['hardware']['machine_model'] == 'Macmini8,1'
     end
 
     def mac_mini_2020?
-      macos? && node['hardware']['machine_model'] == 'Macmini9,1'
+      macos? && self['hardware']['machine_model'] == 'Macmini9,1'
     end
 
     def windows?
       self['platform_family'] == 'windows'
     end
 
+    def windows_desktop?
+      windows? && self['kernel']['product_type'] == 'Workstation'
+    end
+
     def windows8?
-      windows? && self['platform_version'].start_with?('6.2')
+      windows_desktop? && self['platform_version'].start_with?('6.2')
     end
 
     def windows8_1?
-      windows? && self['platform_version'].start_with?('6.3')
+      windows_desktop? && self['platform_version'].start_with?('6.3')
     end
 
     def windows10?
-      windows? && self['platform_version'].start_with?('10.0')
+      windows_desktop? && self['platform_version'].start_with?('10.0.1')
+    end
+
+    def windows11?
+      windows_desktop? && self['platform_version'].start_with?('10.0.2')
+    end
+
+    def windows10_or_newer?
+      windows_desktop? && self._self_version >= self._canonical_version('10.0.1')
+    end
+
+    def windows_server?
+      windows? && self['kernel']['product_type'] == 'Server'
     end
 
     def windows2008?
-      windows? && self['platform_version'] == '6.0'
+      windows_server? && self['platform_version'] == '6.0'
     end
 
     def windows2008r2?
-      windows? && self['platform_version'] == '6.1.7600'
+      windows_server? && self['platform_version'] == '6.1.7600'
     end
 
     def windows2008r2sp1?
-      windows? && self['platform_version'] == '6.1.7601'
+      windows_server? && self['platform_version'] == '6.1.7601'
     end
 
     def windows2012?
-      windows? && self['platform_version'].start_with?('6.2')
+      windows_server? && self['platform_version'].start_with?('6.2')
     end
 
     def windows2012r2?
-      windows? && self['platform_version'].start_with?('6.3')
+      windows_server? && self['platform_version'].start_with?('6.3')
     end
 
     def windows2016?
-      windows? && self['platform_version'] == '10.0.14393'
+      windows_server? && self['platform_version'] == '10.0.14393'
     end
 
     def windows2019?
-      windows? && self['platform_version'] == '10.0.17763'
+      windows_server? && self['platform_version'] == '10.0.17763'
     end
 
     def windows2022?
-      windows? && self['platform_version'] == '10.0.20348'
+      windows_server? && self['platform_version'] == '10.0.20348'
     end
 
     # from https://en.wikipedia.org/wiki/Windows_10_version_history
@@ -342,47 +489,59 @@ class Chef
     end
 
     def windows2012_or_newer?
-      windows? && Gem::Version.new(self['platform_version']) >= Gem::Version.new('6.2')
+      windows_server? && self._self_version >= self._canonical_version('6.2')
     end
 
     def windows2012r2_or_newer?
-      windows? && Gem::Version.new(self['platform_version']) >= Gem::Version.new('6.3')
+      windows_server? && self._self_version >= self._canonical_version('6.3')
     end
 
     def windows2016_or_newer?
-      windows? && Gem::Version.new(self['platform_version']) >= Gem::Version.new('10.0.14393')
+      windows_server? && self._self_version >= self._canonical_version('10.0.14393')
     end
 
     def windows2019_or_newer?
-      windows? && Gem::Version.new(self['platform_version']) >= Gem::Version.new('10.0.17763')
+      windows_server? && self._self_version >= self._canonical_version('10.0.17763')
     end
 
     def windows2022_or_newer?
-      windows? && Gem::Version.new(self['platform_version']) >= Gem::Version.new('10.0.20348')
+      windows_server? && self._self_version >= self._canonical_version('10.0.20348')
     end
 
     def windows2012_or_older?
-      windows? && Gem::Version.new(self['platform_version']) < Gem::Version.new('6.3')
+      windows_server? && self._self_version < self._canonical_version('6.3')
     end
 
     def windows2012r2_or_older?
-      windows? && Gem::Version.new(self['platform_version']) < Gem::Version.new('6.4')
+      windows_server? && self._self_version < self._canonical_version('6.4')
     end
 
     def windows2016_or_older?
-      windows? && Gem::Version.new(self['platform_version']) <= Gem::Version.new('10.0.14393')
+      windows_server? && self._self_version <= self._canonical_version('10.0.14393')
     end
 
     def windows2019_or_older?
-      windows? && Gem::Version.new(self['platform_version']) <= Gem::Version.new('10.0.17763')
+      windows_server? && self._self_version <= self._canonical_version('10.0.17763')
     end
 
     def windows2022_or_older?
-      windows? && Gem::Version.new(self['platform_version']) <= Gem::Version.new('10.0.20348')
+      windows_server? && self._self_version <= self._canonical_version('10.0.20348')
     end
 
     def aristaeos?
       self['platform'] == 'arista_eos'
+    end
+
+    def aristaeos_4_28_or_newer?
+      self.aristaeos? && self._self_version >= self._canonical_version('4.28')
+    end
+
+    def aristaeos_4_30_or_newer?
+      self.aristaeos? && self._self_version >= self._canonical_version('4.30')
+    end
+
+    def aristaeos_4_32_or_newer?
+      self.aristaeos? && self._self_version >= self._canonical_version('4.32')
     end
 
     def embedded?
@@ -488,7 +647,7 @@ class Chef
 
     def ohai_fs_ver
       @ohai_fs_ver ||=
-        node['filesystem2'] ? 'filesystem2' : 'filesystem'
+        self['filesystem2'] ? 'filesystem2' : 'filesystem'
     end
 
     # Take a string representing a mount point, and return the
@@ -614,15 +773,15 @@ class Chef
 
     def coreboot?
       File.directory?('/sys/firmware/vpd') ||
-        node['dmi']['bios']['vendor'] == 'coreboot'
+        self['dmi']['bios']['vendor'] == 'coreboot'
     end
 
     def aarch64?
-      node['kernel']['machine'] == 'aarch64'
+      self['kernel']['machine'] == 'aarch64'
     end
 
     def x64?
-      node['kernel']['machine'] == 'x86_64'
+      self['kernel']['machine'] == 'x86_64'
     end
 
     def cgroup_mounted?
@@ -644,12 +803,12 @@ class Chef
     def get_flexible_shard(shard_size)
       @flexible_shard_value ||= {}
       @flexible_shard_value[shard_size] ||=
-        if node['shard_seed']
-          node['shard_seed'] % shard_size
+        if self['shard_seed']
+          self['shard_seed'] % shard_size
         else
           # backwards compat for Facebook until
           # https://github.com/chef/ohai/pull/877 is out
-          node['fb']['shard_seed'] % shard_size
+          self['fb']['shard_seed'] % shard_size
         end
       @flexible_shard_value[shard_size]
     end
@@ -792,7 +951,7 @@ class Chef
     def firstboot_os?
       # this has to work even when we fail early on so we can call this from
       # broken runs in handlers
-      node['fb_init']['firstboot_os']
+      self['fb_init']['firstboot_os']
     rescue StandardError
       prefix = macos? ? '/var/root' : '/root'
       File.exist?(File.join(prefix, 'firstboot_os'))
@@ -801,7 +960,7 @@ class Chef
     def firstboot_tier?
       # this has to work even when we fail early on so we can call this from
       # broken runs in handlers
-      node['fb_init']['firstboot_tier']
+      self['fb_init']['firstboot_tier']
     rescue StandardError
       prefix = macos? ? '/var/root' : '/root'
       File.exist?(File.join(prefix, 'firstboot_tier'))
@@ -814,11 +973,11 @@ class Chef
     # is this device a SSD?  If it's not rotational, then it's SSD
     # expects a short device name, e.g. 'sda', not '/dev/sda', not '/dev/sda3'
     def device_ssd?(device)
-      unless node['block_device'][device]
+      unless self['block_device'][device]
         fail "fb_helpers: Device '#{device}' passed to node.device_ssd? " +
              "doesn't appear to be a block device!"
       end
-      node['block_device'][device]['rotational'] == '0'
+      self['block_device'][device]['rotational'] == '0'
     end
 
     def root_compressed?
@@ -839,7 +998,7 @@ class Chef
     end
 
     def root_user
-      value_for_platform(
+      @root_user ||= value_for_platform(
         'windows' => { 'default' => 'Administrator' },
         'default' => 'root',
       )
@@ -848,7 +1007,7 @@ class Chef
     def root_group
       # rubocop:disable Chef/Correctness/InvalidPlatformValueForPlatformHelper
       # See the `macos?` method above
-      value_for_platform(
+      @root_group ||= value_for_platform(
         %w{openbsd freebsd mac_os_x macos} => { 'default' => 'wheel' },
         'windows' => { 'default' => 'Administrators' },
         'default' => 'root',
@@ -878,7 +1037,8 @@ class Chef
 
     # returns the version-release of an rpm installed, or nil if not present
     def rpm_version(name)
-      if (self.centos? && !self.centos7?) || self.fedora? || self.redhat8?
+      if (self.centos? && !self.centos7?) || self.fedora? || self.redhat8? || self.oracle8? || self.redhat9? ||
+        self.oracle9? || self.aristaeos_4_30_or_newer?
         # returns epoch.version
         v = Chef::Provider::Package::Dnf::PythonHelper.instance.
             package_query(:whatinstalled, name).version
@@ -901,19 +1061,19 @@ class Chef
     end
 
     def selinux_mode
-      node['selinux']['status']['current_mode'] || 'unknown'
+      self['selinux']['status']['current_mode'] || 'unknown'
     end
 
     def selinux_policy
-      node['selinux']['status']['loaded_policy_name']
+      self['selinux']['status']['loaded_policy_name']
     end
 
     def selinux_enabled?
-      node['selinux']['status']['selinux_status'] == 'enabled'
+      self['selinux']['status']['selinux_status'] == 'enabled'
     end
 
     def host_chef_base_path
-      if node.windows?
+      if self.windows?
         File.join('C:', 'chef')
       else
         File.join('/var', 'chef')
@@ -921,7 +1081,7 @@ class Chef
     end
 
     def solo_chef_base_path
-      if node.windows?
+      if self.windows?
         File.join('C:', 'chef', 'solo')
       else
         File.join('/opt', 'chef-solo')
@@ -929,7 +1089,7 @@ class Chef
     end
 
     def chef_base_path
-      if node.solo?
+      if self.solo?
         self.solo_chef_base_path
       else
         self.host_chef_base_path
@@ -985,11 +1145,11 @@ class Chef
     end
 
     def default_package_manager
-      cls = Chef::ResourceResolver.resolve(:package, :node => node)
+      cls = Chef::ResourceResolver.resolve(:package, :node => self)
       if cls
         m = cls.to_s.match(/Chef::Resource::(\w+)Package/)
         if m[1]
-          m[1].downcase
+          m[1] == 'FbDnf' ? 'dnf' : m[1].downcase
         else
           fail "fb_helpers: unknown package manager resource class: #{cls}"
         end
@@ -1003,7 +1163,7 @@ class Chef
       # mlx is special cased because of their device naming convention
       r = /^(eth(.*[Rr]x|\d+-\d+)|mlx4-\d+@.*|mlx5_comp\d+@.*)/
 
-      irqs = node['interrupts']['irq'].select do |_irq, v|
+      irqs = self['interrupts']['irq'].select do |_irq, v|
         v['device'] && r.match?(v['device']) &&
           v['type'] && v['type'].end_with?('MSI')
       end
@@ -1014,7 +1174,7 @@ class Chef
         )
         return true
       end
-      default_affinity = node['interrupts']['smp_affinity_by_cpu']
+      default_affinity = self['interrupts']['smp_affinity_by_cpu']
       # When all interrupts are affinitized, smp_affinity will be different
       # from the default one, and won't be global. Global technically says
       # that interrupts can be processed on all CPUs, but in reality what's
@@ -1043,7 +1203,7 @@ class Chef
     end
 
     def validate_and_fail_on_dynamic_addresses
-      node['network']['interfaces'].each do |if_str, if_data|
+      self['network']['interfaces'].each do |if_str, if_data|
         next unless if_data['addresses']
 
         if_data['addresses'].each do |addr_str, addr_data|
@@ -1058,13 +1218,13 @@ class Chef
     end
 
     def nw_changes_allowed?
-      method = node['fb_helpers']['network_changes_allowed_method']
+      method = self['fb_helpers']['network_changes_allowed_method']
       if method
-        return method.call(node)
+        return method.call(self)
       else
         return @nw_changes_allowed unless @nw_changes_allowed.nil?
 
-        @nw_changes_allowed = node.firstboot_any_phase? ||
+        @nw_changes_allowed = self.firstboot_any_phase? ||
         ::File.exist?(::FB::Helpers::NW_CHANGES_ALLOWED)
       end
     end
@@ -1072,9 +1232,9 @@ class Chef
     # We can change interface configs if nw_changes_allowed? or we are operating
     # on a DSR VIP
     def interface_change_allowed?(interface)
-      method = node['fb_helpers']['interface_change_allowed_method']
+      method = self['fb_helpers']['interface_change_allowed_method']
       if method
-        return method.call(node, interface)
+        return method.call(self, interface)
       else
         return self.nw_changes_allowed? ||
           ['ip6tnl0', 'tunlany0', 'tunl0'].include?(interface) ||
@@ -1083,12 +1243,19 @@ class Chef
     end
 
     def interface_start_allowed?(interface)
-      method = node['fb_helpers']['interface_start_allowed_method']
+      method = self['fb_helpers']['interface_start_allowed_method']
       if method
-        return method.call(node, interface)
+        return method.call(self, interface)
       else
         return self.interface_change_allowed?(interface)
       end
+    end
+
+    # A gate which can be used to limit dangerous code to only run during
+    # provisioning or upon boot
+    def disruptable?
+      @disruptable ||=
+        self.firstboot_any_phase? || ENV['CHEF_BOOT_SERVICE'] == 'true'
     end
   end
 end

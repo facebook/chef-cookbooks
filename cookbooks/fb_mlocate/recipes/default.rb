@@ -34,8 +34,8 @@ include_recipe 'fb_mlocate::packages'
 template conf_path do
   only_if { node['fb_mlocate']['want_mlocate'] }
   source 'updatedb.conf.erb'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
   action :create
 end

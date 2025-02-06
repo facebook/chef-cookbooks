@@ -33,8 +33,9 @@ if node.systemd?
       'command' => "#{sa_dir}/sa1 -S DISK,SNMP 1 1",
     },
     'sysstat_accounting_2' => {
-      'calendar' => '23:53',
+      'calendar' => 'daily',
       'command' => "#{sa_dir}/sa2 -A",
+      'splay' => '30m',
     },
   }.each do |k, v|
     node.default['fb_timers']['jobs'][k] = v
@@ -56,6 +57,6 @@ end
 
 # the sa[12] commands here trample on those defined in the
 # sysstat_accounting_[12] jobs
-file '/etc/cron.d/sysstat' do
+file '/etc/cron.d/sysstat' do # rubocop:disable Chef/Modernize/CronDFileOrTemplate
   action :delete
 end

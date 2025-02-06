@@ -20,6 +20,7 @@
 return if node.macos?
 
 package 'rsyslog' do
+  only_if { node['fb_syslog']['manage_packages'] }
   action :upgrade
 end
 

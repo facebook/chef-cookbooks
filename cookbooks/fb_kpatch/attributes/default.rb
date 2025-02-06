@@ -18,4 +18,5 @@
 
 default['fb_kpatch'] = {
   'enable' => true,
+  'manage_packages' => true,
 }

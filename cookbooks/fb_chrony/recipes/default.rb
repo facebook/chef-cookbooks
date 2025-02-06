@@ -19,7 +19,7 @@
 # limitations under the License.
 #
 
-if node.centos? || node.redhat? || node.fedora? || node.rocky?
+if node.rhel_family? || node.fedora_family?
   chrony_svc = 'chronyd'
   chrony_conf = '/etc/chrony.conf'
   chrony_user = 'chrony'
@@ -41,17 +41,29 @@ directory '/var/run/chrony' do
   mode '0750'
 end
 
-template 'chrony.conf' do # ~FB031
+template 'chrony.conf' do
   path chrony_conf
   source 'chrony.conf.erb'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
   notifies :restart, 'service[chrony]'
+end
+
+fb_systemd_override 'chronyd_override' do
+  unit_name 'chronyd.service'
+  content({
+            'Service' => {
+              'Restart' => 'always',
+            },
+          })
 end
 
 service 'chrony' do
   service_name chrony_svc
   action [:enable, :start]
-  subscribes :restart, 'package[chrony]'
+  subscribes :restart, [
+    'package[chrony]',
+    'fb_systemd_override[chronyd_override]',
+  ]
 end

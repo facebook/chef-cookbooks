@@ -20,8 +20,8 @@
 
 template '/etc/systemd/logind.conf' do
   source 'systemd.conf.erb'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
   variables(
     :config => 'logind',

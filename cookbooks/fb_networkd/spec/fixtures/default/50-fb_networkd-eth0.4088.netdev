@@ -1,0 +1,9 @@
+# This file is maintained by Chef. Do not edit, all changes will be
+# overwritten. See fb_networkd/README.md
+
+[NetDev]
+Kind = vlan
+Name = eth0.4088
+
+[VLAN]
+Id = 4088

@@ -99,6 +99,7 @@ default['fb_logrotate'] = {
   'configs' => configs,
   'add_locking_to_logrotate' => false,
   'debug_log' => false,
+  'manage_packages' => true,
   'systemd_timer' => systemd_timer,
   'systemd_settings' => {
     'OnCalendar' => 'daily',

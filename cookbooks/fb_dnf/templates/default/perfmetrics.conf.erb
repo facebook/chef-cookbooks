@@ -1,0 +1,5 @@
+# This file is maintained by Chef. Do not edit, all changes will be
+# overwritten. See fb_dnf/README.md
+
+[main]
+enabled=<%= node['fb_dnf']['perfmetrics'] ? '1' : '0' %>

@@ -20,6 +20,7 @@
 
 package 'net-tools' do
   only_if { node.linux? }
+  only_if { node['fb_ethers']['manage_packages'] }
   action :upgrade
 end
 

@@ -17,6 +17,7 @@
 # limitations under the License.
 #
 
+unified_mode(false) if Chef::VERSION >= 18 # TODO(T144966423)
 default_action :set
 
 property :path, String, :name_property => true
@@ -104,7 +105,7 @@ action :set do
     end
     # We are using file to write content, not to manage the file itself,
     # so we exempt the internal foodcritic rule that requires owner/group/mode.
-    file new_resource.path do # rubocop:disable Chef/Meta/RequireOwnerGroupMode # ~FB023
+    file new_resource.path do # rubocop:disable Chef/Meta/RequireOwnerGroupMode
       if new_resource.type == :list
         # Some :list sysfs require a newline at the end of the value to take
         # effect. For others, the newline is ignored, so always write one (and

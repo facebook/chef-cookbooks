@@ -28,8 +28,8 @@ if node.centos6?
   cookbook_file '/etc/init.d/ipset' do
     only_if { node['fb_ipset']['enable'] }
     source 'ipset-init'
-    owner 'root'
-    group 'root'
+    owner node.root_user
+    group node.root_group
     mode '0755'
   end
 
@@ -46,8 +46,8 @@ if node.centos6?
 end
 
 directory '/etc/ipset' do
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0755'
 end
 

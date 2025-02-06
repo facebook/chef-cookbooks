@@ -28,9 +28,82 @@ module FB
     FORCE_WRITE_CUSTOM_DISK_ORDER =
       '/var/chef/storage_force_write_custom_disk_order'.freeze
     DEV_ID_DIR = '/dev/disk/by-id'.freeze
+    DEV_PARTLABEL_DIR = '/dev/disk/by-partlabel'.freeze
 
     # 'size' from sysfs always assumes 512 byte blocks
     SECTOR_SIZE = 512
+
+    # Helper function to make string compatible for ODS
+    # by replacing special characters with _
+    def self.ods_compat(string)
+      string.gsub(/[^0-9a-zA-Z_-]/, '_')
+    end
+
+    # Helper function to get disk model
+    def self.get_disk_model(node, block_device_name)
+      device = node['block_device'][block_device_name]
+      if device
+        if device['model']
+          self.ods_compat(device['model'].to_s)
+        end
+      end
+    end
+
+    # Helper function to get disk firmware
+    def self.get_disk_firmware(node, block_device_name)
+      device = node['block_device'][block_device_name]
+      if device
+        # When mounted on SATA, firmware is stored on rev
+        if device['rev']
+          self.ods_compat(device['rev'].to_s)
+        # When mounted on NVME, firmware is stored on firmware_rev
+        elsif device['firmware_rev']
+          self.ods_compat(device['firmware_rev'].to_s)
+        end
+      end
+    end
+
+    # Helper function to get mdarray devices
+    def self.get_mdarray_devices(node, mdarray)
+      if node['mdadm']
+        if node['mdadm'][mdarray]
+          if node['mdadm'][mdarray]['members']
+            node['mdadm'][mdarray]['members']
+          end
+        end
+      end
+    end
+
+    # Helper function to extract sorted models and their
+    # relative firmwares of disks in mdarray with '__'
+    # delimiters
+    def self.get_mdarray_models_firmwares(node, mdarray)
+      disks_models = ''
+      disks_firmwares = ''
+      models_firmwares = []
+      devices = self.get_mdarray_devices(node, mdarray)
+      devices.each do |device|
+        disk_model = self.get_disk_model(node, device)
+        disk_firmware = self.get_disk_firmware(node, device)
+        if disk_model && disk_firmware
+          # Create a hash of model => firmware
+          model_firmware = {}
+          model_firmware[disk_model] = disk_firmware
+          # Add it to the hash array
+          models_firmwares << model_firmware
+        end
+      end
+      # Sort the hash array by model
+      models_firmwares.sort_by! { |model, _firmware| model.to_s }
+      models_firmwares.each do |model_firmware|
+        model_firmware.each do |model, firmware|
+          disks_models += model.to_s + '__'
+          disks_firmwares += firmware.to_s + '__'
+        end
+      end
+      return disks_models, disks_firmwares
+    end
+
     # Helper function for hybrid XFS users. Given the index (into
     # `eligible_devices` of the device to be used for metadata, and the number
     # of filesystems we expect to create, it will return the size of each
@@ -93,7 +166,9 @@ module FB
       to_skip.dup.each do |oot_dev|
         if oot_dev&.start_with?('md')
           Dir.glob("/sys/block/#{oot_dev}/slaves/*").each do |x|
-            to_skip << ::File.basename(x)
+            rawdev = '/dev/' + ::File.basename(x)
+            rawdev = device_name_from_existing_partition(rawdev)
+            to_skip << ::File.basename(rawdev)
           end
         end
       end
@@ -107,8 +182,12 @@ module FB
       # Legacy. We should probably fail hard here
       return [] if devices_to_skip.length.zero?
 
+      non_eligle = ['ram', 'loop', 'dm-', 'sr', 'md']
+      if node&.dig('fb_storage', '_skip_extra_devices')
+        non_eligle += node['fb_storage']['_skip_extra_devices']
+      end
       node['block_device'].to_hash.reject do |x, _y|
-        ['ram', 'loop', 'dm-', 'sr', 'md'].include?(x.delete('0-9')) ||
+        non_eligle.include?(x.delete('0-9')) ||
         devices_to_skip.include?(x)
       end.keys
     end
@@ -147,9 +226,34 @@ module FB
       "#{device}#{prefix}#{partnum}"
     end
 
-    # Given a device including a partiition, return just the device without
+    def self.get_partition_from_partlabel(partlabel)
+      unless Dir.exist?(DEV_PARTLABEL_DIR)
+        fail 'Host does not have a by-partlabel directory!'
+      end
+      path = File.join(DEV_PARTLABEL_DIR, partlabel.gsub('/', '\x2f'))
+      partition = File.realpath(path)
+      return partition
+    end
+
+    def self.get_partuuid(partition)
+      cmd = "lsblk -o name,partuuid -J #{partition}"
+      lsblk = Mixlib::ShellOut.new(cmd).run_command
+      lsblk.error!
+      blkinfo = JSON.parse(lsblk.stdout)
+      blkdevs = blkinfo['blockdevices']
+
+      fail "Partition #{partition} not found" if blkdevs.empty?
+
+      blkdev = blkdevs.pop
+      partuuid = blkdev['partuuid']
+      Chef::Log.debug("fb_storage: found partuuid #{partuuid} for partition: #{partition}")
+
+      return partuuid
+    end
+
+    # Given a device including a partition, return just the device without
     # the partition. i.e.
-    #   /dev/sda1 -> /dev/sd
+    #   /dev/sda1 -> /dev/sda
     #   /dev/md0p0 -> /dev/md0
     #   /dev/nvme0n1p0 -> /dev/nvm0n1
     #
@@ -166,13 +270,40 @@ module FB
     # So, for devices that we *know* would require such
     # a thing, we also force them to use that regex, so if someone erroneously
     # passes in `/dev/md0`, we give them back `/dev/md0`.
+    # Special treatment is needed for /dev/loop0 because the trailing "p0" can trick the
+    # regexp and we return an invalid "/dev/loo" device.
     def self.device_name_from_partition(partition)
-      if partition =~ /[0-9]+p[0-9]+$/ || partition =~ %r{/(nvme|etherd|md|nbd)}
+      if partition =~ %r{/loop[0-9]+$}
+        return partition
+      end
+      if partition =~ /[0-9]+p[0-9]+$/ || partition =~ %r{/(nvme|etherd|md|nbd|ram|sr)}
         re = /p[0-9]+$/
       else
         re = /[0-9]+$/
       end
       partition.sub(re, '')
+    end
+
+    # Given a device including a partition, return just the device without
+    # the partition. i.e.
+    #   /dev/sda1 -> /dev/sda
+    #   /dev/md0p0 -> /dev/md0
+    #   /dev/nvme0n1p0 -> /dev/nvm0n1
+    #
+    # this works by looking for /sys/class/block/$dev/partition
+    # to ensure that the device is a partition, then using
+    # realpath on /sys/class/block/$dev/.. to get the disk,
+    # as in sysfs the partitions are represented as subdirectories
+    # of disk devices.
+    def self.device_name_from_existing_partition(partition)
+      sys = '/sys/class/block/' + File.basename(partition)
+
+      if !File.exist?(sys) || !File.exist?(sys + '/partition')
+        return partition
+      end
+
+      sys = File.realpath(sys + '/..')
+      '/dev/' + File.basename(sys)
     end
 
     # External automation can pass us disks to rebuild for hot-swap. In order
@@ -367,6 +498,10 @@ module FB
       Dir.open(DEV_ID_DIR).each do |entry|
         next if %w{. ..}.include?(entry)
 
+        if ::Chef.node&.dig('fb_storage', '_skip_persistency')
+          next if ::Chef.node['fb_storage']['_skip_persistency'].any? { |element| entry.include?(element) }
+        end
+
         p = "#{DEV_ID_DIR}/#{entry}"
         id_map[File.basename(File.readlink(p))] = entry
       end
@@ -401,7 +536,7 @@ module FB
         fail 'fb_storage: Unknown persistent disk format ' +
           "specified: #{version}"
       end
-      File.open(PREVIOUS_DISK_ORDER, 'w') do |fd| # ~FB030
+      File.open(PREVIOUS_DISK_ORDER, 'w') do |fd| # rubocop:disable Chef/Meta/NoFileWrites
         Chef::Log.debug('fb_storage: Writing out disk order')
         fd.write(JSON.generate(data))
       end
@@ -1221,6 +1356,82 @@ module FB
         end
       end
       fstab
+    end
+
+    def self.get_t10dix_lbaf(device)
+      nsid_out = Mixlib::ShellOut.new("nvme id-ns #{device} -ojson").run_command
+      nsid_out.error!
+      nsid_json = JSON.parse(nsid_out.stdout)
+
+      # Details about output of the nvme id-ns command and it's associated structures/sub-structures can be found here:
+      # https://manpages.ubuntu.com/manpages/oracular/en/man2/nvme_id_ns.2.html
+      # More details about the bitmask values used can be bound here:
+      # https://github.com/torvalds/linux/blob/master/include/linux/nvme.h
+
+      # Find LBA format with metadata size 64 bytes and data size 2^12 = 4KB
+      lbaf = nsid_json['lbafs'].find_index { |item| item['ms'] == 64 && item['ds'] == 12 }
+
+      # Ensure Protection Information (PI) Type 3 is supported and PI is transferred as the last 8 bytes of the metadata
+      # TODO: Enable dpc check after firmware bug affecting some dpc values in some drives is fixed
+      # dpc_valid = (nsid_json['dpc'] & (1 << 2) != 0 && nsid_json['dpc'] & (1 << 4) != 0)
+      dpc_valid = true
+
+      if !lbaf.nil? && dpc_valid
+        return lbaf
+      else
+        return -1
+      end
+    end
+
+    def self.get_non_t10dix_lbaf(device)
+      nsid_out = Mixlib::ShellOut.new("nvme id-ns #{device} -ojson").run_command
+      nsid_out.error!
+      nsid_json = JSON.parse(nsid_out.stdout)
+
+      # Details about output of the nvme id-ns command and it's associated structures/sub-structures can be found here:
+      # https://manpages.ubuntu.com/manpages/oracular/en/man2/nvme_id_ns.2.html
+      # More details about the bitmask values used can be bound here:
+      # https://github.com/torvalds/linux/blob/master/include/linux/nvme.h
+
+      # Find LBA format with data size 2^12 = 4KB
+      lbaf = nsid_json['lbafs'].find_index { |item| item['ds'] == 12 }
+
+      if !lbaf.nil?
+        return lbaf
+      end
+      return -1
+    end
+
+    def self.t10dix_enabled?(device)
+      nsid_out = Mixlib::ShellOut.new("nvme id-ns #{device} -ojson").run_command
+      nsid_out.error!
+      nsid_json = JSON.parse(nsid_out.stdout)
+
+      # Details about output of the nvme id-ns command and it's associated structures/sub-structures can be found here:
+      # https://manpages.ubuntu.com/manpages/oracular/en/man2/nvme_id_ns.2.html
+      # More details about the bitmask values used can be bound here:
+      # https://github.com/torvalds/linux/blob/master/include/linux/nvme.h
+
+      # Check if the drive is formatted with the expected LBAF, if supported: metadata size 64 bytes and data size 4KB
+      current_lbaf = (nsid_json['flbas'] & 0xf) | ((nsid_json['flbas'] & 0x60) >> 1)
+      expected_lbaf = nsid_json['lbafs'].find_index { |item| item['ms'] == 64 && item['ds'] == 12 }
+      if current_lbaf != expected_lbaf
+        return false
+      end
+
+      # Ensure LBA is not extended i.e. metadata is transferred as a separate buffer and not at the end of data buffer
+      extended_data_lba = nsid_json['flbas'] & (1 << 5) != 0
+      if extended_data_lba
+        return false
+      end
+
+      # Ensure Protection Information (PI) Type 3 is enabled and PI is transferred as the last 8 bytes of metadata
+      dps_valid = (nsid_json['dps'] & 0x7 == 3 && nsid_json['dps'] & (1 << 3) == 0)
+      if !dps_valid
+        return false
+      end
+
+      return true
     end
 
     private

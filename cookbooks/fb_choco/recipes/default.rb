@@ -38,7 +38,7 @@ end
 # We only want to run this if we have chocolatey is installed.
 unless ENV['ChocolateyInstall'].nil?
   ruby_friendly = ENV['ChocolateyInstall'].gsub(/\\+/, '/')
-  ::Dir.glob("#{ruby_friendly}/lib/**/*.nu*").select do |file|
+  ::Dir.glob("#{ruby_friendly}/lib/*/*.nu*").select do |file|
     ::File.zero?(file)
   end.each do |empty_file|
     file empty_file do

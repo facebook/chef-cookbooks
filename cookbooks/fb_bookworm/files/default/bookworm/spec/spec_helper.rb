@@ -1,4 +1,4 @@
-# Copyright (c) 2022-present, Meta, Inc.
+# Copyright (c) 2022-present, Meta Platforms, Inc. and affiliates
 # All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,3 +21,5 @@ RSpec.configure do |config|
   config.filter_run(:focus)
   config.order = :random
 end
+
+$LOAD_PATH.unshift("#{__dir__}/../lib")

@@ -18,6 +18,7 @@
 
 resource_name :fb_choco_configure
 provides :fb_choco_configure, :os => 'windows'
+unified_mode(false) if Chef::VERSION >= 18 # TODO(T144966423)
 default_action :change
 property :config,   Hash,
          :coerce => proc { |i|

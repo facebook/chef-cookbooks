@@ -14,10 +14,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+# rubocop:disable Chef/Meta/FBUtilReboot
 
 resource_name :fb_helpers_reboot
 
 provides :fb_helpers_reboot, :os => ['darwin', 'linux']
+unified_mode(false) if Chef::VERSION >= 18 # TODO(T144966423)
 
 # description 'Use the fb_helpers_reboot resource if you need to indicate to an'
 #             ' external service that the host needs to be rebooted and when'
@@ -136,7 +138,7 @@ action :now do
       set_reboot_override('immediate')
       do_managed_reboot
     else
-      command = execute 'reboot' do # ~FB026
+      command = execute 'reboot' do # rubocop:disable Chef/Meta/FBUtilReboot
         command 'reboot'
         action :nothing
       end
@@ -194,7 +196,7 @@ action :process_deferred do
           node,
           load_reboot_reason,
         )
-        reboot 'reboot' do # ~FB026
+        reboot 'reboot' do # rubocop:disable Chef/Meta/FBUtilReboot
           action :request_reboot
         end
       else
@@ -222,7 +224,7 @@ action :rtc_wakeup do
     command "rtcwake -m no -s #{new_resource.wakeup_time_secs}"
     action :nothing
   end
-  poweroff = execute 'poweroff' do # ~FB026
+  poweroff = execute 'poweroff' do # rubocop:disable Chef/Meta/FBUtilReboot
     command 'shutdown -P now'
     action :nothing
   end

@@ -18,6 +18,7 @@
 
 default['fb_sdparm'] = {
   'enforce' => false,
+  'manage_packages' => true,
   'settings' => {
     'rotational' => {},
     'non-rotational' => {},

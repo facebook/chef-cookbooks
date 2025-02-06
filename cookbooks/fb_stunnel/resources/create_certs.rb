@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+unified_mode(false) if Chef::VERSION >= 18 # TODO(T144966423)
 action :enable do
   node['fb_stunnel']['config'].each do |section, config|
     if !config['_create_self_signed_cert'] || !config['cert'] || !config['key']

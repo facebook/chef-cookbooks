@@ -25,8 +25,8 @@ ohai 'reload kernel' do
 end
 
 directory '/etc/modprobe.d' do
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0755'
 end
 
@@ -41,32 +41,32 @@ end
 
 template '/etc/modprobe.d/fb_modprobe.conf' do
   source 'fb_modprobe.conf.erb'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
 end
 
 if node.systemd?
   template '/etc/modules-load.d/chef.conf' do
     source 'modules-load.conf.erb'
-    owner 'root'
-    group 'root'
+    owner node.root_user
+    group node.root_group
     mode '0644'
     notifies :run, 'execute[load modules]'
   end
 else
   directory '/etc/sysconfig/modules' do
     only_if { node.centos? && !node.systemd? }
-    owner 'root'
-    group 'root'
+    owner node.root_user
+    group node.root_group
     mode '0755'
   end
 
   template '/etc/sysconfig/modules/fb.modules' do
     only_if { node.centos? && !node.systemd? }
     source 'fb.modules.erb'
-    owner 'root'
-    group 'root'
+    owner node.root_user
+    group node.root_group
     mode '0755'
   end
 end

@@ -119,6 +119,7 @@ if node.linux? && !node.container?
 end
 include_recipe 'fb_motd'
 include_recipe 'fb_profile'
+include_recipe 'fb_smartmon'
 
 if node.firstboot_tier?
   include_recipe 'fb_init_sample::firstboot'

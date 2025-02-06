@@ -40,8 +40,8 @@ end
 template '/etc/default/collectd' do
   only_if { node['platform_family'] == 'debian' }
   source 'collectd.erb'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
   notifies :restart, 'service[collectd]'
 end
@@ -54,8 +54,8 @@ end
 
 template conf do
   source 'collectd.conf.erb'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
   notifies :restart, 'service[collectd]'
 end

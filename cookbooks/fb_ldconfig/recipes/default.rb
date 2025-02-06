@@ -29,8 +29,8 @@ end
 
 cookbook_file '/etc/ld.so.conf' do
   source 'ld.so.conf'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
   # immediately because stuff in the run probably needs this
   notifies :run, 'execute[ldconfig]', :immediately
@@ -38,8 +38,8 @@ end
 
 template '/etc/ld.so.conf.d/chef.conf' do
   source 'ld.so.conf.erb'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
   # immediately because stuff in the run probably needs this
   notifies :run, 'execute[ldconfig]', :immediately

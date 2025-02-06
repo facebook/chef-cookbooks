@@ -39,16 +39,16 @@ user_list = value_for_platform_family(
 
 template "#{prefix}/vsftpd.conf" do
   source 'vsftpd.conf.erb'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
   notifies :restart, 'service[vsftpd]'
 end
 
 template "#{prefix}/ftpusers" do
   source 'ftpusers.erb'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
   notifies :restart, 'service[vsftpd]'
   variables(
@@ -58,8 +58,8 @@ end
 
 template user_list do
   source 'ftpusers.erb'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
   notifies :restart, 'service[vsftpd]'
   variables(

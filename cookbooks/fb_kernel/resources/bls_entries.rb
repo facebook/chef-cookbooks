@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+unified_mode(false) if Chef::VERSION >= 18 # TODO(T144966423)
 action :run do
   bls_root = ::File.join(node['fb_kernel']['boot_path'], 'loader', 'entries')
   bls_entries = []
@@ -24,10 +25,10 @@ action :run do
     bls_entry =
       ::File.join(bls_root, "#{node['machine_id']}-#{data['version']}.conf")
 
-    template bls_entry do # ~FB031
+    template bls_entry do
       source 'bls-entry.conf.erb'
-      owner 'root'
-      group 'root'
+      owner node.root_user
+      group node.root_group
       mode '0644'
       variables(
         :kernel => name,

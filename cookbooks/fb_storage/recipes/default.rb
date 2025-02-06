@@ -20,22 +20,22 @@
 
 cookbook_file '/sbin/mount.rtxfs' do
   only_if { node.centos? }
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0755'
 end
 
 # fsck for XFS with realtime devices (rtxfs filesystem type)
 cookbook_file '/sbin/fsck.rtxfs' do
   only_if { node.centos? }
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0755'
 end
 
 directory FB::Storage::REPLACED_DISKS_DIR do
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0755'
 end
 
@@ -47,8 +47,8 @@ end
   /run/systemd/system-generators
 }.each do |dir|
   directory dir do
-    owner 'root'
-    group 'root'
+    owner node.root_user
+    group node.root_group
     mode '0755'
   end
 end
@@ -111,7 +111,7 @@ whyrun_safe_ruby_block 'validate storage options' do
                  'It must be a number with an optional suffix of %%kmgt'
           %w{start end}.each do |disp|
             unless partition["partition_#{disp}"].match(
-              /^\d+(\.\d+)?([KkMmGgTt%](iB)?)?$/,
+              /^\d+(\.\d+)?([KkMmGgsTt%](iB)?)?$/,
             )
               fail format(pmsg, partition["partition_#{disp}"])
             end
@@ -236,14 +236,14 @@ template '/etc/mdadm.conf' do
       # and we've been asked to create this
       node['fb_storage']['manage_mdadm_conf']
   end
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0755'
 end
 
 file '/var/chef/storage_api_active' do
   not_if { node['fb_storage']['devices'].empty? }
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
 end

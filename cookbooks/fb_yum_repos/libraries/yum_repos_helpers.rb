@@ -24,6 +24,7 @@ module FB
       'countme',
       'repo_gpgcheck',
       'module_hotfixes',
+      'antlir_extra_repo',
     ].freeze
 
     def self.get_default_gpg_key(_node)

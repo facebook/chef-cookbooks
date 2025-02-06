@@ -30,4 +30,6 @@ default['fb_networkd'] = {
   },
   'links' => {},
   'devices' => {},
+  'notify_resources' => {},
+  'stop_before' => [],
 }

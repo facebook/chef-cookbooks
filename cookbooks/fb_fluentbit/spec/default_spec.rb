@@ -190,17 +190,17 @@ recipe(
     end
 
     it 'should install external plugin packages' do
-      expect(chef_run).to upgrade_package('fluentbit external plugins').
+      expect(chef_run).to upgrade_package('Install fluentbit external plugins').
         with_package_name(['my-custom-rpm', 'my-fake-package'])
     end
 
     it 'should render plugins.conf' do
-      expect(chef_run).to render_file('/etc/td-agent-bit/plugins.conf').
+      expect(chef_run).to render_file('/etc/fluent-bit/plugins.conf').
         with_content(tc.fixture('multiple_external_plugins_plugins.conf'))
     end
 
     it 'should render service conf' do
-      expect(chef_run).to render_file('/etc/td-agent-bit/td-agent-bit.conf').
+      expect(chef_run).to render_file('/etc/fluent-bit/fluent-bit.conf').
         with_content(tc.fixture('multiple_external_plugins_service.conf'))
     end
   end
@@ -259,32 +259,32 @@ recipe(
     end
 
     it 'should upgrade the package' do
-      expect(chef_run).to upgrade_package('td-agent-bit')
+      expect(chef_run).to upgrade_package('fluent-bit')
     end
 
     it 'should install external plugin packages' do
-      expect(chef_run).to upgrade_package('fluentbit external plugins').
+      expect(chef_run).to upgrade_package('Install fluentbit external plugins').
         with_package_name(['my-custom-rpm'])
     end
 
     it 'should render parsers.conf' do
-      expect(chef_run).to render_file('/etc/td-agent-bit/parsers.conf').
+      expect(chef_run).to render_file('/etc/fluent-bit/parsers.conf').
         with_content(tc.fixture('clean_config_parsers.conf'))
     end
 
     it 'should render plugins.conf' do
-      expect(chef_run).to render_file('/etc/td-agent-bit/plugins.conf').
+      expect(chef_run).to render_file('/etc/fluent-bit/plugins.conf').
         with_content(tc.fixture('clean_config_plugins.conf'))
     end
 
     it 'should render service conf' do
-      expect(chef_run).to render_file('/etc/td-agent-bit/td-agent-bit.conf').
+      expect(chef_run).to render_file('/etc/fluent-bit/fluent-bit.conf').
         with_content(tc.fixture('clean_config_service.conf'))
     end
 
     it 'should start the service' do
-      expect(chef_run).to enable_service('td-agent-bit')
-      expect(chef_run).to start_service('td-agent-bit')
+      expect(chef_run).to enable_service('fluent-bit')
+      expect(chef_run).to start_service('fluent-bit')
     end
   end
 
@@ -306,7 +306,7 @@ recipe(
     end
 
     it 'should not upgrade the fluentbit package' do
-      expect(chef_run).to_not upgrade_package('td-agent-bit')
+      expect(chef_run).to_not upgrade_package('fluent-bit')
     end
 
     it 'should not install external plugin packages' do
@@ -329,7 +329,7 @@ recipe(
         }
       end
 
-      expect(chef_run).to render_file('/etc/td-agent-bit/td-agent-bit.conf').
+      expect(chef_run).to render_file('/etc/fluent-bit/fluent-bit.conf').
         with_content(tc.fixture('systemd_duplicate_keys_service.conf'))
     end
 
@@ -340,7 +340,7 @@ recipe(
         }
       end
 
-      expect(chef_run).to render_file('/etc/td-agent-bit/td-agent-bit.conf').
+      expect(chef_run).to render_file('/etc/fluent-bit/fluent-bit.conf').
         with_content(tc.fixture('record_modifier_duplicate_keys_service.conf'))
     end
   end

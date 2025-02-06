@@ -28,6 +28,7 @@ default['fb_chrony'] = {
   'manage_packages' => true,
   'servers' => server_list,
   'pools' => {},
+  'refclocks' => {},
   # https://chrony.tuxfamily.org/doc/3.4/chrony.conf.html
   'default_options' => %w{iburst},
   'config' => {

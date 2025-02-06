@@ -24,7 +24,17 @@ end
 
 node.default['fb_systemd']['networkd']['enable'] = true
 
-fb_networkd 'manage configuration'
+fb_networkd 'manage configuration' do
+  # Trigger deferred actions (e.g. :restart)
+  notifies :trigger, 'fb_networkd_notify[doit]'
+  # Trigger service stops (and starts) around networkd changes
+  notifies :stop, 'fb_networkd_notify[doit]', :before
+  notifies :start, 'fb_networkd_notify[doit]'
+end
+
+fb_networkd_notify 'doit' do
+  action :nothing
+end
 
 # Increase timeout to avoid conflicting with any start/restart calls.
 # Yes this could be racy but if systemd-networkd takes more than 30 min to come
@@ -37,7 +47,7 @@ execute 'networkctl reload' do
   command '/bin/networkctl reload'
   action :nothing
   environment({ 'SYSTEMD_BUS_TIMEOUT' => '1800s' })
-
+  notifies :trigger, 'fb_networkd_notify[doit]'
 end
 
 node['network']['interfaces'].to_hash.each_key do |iface|
@@ -64,8 +74,8 @@ end
 if node.centos?
   directory '/dev/net' do
     only_if { node['fb_networkd']['enable_tun'] }
-    owner 'root'
-    group 'root'
+    owner node.root_user
+    group node.root_group
     mode '0755'
   end
 

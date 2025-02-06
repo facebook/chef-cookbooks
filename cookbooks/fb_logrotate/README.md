@@ -19,6 +19,7 @@ Attributes
 * node['fb_logrotate']['debug_log']
 * node['fb_logrotate']['systemd_timer']
 * node['fb_logrotate']['timer_settings']
+* node['fb_logrotate']['manage_packages']
 
 Usage
 -----
@@ -238,3 +239,8 @@ Note that the use of the size property together with logrotate runs that are
 more frequent than daily will result in `duplicate log entry` errors in
 logrotate because the default dateformat is `-%Y%m%d`.  To handle this, specify
 a more granular dateformat, e.g. `-%Y%m%d%H`.
+
+### Packages
+By default this cookbook keeps the logrotate and pigz package up-to-date, but
+if you want to manage them locally, simply set
+`node['fb_logrotate']['manage_packages']` to false.

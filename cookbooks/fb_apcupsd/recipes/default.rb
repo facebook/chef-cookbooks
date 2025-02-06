@@ -34,16 +34,16 @@ end
 cookbook_file '/etc/default/apcupsd' do
   only_if { node.debian? || node.ubuntu? }
   source 'apcupsd'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
   notifies :restart, 'service[apcupsd]'
 end
 
 template '/etc/apcupsd/apcupsd.conf' do
   source 'apcupsd.conf.erb'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
   notifies :restart, 'service[apcupsd]'
 end

@@ -44,8 +44,8 @@ end
 template '/etc/sysconfig/network' do
   only_if { ['rhel', 'fedora'].include?(node['platform_family']) }
   source 'network.erb'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0644'
   if node.firstboot_any_phase?
     notifies :restart, 'service[network]'
@@ -62,8 +62,8 @@ end
 if node.centos?
   directory '/dev/net' do
     only_if { node['fb_network_scripts']['enable_tun'] }
-    owner 'root'
-    group 'root'
+    owner node.root_user
+    group node.root_group
     mode '0755'
   end
 
@@ -85,8 +85,8 @@ end
 # Workaround for https://github.com/fedora-sysv/initscripts/issues/296
 cookbook_file '/sbin/ifup-pre-local' do
   source 'ifup-pre-local'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0755'
 end
 
@@ -200,8 +200,8 @@ end
 # the provider.
 template '/sbin/ifup-local' do
   source 'ifup-local.erb'
-  owner 'root'
-  group 'root'
+  owner node.root_user
+  group node.root_group
   mode '0755'
   notifies :run, 'whyrun_safe_ruby_block[trigger re-run of ifup-local]',
            :immediately

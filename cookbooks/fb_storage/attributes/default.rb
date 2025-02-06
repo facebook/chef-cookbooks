@@ -35,7 +35,6 @@ default['fb_storage'] = {
     'scheduler' => nil,
     'queue_depth' => nil,
     'over_provisioning' => 'low',
-    'over_provisioning_mapping' => {},
     'max_sectors_kb' => nil,
   },
   'format_options' => nil,
@@ -50,4 +49,6 @@ default['fb_storage'] = {
   ],
   '_clowntown_device_order_method' => nil,
   '_clowntown_override_file_method' => nil,
+  '_skip_persistency' => [],
+  '_skip_extra_devices' => [],
 }

@@ -34,6 +34,15 @@ Fluentbit supports built-in and external plugins.
 * RHEL
 * Windows
 
+### Upgrade to fluent-bit package/service/directory name
+FluentBit moved from `td-agent-bit` naming starting with [v1.9.9](https://docs.fluentbit.io/manual/installation/upgrade-notes#fluent-bit-v1.9.9).
+If your tier uses FluentBit and you want to continue using the old
+'td-agent-bit' you can by setting:
+`node.default['fb_fluentbit']['adopt_package_name_fluent-bit'] = false`
+
+**Important dates for this**
+- April 15th, 2024 support of the `td-agen-bit` name will be dropped
+
 ### Install FluentBit
 The package installation of FluentBit is managed through defining:
 `node.default['fb_fluentbit']['manage_packages'] = true`
@@ -173,7 +182,7 @@ node.default['fb_fluentbit']['multiline_parser']['multiline-choco'] = {
   'name' => 'multiline-choco',
   'type' => 'regex',
   'flush_timeout' => '1000',
-  "rules" => (
+  "rules" => [
     {
       "state_name" => "start_state",
       "pattern" => "/^(?<time>\d{4}\-\d{2}\-\d{2} \d{2}\:\d{2}\:\d{2},\d+) (?<thread>\d+) \[(?<log_level>(DEBUG|INFO |WARN |ERROR))\].*$/",
@@ -184,7 +193,7 @@ node.default['fb_fluentbit']['multiline_parser']['multiline-choco'] = {
       "pattern" => "/^(?!\d{4}\-\d{2}\-\d{2} \d{2}\:\d{2}\:\d{2},\d+).*/",
       "next_state" => "cont",
     },
-  ),
+  ],
 }
 ```
 
@@ -214,3 +223,7 @@ like so:
 restart_command = 'powershell.exe -File C:\restart-script.ps1'
 node.default['fb_fluentbit']['custom_svc_restart_command'] = restart_command
 ```
+
+### Windows Service Enforcement
+To ensure the service is active and enabled (set to Automatic) on Windows,
+it can be configured with `node.default['fb_fluentbit']['keep_alive'] = true`

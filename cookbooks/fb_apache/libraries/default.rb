@@ -85,5 +85,26 @@ module FB
     def self.get_module_packages(mods, pkgs)
       mods.map { |mod| pkgs[mod] }.uniq.compact
     end
+
+    def self.base_packages(node)
+      node.value_for_platform_family(
+        'rhel' => ['httpd', 'mod_ssl'],
+        'debian' => ['apache2'],
+      )
+    end
+
+    def self.packages(node)
+      base_packages(node) + FB::Apache.get_module_packages(
+        node['fb_apache']['modules'],
+        node['fb_apache']['module_packages'],
+      )
+    end
+
+    def self.service(node)
+      node.value_for_platform_family(
+        'rhel' => 'httpd',
+        'debian' => 'apache2',
+      )
+    end
   end
 end

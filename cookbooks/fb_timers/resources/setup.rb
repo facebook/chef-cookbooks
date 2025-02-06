@@ -16,9 +16,11 @@
 # limitations under the License.
 #
 
+unified_mode(false) if Chef::VERSION >= 18 # TODO(T144966423)
 action :run do
+  timer_path = node['fb_timers']['_timer_path']
   # Delete old jobs
-  Dir.glob("#{node['fb_timers']['_timer_path']}/*").each do |path|
+  Dir.glob("#{timer_path}/*").each do |path|
     # this doubles as the unit name.
     fname = ::File.basename(path)
 
@@ -52,7 +54,7 @@ action :run do
     # We have to do this first cause you can't disable a unit who's file has
     # disappeared off the filesystem
     possible_link = "/etc/systemd/system/#{fname}"
-    if ::File.symlink?(possible_link) && # ~FC023
+    if ::File.symlink?(possible_link) &&
       ::File.readlink(possible_link) == path
       # systemd can get confused if you delete the file without disabling
       # the unit first. Disabling a linked unit removes the symlink anyway.
@@ -128,18 +130,18 @@ action :run do
       unless conf['only_if'].call
         Chef::Log.debug("fb_timers: Not including #{conf['name']}" +
                         'due to only_if')
-        node.rm('fb_timers', 'jobs', conf['name'])
+        node.rm_default('fb_timers', 'jobs', conf['name'])
         next
       end
     end
 
     %w{service timer}.each do |type|
-      filename = "#{node['fb_timers']['_timer_path']}/#{conf['name']}.#{type}"
+      filename = "#{timer_path}/#{conf['name']}.#{type}"
       template filename do
         source "#{type}.erb"
         mode '0644'
-        owner 'root'
-        group 'root'
+        owner node.root_user
+        group node.root_group
         # Use of variables within templates is heavily discouraged.
         # It's safe to use here since it's in a provider and isn't used
         # directly.
@@ -178,43 +180,55 @@ action :run do
       FB::Version.new(node['packages']['systemd'][
         'version']) <= FB::Version.new('201')
     end
-    owner 'root'
-    group 'root'
+    owner node.root_user
+    group node.root_group
     mode '0755'
   end
 
   # Setup services
-  node['fb_timers']['jobs'].to_hash.each_pair do |_name, conf|
-    timer_name = "#{conf['name']}.timer"
-
-    service "#{timer_name} enable/start" do
-      only_if do
-        conf['autostart'] && FB::Version.new(node['packages']['systemd'][
-          'version']) > FB::Version.new('201')
-      end
-      service_name timer_name
-      action [:enable, :start]
+  if FB::Version.new(node['packages']['systemd']['version']) > FB::Version.new('201')
+    # Build the list of timers with autostart enabled
+    enabled_timers = node['fb_timers']['jobs'].each_pair.select do |_name, conf|
+      conf['autostart']
+    end.map { |_name, conf| "#{conf['name']}.timer" }
+    Chef::Log.debug("fb_timers: autostart enabled timers is: #{enabled_timers}")
+    timers_status = FB::Timers.get_systemd_unit_status(enabled_timers)
+    # Build the list of timers which need to be enabled
+    need_enable = timers_status.each_key.reject do |id|
+      timers_status[id][:UnitFileState] == 'enabled'
     end
-
+    # Build the list of timers which need to be started
+    need_start = timers_status.each_key.reject do |id|
+      timers_status[id][:Active] == 'active'
+    end
+    if !need_enable.empty?
+      Chef::Log.info("fb_timers: enabling timers: #{need_enable}")
+      execute 'Enable systemd timers' do
+        command "systemctl enable #{need_enable.join(' ')}"
+      end
+    end
+    if !need_start.empty?
+      Chef::Log.info("fb_timers: starting timers: #{need_start}")
+      execute 'Start systemd timers' do
+        command "systemctl start #{need_start.join(' ')}"
+      end
+    end
+  else
     # Versions prior to 201 did not support enablement of unit symlinks.
     # Workaround is to create the following symlink.
-    link "/etc/systemd/system/timers.target.wants/#{timer_name}" do
-      only_if do
-        conf['autostart'] && FB::Version.new(node['packages']['systemd'][
-          'version']) <= FB::Version.new('201')
-      end
-      to lazy {
-        "#{node['fb_timers']['_timer_path']}/#{conf['name']}.timer"
-      }
-    end
+    node['fb_timers']['jobs'].to_hash.each_pair do |_name, conf|
+      timer_name = "#{conf['name']}.timer"
 
-    service "#{timer_name} start only" do
-      only_if do
-        conf['autostart'] && FB::Version.new(node['packages']['systemd'][
-          'version']) <= FB::Version.new('201')
+      link "/etc/systemd/system/timers.target.wants/#{timer_name}" do
+        only_if { conf['autostart'] }
+        to "#{timer_path}/#{conf['name']}.timer"
       end
-      service_name timer_name
-      action [:start]
+
+      service "#{timer_name} start only" do
+        only_if { conf['autostart'] }
+        service_name timer_name
+        action [:start]
+      end
     end
   end
 
@@ -223,7 +237,7 @@ action :run do
     # only delete symlinks
     ::File.symlink?(unit) &&
       # whose targets are timer files
-      ::File.readlink(unit).start_with?(node['fb_timers']['_timer_path']) &&
+      ::File.readlink(unit).start_with?(timer_path) &&
       # whose targets don't exist
       !::File.exist?(::File.readlink(unit))
   end
