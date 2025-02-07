@@ -143,10 +143,11 @@ done
 # or command-line...
 save_internaldir=""
 save_upstreamdir=""
-if [ -n "$internaldir" ]; then
+# +x syntax required to not trip up -u
+if [[ -n "${internaldir+x}" ]]; then
   save_internaldir="$internaldir"
 fi
-if [ -n "$upstreamdir" ]; then
+if [[ -n "${upstreamdir+x}" ]]; then
   save_upstreamdir="$upstreamdir"
 fi
 
@@ -156,8 +157,8 @@ upstreamdir="$default_upstreamdir"
 
 # now read the config file, if we have one
 if [ -e "$config" ]; then
-  # shellcheck disable=SC1090
   info "Loading config from $config"
+  # shellcheck disable=SC1090
   source "$config" || die "Configuration file $config malformed"
 fi
 
