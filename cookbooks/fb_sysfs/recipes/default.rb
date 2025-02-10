@@ -27,7 +27,6 @@ systemd_unit 'set_sysfs_on_boot.service' do
   ExecStart=/usr/local/bin/set_sysfs_on_boot.py
   TimeoutStartSec=1m
   TimeoutStopSec=2m
-  Before=tupperware_agent.service
 
   [Install]
   WantedBy=default.target
