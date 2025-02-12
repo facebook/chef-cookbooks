@@ -1,0 +1,5 @@
+# This file is maintained by Chef. Do not edit, all changes will be
+# overwritten. See opsfiles/chef/cookbooks/core/fb_chrony
+
+# Command-line options for chronyd
+OPTIONS="-F 2 -r"
