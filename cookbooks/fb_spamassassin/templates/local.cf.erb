@@ -1,0 +1,4 @@
+# This file is controlled by chef, do not edit
+<% node['fb_spamassassin']['local'].each do |key, val| %>
+<%   FB::SpamAssassin::TemplateHelper.render(_buf, 0, key, val) %>
+<% end %>

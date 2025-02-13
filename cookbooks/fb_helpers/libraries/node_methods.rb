@@ -305,8 +305,24 @@ class Chef
       debian? && self['platform_version'].include?('sid')
     end
 
+    def debian_min_version?(version)
+      self.debian? && (self['platform_version'].to_i >= version || self.debian_sid?)
+    end
+
+    def debian_max_version?(version)
+      self.debian? && self['platform_version'].to_i <= version
+    end
+
     def ubuntu?
       self['platform'] == 'ubuntu'
+    end
+
+    def ubuntu_min_version?(version)
+      self.ubuntu? && self['platform_version'].to_i >= version
+    end
+
+    def ubuntu_max_version?(version)
+      self.ubuntu? && self['platform_version'].to_i <= version
     end
 
     def ubuntu12?
