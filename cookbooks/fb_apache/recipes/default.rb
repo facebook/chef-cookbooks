@@ -178,11 +178,19 @@ end
 
 # We want to collect apache stats
 template "#{confdir}/status.conf" do
+  only_if { node['fb_apache']['enable_public_status'] }
   source 'status.erb'
   owner node.root_user
   group node.root_group
   mode '0644'
   variables(:location => '/server-status')
+  notifies :verify, 'fb_apache_verify_configs[doit]', :before
+  notifies :restart, 'service[apache]'
+end
+
+file "#{confdir}/status.conf" do
+  not_if { node['fb_apache']['enable_public_status'] }
+  action :delete
   notifies :verify, 'fb_apache_verify_configs[doit]', :before
   notifies :restart, 'service[apache]'
 end
