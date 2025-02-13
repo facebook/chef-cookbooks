@@ -28,37 +28,55 @@ module FB
       '  ' * indent
     end
 
-    # Map a hash to a apache-style syntax
-    def self.template_hash_handler(buf, indent, kw, data)
-      if HANDLERS.keys.include?(kw)
-        self.send(HANDLERS[kw], buf, indent, kw, data)
-        return
-      end
-      buf << indentstr(indent)
-      buf << "<#{kw}>\n"
-      data.each do |key, val|
+    def self.render_apache_conf(buf, depth, config)
+      config.each do |kw, val|
+        if HANDLERS.keys.include?(kw)
+          self.send(HANDLERS[kw], buf, depth, val)
+          next
+        end
+
+        indent = indentstr(depth)
+
         case val
-        when String
-          buf << indentstr(indent + 1)
-          buf << "#{key} #{val}\n"
+        when String, Integer
+          buf << indent
+          buf << "#{kw} #{val}\n"
+
+        when Array
+          val.each do |entry|
+            buf << indent
+            buf << "#{kw} #{entry}\n"
+          end
+
         when Hash
-          template_hash_handler(buf, indent + 1, key, val)
+          buf << indent
+          buf << "<#{kw}>\n"
+
+          render_apache_conf(buf, depth + 1, val)
+
+          buf << indent
+          buf << "</#{kw.split[0]}>\n"
+
+        else
+          fail "fb_apache: bad type for value of #{kw}: #{val.class}"
         end
       end
-      buf << indentstr(indent)
-      buf << "</#{kw.split[0]}>\n"
     end
 
     # Helper for rewrite syntax
-    def self.template_rewrite_helper(buf, _indent, _key, rules)
+    def self.template_rewrite_helper(buf, depth, rules)
+      indent = indentstr(depth)
+
       rules.each do |name, ruleset|
-        buf << indentstr(1)
+        buf << indent
         buf << "# #{name}\n"
+
         ruleset['conditions']&.each do |cond|
-          buf << indentstr(1)
+          buf << indent
           buf << "RewriteCond #{cond}\n"
         end
-        buf << indentstr(1)
+
+        buf << indent
         buf << "RewriteRule #{ruleset['rule']}\n\n"
       end
     end
