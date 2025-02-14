@@ -7,18 +7,19 @@ Requirements
 
 Attributes
 ----------
+* node['fb_apache']['enable_default_site']
+* node['fb_apache']['enable_public_status']
+* node['fb_apache']['extra_configs']
 * node['fb_apache']['manage_packages']
 * node['fb_apache']['manage_service']
-* node['fb_apache']['sites'][$SITE][$CONFIG]
-* node['fb_apache']['sysconfig'][$KEY]
-* node['fb_apache']['sysconfig']['_extra_lines']
+* node['fb_apache']['module_packages']
 * node['fb_apache']['modules']
 * node['fb_apache']['modules_directory']
 * node['fb_apache']['modules_mapping']
-* node['fb_apache']['module_packages']
-* node['fb_apache']['enable_default_site']
-* node['fb_apache']['extra_configs']
 * node['fb_apache']['mpm']
+* node['fb_apache']['sites'][$SITE][$CONFIG]
+* node['fb_apache']['sysconfig'][$KEY]
+* node['fb_apache']['sysconfig']['_extra_lines']
 
 Usage
 -----
@@ -218,6 +219,11 @@ and we've pre-populated all the common modules on both distro variants.
 
 Finally, `node['fb_apache']['modules_directory']` is set to the proper module
 directory for your distro, but you may override it if you'd like.
+
+### Global status
+By default this cookbook will enable a mod_status handler available publically
+at /server-status. You can disable this with
+`node.default['fb_apache']['enable_public_status'] = false`.
 
 ### Extra Configs
 Everything in `node['fb_apache']['extra_configs']` will be converted from hash

@@ -87,6 +87,7 @@ end
 
 default['fb_apache'] = {
   'sysconfig' => sysconfig,
+  'enable_public_status' => true,
   'manage_packages' => true,
   'manage_service' => true,
   'enable_default_site' => true,
