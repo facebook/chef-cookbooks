@@ -6,39 +6,38 @@ driver:
   chef_version: <%= ENV['CHEF_VERSION'] || 'current' %>
 
 platforms:
-  - name: centos-7
+  - name: centos-stream-9
     driver:
-      image: dokken/centos-7
+      image: dokken/centos-stream-9
       pid_one_command: /usr/lib/systemd/systemd
       intermediate_instructions:
         # stub out /etc/fstab for fb_fstab
         - RUN touch /etc/fstab
         # enable EPEL (for stuff like hddtemp)
-        - RUN rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-  - name: centos-stream-8
+        - RUN rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
+  - name: centos-stream-10
     driver:
-      image: dokken/centos-stream-8
+      image: dokken/centos-stream-10
       pid_one_command: /usr/lib/systemd/systemd
       intermediate_instructions:
         # stub out /etc/fstab for fb_fstab
         - RUN touch /etc/fstab
+        # mirrorlist.centos.org doesn't exist anymore, use baseurl
+        - RUN sed -i=.bak -e 's/^mirrorlist/#mirrorlist/g' -e 's!^#baseurl=http://mirror.centos.org/$contentdir/$stream!baseurl=https://vault.centos.org/$stream!g' /etc/yum.repos.d/*.repo
+        - RUN rm /etc/yum.repos.d/*.bak
         # enable EPEL (for stuff like hddtemp)
-        - RUN rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
-  - name: ubuntu-18.04
+        - RUN rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-10.noarch.rpm
+  - name: ubuntu-24.04
     driver:
-      image: dokken/ubuntu-18.04
+      image: dokken/ubuntu-24.04
       pid_one_command: /bin/systemd
-  - name: ubuntu-20.04
+  - name: ubuntu-22.04
     driver:
-      image: dokken/ubuntu-20.04
+      image: dokken/ubuntu-22.04
       pid_one_command: /bin/systemd
-  - name: debian-9
+  - name: debian-12
     driver:
-      image: dokken/debian-9
-      pid_one_command: /bin/systemd
-  - name: debian-10
-    driver:
-      image: dokken/debian-10
+      image: dokken/debian-12
       pid_one_command: /bin/systemd
 
 provisioner:

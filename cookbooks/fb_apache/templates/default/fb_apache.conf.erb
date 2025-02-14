@@ -3,5 +3,4 @@
 <%=   render 'apache_modules.erb' %>
 
 <%  end %>
-<%= render 'apache_conf.erb',
-        :variables => {:conf => node['fb_apache']['extra_configs']} %>
+<% FB::Apache.render_apache_conf(_buf, 0, node['fb_apache']['extra_configs']) %>
