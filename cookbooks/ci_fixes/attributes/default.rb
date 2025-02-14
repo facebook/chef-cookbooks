@@ -15,24 +15,3 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-# monkeypatch for https://github.com/chef/ohai/pull/1476
-if FB::Version.new(Chef::VERSION) < FB::Version.new('16.2.2')
-  Chef::Log.debug('ci_fixes: applying virtualization monkeypatch')
-
-  if File.exist?('/proc/self/cgroup')
-    cgroup_content = File.read('/proc/self/cgroup')
-    if cgroup_content =~ %r{^\d+:[^:]*:/(lxc|docker)/.+$} ||
-      cgroup_content =~ %r{^\d+:[^:]*:/[^/]+/(lxc|docker)-?.+$}
-      Chef::Log.info(
-        'Plugin Virtualization Monkeypatch: /proc/self/cgroup indicates ' +
-        "#{$1} container. Detecting as #{$1} guest",
-      )
-      node.automatic['virtualization']['system'] = $1 # rubocop:disable Chef/Meta/UseNodeDefault
-      node.automatic['virtualization']['role'] = 'guest' # rubocop:disable Chef/Meta/UseNodeDefault
-      node.automatic['virtualization']['systems'][$1.to_s] = 'guest' # rubocop:disable Chef/Meta/UseNodeDefault
-    end
-  end
-else
-  Chef::Log.warn('ci_fixes: clean up the virtualization monkeypatch!')
-end
