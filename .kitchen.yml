@@ -22,6 +22,9 @@ platforms:
       intermediate_instructions:
         # stub out /etc/fstab for fb_fstab
         - RUN touch /etc/fstab
+        # mirrorlist.centos.org doesn't exist anymore, use baseurl
+        - RUN sed -i=.bak -e 's/^mirrorlist/#mirrorlist/g' -e 's!^#baseurl=http://mirror.centos.org/$contentdir/$stream!baseurl=https://vault.centos.org/$stream!g' /etc/yum.repos.d/*.repo
+        - RUN rm /etc/yum.repos.d/*.bak
         # enable EPEL (for stuff like hddtemp)
         - RUN rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
   - name: ubuntu-18.04
@@ -32,13 +35,9 @@ platforms:
     driver:
       image: dokken/ubuntu-20.04
       pid_one_command: /bin/systemd
-  - name: debian-9
+  - name: debian-11
     driver:
-      image: dokken/debian-9
-      pid_one_command: /bin/systemd
-  - name: debian-10
-    driver:
-      image: dokken/debian-10
+      image: dokken/debian-11
       pid_one_command: /bin/systemd
 
 provisioner:
