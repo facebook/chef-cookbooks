@@ -1,0 +1,4 @@
+# This file is controlled by Chef, do not modify!
+<% node['fb_opendkim']['config'].each do |key, val| %>
+<%=  key %> <%= val %>
+<% end %>

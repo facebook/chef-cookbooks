@@ -1,0 +1,8 @@
+# This file managed by Chef - do not modify!
+<% node['fb_cyrus']['configs']['cyrus'].each do |section, config| %>
+<%=  section.upcase %> {
+<%   config.each do |entry, options| %>
+    <%= entry %>  <%= options.map { |x, y| "#{x}=#{y.is_a?(Integer) ? y : "\"#{y}\""}" }.join(' ') %>
+<%   end %>
+}
+<% end %>

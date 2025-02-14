@@ -48,10 +48,8 @@ module FB
         return "#{indent}#{k} true"
       elsif v.is_a?(FalseClass)
         return "#{indent}#{k} false"
-      elsif v.is_a?(Numeric)
-        return "#{indent}#{k} #{v}"
       else
-        return "#{indent}#{k} \"#{v}\""
+        return "#{indent}#{k} #{v}"
       end
     end
   end

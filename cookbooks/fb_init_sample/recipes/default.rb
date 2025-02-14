@@ -79,7 +79,9 @@ include_recipe 'fb_limits'
 include_recipe 'fb_hostconf'
 include_recipe 'fb_sysctl'
 # HERE: networking
-include_recipe 'fb_users'
+# until we defined a UID_MAP that works with testing, this can't
+# run in kitchen tests
+# include_recipe 'fb_users'
 if node.centos?
   # We turn this off because the override causes intermittent failures in
   # Travis when rsyslog is restarted
@@ -126,12 +128,18 @@ if node.firstboot_tier?
 end
 
 unless node.centos6?
-  include_recipe 'fb_apcupsd'
+  # not packaged in C10 and above
+  if node.centos_max_version?(9)
+    include_recipe 'fb_apcupsd'
+  end
   # Turn off dnsmasq as it doesn't play well with travis
   node.default['fb_dnsmasq']['enable'] = false
   include_recipe 'fb_dnsmasq'
 end
-include_recipe 'fb_collectd'
+# not packaged in C10 and above
+unless node.centos10?
+  include_recipe 'fb_collectd'
+end
 include_recipe 'fb_rsync::server'
 if node.centos?
   include_recipe 'fb_sysstat'

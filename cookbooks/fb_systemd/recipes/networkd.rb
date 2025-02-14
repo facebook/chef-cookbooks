@@ -19,7 +19,7 @@
 #
 
 fb_helpers_gated_template '/etc/systemd/networkd.conf' do
-  only_if { node['fb_systemd']['networkd']['enable'] }
+  only_if { defined?(FB::Networkd) && node['fb_systemd']['networkd']['enable'] }
   allow_changes node.nw_changes_allowed?
   source 'systemd.conf.erb'
   owner node.root_user

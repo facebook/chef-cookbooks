@@ -24,16 +24,26 @@ if node.rhel_family? || node.fedora_family?
   chrony_conf = '/etc/chrony.conf'
   chrony_user = 'chrony'
   chrony_group = 'chrony'
+  chrony_sysconfig = '/etc/sysconfig/chronyd'
 elsif node.debian_family?
   chrony_svc = 'chrony'
   chrony_conf = '/etc/chrony/chrony.conf'
   chrony_user = '_chrony'
   chrony_group = '_chrony'
+  chrony_sysconfig = '/etc/default/chrony'
 else
   fail 'fb_chrony: unsupported platform, aborting!'
 end
 
 include_recipe 'fb_chrony::packages'
+
+cookbook_file chrony_sysconfig do
+  source 'chronyd_sysconfig'
+  mode '0755'
+  owner node.root_user
+  group node.root_group
+  notifies :restart, 'service[chrony]'
+end
 
 directory '/var/run/chrony' do
   owner chrony_user

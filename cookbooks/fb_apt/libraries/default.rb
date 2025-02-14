@@ -19,6 +19,9 @@
 module FB
   # APT utility functions
   class Apt
+    TRUSTED_D = '/etc/apt/trusted.gpg.d'.freeze
+    PEM_D = "#{Chef::Config[:file_cache_path]}/fb_apt_pems".freeze
+
     # Internal helper function to generate /etc/apt.conf entries
     def self._gen_apt_conf_entry(k, v, i = 0)
       indent = ' ' * i
@@ -116,35 +119,121 @@ module FB
       end.flatten
     end
 
-    # Here ye here ye, read this before touching keys!
-    #
-    # On modern debian and ubuntu, all keys are stored in files in
-    # `/etc/apt/trusted.gpg.d/`, and **never** on `/etc/apt/trusted.gpg`,
-    # this we can know what the Distro keys are by reading all keys in
-    # all keyring files owned by packages. So what's what we populate
-    # the default list with.
-    #
-    # However, for Ubuntu <= 16.04 they are on the `/etc/apt/trusted.gpg` list,
-    # so we hard-code those, the distros are old enough they won't change.
-    def self.get_official_keyids(node)
-      if node.ubuntu? && node['platform_version'].to_i <= 16
-        return %w{
-          40976EAF437D05B5
-          46181433FBB75451
-          3B4FE6ACC0B21F32
-          D94AA3F0EFE21092
-          0BFB847F3F272F5B
-        }
-      end
-      keyids = _extract_keyids(_get_owned_keyring_files(node))
-      Chef::Log.debug("fb_apt[keys]: Official keyids: #{keyids}")
-      keyids
+    def self.get_legacy_keyids
+      _extract_keyids(['/etc/apt/trusted.gpg'])
     end
 
-    def self.get_installed_keyids(node)
-      rings = _get_owned_keyring_files(node)
-      rings << '/etc/apt/trusted.gpg'
-      _extract_keyids(rings)
+    def self.determine_base_repo_components(node)
+      components = %w{main}
+      if node.ubuntu?
+        components << 'universe'
+      end
+
+      if node['fb_apt']['want_non_free']
+        if node.debian?
+          components += %w{contrib non-free non-free-firmware}
+        elsif node.ubuntu?
+          components += %w{restricted multiverse}
+        else
+          fail "Don't know how to setup non-free for #{node['platform']}"
+        end
+      end
+
+      components
+    end
+
+    def self.base_sources(node)
+      base_repos = {}
+      sources = {}
+      mirror = node['fb_apt']['mirror']
+      security_mirror = node['fb_apt']['security_mirror']
+      # By default, we want our current distro to assemble to repo URLs.
+      # However, for when people want to upgrade across distros, we let
+      # them specify a distro to upgrade to.
+      distro = node['fb_apt']['distro'] || node['lsb']['codename']
+
+      # only add base repos if mirror is set and codename is available
+      if mirror && distro
+        components = FB::Apt.determine_base_repo_components(node)
+
+        base_repos['base'] = {
+          'url' => mirror,
+          'suite' => distro,
+        }
+
+        # Security updates
+        pv = node['platform_version'].to_i
+        if node.debian? && distro != 'sid' && pv != 0 && pv > 9
+          # In buster/10 and before the suite was ${distro}/updates
+          # After that it became ${distro}-security
+          suite = pv == 10 ? "#{distro}/updates" : "#{distro}-security"
+          base_repos['security'] = {
+            'url' => "#{security_mirror}debian-security",
+            'suite' => suite,
+          }
+        elsif node.ubuntu?
+          base_repos['security'] = {
+            'url' => security_mirror,
+            'suite' => "#{distro}-security",
+          }
+        end
+
+        # Debian Sid doesn't have updates or backports
+        unless node.debian? && distro == 'sid'
+          # Stable updates
+          base_repos['updates'] = {
+            'url' => mirror,
+            'suite' => "#{distro}-updates",
+          }
+
+          if node['fb_apt']['want_backports']
+            base_repos['backports'] = {
+              'url' => mirror,
+              'suite' => "#{distro}-backports",
+            }
+          end
+        end
+
+        base_keyring = node.debian? ?
+          '/usr/share/keyrings/debian-archive-keyring.gpg' :
+          '/usr/share/keyrings/ubuntu-archive-keyring.gpg'
+        base_repos.each do |name, config|
+          config.merge!({
+                          'options' => {
+                            'signed-by' => base_keyring,
+                          },
+            'components' => components,
+            'type' => 'deb',
+                        })
+          sources[name] = config
+          if node['fb_apt']['want_source']
+            source["#{name}_src"] = config.merge({ 'type' => 'deb-src' })
+          end
+        end
+      end
+      sources
+    end
+
+    def self.gen_sources_line(config)
+      type = config['type'] || 'deb'
+      options = config['options'].dup || {}
+      if config['key']
+        options['signed-by'] = keyring_path_from_name(config['key'])
+      end
+      c_str = config['components'].join(' ')
+      options_str = ''
+      unless options.empty?
+        options_str = "[#{options.map { |k, v| "#{k}=#{v}" }.join(' ')}] "
+      end
+      "#{type} #{options_str}#{config['url']} #{config['suite']} #{c_str}"
+    end
+
+    def self.pem_path_from_name(name)
+      "#{PEM_D}/#{name}.asc"
+    end
+
+    def self.keyring_path_from_name(name)
+      "#{TRUSTED_D}/#{name}.gpg"
     end
   end
 end

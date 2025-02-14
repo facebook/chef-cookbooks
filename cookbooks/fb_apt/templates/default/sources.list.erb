@@ -1,6 +1,14 @@
 # This file is maintained by Chef. Do not edit, all changes will be
 # overwritten. See fb_apt/README.md
 
-<% node['fb_apt']['repos'].each do |repo| -%>
-<%=  repo %>
-<% end -%>
+<% node['fb_apt']['sources'].each do |name, config| %>
+# <%= name %>
+<%=  FB::Apt.gen_sources_line(config) %>
+<% end %>
+<% unless node['fb_apt']['repos'].empty? %>
+# Repos from the legacy node['fb_apt']['repos'] - please migrate
+# these to node['fb_apt']['sources']
+<%   node['fb_apt']['repos'].each do |repo| %>
+<%=    repo %>
+<%   end %>
+<% end %>

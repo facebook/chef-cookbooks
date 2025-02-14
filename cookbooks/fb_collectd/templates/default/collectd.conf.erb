@@ -7,10 +7,19 @@
 <% end -%>
 
 <% config['plugins'].each do |plugin, config| -%>
+<%   if config && config['_load_config'] %>
+<LoadPlugin <%= plugin %>>
+<%     config['_load_config'].each do |key, val| %>
+<%=      FB::Collectd._gen_collectd_conf_entry(key, val, 1) %>
+<%     end %>
+</LoadPlugin>
+<%   else %>
 LoadPlugin <%= plugin %>
+<%   end %>
 <%   if config -%>
 <Plugin <%= plugin %>>
 <%     config.each do |key, val| -%>
+<%       next if key == '_load_config' %>
 <%=      FB::Collectd._gen_collectd_conf_entry(key, val, 2) %>
 <%     end -%>
 </Plugin>

@@ -27,7 +27,11 @@ end
 include_recipe 'fb_apache'
 if node.debian? || (node.ubuntu? && !node.ubuntu16?)
   include_recipe 'fb_apt_cacher'
-  include_recipe 'fb_smokeping'
+  # ubuntu post-18 doesn't package echoping which the config
+  # in fb_smokeping depends on, so don't run it, for now
+  if node.ubuntu18? || node.ubuntu20?
+    include_recipe 'fb_smokeping'
+  end
 end
 
 # Currently fb_reprepro is broken

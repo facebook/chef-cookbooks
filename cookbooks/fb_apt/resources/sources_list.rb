@@ -18,66 +18,17 @@
 
 unified_mode(false) if Chef::VERSION >= 18 # TODO(T144966423)
 action :run do
-  mirror = node['fb_apt']['mirror']
-  security_mirror = node['fb_apt']['security_mirror']
-  # By default, we want our current distro to assemble to repo URLs.
-  # However, for when people want to upgrade across distros, we let
-  # them specify a distro to upgrade to.
-  distro = node['fb_apt']['distro'] || node['lsb']['codename']
+  base_sources = FB::Apt.base_sources(node)
+  # update repos list and ensure base repos come first
+  node.default['fb_apt']['sources'] = base_sources.merge(
+    node['fb_apt']['sources'],
+  )
 
-  # only add base repos if mirror is set and codename is available
-  if mirror && distro
-    components = %w{main}
-    if node.ubuntu?
-      components << 'universe'
-    end
-
-    if node['fb_apt']['want_non_free']
-      if node.debian?
-        components += %w{contrib non-free}
-      elsif node.ubuntu?
-        components += %w{restricted multiverse}
-      else
-        fail "Don't know how to setup non-free for #{node['platform']}"
-      end
-    end
-
-    components_entry = components.join(' ')
-    base_repos = [
-      # Main repo
-      "#{mirror} #{distro} #{components_entry}",
-    ]
-
-    # Security updates
-    if node.debian? && distro != 'sid'
-      base_repos <<
-        "#{security_mirror} #{distro}/updates #{components_entry}"
-    elsif node.ubuntu?
-      base_repos <<
-        "#{security_mirror} #{distro}-security " +
-        components_entry
-    end
-
-    # Debian Sid doesn't have updates or backports
-    unless node.debian? && distro == 'sid'
-      # Stable updates
-      base_repos << "#{mirror} #{distro}-updates #{components_entry}"
-
-      if node['fb_apt']['want_backports']
-        base_repos << "#{mirror} #{distro}-backports #{components_entry}"
-      end
-    end
-
-    repos = []
-    base_repos.each do |repo|
-      repos << "deb #{repo}"
-      if node['fb_apt']['want_source']
-        repos << "deb-src #{repo}"
-      end
-    end
-
-    # update repos list and ensure base repos come first
-    node.default['fb_apt']['repos'] = repos + node['fb_apt']['repos']
+  unless node['fb_apt']['repos'].empty?
+    Chef::Log.warn(
+      'fb_apt: `node["fb_apt"]["repos"]` is deprecated. Please migrate to' +
+      ' `node["fb_apt"]["sources"]`.',
+    )
   end
 
   template '/etc/apt/sources.list' do

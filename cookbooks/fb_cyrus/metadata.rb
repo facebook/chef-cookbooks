@@ -1,0 +1,6 @@
+name 'fb_cyrus'
+maintainer 'Meta Platforms, Inc.'
+maintainer_email 'noreply@facebook.com'
+license 'Apache-2.0'
+description 'Manages Cyrus Mail Services'
+version '0.1.0'

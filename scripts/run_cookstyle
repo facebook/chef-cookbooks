@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # vim: syntax=ruby:expandtab:shiftwidth=2:softtabstop=2:tabstop=2
 #
@@ -19,7 +19,55 @@
 
 set -eu
 
-default_config='.cookstyle_combined.yml'
+usage() {
+  cat <<EOF
+Usage:
+   $0 [<config>]]
+   $0 -C [<options>] [<file>...]
+
+By default this script runs in backwards-compatibility mode where
+the only arguments is a config. However, if you pass in -C, it will
+parse options, and you can pass in a config with -c, and any additional
+arguments will be passed as files/dirs to be linted.
+
+Options:
+  -a            Enable autocorrect
+  -C            Disable compatibility mode
+  -c <config>   Use <config> file for cookstyle
+  -h            Print this message and exist
+EOF
+}
+
+CONFIG='.cookstyle_combined.yml'
+AUTOCORRECT=0
+COMPAT_MODE=1
+
+while getopts 'ac:Ch' opt; do
+  case "$opt" in
+    a)
+      AUTOCORRECT=1
+      ;;
+    c)
+      CONFIG="$OPTARG"
+      ;;
+    C)
+      COMPAT_MODE=0
+      ;;
+    h)
+      usage
+      exit 0
+      ;;
+    \?)
+      echo "Unknown option: -$OPTARG" >&2
+      exit 1
+      ;;
+  esac
+done
+
+# shift away args we parsed, what's left should be a config
+# file, if anything
+shift "$((OPTIND - 1))"
+
 if bundle exec cookstyle --version > /dev/null 2>&1; then
   COOKSTYLE='bundle exec cookstyle'
 elif [ -x /opt/chef-workstation/embedded/bin/cookstyle ]; then
@@ -29,18 +77,24 @@ else
   exit 1
 fi
 
-if [ "$#" -eq 0 ]; then
-  config="$default_config"
-elif [ "$#" -eq 1 ]; then
-  config="$1"
-else
-  echo "Usage: $0 [config]"
+if [ "$COMPAT_MODE" -eq 1 ]; then
+  if [ "$#" -eq 1 ]; then
+    CONFIG="$1"
+    shift
+  elif [ "$#" -ne 0 ]; then
+    usage
+    exit 1
+  fi
+fi
+
+if [ ! -r "$CONFIG" ]; then
+  echo "Cannot read config config: $CONFIG"
   exit 1
 fi
 
-if [ ! -r "$config" ]; then
-  echo "Cannot read config config: $config"
-  exit 1
+declare -a options
+if [ "$AUTOCORRECT" -eq 1 ]; then
+  options+=("-a")
 fi
 
-exec $COOKSTYLE --display-cop-names -c "$config"
+exec $COOKSTYLE --display-cop-names -c "$CONFIG" "${options[@]}" "$@"
