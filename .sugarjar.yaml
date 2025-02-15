@@ -1,0 +1,5 @@
+on_push: [lint]
+lint:
+  - scripts/run_cookstyle
+unit:
+  - scripts/run_chefspec
