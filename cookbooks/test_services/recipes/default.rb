@@ -18,6 +18,8 @@
 # limitations under the License.
 #
 
+include_recipe 'fb_bind'
+
 # Currently fb_vsftpd is broken on debian
 # https://github.com/facebook/chef-cookbooks/issues/149
 unless node.debian?

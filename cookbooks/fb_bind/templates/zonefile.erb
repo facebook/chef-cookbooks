@@ -1,0 +1,25 @@
+; This file is controlled by Chef, do not modify!
+; 
+; Zonefile for <%= @zone %>
+<% records = node['fb_bind']['zones'][@zone]['_records'] %>
+<% default_ttl = node['fb_bind']['default_zone_ttl'] %>
+$TTL <%= records['ttl'] || default_ttl %>
+<% records.each do |comment, info| %>
+<%   next if comment == 'ttl' %>
+<% if node['fb_bind']['include_record_comments_in_zonefiles'] %>
+; <%= comment %>
+<% end %>
+<%
+     name = info['name'] || '@'
+     cls = info['class'] || 'IN'
+     type = info['type'].upcase
+     if type == 'SOA'
+       val = FB::Bind::Helper.soa_to_val(info)
+     elsif type == 'TXT'
+       val = FB::Bind::Helper.txt_to_val(info)
+     else
+       val = info['value']
+     end
+%>
+<%=  "#{name}\t#{info['ttl']}\t#{cls}\t#{type}\t#{val}" %>
+<% end %>
