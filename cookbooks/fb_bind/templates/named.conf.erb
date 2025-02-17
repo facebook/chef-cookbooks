@@ -1,0 +1,24 @@
+# This file is controlled by Chef, do not edit
+<% FB::Bind::Helper.render_config(_buf, node['fb_bind']['config']) %>
+
+<% node['fb_bind']['zones'].each do |name, info| %>
+zone "<%= name %>" {
+<%
+    if ['primary', 'hint'].include?(info['type']) && info['_filename']
+      filename = info['_filename']
+    elsif info['type'] == 'secondary'
+      # seconary zones should be a relative path so that Bind can manage
+      # it's cache data in it's configured cache dir
+      filename = "secondary/#{name}"
+    else
+      filename = "#{@zones_dir}/primary/db.#{name}"
+    end
+%>
+  file "<%= filename %>";
+<%   info.each do |key, val| %>
+<%     next if key.start_with?('_') %>
+  <%= key %> <%= val.is_a?(Array) ? FB::Bind::Helper.gen_list_syntax(val) : val %>;
+<%   end %>
+};
+
+<% end %>

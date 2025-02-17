@@ -1,0 +1,14 @@
+# This file is controlled by Chef, do not modify!
+<% node['fb_bind']['sysconfig'].each do |key, val| %>
+<%
+     pval = case val
+            when TrueClass
+              'yes'
+            when FalseClass
+              'no'
+            else
+              val
+            end
+%>
+<%=  key.upcase %>="<%= pval %>"
+<% end %>

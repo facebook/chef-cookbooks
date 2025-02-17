@@ -1273,5 +1273,38 @@ class Chef
       @disruptable ||=
         self.firstboot_any_phase? || ENV['CHEF_BOOT_SERVICE'] == 'true'
     end
+
+    # Given a list of files, return those that are not owned by the relevant
+    # package management for this host.
+    #
+    # Note: When using this, if you have other filters (like, "is this in
+    # my config"), use this filter last, so that you don't execute pkgmgmt
+    # stuff on files you don't need to (and hopefully not at all)
+    def files_unowned_by_pkgmgmt(files)
+      # this uses the chef-utils helpers, which we should be moving towards
+      # instead of the fb_helpers helpers. rpm_based is obvious, debian?
+      # is all debian-derived distros
+      unowned_files = []
+      if rpm_based?
+        s = Mixlib::ShellOut.new(['/bin/rpm', '-qf'] + files).run_command
+        unless s.exitstatus == 0
+          s.stdout.split("\n").each do |line|
+            m = /file (.*) is not owned by any package/.match(line.strip)
+            next unless m
+            unowned_files << m[1]
+          end
+        end
+      elsif debian?
+        s = Mixlib::ShellOut.new(['dpkg', '-S'] + files).run_command
+        unless s.exitstatus == 0
+          s.stderr.split("\n").each do |line|
+            m = /no path found matching pattern (.*)/.match(line.strip)
+            next unless m
+            unowned_files << m[1]
+          end
+        end
+      end
+      unowned_files
+    end
   end
 end
