@@ -1,0 +1,8 @@
+# This file is managed by Chef, do not modify manually!
+<% node['fb_grafana']['config'].each do |section, block| %>
+[<%= section %>]
+<%   block.each do |key, val| %>
+<%=    key %> = <%= val %>
+<%   end %>
+
+<% end %>
