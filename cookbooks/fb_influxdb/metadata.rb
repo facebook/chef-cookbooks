@@ -1,0 +1,6 @@
+name 'fb_influxdb'
+maintainer 'Meta Platforms, Inc.'
+maintainer_email 'noreply@meta.com'
+license 'Apache-2.0'
+description 'Installs/Configures InfluxDB'
+version '0.1.0'
