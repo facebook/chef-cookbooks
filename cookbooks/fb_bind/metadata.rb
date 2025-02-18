@@ -1,0 +1,7 @@
+name 'fb_bind'
+maintainer 'Meta Platforms, Inc.'
+maintainer_email 'noreply@meta.com'
+license 'Apache-2.0'
+description 'Installs/Configures Bind'
+version '0.1.0'
+depends 'fb_helpers'
