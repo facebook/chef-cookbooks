@@ -27,6 +27,7 @@ Attributes
 * node['fb_syslog']['rsyslog_use_omprog_force']
 * node['fb_syslog']['rsyslog_stats_logging']
 * node['fb_syslog']['rsyslog_report_suspension']
+* node['fb_syslog']['rsyslog_d_preserve']
 * node['fb_syslog']['sysconfig']['vars'][$KEY][$VAL]
 * node['fb_syslog']['sysconfig']['extra_lines']
 
@@ -243,6 +244,11 @@ support it).
 Set `node['fb_syslog']['rsyslog_stats_logging']` to true to enable periodic
 output of rsyslog internal counters. These will be logged using the `impstats`
 module to `/var/log/rsyslog-stats.log`.
+
+### Controlling the syslog.d directory
+By default, we will delete everything in the `/etc/rsyslog.d`, as all rsyslog
+configuration should be controlled by users of this API. However, if you need
+to preserve such files, set `node['fb_syslog']['rsyslog_d_preserve']` to `true`.
 
 ### sysconfig settings
 On non-systemd systems, `node['fb_syslog']['sysconfig']` can be used
