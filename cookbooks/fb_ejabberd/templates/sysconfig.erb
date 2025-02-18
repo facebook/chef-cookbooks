@@ -1,0 +1,15 @@
+# This file is controlled by Chef, do not modify!
+<%
+    # Per fb-style standards, the paths to configs are non-configurable,
+    # so we hard-code them here
+    {
+      'ejabberd_config_path' => '/etc/ejabberd/ejabberd.yml',
+      'contrib_modules_conf_dir' => '/etc/ejabberd/modules.d',
+    }.each do |key, val|
+      node.rm(:fb_ejabberd, :sysconfig, key.to_sym)
+%>
+<%=   key.upcase %>="<%= val %>"
+<% end %>
+<% node['fb_ejabberd']['sysconfig'].each do |key, val| %>
+<%=  key.upcase %>="<%= val %>"
+<% end %>

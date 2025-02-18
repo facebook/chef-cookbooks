@@ -32,6 +32,8 @@ if node.debian? || (node.ubuntu? && !node.ubuntu16?)
   if node.ubuntu18? || node.ubuntu20?
     include_recipe 'fb_smokeping'
   end
+  node.default['fb_ejabberd']['config']['hosts'] << 'sample.com'
+  include_recipe 'fb_ejabberd'
 end
 
 include_recipe 'fb_spamassassin'
