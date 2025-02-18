@@ -1,0 +1,4 @@
+# This file controlled by Chef - do not edit!
+<% node['fb_spamassassin']["#{@flavor}_sysconfig"].each do |key, val| %>
+<%=  key.upcase %>="<%= val %>"
+<% end %>

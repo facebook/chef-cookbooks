@@ -1,0 +1,9 @@
+# This file controlled by Chef - do not edit!
+<% node['fb_spamassassin']['enable_compat'].each do |compat, enable| %>
+<%   if enable %>
+enable_compat <%= compat %>
+<%   end %>
+<% end %>
+<% node['fb_spamassassin']['plugins'].each_key do |plugin| %>
+loadplugin <%= plugin %>
+<% end %>
