@@ -82,6 +82,9 @@ include_recipe 'fb_sysctl'
 # until we defined a UID_MAP that works with testing, this can't
 # run in kitchen tests
 # include_recipe 'fb_users'
+if node.debian? || node.ubuntu?
+  include_recipe 'fb_networkmanager'
+end
 if node.centos?
   # We turn this off because the override causes intermittent failures in
   # Travis when rsyslog is restarted
