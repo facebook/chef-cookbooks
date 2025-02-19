@@ -21,12 +21,55 @@
 
 set -u
 
-# defaults
-config="$HOME/.config/sync_fb_cookbooks.conf"
-default_upstreamdir="$HOME/src/chef-cookbooks"
-default_internaldir="$HOME/src/chef"
+# Constants
+CONFIG_FILE_NAME='sync_fb_cookbooks.conf'
+DEFAULT_UPSTREAMDIR="$HOME/src/chef-cookbooks"
+DEFAULT_INTERNALDIR="$HOME/src/chef"
+STATIC_CONFIG_OPTIONS=(
+  "$HOME/.config/$CONFIG_FILE_NAME"
+  "/etc/$CONFIG_FILE_NAME"
+)
 
-# methods
+# Globals
+mode=''
+cookbook=''
+config=''
+debug=0
+dryrun=0
+
+inside_git() {
+  git rev-parse --is-inside-work-tree &>/dev/null
+}
+
+determine_config() {
+  # if we're inside a git repo..
+  if inside_git; then
+    debug "Inside git repo..."
+    # then find the root
+    root=$(git rev-parse --show-toplevel)
+    attempt="${root}/.${CONFIG_FILE_NAME}"
+    if [ -r "${attempt}" ]; then
+      debug "Using $attempt"
+      echo "$attempt"
+      return
+    fi
+  fi
+  for attempt in "${STATIC_CONFIG_OPTIONS[@]}"; do
+    debug "checking $attempt"
+    if [ -r "$attempt" ]; then
+      echo "$attempt"
+      return
+    fi
+  done
+}
+
+debug() {
+  if [ "$debug" -eq 0 ]; then
+    return
+  fi
+  echo "DEBUG: $*" >&2
+}
+
 error() {
   echo "ERROR: $*"
 }
@@ -54,18 +97,22 @@ OPTIONS
 
     -C <config_file>
         Path to config file
-        Default: $config
 
     -d
         Diff mode
+
+    -D
+        Enable debug
 
     -h
         This
 
     -i <dir>
         Where your clone of the INTERNAL repo is
-        Default: $default_internaldir
+        Default: $DEFAULT_INTERNALDIR
 
+    -n
+        Run rsync in dryrun mode
     -p
         Push changes internal -> upstream
 
@@ -74,14 +121,30 @@ OPTIONS
 
     -u <dir>
         Where your clone of the UPSTREAM repo is
-        Default: $default_internaldir
+        Default: $DEFAULT_INTERNALDIR
+
+    -x
+        Exit after printing config
 
 CONFIG FILE
-You can also tell this script where your repos are by creating $config
+You can also tell this script where your repos are by creating config
 in shell format and defining 'upstreamdir' and 'internaldir', like so:
 
     upstreamdir="\$HOME/mycheckouts/chef-cookbooks"
     internaldir="\$HOME/mycheckouts/chef"
+
+$0 will look for config files in the following places, and use the first
+one it finds:
+
+  - \$REPO_ROOT/.sync_fb_cookbooks.conf  # note the dot
+  - ~/.config/sync_fb_cookbooks.conf
+  - /etc/sync_fb_cookbooks.conf
+
+Where \$REPO_ROOT is the toplevel of your git repo.
+
+CONFIGURATION VIA ENVIRONMENT VARIABLE
+You can pass upstreamdir and internaldir via environment variables
+as well.
 
 GENERAL USAGE
     # get a list of cookbooks that differ
@@ -103,9 +166,55 @@ GENERAL USAGE
 EOF
 }
 
-mode=''
-cookbook=''
-while getopts 'c:C:dhi:psu:' opt; do
+# loads config in default -> configfile -> environment -> cli order
+load_config() {
+  # save what was passed in either through env vars, if they exist,
+  # that should win over config file
+  # or command-line...
+  env_internaldir=""
+  env_upstreamdir=""
+  # +x syntax required to not trip up -u
+  if [[ -n "${internaldir+x}" ]]; then
+    env_internaldir="$internaldir"
+  fi
+  if [[ -n "${upstreamdir+x}" ]]; then
+    env_upstreamdir="$upstreamdir"
+  fi
+
+  # initialize with defaults
+  internaldir="$DEFAULT_INTERNALDIR"
+  upstreamdir="$DEFAULT_UPSTREAMDIR"
+
+  # if a configuration file was not passed in on the command line,
+  # walk our possible config paths...
+  if [ -z "$config" ]; then
+    config=$(determine_config)
+  fi
+
+  # if we have a config, load it...
+  if [ -n "$config" ]; then
+    info "Loading config from $config"
+    # shellcheck disable=SC1090
+    source "$config" || die "Configuration file $config malformed"
+  fi
+
+  # env/cli (cli wins)
+  if [ -n "$cli_internaldir" ]; then
+    internaldir="$cli_internaldir"
+  elif [ -n "$env_internaldir" ]; then
+    internaldir="$env_internaldir"
+  fi
+
+  if [ -n "$cli_upstreamdir" ]; then
+    upstreamdir="$cli_upstreamdir"
+  elif [ -n "$env_upstreamdir" ]; then
+    upstreamdir="$env_upstreamdir"
+  fi
+}
+
+cli_internaldir=''
+cli_upstreamdir=''
+while getopts 'c:C:dDhi:npsu:x' opt; do
   case $opt in
     c)
       cookbook="$OPTARG"
@@ -116,12 +225,18 @@ while getopts 'c:C:dhi:psu:' opt; do
     d)
       mode='diff'
       ;;
+    D)
+      debug=1
+      ;;
     h)
       ourhelp
       exit
       ;;
     i)
-      internaldir="$OPTARG"
+      cli_internaldir="$OPTARG"
+      ;;
+    n)
+      dryrun=1
       ;;
     p)
       mode='push'
@@ -130,7 +245,10 @@ while getopts 'c:C:dhi:psu:' opt; do
       mode='sync'
       ;;
     u)
-      upstreamdir="$OPTARG"
+      cli_upstreamdir="$OPTARG"
+      ;;
+    x)
+      mode='dumpconfig'
       ;;
     ?)
       ourhelp
@@ -139,38 +257,13 @@ while getopts 'c:C:dhi:psu:' opt; do
   esac
 done
 
-# save what was passed in either through env
-# or command-line...
-save_internaldir=""
-save_upstreamdir=""
-# +x syntax required to not trip up -u
-if [[ -n "${internaldir+x}" ]]; then
-  save_internaldir="$internaldir"
-fi
-if [[ -n "${upstreamdir+x}" ]]; then
-  save_upstreamdir="$upstreamdir"
-fi
+load_config
 
-# initialize with defaults
-internaldir="$default_internaldir"
-upstreamdir="$default_upstreamdir"
+info "Using upstreamdir: $upstreamdir | internaldir: $internaldir"
 
-# now read the config file, if we have one
-if [ -e "$config" ]; then
-  info "Loading config from $config"
-  # shellcheck disable=SC1090
-  source "$config" || die "Configuration file $config malformed"
+if [[ $mode == 'dumpconfig' ]]; then
+  exit
 fi
-
-# Now merge in passed-in config
-if [ -n "$save_internaldir" ]; then
-  internaldir="$save_internaldir"
-fi
-if [ -n "$save_upstreamdir" ]; then
-  upstreamdir="$save_upstreamdir"
-fi
-
-info "Using upstream: $upstreamdir | internal: $internaldir"
 
 if [ -z "$mode" ]; then
   if [ -n "$cookbook" ]; then
@@ -178,6 +271,11 @@ if [ -z "$mode" ]; then
   else
     mode='status'
   fi
+fi
+
+rsyncargs="-avz"
+if [ "$dryrun" -eq 1 ];then
+  rsyncargs="${rsyncargs}n"
 fi
 
 cd "$internaldir/cookbooks" || die "where am I?"
@@ -193,9 +291,9 @@ for cb in $cookbook; do
   elif [ "$mode" = 'diff' ]; then
     diff -Nru "$ours" "$upstream"
   elif [ "$mode" = 'push' ]; then
-    rsync -avz "$ours" "$upstream"
+    rsync "$rsyncargs" "$ours" "$upstream"
   elif [ "$mode" = 'sync' ]; then
-    rsync -avz "$upstream" "$ours"
+    rsync "$rsyncargs" "$upstream" "$ours"
   else
     die "wut? wut mode is '$mode'"
   fi
