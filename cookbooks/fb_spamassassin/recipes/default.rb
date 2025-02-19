@@ -25,11 +25,7 @@ if node.ubuntu_max_version?(22) || node.debian_max_version?(11)
 end
 
 packages = value_for_platform_family(
-  ['rhel'] => %w{spamassassin},
-  ['fedora'] => %w{
-    spamassassin
-    spamassassin-compile
-  },
+  ['rhel', 'fedora'] => %w{spamassassin},
   ['debian'] => %w{
     sa-compile
     spamassassin

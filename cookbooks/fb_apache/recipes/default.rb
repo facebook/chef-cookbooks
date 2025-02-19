@@ -20,7 +20,7 @@
 
 node.default['fb_apache']['module_packages']['wsgi'] =
   case node['platform_family']
-  when 'rhel'
+  when 'rhel', 'fedora'
     node['platform_version'].to_f >= 8 ? 'python3-mod_wsgi' : 'mod_wsgi'
   when 'debian'
     'libapache2-mod-wsgi-py3'
@@ -32,7 +32,7 @@ node.default['fb_apache']['module_packages']['wsgi'] =
 # rubocop:disable Chef/Style/UnnecessaryPlatformCaseStatement
 node.default['fb_apache']['modules_mapping']['wsgi'] =
   case node['platform_family']
-  when 'rhel'
+  when 'rhel', 'fedora'
     node['platform_version'].to_f >= 8 ? 'mod_wsgi_python3.so' : 'mod_wsgi.so'
   else
     'mod_wsgi.so'
@@ -54,18 +54,18 @@ apache_version =
     else
       '2.4'
     end
-  when 'rhel'
+  when 'rhel', 'fedora'
     node['platform_version'].to_f >= 7.0 ? '2.4' : '2.2'
   end
 
 httpdir = value_for_platform_family(
-  'rhel' => '/etc/httpd',
+  ['rhel', 'fedora'] => '/etc/httpd',
   'debian' => '/etc/apache2',
 )
 
 confdir =
   case node['platform_family']
-  when 'rhel'
+  when 'rhel', 'fedora'
     "#{httpdir}/conf.d"
   when 'debian'
     case apache_version
@@ -77,13 +77,13 @@ confdir =
   end
 
 sitesdir = value_for_platform_family(
-  'rhel' => confdir,
+  ['rhel', 'fedora'] => confdir,
   'debian' => "#{httpdir}/sites-enabled",
 )
 
 moddir =
   case node['platform_family']
-  when 'rhel'
+  when 'rhel', 'fedora'
     "#{httpdir}/conf.modules.d"
   when 'debian'
     case apache_version
@@ -95,7 +95,7 @@ moddir =
   end
 
 sysconfig = value_for_platform_family(
-  'rhel' => '/etc/sysconfig/httpd',
+  ['rhel', 'fedora'] => '/etc/sysconfig/httpd',
   'debian' => '/etc/default/apache2',
 )
 
