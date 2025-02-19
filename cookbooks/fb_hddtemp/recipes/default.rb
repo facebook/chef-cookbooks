@@ -18,8 +18,8 @@
 # limitations under the License.
 #
 
-unless node.debian? || node.ubuntu? || node.centos?
-  fail 'fb_hddtemp only supports Debian, Ubuntu and CentOS.'
+unless ::ChefUtils.debian? || ::ChefUtils.fedora_derived?
+  fail 'fb_hddtemp is only Fedora-based and Debian-based distros'
 end
 
 package 'hddtemp' do

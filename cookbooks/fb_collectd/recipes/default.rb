@@ -18,19 +18,16 @@
 # limitations under the License.
 #
 
-unless node.centos? || node.debian? || node.ubuntu?
-  fail 'fb_collectd is only supported on CentOS, Debian or Ubuntu.'
-end
-
-case node['platform_family']
-when 'rhel', 'fedora'
+if ::ChefUtils.fedora_derived?
   pkg = 'collectd'
   conf = '/etc/collectd.conf'
   conf_d = '/etc/collectd.d'
-when 'debian'
+elsif ::ChefUtils.debian?
   pkg = 'collectd-core'
   conf = '/etc/collectd/collectd.conf'
   conf_d = '/etc/collectd/collectd.conf.d'
+else
+  fail 'fb_collectd is only Fedora-based and Debian-based distros'
 end
 
 package pkg do
@@ -38,7 +35,7 @@ package pkg do
 end
 
 template '/etc/default/collectd' do
-  only_if { node['platform_family'] == 'debian' }
+  only_if { ::ChefUtils.debian? }
   source 'collectd.erb'
   owner node.root_user
   group node.root_group
