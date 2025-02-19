@@ -18,8 +18,9 @@
 # limitations under the License.
 #
 
-unless node.centos?
-  fail 'fb_dracut is only supported on CentOS.'
+# TODO: use fedora_derived?
+unless node.centos? || node.rhel? || node.fedora?
+  fail 'fb_dracut is only supported on Fedora-based distros.'
 end
 
 include_recipe 'fb_dracut::packages'

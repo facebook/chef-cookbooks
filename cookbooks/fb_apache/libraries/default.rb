@@ -88,7 +88,7 @@ module FB
 
     def self.base_packages(node)
       node.value_for_platform_family(
-        'rhel' => ['httpd', 'mod_ssl'],
+        ['rhel', 'fedora'] => ['httpd', 'mod_ssl'],
         'debian' => ['apache2'],
       )
     end
@@ -102,7 +102,7 @@ module FB
 
     def self.service(node)
       node.value_for_platform_family(
-        'rhel' => 'httpd',
+        ['rhel', 'fedora'] => 'httpd',
         'debian' => 'apache2',
       )
     end

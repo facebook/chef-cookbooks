@@ -29,7 +29,8 @@ end
 # this should be first.
 include_recipe 'fb_init_sample::site_settings'
 
-if node.centos?
+# TODO: use fedora_derived?
+if node.centos? || node.rhel? || node.fedora?
   # We turn this off to avoid clobbering /etc/yum,repos.d in the CI
   node.default['fb_yum_repos']['manage_repos'] = false
   include_recipe 'fb_dnf'
@@ -39,7 +40,8 @@ if node.debian? || node.ubuntu?
   include_recipe 'fb_apt'
 end
 # HERE: chef_client
-if node.centos?
+# TODO: use fedora_derived?
+if node.centos? || node.rhel? || node.fedora?
   include_recipe 'fb_e2fsprogs'
   include_recipe 'fb_util_linux'
 end
@@ -56,7 +58,8 @@ include_recipe 'fb_less'
 if node.linux? && !node.embedded? && !node.container?
   include_recipe 'fb_ethtool'
 end
-if node.centos?
+# TODO: use fedora_derived?
+if node.centos? || node.rhel? || node.fedora?
   include_recipe 'fb_ldconfig'
 end
 if node.linux? && !node.container?
@@ -65,10 +68,12 @@ if node.linux? && !node.container?
   end
   include_recipe 'fb_grub'
 end
-if node.centos?
+# TODO: use fedora_derived?
+if node.centos? || node.rhel? || node.fedora?
   include_recipe 'fb_dracut'
 end
-if node.centos? && !node.container?
+# TODO: use fedora_derived?
+if (node.centos? || node.rhel? || node.fedora?) && !node.container?
   include_recipe 'fb_storage'
 end
 include_recipe 'fb_modprobe'
@@ -84,10 +89,14 @@ include_recipe 'fb_sysctl'
 # until we defined a UID_MAP that works with testing, this can't
 # run in kitchen tests
 # include_recipe 'fb_users'
+
+# TODO: use debian?
 if node.debian? || node.ubuntu?
   include_recipe 'fb_networkmanager'
 end
-if node.centos?
+
+# TODO: use fedora_derived?
+if node.centos? || node.rhel? || node.fedora?
   # We turn this off because the override causes intermittent failures in
   # Travis when rsyslog is restarted
   node.default['fb_syslog']['_enable_syslog_socket_override'] = false
@@ -97,7 +106,8 @@ if node.linux? && !node.container?
   include_recipe 'fb_hdparm'
   include_recipe 'fb_sdparm'
   include_recipe 'fb_nscd'
-  if fedora_derived?
+  # TODO: use fedora_derived?
+  if node.centos? || node.rhel? || node.fedora?
     include_recipe 'fb_hddtemp'
   end
 end
@@ -117,7 +127,7 @@ include_recipe 'fb_sudo'
 if node.linux? && !node.container?
   include_recipe 'fb_chrony'
 
-  if node.centos?
+  if node.centos? || node.rhel? || node.fedora?
     node.default['fb_ipset']['auto_cleanup'] = false
     include_recipe 'fb_ebtables'
     include_recipe 'fb_ipset'
@@ -150,7 +160,7 @@ if !node.rhel_family? || node.el_max_version?(9)
   include_recipe 'fb_collectd'
 end
 include_recipe 'fb_rsync::server'
-if node.centos?
+if node.centos? || node.rhel? || node.fedora?
   include_recipe 'fb_sysstat'
 end
 if node.linux?
