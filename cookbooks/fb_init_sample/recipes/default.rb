@@ -29,7 +29,7 @@ end
 # this should be first.
 include_recipe 'fb_init_sample::site_settings'
 
-if node.centos?
+if fedora_derived?
   # HERE: yum
   include_recipe 'fb_rpm'
 end
@@ -37,7 +37,7 @@ if node.debian? || node.ubuntu?
   include_recipe 'fb_apt'
 end
 # HERE: chef_client
-if node.centos?
+if fedora_derived?
   include_recipe 'fb_e2fsprogs'
   include_recipe 'fb_util_linux'
 end
@@ -54,7 +54,7 @@ include_recipe 'fb_less'
 if node.linux? && !node.embedded? && !node.container?
   include_recipe 'fb_ethtool'
 end
-if node.centos?
+if fedora_derived?
   include_recipe 'fb_ldconfig'
 end
 if node.linux? && !node.container?
@@ -63,10 +63,10 @@ if node.linux? && !node.container?
   end
   include_recipe 'fb_grub'
 end
-if node.centos?
+if fedora_derived?
   include_recipe 'fb_dracut'
 end
-if node.centos? && !node.container?
+if fedora_derived? && !node.container?
   include_recipe 'fb_storage'
 end
 include_recipe 'fb_modprobe'
@@ -82,10 +82,10 @@ include_recipe 'fb_sysctl'
 # until we defined a UID_MAP that works with testing, this can't
 # run in kitchen tests
 # include_recipe 'fb_users'
-if node.debian? || node.ubuntu?
+if debian?
   include_recipe 'fb_networkmanager'
 end
-if node.centos?
+if fedora_derived?
   # We turn this off because the override causes intermittent failures in
   # Travis when rsyslog is restarted
   node.default['fb_syslog']['_enable_syslog_socket_override'] = false
@@ -113,7 +113,7 @@ include_recipe 'fb_sudo'
 if node.linux? && !node.container?
   include_recipe 'fb_chrony'
 
-  if node.centos?
+  if fedora_derived?
     node.default['fb_ipset']['auto_cleanup'] = false
     include_recipe 'fb_ebtables'
     include_recipe 'fb_ipset'
@@ -144,7 +144,7 @@ unless node.centos10?
   include_recipe 'fb_collectd'
 end
 include_recipe 'fb_rsync::server'
-if node.centos?
+if fedora_derived?
   include_recipe 'fb_sysstat'
 end
 if node.linux?
