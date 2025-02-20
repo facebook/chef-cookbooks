@@ -18,8 +18,8 @@
 # limitations under the License.
 #
 
-unless node.centos? || node.debian? || node.ubuntu?
-  fail 'fb_collectd is only supported on CentOS, Debian or Ubuntu.'
+unless debian? || fedora_derived?
+  fail 'fb_collectd is only Fedora-based and Debian-based distros'
 end
 
 case node['platform_family']

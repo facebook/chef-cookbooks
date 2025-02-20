@@ -18,8 +18,8 @@
 # limitations under the License.
 #
 
-unless node.centos?
-  fail 'fb_ldconfig is only supported on CentOS'
+unless fedora_derived?
+  fail 'fb_ldconfig is only supported on Fedora-based distros'
 end
 
 execute 'ldconfig' do
