@@ -1,0 +1,14 @@
+# This file is controlled by Chef - do not modify!
+<% node['fb_influxdb']['config'].each do |section, config| %>
+<%
+  # If the config isn't a has, then we're on global configs, process,
+  # them manually, otherwise print the section header and pass the
+  # hash to the hash handler.
+%>
+<%   if config.is_a?(Hash) %>
+[<%=    section %>]
+<%      FB::InfluxDB.template_hash_helper(_buf, 0, config) %>
+<%   else %>
+<%=   section %> = <%= FB::InfluxDB.handle_raw_val(config) %>
+<%   end %>
+<% end %>
