@@ -18,6 +18,7 @@
 # limitations under the License.
 #
 
+include_recipe 'fb_sasl'
 include_recipe 'fb_bind'
 
 # Currently fb_vsftpd is broken on debian

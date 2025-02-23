@@ -1,0 +1,5 @@
+# This file is controlled by Chef, do not modify!
+START="<%= node['fb_sasl']['enable_saslauthd'] ? 'yes' : 'no' %>"
+<% node['fb_sasl']['sysconfig'].each do |key, val| %>
+<%=  key.upcase %>="<%= val %>"
+<% end %>
