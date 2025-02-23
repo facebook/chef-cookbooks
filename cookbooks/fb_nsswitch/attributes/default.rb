@@ -23,6 +23,7 @@ databases = {}
   automount
   ethers
   group
+  gshadow
   hosts
   initgroups
   netgroup
