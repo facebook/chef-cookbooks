@@ -18,8 +18,8 @@
 # limitations under the License.
 #
 
-unless node.centos?
-  fail 'fb_iproute is only supported on CentOS'
+unless fedora_derived?
+  fail 'fb_iproute is only supported on Fedora-based distros.'
 end
 
 include_recipe 'fb_iproute::packages'

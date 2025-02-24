@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-unless node.centos? || node.fedora? || node.ubuntu?
-  fail 'fb_iptables is only supported on CentOS, Fedora, and Ubuntu'
+unless debian? || fedora_derived?
+  fail 'fb_iptables is only supported on Debian- and Fedora-based distros.'
 end
 
 services = value_for_platform(
