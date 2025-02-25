@@ -1,0 +1,6 @@
+name 'fb_kea'
+maintainer 'Meta Platforms, Inc.'
+maintainer_email 'noreply@meta.com'
+license 'Apache-2.0'
+description 'Installs/Configures fb_kea'
+version '0.1.0'
