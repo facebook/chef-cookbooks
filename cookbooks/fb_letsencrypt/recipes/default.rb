@@ -34,11 +34,11 @@ end
 service 'conditionally enable certbot.timer' do
   only_if { node['fb_letsencrypt']['enable_package_timer'] }
   service_name 'certbot.timer'
-  action :enable
+  action [:enable, :start]
 end
 
 service 'conditionally disable certbot.timer' do
   not_if { node['fb_letsencrypt']['enable_package_timer'] }
   service_name 'certbot.timer'
-  action :disable
+  action [:stop, :disable]
 end
