@@ -24,6 +24,13 @@ unless node.el_min_version?(10)
   include_recipe 'fb_dhcprelay'
 end
 node.default['fb_dhcprelay']['sysconfig']['servers'] = ['10.1.1.1']
+include_recipe 'fb_kea'
+# Getting a working config for these would be pretty tricky, so for now
+# we disable all 4 services, but at least let the cookbook get loaded which
+# will ensure some basic sanity
+%w{dhcp4 dhcp6 ddns control-agent}.each do |svc|
+  node.default['fb_kea']["enable_#{svc}"] = false
+end
 
 # Currently fb_vsftpd is broken on debian
 # https://github.com/facebook/chef-cookbooks/issues/149
@@ -43,7 +50,7 @@ if node.debian? || (node.ubuntu? && !node.ubuntu16?)
   # if running behind a NAT, so don't run while using VirtualBox
   # https://github.com/openspace42/aenigma/issues/48
   # https://github.com/test-kitchen/test-kitchen/issues/458
-  unless ENV['TEST_KITCHEN'] || node['virtualization']['system'] == 'vbox'
+  unless ::ChefUtils.kitchen? || node['virtualization']['system'] == 'vbox'
     node.default['fb_ejabberd']['config']['hosts'] << 'sample.com'
     include_recipe 'fb_ejabberd'
   end
