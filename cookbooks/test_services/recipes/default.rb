@@ -24,6 +24,13 @@ unless node.el_min_version?(10)
   include_recipe 'fb_dhcprelay'
 end
 node.default['fb_dhcprelay']['sysconfig']['servers'] = ['10.1.1.1']
+include_recipe 'fb_kea'
+# Getting a working config for these would be pretty tricky, so for now
+# we disable all 4 services, but at least let the cookbook get loaded which
+# will ensure some basic sanity
+%w{dhcp4 dhcp6 ddns control-agent}.each do |svc|
+  node.default['fb_kea']["enable_#{svc}"] = false
+end
 
 # Currently fb_vsftpd is broken on debian
 # https://github.com/facebook/chef-cookbooks/issues/149
