@@ -479,6 +479,10 @@ class Chef
       windows_server? && self['platform_version'] == '10.0.20348'
     end
 
+    def windows2025?
+      windows_server? && self['platform_version'] == '10.0.26100'
+    end
+
     # from https://en.wikipedia.org/wiki/Windows_10_version_history
     def windows1903?
       windows? && self['platform_version'] == '10.0.18362'
@@ -524,6 +528,10 @@ class Chef
       windows_server? && self._self_version >= self._canonical_version('10.0.20348')
     end
 
+    def windows2025_or_newer?
+      windows_server? && self._self_version >= self._canonical_version('10.0.26100')
+    end
+
     def windows2012_or_older?
       windows_server? && self._self_version < self._canonical_version('6.3')
     end
@@ -542,6 +550,10 @@ class Chef
 
     def windows2022_or_older?
       windows_server? && self._self_version <= self._canonical_version('10.0.20348')
+    end
+
+    def windows2025_or_older?
+      windows_server? && self._self_version <= self._canonical_version('10.0.26100')
     end
 
     def aristaeos?
