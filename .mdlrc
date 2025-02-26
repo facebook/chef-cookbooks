@@ -1,0 +1,17 @@
+all
+rule 'MD003', :style => :setext_with_atx
+rule 'MD013', :code_blocks => false, :tables => false
+
+# "Headers should be surrounded by blank lines" - we start our
+# sections directly below the header
+exclude_rule 'MD022'
+
+# "Bare URL used" - we have a lot of these
+exclude_rule 'MD034'
+
+# "Fenced code blocks should have a language specified" - we assume ruby
+exclude_rule 'MD040'
+
+# "Lists should be surrounded by blank lines" - violates our Attributes rules
+# ... but I like this rule and we should figure out if we can bring it back
+exclude_rule 'MD032'
