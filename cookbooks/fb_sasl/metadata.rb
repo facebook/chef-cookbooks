@@ -1,0 +1,6 @@
+name 'fb_sasl'
+maintainer 'Meta Platforms, Inc.'
+maintainer_email 'noreply@meta.com'
+license 'Apache-2.0'
+description 'Installs/Configures Cyrus SASL'
+version '0.1.0'
