@@ -20,6 +20,10 @@
 
 include_recipe 'fb_sasl'
 include_recipe 'fb_bind'
+unless node.el_min_version?(10)
+  include_recipe 'fb_dhcprelay'
+end
+node.default['fb_dhcprelay']['sysconfig']['servers'] = ['10.1.1.1']
 
 # Currently fb_vsftpd is broken on debian
 # https://github.com/facebook/chef-cookbooks/issues/149
