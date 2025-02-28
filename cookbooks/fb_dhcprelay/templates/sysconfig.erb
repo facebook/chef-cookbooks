@@ -1,0 +1,4 @@
+# This file is controlled by Chef, do not modify!
+<% node['fb_dhcprelay']['sysconfig'].each do |key, val| %>
+<%=  key.upcase %>="<%= val.join(' ') %>"
+<% end %>
