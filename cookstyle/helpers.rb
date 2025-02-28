@@ -17,3 +17,16 @@
 def fb_msg(msg)
   "#{msg} (https://github.com/facebook/chef-cookbooks)".freeze
 end
+
+# Predefine modules for compact style, cannot be compact
+module RuboCop # rubocop:disable Chef/Meta/CookstyleCompactClassStyle
+  module Cop
+    module Chef
+      module Meta
+        class Base < RuboCop::Cop::Base
+          prepend RuboCop::Cop
+        end
+      end
+    end
+  end
+end
