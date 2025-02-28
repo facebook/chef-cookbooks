@@ -11,6 +11,14 @@ AllCops:
 Lint/Syntax:
   Enabled: true
 
+# Generally speaking, we don't want to use compact class definitions in Chef
+# because it opens the codebase to runtime constant-load failures. However, we
+# control the load path of Cookstyle, and the deep nesting of class definitions
+# make readability difficult.
+Style/ClassAndModuleChildren:
+  Exclude:
+    - !ruby/regexp /^.*\/cookstyle\/.*\.rb$/
+
 Chef/Correctness/BlockGuardWithOnlyString:
   Enabled: true
 Chef/Correctness/ChefApplicationFatal:
