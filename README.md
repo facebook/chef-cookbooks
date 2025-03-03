@@ -30,7 +30,7 @@ Specifically:
   node before committing. For this, we use [Taste
   Tester](http://www.github.com/facebook/taste-tester).
 
-Cookbooks in this repo all being with `fb_` to denote that not only do they
+Cookbooks in this repo all begin with `fb_` to denote that not only do they
 use the Facebook Cookbook Model, but that they are maintained in this repo.
 
 Local cookbooks or cookbooks in other repositories that implement this model
