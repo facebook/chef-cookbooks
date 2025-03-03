@@ -1,0 +1,7 @@
+name 'fb_dhcprelay'
+maintainer 'Meta Platforms, Inc.'
+maintainer_email 'noreply@meta.com'
+license 'Apache-2.0'
+description 'Installs/Configures ISC DHCP Relay'
+version '0.1.0'
+depends 'fb_systemd'
