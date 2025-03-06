@@ -748,6 +748,124 @@ fb_helpers_gated_template '/etc/foo.network' do
 end
 ```
 
+#### fb_notify_merger
+Use the `fb_notify_merger` resource to aggregate notifications and subscriptions
+into a single notification which fires in resource order.  This solves the problem
+where, when multiple resources update that need to (for example) restart a service,
+one must currently choose between two flawed options.  Either choose to
+notify `:immediately` (in which case multiple incorrect and unnecessary restarts
+occur), or `:delayed` (in which case the restarts are deduplicated, but happen
+out of order (at the end of the run), and create the opportunity for a (temporary)
+incorrectness).
+
+Consider a common example.  Two configuration files are inputs for a service,
+and updating them should cause the service to be restarted.  In the initial setup
+scenario for a host, the service is not yet running, and we have the following
+recipe code:
+
+```ruby
+template 'A' do
+  ...
+  notifies :restart, 'service[X]', :delayed
+end
+
+template 'B' do
+  ...
+  notifies :restart, 'service[X]', :delayed
+end
+
+service 'X' do
+  action [:enable, :start]
+end
+```
+
+The above code, during initial host setup, will trigger two delayed restarts, then
+the service will be started, then at the end of the run it will be restarted again
+(unnecessarily) due to the delayed notification.
+
+`fb_notify_merger` serves as an in-order aggregation point for notifications, so
+that they can be deduplicated and delivered at the correct point in the run.
+
+When updating the above code with the `fb_notify_merger`, we get:
+
+```ruby
+template 'A' do
+  ...
+  notifies :update, 'fb_notify_merger[C]', :immediately
+end
+
+template 'B' do
+  ...
+  notifies :update, 'fb_notify_merger[C]', :immediately
+end
+
+fb_notify_merger 'C' do
+  notifies :restart, 'service[X]', :immediately
+end
+
+service 'X' do
+  action [:enable, :start]
+end
+```
+
+The above code has no unnecessary restart of the service at the end of the run.
+
+The `fb_notify_merger` resource, when running the `:update` action, flips a bit
+to true, such that when the default `:merge` action runs, if the
+bit was true, the resource is marked as updated and triggers any associated
+notifications.
+
+```ruby
+package 'syslog' do
+  ...
+  notifies :update, 'fb_notify_merger[syslog]', :immediately
+end
+
+template '/etc/sysconfig/syslog' do
+  ...
+  notifies :update, 'fb_notify_merger[syslog]', :immediately
+end
+
+fb_notify_merger 'syslog' do
+  notifies :restart, "service[syslog]", :immediately
+end
+
+service 'syslog' do
+  action [:enable, :start]
+end
+```
+
+In the sample above, even if both the `package` and the `template` update, only
+a single `:restart` is issued against the `service`.
+
+Other examples:
+- Two or more input files are changed in the systemd configuration.  Use the
+  `fb_notify_merger` to aggregate the call to `systemctl daemon-reload` so it
+  only happens once, and in order.
+- Two or more input files for a script are changed.  Use the
+  `fb_notify_merger` to aggregate the `:run` notification for the `execute`
+  resource so it only happens once, and in order.
+
+The `fb_notify_merger` resource order should be _immediately_ before the resource
+which it notifies to have the most correct behavior.
+
+`notifies` and `subscribes` retain the same behavior as upstream chef and both
+work with `fb_notify_merger` (though `notifies` is preferred since it provides stronger
+guarantees).
+
+You must use `:immediately` or `:before` when notifying the `fb_notify_merger`
+resource; if you use `:delayed` the in-order element is lost, and
+the entire point of using `fb_notify_merger` is lost.
+
+Note that this is different from `notify_group`, which has no element of
+aggregating notifications, and only serves to minimize repetition in code.
+
+Also note: `fb_notify_merger` tracks if it has already merged, and will
+fail the run if any subsequent `:update` or `:merge` actions are triggered.
+The `:merge` which triggers the actual aggregated notification should only happen
+a single time, immediately before the resource which is being notified; all
+other flows are fundamentally flawed.
+
 ### Reboot control
 If it's safe for Chef to reboot your host, set `reboot_allowed` to true in
 your cookbook:
