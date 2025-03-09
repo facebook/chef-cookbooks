@@ -47,12 +47,9 @@ service 'ejabberd' do
   # be holding it's port open. If you stop epmd.service (which doesn't
   # stop its socket), and restart ejabberd, that'll start everything
   # up properly
-  restart_command <<-EOH
+  restart_command '
     systemctl stop ejabberd
-    systemctl stop epmd || true
-    pkill epmd || true  # Ensures epmd is completely stopped
-    sleep 2  # Allow time for the port to be freed
-    systemctl start ejabberd
-  EOH
+    systemctl stop epmd
+    systemctl restart ejabberd'
   action [:enable, :start]
 end
