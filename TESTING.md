@@ -106,14 +106,14 @@ $ KITCHEN_YAML=.kitchen.vagrant.yml kitchen destroy centos-stream-9
 If a VM is still lingering, you can manually identify and remove it:
 
 1. Find the VM ID:
-   ```bash
-   vagrant global-status
-   ```
+```bash
+vagrant global-status
+```
 
 2. Force destroy the VM:
-   ```
-   vagratn destroy -f <VM-ID>
-   ```
+```bash
+vagrant destroy -f <VM-ID>
+```
 
 ### Testing with Different Cinc Client Versions
 
