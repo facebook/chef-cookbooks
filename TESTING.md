@@ -129,10 +129,13 @@ KITCHEN_YAML=.kitchen.vagrant.yml kitchen converge centos-stream-9
 This will ensure that the specified verison is installed insdie the test VM.
 
 
-## Configuring an Ubuntu 24.04 host for local testing.
+## Configuring an Ubuntu 24.04 Host for Local Testing.
 
-Make sure you are running an 64-bit AMD64 compatible host that has CPU
-Virtualization enabled.
+To set up your **Ubuntu 24.04** machine for local testing, ensure you are
+running a **64-bit AMD64-compatible host** with **CPU virtualization enabled**
+in your system's BIOS.
+
+You'll need to install **VirtualBox, Vagrant, and Cinc Workstation**.
 
 Install [Virtualbox](https://www.virtualbox.org/wiki/Linux_Downloads)
 
@@ -185,7 +188,7 @@ sudo apt install vagrant
 vagrant --version
 ```
 
-Install cinc-workstation 
+Install Cinc Workstation 
 
 ```
 # Download and install cinc-workstatus via omnibus installer
