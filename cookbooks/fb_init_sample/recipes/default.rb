@@ -111,6 +111,11 @@ include_recipe 'fb_tmpclean'
 include_recipe 'fb_sudo'
 # HERE: ntp
 if node.linux? && !node.container?
+  # Chrony replaces timesyncd, so make sure timesync is disabled
+  if node.ubuntu? &&
+   FB::Version.new(node['platform_version']) >= FB::Version.new('18.04')
+    node.default['fb_systemd']['timesyncd']['enable'] = false
+  end
   include_recipe 'fb_chrony'
 
   if node.centos?
