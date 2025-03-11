@@ -21,8 +21,6 @@
 dnf_packages = %w{
   dnf
   dnf-data
-  dnf-plugins-core
-  dnf-utils
   libcomps
   libdnf
   libsolv
@@ -30,6 +28,10 @@ dnf_packages = %w{
   python3-dnf-plugins-core
   python3-libcomps
 }
+
+unless node.fedora? && node['platform_version'].to_i >= 41
+  dnf_packages += %w{dnf-plugins-core dnf-utils}
+end
 
 package dnf_packages do
   only_if { node['fb_dnf']['manage_packages'] }
