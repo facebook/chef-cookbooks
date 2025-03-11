@@ -43,6 +43,11 @@ platforms:
 suites:
   - name: default
     attributes:
+      # Add vagrant to passwordless sudo
+      fb_sudo:
+        users:
+          vagrant:
+            admin: "ALL=(ALL:ALL) NOPASSWD: ALL"
       # No /boot/efi directory for bento boxes
       fb_grub:
         force_both_efi_and_bios: false

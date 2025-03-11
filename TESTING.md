@@ -74,12 +74,6 @@ Example output:
 
 ## Limitations and Workarounds
 
-### Sudo Privileges Issue
-
-Currently, `kitchen test` **does not work** because the default Vagrant user
-lacks **sudo** privileges. This means that the automation will fail when trying
-to use `sudo`, as it cannot prompt for a password without a TTY.
-
 ### Cleaning Up: Stopping and Destroying VMs
 
 Unlike with the Dokken driver, running `kitchen destroy` **without parameters**
