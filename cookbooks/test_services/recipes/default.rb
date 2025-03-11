@@ -39,8 +39,14 @@ if node.debian? || (node.ubuntu? && !node.ubuntu16?)
   if node.ubuntu18? || node.ubuntu20?
     include_recipe 'fb_smokeping'
   end
-  node.default['fb_ejabberd']['config']['hosts'] << 'sample.com'
-  include_recipe 'fb_ejabberd'
+  # ejabberd has issues restarting while running in Test Kitchen
+  # while running behind a NAT, so don't run while using VirtualBox
+  # https://github.com/openspace42/aenigma/issues/48
+  # https://github.com/test-kitchen/test-kitchen/issues/458
+  unless ENV['TEST_KITCHEN'] || node['virtualization']['system'] == 'vbox'
+    node.default['fb_ejabberd']['config']['hosts'] << 'sample.com'
+    include_recipe 'fb_ejabberd'
+  end
   include_recipe 'fb_influxdb'
 end
 
