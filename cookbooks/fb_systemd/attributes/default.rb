@@ -61,14 +61,18 @@ if node.ubuntu? &&
   enable_networkd = true
   enable_resolved = true
   enable_nss_resolve = true
-  enable_timesyncd = true
 else
   enable_networkd = false
   enable_resolved = false
   enable_nss_resolve = false
+end
+# Since 20.04, Ubuntu defaults to chronyd instead of timesyncd
+if node.ubuntu? &&
+   FB::Version.new(node['platform_version']) == FB::Version.new('18.04')
+  enable_timesyncd = true
+else
   enable_timesyncd = false
 end
-
 # This enables a workaround in Fedora systemd-nspawn containers
 # so that tmpfiles can be created
 # See https://bugzilla.redhat.com/show_bug.cgi?id=1945775
