@@ -27,8 +27,9 @@ To see the available test platforms, run:
 KITCHEN_YAML=.kitchen.vagrant.yml kitchen list
 ```
 
-Example output
-```
+Example output:
+
+```bash
 $ KITCHEN_YAML=.kitchen.vagrant.yml kitchen list
 Instance                 Driver   Provisioner  Verifier  Transport  Last Action    Last Error
 default-centos-stream-9  Vagrant  ChefInfra    Inspec    Ssh        <Not Created>  <None>
@@ -47,7 +48,7 @@ KITCHEN_YAML=.kitchen.vagrant.yml kitchen converge centos-stream-9
 
 Example output:
 
-```
+```bash
  KITCHEN_YAML=.kitchen.vagrant.yml kitchen converge centos-stream-9
 -----> Starting Test Kitchen (v3.6.0)
 -----> Creating <default-centos-stream-9>...
@@ -86,7 +87,7 @@ KITCHEN_YAML=.kitchen.vagrant.yml kitchen destroy centos-stream-9
 
 Example output:
 
-```
+```bash
 $ KITCHEN_YAML=.kitchen.vagrant.yml kitchen destroy centos-stream-9
 -----> Starting Test Kitchen (v3.6.0)
 -----> Destroying <default-centos-stream-9>...
@@ -100,11 +101,13 @@ $ KITCHEN_YAML=.kitchen.vagrant.yml kitchen destroy centos-stream-9
 If a VM is still lingering, you can manually identify and remove it:
 
 1. Find the VM ID:
+
 ```bash
 vagrant global-status
 ```
 
 2. Force destroy the VM:
+
 ```bash
 vagrant destroy -f <VM-ID>
 ```
@@ -133,7 +136,7 @@ You'll need to install **VirtualBox, Vagrant, and Cinc Workstation**.
 
 Install [Virtualbox](https://www.virtualbox.org/wiki/Linux_Downloads)
 
-```
+```bash
 # Add Oracle VirtualBox's GPG key:
 wget -O- https://www.virtualbox.org/download/oracle_vbox_2016.asc \
   | sudo gpg --yes --output /usr/share/keyrings/oracle-virtualbox-2016.gpg --dearmor
@@ -165,7 +168,7 @@ vboxdrv               696320  2 vboxnetadp,vboxnetflt
 
 Install [Vagrant](https://developer.hashicorp.com/vagrant/downloads#linux):
 
-```
+```bash
 # Add HashiCorp's GPG key:
 wget -O - https://apt.releases.hashicorp.com/gpg \
   | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
@@ -184,7 +187,7 @@ vagrant --version
 
 Install Cinc Workstation 
 
-```
+```bash
 # Download and install cinc-workstatus via omnibus installer
 curl -L https://omnitruck.cinc.sh/install.sh \
   | sudo bash -s -- -P cinc-workstation -v 25
