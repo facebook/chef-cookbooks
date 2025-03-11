@@ -91,11 +91,13 @@ if node.centos?
   node.default['fb_syslog']['_enable_syslog_socket_override'] = false
 end
 include_recipe 'fb_syslog'
-if fedora_derived? && !node.container?
+if node.linux? && !node.container?
   include_recipe 'fb_hdparm'
   include_recipe 'fb_sdparm'
   include_recipe 'fb_nscd'
-  include_recipe 'fb_hddtemp'
+  if fedora_derived?
+    include_recipe 'fb_hddtemp'
+  end
 end
 include_recipe 'fb_postfix'
 # HERE: nfs
