@@ -54,5 +54,4 @@ the production version of the file contains only real leap seconds!
 Duration of time in seconds for smearing of the leap second offset.
 
 Default recipe is included in fb_init, whereas the server one has to be included
-in the runlist in roles definition. Usually only cm and routablecm tiers will
-need it.
+in the runlist in roles definition.
