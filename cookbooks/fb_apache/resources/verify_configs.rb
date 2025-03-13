@@ -89,14 +89,19 @@ action :verify do
       mode '0644'
     end.run_action(:create)
 
-    build_resource(:template,
-                   "#{tdir}/#{new_resource.confdir}/status.conf") do
-      source 'status.erb'
-      owner 'root'
-      group 'root'
-      mode '0644'
-      variables(:location => '/server-status')
-    end.run_action(:create)
+    if node['fb_apache']['enable_public_status']
+      build_resource(:template,
+                     "#{tdir}/#{new_resource.confdir}/status.conf") do
+        source 'status.erb'
+        owner 'root'
+        group 'root'
+        mode '0644'
+        variables(:location => '/server-status')
+      end.run_action(:create)
+    else
+      build_resource(:file, "#{tdir}/#{new_resource.confdir}/status.conf").
+        run_action(:delete)
+    end
 
     verify_cmd = value_for_platform_family(
       'rhel' => "httpd -t -d #{tdir}",
