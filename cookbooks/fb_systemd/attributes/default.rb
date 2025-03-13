@@ -54,20 +54,19 @@ if node['machine_id']
   loader['default'] = "#{node['machine_id']}-*"
 end
 
-# Starting from 18.04, Ubuntu uses networkd, resolved and timesyncd by default,
+# Starting from 18.04, Ubuntu uses networkd and resolved by default,
 # so default to enabling them there to prevent breakage
 if node.ubuntu? &&
    FB::Version.new(node['platform_version']) >= FB::Version.new('18.04')
   enable_networkd = true
   enable_resolved = true
   enable_nss_resolve = true
-  enable_timesyncd = true
 else
   enable_networkd = false
   enable_resolved = false
   enable_nss_resolve = false
-  enable_timesyncd = false
 end
+enable_timesyncd = false
 
 # This enables a workaround in Fedora systemd-nspawn containers
 # so that tmpfiles can be created

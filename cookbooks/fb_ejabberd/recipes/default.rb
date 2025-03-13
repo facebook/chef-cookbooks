@@ -44,7 +44,7 @@ end
 
 service 'ejabberd' do
   # if you try to restart ejabberd, often times epmd will still
-  # be holding it's port open. If you stop epmd.service (which doesn't
+  # be holding its port open. If you stop epmd.service (which doesn't
   # stop its socket), and restart ejabberd, that'll start everything
   # up properly
   restart_command '

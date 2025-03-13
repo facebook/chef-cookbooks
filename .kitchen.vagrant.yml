@@ -1,0 +1,64 @@
+---
+driver:
+  name: vagrant
+  box_auto_update: true
+  box_auto_prune: true
+
+provisioner:
+  name: chef_zero
+  product_name: cinc
+  # our cookbooks should be compatible with the latest Chef,
+  # but we need to ensure they still work earlier versions of 18.
+  product_version: <%= ENV['CHEF_VERSION'] || 'latest'  %>
+  install_script: https://omnitruck.cinc.sh/install.sh
+  chef_root: /opt/cinc
+
+verifier:
+  name: inspec
+
+lifecycle:
+  post_create:
+    - remote: |
+        bash -xc '
+          # Some cookbooks assume /var/chef has been created (fb_storage)
+          sudo mkdir -p /var/chef
+        '
+
+platforms:
+  # We will grab boxes from bento on Vagrant Cloud
+  # for a set of common platforms
+  - name: centos-stream-10 # Requires VirtualBox 7.1 or higher
+    lifecycle:
+      post_create:
+        - remote: |
+            bash -xc '
+              # enable EPEL (for stuff like hddtemp)
+              sudo rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-10.noarch.rpm
+            '
+  - name: centos-stream-9
+    lifecycle:
+      post_create:
+        - remote: |
+            bash -xc '
+              # enable EPEL (for stuff like hddtemp)
+              sudo rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
+            '
+  - name: debian-12
+  - name: ubuntu-22.04
+  - name: ubuntu-24.04
+
+suites:
+  - name: default
+    attributes:
+      # Add vagrant to passwordless sudo
+      fb_sudo:
+        users:
+          vagrant:
+            admin: "ALL=(ALL:ALL) NOPASSWD: ALL"
+      # No /boot/efi directory for bento boxes
+      fb_grub:
+        force_both_efi_and_bios: false
+    run_list:
+      - recipe[ci_fixes]
+      - recipe[fb_init_sample]
+      - recipe[test_services]
