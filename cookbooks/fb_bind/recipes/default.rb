@@ -19,11 +19,6 @@
 # limitations under the License.
 #
 
-if node.ubuntu_max_version?(18) || node.debian_max_version?(10)
-  Chef::Log.warn('fb_bind requires ubuntu > 18.04 or debian > 10')
-  return
-end
-
 conf = ::File.join(FB::Bind::CONFIG_DIR, 'named.conf')
 svc = 'named'
 if rpm_based?
