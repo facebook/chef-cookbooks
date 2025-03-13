@@ -27,7 +27,7 @@ lifecycle:
 platforms:
   # We will grab boxes from bento on Vagrant Cloud
   # for a set of common platforms
-  - name: centos-stream-10 # Requires VirtualBox 7.1 or highter
+  - name: centos-stream-10 # Requires VirtualBox 7.1 or higher
     lifecycle:
       post_create:
         - remote: |
