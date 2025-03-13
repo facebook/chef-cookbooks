@@ -27,7 +27,7 @@ lifecycle:
 platforms:
   # We will grab boxes from bento on Vagrant Cloud
   # for a set of common platforms
-  - name: centos-stream-10 # Currently segfaults booting in VirtualBox 7.x
+  - name: centos-stream-10 # Requires VirtualBox 7.1 or highter
     lifecycle:
       post_create:
         - remote: |
