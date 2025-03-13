@@ -82,7 +82,7 @@ guest VMs. Make sure you are using at least VirtualBox 7.1, as it now
 supports x86-64-v3 instructions and that you are running on a supported
 host CPU.
 
-If CentOS Stream 10/RHEL10 kernel panics on boot, likely it due to this
+If CentOS Stream 10/RHEL10 kernel panics on boot, likely it is due to this
 issue. Make sure you're running on at least version 7.1 of VirtualBox and
 that your host CPU supports x86-64-v3 instructions.
 
