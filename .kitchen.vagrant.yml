@@ -27,7 +27,14 @@ lifecycle:
 platforms:
   # We will grab boxes from bento on Vagrant Cloud
   # for a set of common platforms
-  # name: centos-stream-10 # Currently segfaults booting in VirtualBox 7.x
+  - name: centos-stream-10 # Currently segfaults booting in VirtualBox 7.x
+    lifecycle:
+      post_create:
+        - remote: |
+            bash -xc '
+              # enable EPEL (for stuff like hddtemp)
+              sudo rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-10.noarch.rpm
+            '
   - name: centos-stream-9
     lifecycle:
       post_create:

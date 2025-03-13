@@ -75,6 +75,17 @@ Example output:
 
 ## Limitations and Workarounds
 
+### CentOS Stream 10/RHEL 10 require x86-64-v3 instructions
+
+CentOS Stream 10 and RHEL require x86-64-v3 capabilities to be exposed in
+guest VMs. Make sure you are using at least VirtualBox 7.1, as it now
+supports x86-64-v3 instructions and that you are running on a supported
+host CPU.
+
+If CentOS Stream 10/RHEL10 kernel panics on boot, likely it due to this
+issue. Make sure you're running on at least version 7.1 of VirtualBox and
+that your host CPU supports x86-64-v3 instructions.
+
 ### Cleaning Up: Stopping and Destroying VMs
 
 Unlike with the Dokken driver, running `kitchen destroy` **without parameters**
