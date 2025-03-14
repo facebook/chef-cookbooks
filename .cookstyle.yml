@@ -258,6 +258,21 @@ Chef/Effortless/DependsChefVault:
 Chef/Effortless/SearchForEnvironmentsOrRoles:
   Enabled: false
 
+Chef/Meta/BacktickShelloutsInRecipes:
+  Enabled: true
+Chef/Meta/CompoundBooleanLiteralCleanup:
+  Enabled: true
+Chef/Meta/ConditionalBooleanLiteralCleanup:
+  Enabled: true
+Chef/Meta/InvertedBooleanLiteralCleanup:
+  Enabled: true
+Chef/Meta/OrderedDependancies:
+  Enabled: true
+  Include:
+    - !ruby/regexp /\/metadata.rb/
+Chef/Meta/PythonCaps:
+  Enabled: true
+
 Chef/Modernize/ActionMethodInResource:
   Enabled: true
 Chef/Modernize/AllowedActionsFromInitialize:

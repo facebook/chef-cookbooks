@@ -30,3 +30,9 @@ module RuboCop # rubocop:disable Chef/Meta/CookstyleCompactClassStyle
     end
   end
 end
+
+cops = Dir.glob("#{__dir__}/*.rb", :base => __dir__)
+cops.delete_if { |f| f.end_with?('helpers.rb') }
+cops.each do |f|
+  require_relative f
+end

@@ -39,6 +39,7 @@ EOF
 }
 
 CONFIG='.cookstyle_combined.yml'
+RULES_DIR="$(pwd)/cookstyle/" # `cookstyle -r FOO` expects FOO to be absolute
 AUTOCORRECT=0
 COMPAT_MODE=1
 
@@ -97,4 +98,4 @@ if [ "$AUTOCORRECT" -eq 1 ]; then
   options+=("-a")
 fi
 
-exec $COOKSTYLE --display-cop-names -c "$CONFIG" "${options[@]}" "$@"
+exec $COOKSTYLE --display-cop-names -r "$RULES_DIR/helpers.rb" -c "$CONFIG" "${options[@]}" "$@"

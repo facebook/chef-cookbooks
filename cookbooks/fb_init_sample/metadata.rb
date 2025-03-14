@@ -14,10 +14,10 @@ version '0.0.1'
   supports p
 end
 depends 'fb_apcupsd'
-depends 'fb_apt'
 depends 'fb_chrony'
 depends 'fb_collectd'
 depends 'fb_cron'
+depends 'fb_apt'
 depends 'fb_dnsmasq'
 depends 'fb_dracut'
 depends 'fb_e2fsprogs'
