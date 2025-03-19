@@ -23,6 +23,16 @@ else
   map_type = 'hash'
 end
 
+if node.debian_family?
+  daemon_directory = '/usr/lib/postfix/sbin'
+  mailq_path = '/usr/bin/mailq'
+  mailbox_command = nil
+else
+  daemon_directory = '/usr/libexec/postfix'
+  mailq_path = '/usr/bin/mailq.postfix'
+  mailbox_command = '/usr/bin/procmail'
+end
+
 default['fb_postfix'] = {
   'enable' => true,
   'mask_service' => false,
@@ -35,7 +45,7 @@ default['fb_postfix'] = {
   'local_access' => {},
   'localdomains' => [],
   'main.cf' => {
-    'daemon_directory' => '/usr/libexec/postfix',
+    'daemon_directory' => daemon_directory,
     'queue_directory' => '/var/spool/postfix',
     'mail_owner' => 'postfix',
     'mynetworks' => '/etc/postfix/mynetworks',
@@ -68,7 +78,7 @@ default['fb_postfix'] = {
     'sendmail_path' => '/usr/sbin/sendmail.postfix',
     'setgid_group' => 'postdrop',
     'manpage_directory' => '/usr/share/man',
-    'mailq_path' => '/usr/bin/mailq.postfix',
+    'mailq_path' => mailq_path,
     'mydestination' =>
         '$myhostname, localhost.$mydomain /etc/postfix/localdomains',
     'myorigin' => '$myhostname',
@@ -89,7 +99,7 @@ default['fb_postfix'] = {
     'local_destination_concurrency_limit' => '2',
     'local_recipient_maps' => '$alias_maps unix:passwd.byname',
     'luser_relay' => nil,
-    'mailbox_command' => '/usr/bin/procmail',
+    'mailbox_command' => mailbox_command,
     'mailbox_size_limit' => nil,
     'maximal_backoff_time' => '300',
     'maximal_queue_lifetime' => nil,
