@@ -19,7 +19,6 @@
 #
 
 dnf_packages = %w{
-  dnf
   dnf-data
   libcomps
   libdnf
@@ -30,7 +29,7 @@ dnf_packages = %w{
 }
 
 unless node.fedora? && node['platform_version'].to_i >= 41
-  dnf_packages += %w{dnf-plugins-core dnf-utils}
+  dnf_packages += %w{dnf dnf-plugins-core dnf-utils}
 end
 
 package dnf_packages do
