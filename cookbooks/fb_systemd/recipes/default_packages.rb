@@ -68,7 +68,7 @@ package 'systemd packages' do
         node['platform_family'] == 'debian'
       systemd_packages << 'systemd-timesyncd'
     end
-    if node['packages'] && node['packages']['systemd']['version']
+    if node.dig('packages', 'systemd', 'version')
       systemd_version = FB::Version.new(node['packages']['systemd']['version'])
       has_split_rpms = node.debian? || ((node.fedora? || node.centos?) &&
           systemd_version >= FB::Version.new('249'))
