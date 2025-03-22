@@ -84,7 +84,7 @@ CentOS.
 
 ### Frontend
 
-The collectd-web fronted can be installed with the `fb_collectd::fronted`
+The collectd-web fronted can be installed with the `fb_collectd::frontend`
 recipe. Use the `node['fb_collectd']['collection']` to customize its settings.
 Note that this recipe will not install or configure a web server, so unless you
 set one up the collection CGIs will not actually be available.
