@@ -39,7 +39,10 @@ EOF
 }
 
 CONFIG='.cookstyle_combined.yml'
-RULES_DIR="$(pwd)/cookstyle/" # `cookstyle -r FOO` expects FOO to be absolute
+ME=$(realpath "$0")
+MY_DIR=$(dirname "$ME")
+# `cookstyle -r FOO` expects FOO to be absolute
+RULES_DIR="${MY_DIR}/../cookstyle/"
 AUTOCORRECT=0
 COMPAT_MODE=1
 
