@@ -51,6 +51,7 @@ if node.debian? || (node.ubuntu? && !node.ubuntu16?)
 end
 
 include_recipe 'fb_spamassassin'
+include_recipe 'fb_openport'
 
 # Currently fb_reprepro is broken
 # https://github.com/facebook/chef-cookbooks/issues/78

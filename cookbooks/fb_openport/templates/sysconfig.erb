@@ -1,0 +1,9 @@
+# This file is controlled by Chef, do not modify!
+<%
+  if @instance === 'global'
+    opts = node['fb_openport']['config']['options']
+  else
+    opts = node['fb_openport']['config']['sessions'][@instance]['options']
+  end
+%>
+OPTIONS="<%= opts.join(' ') %>"

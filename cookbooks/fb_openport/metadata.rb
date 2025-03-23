@@ -1,0 +1,6 @@
+name 'fb_openport'
+maintainer 'Meta Platforms, Inc.'
+maintainer_email 'noreply@meta.com'
+license 'Apache-2.0'
+description 'Installs/Configures openport'
+version '0.1.0'

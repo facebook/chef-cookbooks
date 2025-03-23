@@ -1,0 +1,19 @@
+[Unit]
+Description=A service to forward local ports to the internet
+After=network.target nss-user-lookup.target auditd.service
+
+[Service]
+Environment=PORT=%i
+Environment=OPTIONS=
+EnvironmentFile=-/etc/default/openport
+EnvironmentFile=-/etc/sysconfig/openport
+EnvironmentFile=-/etc/default/openport-%i
+EnvironmentFile=-/etc/sysconfig/openport-%i
+ExecStart=/usr/bin/openport $PORT $OPTIONS
+Restart=on-failure
+Type=simple
+RuntimeDirectory=openport
+RuntimeDirectoryMode=0755
+
+[Install]
+WantedBy=multi-user.target
