@@ -1,4 +1,5 @@
-# Facebook Cookbooks Suite
+Facebook Cookbooks Suite
+========================
 
 [![Continuous Integration](https://github.com/facebook/chef-cookbooks/actions/workflows/ci.yml/badge.svg)](https://github.com/facebook/chef-cookbooks/actions/workflows/ci.yml)
 
@@ -36,8 +37,8 @@ use the Facebook Cookbook Model, but that they are maintained in this repo.
 Local cookbooks or cookbooks in other repositories that implement this model
 should not use this prefix, but should reference this document in their docs.
 
-
-## APIs
+APIs
+----
 
 Unlike other cookbook models, we do not use resources as APIs, we use the node
 object. Configuration is modeled in arrays and hashes as closely and thinly as
@@ -80,7 +81,7 @@ There are two reasons we use attribute-driven APIs:
    during each Chef run the cron job gets modified to hourly, then re-modified
    to twice a day.
 
-2. Allows for what we refer to as "idempotent systems" instead of "idempotent
+1. Allows for what we refer to as "idempotent systems" instead of "idempotent
    settings." In other words, if you only manage a specific item in a larger
    config, and then you stop managing it, it should either revert to a
    less-specific setting (see #1) or be removed, as necessary.
@@ -101,14 +102,16 @@ There are two reasons we use attribute-driven APIs:
    in the hash falls back to being set again by the next-most-specific value
    (i.e. the "site" cookbook in this case).
 
-
-## Run-lists
+Run-lists
+---------
 
 How you formulate your run-lists is up to your site, as long as you follow the
 basic rule that core cookbooks come first and you order least-specific to
 most-specific. At Facebook, all of our run-lists are:
 
-    recipe[fb_init], recipe[$SERVICE]
+```ruby
+recipe[fb_init], recipe[$SERVICE]
+```
 
 Where `fb_init` is similar to the sample provided in this repo, but with extra
 "core cookbooks."
@@ -116,15 +119,15 @@ Where `fb_init` is similar to the sample provided in this repo, but with extra
 We generally think of this way: `fb_init` should make you a "Facebook server"
 and the rest should make you a whatever-kind-of-server-you-are.
 
-
-## Getting started
+Getting started
+---------------
 
 Grab a copy of the repo, rename `fb_init_sample` to `fb_init`, and follow the
 instructions in its [README.md](https://github.com/facebook/chef-cookbooks/blob/main/cookbooks/fb_init_sample/README.md)
 (coordinating guidance is in comments in the default recipe).
 
-
-## Other Guidelines
+Other Guidelines
+----------------
 
 ### Modules and classes in cookbooks
 
@@ -216,8 +219,9 @@ vulnerability.
 Likewise, the Facebook cookbooks will err on the side of failing if something
 seems wrong. This is both in line with the Chef philosophy we just outlined,
 but also because this model assumes that code is being tested on real systems
-before being released using something like [taste-tester](https://github.com/facebook/taste-tester/) and that monitoring is
-in place to know if your machines are successfully running Chef.
+before being released using something like
+[taste-tester](https://github.com/facebook/taste-tester/) and that monitoring
+is in place to know if your machines are successfully running Chef.
 
 Here are some examples of this philosophy in practice:
 
@@ -403,7 +407,8 @@ end
 In general, always start your implementation as a recipe and then escalate to
 Custom Resources where necessary.
 
-## Debugging kitchen runs
+Debugging kitchen runs
+----------------------
 
 You can set up kitchen using the same commands as in `.github/workflows/ci.yml`,
 but once Chef runs you won't have access to connect, so modify
@@ -412,6 +417,7 @@ but once Chef runs you won't have access to connect, so modify
 Then you can do `bundle exec kitchen login <INSTANCE>` after a failed
 run, and sudo will be passwordless so you can debug.
 
-## License
+License
+-------
 
 See the LICENSE file in this directory
