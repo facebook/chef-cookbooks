@@ -52,7 +52,9 @@ if node.systemd?
     owner node.root_user
     group node.root_group
     mode '0644'
-    notifies :run, 'execute[load modules]'
+    unless node.antlir2_build?
+      notifies :run, 'execute[load modules]'
+    end
   end
 else
   directory '/etc/sysconfig/modules' do
