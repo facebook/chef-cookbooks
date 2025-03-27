@@ -1279,6 +1279,12 @@ class Chef
       end
     end
 
+    # Facebook-ism, put in place to avoid OSS cookbook breakage
+    # It can be ignored.
+    def antlir2_build?
+      false
+    end
+
     # A gate which can be used to limit dangerous code to only run during
     # provisioning or upon boot
     def disruptable?
