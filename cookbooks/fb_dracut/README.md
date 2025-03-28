@@ -8,6 +8,7 @@ Requirements
 Attributes
 ----------
 * node['fb_dracut']['conf']['add_dracutmodules']
+* node['fb_dracut']['conf']['omit_dracutmodules']
 * node['fb_dracut']['conf']['drivers']
 * node['fb_dracut']['conf']['add_drivers']
 * node['fb_dracut']['conf']['omit_drivers']
@@ -38,6 +39,11 @@ The following are pre-initialized for you as noted:
 
 * `node['fb_dracut']['conf']['add_dracutmodules']`
   Specify a list of dracut modules to add in the initramfs.
+  (Should be array of strings)
+  (default=empty)
+
+* `node['fb_dracut']['conf']['omit_dracutmodules']`
+  Specify a list of dracut modules to omit from the initramfs.
   (Should be array of strings)
   (default=empty)
 

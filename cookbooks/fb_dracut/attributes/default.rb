@@ -33,6 +33,7 @@ default['fb_dracut'] = {
   'manage_packages' => true,
   'conf' => {
     'add_dracutmodules' => [],
+    'omit_dracutmodules' => [],
     'drivers' => [],
     'add_drivers' => add_drivers,
     'omit_drivers' => [],
