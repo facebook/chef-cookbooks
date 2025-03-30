@@ -69,15 +69,15 @@ operates in roughly like this:
   a package swap between them
 * generate the upgrade command as described above
 * execute the upgrade
-  * before the actual upgrade, notify any resources that were defined in
-    `node['fb_system_upgrade']['notify_resources_before']`
-  * run the upgrade command with a timeout from
-  `node['fb_system_upgrade']['timeout']` (defaulting to 30 minutes)
-  * call any callback methods that were defined for success/failure in
-    `node['fb_system_upgrade']['success_callback_method']` and
-    `node['fb_system_upgrade']['failure_callback_method']`
-  * notify any resources that were defined in
-    `node['fb_system_upgrade']['notify_resources']`
+   * before the actual upgrade, notify any resources that were defined in
+     `node['fb_system_upgrade']['notify_resources_before']`
+   * run the upgrade command with a timeout from
+     `node['fb_system_upgrade']['timeout']` (defaulting to 30 minutes)
+   * call any callback methods that were defined for success/failure in
+     `node['fb_system_upgrade']['success_callback_method']` and
+     `node['fb_system_upgrade']['failure_callback_method']`
+   * notify any resources that were defined in
+     `node['fb_system_upgrade']['notify_resources']`
 
 ### Callbacks
 Two attributes are provided to define callback methods that should be called
