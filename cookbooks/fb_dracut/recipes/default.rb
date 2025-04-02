@@ -41,7 +41,7 @@ end
 
 execute 'rebuild all initramfs' do
   not_if { node.container? || node.quiescent? || node['fb_dracut']['disable'] }
-  command 'dracut --force'
+  command 'dracut --force -vv'
   action :nothing
   subscribes :run, 'template[/etc/sysctl.conf]'
   subscribes :run, 'package[e2fsprogs]'
