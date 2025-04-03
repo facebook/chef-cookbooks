@@ -19,14 +19,20 @@
 # limitations under the License.
 #
 
-# c10s is opted out until EPEL 10 becomes available
-if (node.centos? && !(node.centos7? || node.centos8? || node.centos10?)) || node.fedora?
-  packages = ['iptables-legacy']
-else
-  packages = ['iptables']
-end
+packages = ['iptables']
+
 if node.ubuntu?
   packages << 'iptables-persistent'
+elsif node.centos_min_version?(9)
+  # In C9 and above, iptables-nft-services contains everything
+  # that iptables-services does, they overlap.
+  #
+  # In C10 and above, it's the same but iptables-nft-services
+  # obsoletes iptables-services
+  #
+  # In Fedora there is only 'iptables-services', and it's the
+  # superset package (like iptables-nft-services in CentOS)
+  packages << 'iptables-nft-services'
 else
   packages << 'iptables-services'
 end
