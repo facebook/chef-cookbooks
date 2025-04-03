@@ -44,7 +44,6 @@ when 'debian'
     systemd_packages += %w{
       libnss-myhostname
       libnss-mymachines
-      libnss-resolve
       systemd-container
       systemd-coredump
     }
@@ -77,6 +76,7 @@ package 'systemd packages' do
       end
       if node['fb_systemd']['resolved']['enable'] && has_split_rpms
         systemd_packages << 'systemd-resolved'
+        systemd_packages << 'libnss-resolve'
       end
       if node['fb_systemd']['nspawn']['enable'] && has_split_rpms
         systemd_packages << 'systemd-container'
