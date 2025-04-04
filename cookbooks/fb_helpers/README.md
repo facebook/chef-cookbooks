@@ -21,6 +21,21 @@ Usage
 Simply depend on this cookbook from your metadata.rb to get these methods in
 your node.
 
+* `node.os_max_version?(version, full=false)`
+   Compares the OS version (`node['platform_version']` with `version`) and
+   returns `true` if the OS version is, at most `version`. By default compares
+   *only* the *major version* (so `8.2 <= 8.1` because `8 <= 8`).  For comparing
+   the full version set full=true.
+
+* `node.os_min_version?(version, full=false)`
+   Compares the OS version (`node['platform_version']` with `version`) and
+   returns `true` if the OS version is, at least `version`. By default compares
+   *only* the *major version* (so `8.2 >= 8.1` because `8 >= 8`). For comparing
+   the full version set full=true.
+
+   Note that for special cases like 'rawhide' or 'sid', you should use the
+   OS-specific incarnation of this (e.g. `debian_min_full_version?`)
+
 * `node.centos?`
     Is CentOS
 
@@ -42,11 +57,13 @@ your node.
 * `node.centos10?`
     Is CentOS Stream 10
 
-* `node.centos_max_version?(v)`
+* `node.centos_max_version?(v, full=false)`
     Is RHEL-compatible with a maximum version number of v
+    See os_max_version? for details
 
-* `node.centos_min_version?(v)`
+* `node.centos_min_version?(v, full=false)`
     Is RHEL-compatible with a minimum version number of v
+    See os_min_version? for details
 
 * `node.fedora?`
     Is Fedora
@@ -114,11 +131,13 @@ your node.
 * `node.redhat10?`
     Is Redhat Enterprise Linux 10
 
-* `node.rhel_max_version?(v)`
+* `node.rhel_max_version?(v, full=false)`
     Is Redhat Enterprise Linux with a maximum major version number of v
+    See os_max_version? for details.
 
-* `node.rhel_min_version?(v)`
+* `node.rhel_min_version?(v, full=false)`
     Is Redhat Enterprise Linux with a minimum major version number of v
+    See os_min_version? for details.
 
 * `node.rhel?`
     Is Redhat Enterprise Linux
@@ -156,11 +175,13 @@ your node.
 * `node.rhel_family?`
     Is Redhat Enterprise Linux-compatible (eg CentOS, Oracle Linux, Rocky Linux)
 
-* `node.el_max_version?(v)`
+* `node.el_max_version?(v, full=false)`
     Is RHEL-compatible with a maximum version number of v
+    See os_max_version? for details.
 
-* `node.el_min_version?(v)`
+* `node.el_min_version?(v, full=false)`
     Is RHEL-compatible with a minimum version number of v
+    See os_min_version? for details.
 
 * `node.debian?`
     Is Debian
