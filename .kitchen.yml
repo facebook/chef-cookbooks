@@ -6,6 +6,20 @@ driver:
   chef_version: <%= ENV['CHEF_VERSION'] || 'current' %>
 
 platforms:
+  - name: fedora-40
+    driver:
+      image: dokken/fedora-40
+      pid_one_command: /usr/lib/systemd/systemd
+      intermediate_instructions:
+        # stub out /etc/fstab for fb_fstab
+        - RUN touch /etc/fstab
+  - name: fedora-41
+    driver:
+      image: dokken/fedora-41
+      pid_one_command: /usr/lib/systemd/systemd
+      intermediate_instructions:
+        # stub out /etc/fstab for fb_fstab
+        - RUN touch /etc/fstab
   - name: centos-stream-9
     driver:
       image: dokken/centos-stream-9

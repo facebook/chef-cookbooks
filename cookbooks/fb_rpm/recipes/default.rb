@@ -18,8 +18,8 @@
 # limitations under the License.
 #
 
-unless node.centos?
-  fail 'fb_rpm is only supported on CentOS!'
+unless ::ChefUtils.fedora_derived?
+  fail 'fb_rpm is only supported on Fedora-based OSes!'
 end
 
 include_recipe 'fb_rpm::packages'
