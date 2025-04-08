@@ -40,14 +40,15 @@ class Chef
 
       @canonical_version.fetch(version) do |ver|
         @canonical_version[ver] =
-          if ver.class == Integer
+          case ver
+          when Integer, Float
             FB::Version.new(version.to_s)
-          elsif ver.class == String
+          when String
             FB::Version.new(version)
-          elsif ver.class == FB::Version
+          when FB::Version
             version
           else
-            fail 'fb_helpers: EL Version comparison can only be performed with strings and integers'
+            fail 'fb_helpers: Version comparison can only be performed with strings and numbers'
           end
       end
     end
@@ -56,14 +57,30 @@ class Chef
       @self_version ||= FB::Version.new(self['platform_version'])
     end
 
+    def os_min_version?(version, full = false)
+      if full
+        self._self_version >= self._canonical_version(version)
+      else
+        self._self_version[0] >= self._canonical_version(version)[0]
+      end
+    end
+
+    def os_max_version?(version, full = false)
+      if full
+        self._self_version <= self._canonical_version(version)
+      else
+        self._self_version[0] <= self._canonical_version(version)[0]
+      end
+    end
+
     # Is this a RHEL-compatible OS with a minimum major version number of `version`
-    def el_min_version?(version)
-      self.rhel_family? && self._self_version[0] >= self._canonical_version(version)[0]
+    def el_min_version?(version, full = false)
+      self.rhel_family? && self.os_min_version?(version, full)
     end
 
     # Is this a RHEL-compatible OS with a maximum major version number of `version`
-    def el_max_version?(version)
-      self.rhel_family? && self._self_version[0] <= self._canonical_version(version)[0]
+    def el_max_version?(version, full = false)
+      self.rhel_family? && self.os_max_version?(version, full)
     end
 
     def rhel_family7?
@@ -82,12 +99,12 @@ class Chef
       self.rhel_family?
     end
 
-    def rhel_min_version?(version)
-      self.rhel? && self.el_min_version?(version)
+    def rhel_min_version?(version, full = false)
+      self.rhel? && self.el_min_version?(version, full)
     end
 
-    def rhel_max_version?(version)
-      self.rhel? && self.el_max_version?(version)
+    def rhel_max_version?(version, full = false)
+      self.rhel? && self.el_max_version?(version, full)
     end
 
     def rhel7?
@@ -110,12 +127,12 @@ class Chef
       self.rhel? && self['platform_version'].start_with?('10')
     end
 
-    def centos_min_version?(version)
-      self.centos? && self.el_min_version?(version)
+    def centos_min_version?(version, full = false)
+      self.centos? && self.os_min_version?(version, full)
     end
 
-    def centos_max_version?(version)
-      self.centos? && self.el_max_version?(version)
+    def centos_max_version?(version, full = false)
+      self.centos? && self.os_max_version?(version, full)
     end
 
     def centos?
@@ -150,24 +167,24 @@ class Chef
       self['platform'] == 'rocky'
     end
 
-    def rocky_min_version?(version)
-      self.rocky? && self.el_min_version?(version)
+    def rocky_max_version?(version, full = false)
+      self.rocky? && self.os_max_version?(version, full)
     end
 
-    def rocky_max_version?(version)
-      self.rocky? && self.el_max_version?(version)
+    def rocky_min_version?(version, full = false)
+      self.rocky? && self.os_min_version?(version, full)
     end
 
     def redhat?
       self['platform'] == 'redhat'
     end
 
-    def redhat_min_version?(version)
-      self.redhat? && self.el_min_version?(version)
+    def redhat_max_version?(version, full = false)
+      self.redhat? && self.os_max_version?(version, full)
     end
 
-    def redhat_max_version?(version)
-      self.redhat? && self.el_max_version?(version)
+    def redhat_min_version?(version, full = false)
+      self.redhat? && self.os_min_version?(version, full)
     end
 
     def redhat6?
@@ -194,12 +211,12 @@ class Chef
       self['platform'] == 'oracle'
     end
 
-    def oracle_min_version?(version)
-      self.oracle? && self.el_min_version?(version)
+    def oracle_max_version?(version, full = false)
+      self.oracle? && self.os_max_version?(version, full)
     end
 
-    def oracle_max_version?(version)
-      self.oracle? && self.el_max_version?(version)
+    def oracle_min_version?(version, full = false)
+      self.oracle? && self.os_min_version?(version, full)
     end
 
     def oracle9?
@@ -305,24 +322,25 @@ class Chef
       debian? && self['platform_version'].include?('sid')
     end
 
-    def debian_min_version?(version)
-      self.debian? && (self['platform_version'].to_i >= version || self.debian_sid?)
+    def debian_max_version?(version, full = false)
+      self.debian? && self.os_max_version?(version, full)
     end
 
-    def debian_max_version?(version)
-      self.debian? && self['platform_version'].to_i <= version
+    def debian_min_version?(version, full = false)
+      self.debian? &&
+        (self.debian_sid? || self.os_min_version?(version, full))
     end
 
     def ubuntu?
       self['platform'] == 'ubuntu'
     end
 
-    def ubuntu_min_version?(version)
-      self.ubuntu? && self['platform_version'].to_i >= version
+    def ubuntu_max_version?(version, full = false)
+      self.ubuntu? && self.os_max_version?(version, full)
     end
 
-    def ubuntu_max_version?(version)
-      self.ubuntu? && self['platform_version'].to_i <= version
+    def ubuntu_min_version?(version, full = false)
+      self.ubuntu? && self.os_min_version?(version, full)
     end
 
     def ubuntu12?

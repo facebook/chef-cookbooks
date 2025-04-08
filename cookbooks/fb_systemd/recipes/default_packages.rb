@@ -23,8 +23,9 @@ systemd_packages = ['systemd', 'systemd-sysv']
 case node['platform_family']
 when 'rhel', 'fedora'
   systemd_packages << 'systemd-libs'
-  # Starting with Fedora 41, systemd-sysv is no longer supported and does not exist in the repo
-  if node.fedora? && node['platform_version'].to_i >= 41
+  # Starting with Fedora 41, systemd-sysv is no longer supported and does not
+  # exist in the repo
+  if node.fedora? && node.os_min_version?('41', true)
     systemd_packages.delete('systemd-sysv')
   end
 when 'debian'
