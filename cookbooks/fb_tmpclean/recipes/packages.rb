@@ -30,6 +30,6 @@ else
 end
 
 package pkg do
-  only_if { node['fb_tmpclean']['manage_packages'] }
+  only_if { node['fb_tmpclean']['manage_packages'] && (!node.fedora? || node['platform_version'].to_i <= 41) }
   action :upgrade
 end
