@@ -29,6 +29,10 @@ action :manage do
     files = determine_files(name, config)
 
     current, new_config = generate_config_hashes(files['from'], config)
+    # Give it the friendly name the user wanted
+    unless new_config['id']
+      new_config['connection']['id'] = name
+    end
 
     template files['config'] do
       # we don't rely just on the idempotency of the template because
