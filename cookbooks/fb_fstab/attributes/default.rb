@@ -104,4 +104,6 @@ default['fb_fstab'] = {
   # Best effort try to remove the mount point (only directory and only if empty)
   # Does not throw exception on failure
   'umount_delete_empty_mountdir' => false,
+  # In case anyone need to add a custom comment header to fstab file
+  'custom_comment_headers' => [],
 }
