@@ -57,3 +57,11 @@ jobs:
         uses: actions/checkout@v4
       - name: Run Shellcheck
         uses: ludeeus/action-shellcheck@2.0.0
+  markdownlint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Run mdl
+        uses: actionshub/markdownlint@main
+
