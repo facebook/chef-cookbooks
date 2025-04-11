@@ -42,7 +42,6 @@ execute 'reload iptables' do
   only_if { node['fb_iptables']['enable'] }
   command '/usr/sbin/fb_iptables_reload 4 reload'
   action :nothing
-  subscribes :run, 'package[osquery]'
 end
 
 ## ip6tables ##
