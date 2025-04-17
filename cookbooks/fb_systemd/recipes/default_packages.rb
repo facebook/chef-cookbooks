@@ -77,7 +77,6 @@ package 'systemd packages' do
       end
       if node['fb_systemd']['resolved']['enable'] && has_split_rpms
         systemd_packages << 'systemd-resolved'
-        systemd_packages << 'libnss-resolve'
       end
       if node['fb_systemd']['nspawn']['enable'] && has_split_rpms
         systemd_packages << 'systemd-container'
