@@ -421,6 +421,10 @@ class Chef
       macos? && self['platform_version'].start_with?('14.')
     end
 
+    def macos15v4plus?
+      macos? && self['platform_version'] >= '15.4'
+    end
+
     def macos15?
       macos? && self['platform_version'].start_with?('15.')
     end
