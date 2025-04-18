@@ -123,13 +123,13 @@ end
 systemd_unit 'enable spam assassin update job' do
   only_if { node['fb_spamassassin']['enable_update_job'] }
   unit_name "#{update_job}.timer"
-  action [:enable]
+  action [:enable, :start]
 end
 
 systemd_unit 'disable spam assassin update job' do
   not_if { node['fb_spamassassin']['enable_update_job'] }
   unit_name "#{update_job}.timer"
-  action [:disable]
+  action [:stop, :disable]
 end
 
 service 'spamd' do
