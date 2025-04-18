@@ -22,7 +22,7 @@ sysconfig = {
   'servers' => [],
   'options' => [],
 }
-if ::ChefUtils.debian?
+if node.debian_family?
   sysconfig['interfaces'] = []
 end
 
