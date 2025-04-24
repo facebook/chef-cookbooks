@@ -134,18 +134,20 @@ if node.firstboot_tier?
   include_recipe 'fb_init_sample::firstboot'
 end
 
-if node.centos?
-  # https://bugzilla.redhat.com/show_bug.cgi?id=2337139
-  if node.centos_max_version?(9)
-    include_recipe 'fb_apcupsd'
-  end
-  # Turn off dnsmasq as it doesn't play well with travis
-  node.default['fb_dnsmasq']['enable'] = false
-  include_recipe 'fb_dnsmasq'
-  # https://bugzilla.redhat.com/show_bug.cgi?id=2345748
-  if node.centos_max_version?(9)
-    include_recipe 'fb_collectd'
-  end
+# APCUPSD is not yet in C10+
+# https://bugzilla.redhat.com/show_bug.cgi?id=2337139
+if !node.rhel_family? || node.el_max_version?(9)
+  include_recipe 'fb_apcupsd'
+end
+
+# Turn off dnsmasq as it doesn't play well with travis
+node.default['fb_dnsmasq']['enable'] = false
+include_recipe 'fb_dnsmasq'
+
+# Collected is not yet in C10+
+# https://bugzilla.redhat.com/show_bug.cgi?id=2345748
+if !node.rhel_family? || node.el_max_version?(9)
+  include_recipe 'fb_collectd'
 end
 include_recipe 'fb_rsync::server'
 if node.centos?
