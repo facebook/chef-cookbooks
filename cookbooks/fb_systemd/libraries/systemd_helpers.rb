@@ -128,5 +128,15 @@ module FB
 
       merged
     end
+
+    def self.get_unit_properties(unit)
+      property_map = {}
+      Mixlib::ShellOut.new("systemctl show #{unit}").run_command.stdout.lines.each do |line|
+        key, value = line.split('=')
+        property_map[key] = value
+      end
+
+      property_map
+    end
   end
 end
