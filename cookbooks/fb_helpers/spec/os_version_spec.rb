@@ -25,8 +25,8 @@ describe 'Chef::Node' do
 
   context 'Any OS v 8.2' do
     before(:each) do
-      node.default['platform_version'] = '8.2'
-      node.default['platform_family'] = 'rhel'
+      node.automatic['platform_version'] = '8.2'
+      node.automatic['platform_family'] = 'rhel'
     end
 
     it 'should report correct version' do
@@ -95,9 +95,9 @@ describe 'Chef::Node' do
 
   context 'Ubuntu 24.04' do
     before(:each) do
-      node.default['platform_version'] = '24.04'
-      node.default['platform_family'] = 'debian'
-      node.default['platform'] = 'ubuntu'
+      node.automatic['platform_version'] = '24.04'
+      node.automatic['platform_family'] = 'debian'
+      node.automatic['platform'] = 'ubuntu'
     end
 
     it 'should report correct version' do
@@ -179,13 +179,103 @@ describe 'Chef::Node' do
         expect(node.os_max_version?(23.9, true)).to eq(false)
       end
     end
+
+    context 'Chef::Node.ubuntu_version?' do
+      it 'should handle major versions properly' do
+        {
+          23 => false,
+          24 => true,
+          25 => false,
+        }.each do |v, r|
+          expect(node.ubuntu_version?(v)).to eq(r)
+          expect(node.ubuntu_version?(v.to_s)).to eq(r)
+        end
+      end
+
+      it 'should handle minor versions properly' do
+        {
+          '23.04' => false,
+          '24.01' => false,
+          '24.04' => true,
+          '24.10' => false,
+          '25.04' => false,
+        }.each do |v, r|
+          expect(node.ubuntu_version?(v)).to eq(r)
+          expect(node.ubuntu_version?(v.to_f)).to eq(r)
+        end
+      end
+    end
+  end
+
+  context 'Fedora 39' do
+    before(:each) do
+      node.automatic['platform_version'] = '39'
+      node.automatic['platform_family'] = 'fedora'
+      node.automatic['platform'] = 'fedora'
+    end
+
+    context 'Chef::Node.fedora_version?' do
+      it 'handles versions correctly' do
+        {
+          37 => false,
+          38 => false,
+          39 => true,
+          40 => false,
+        }.each do |v, r|
+          expect(node.fedora_version?(v)).to eq(r)
+          expect(node.fedora_version?(v.to_s)).to eq(r)
+        end
+      end
+    end
+  end
+
+  context 'CentOS 9' do
+    before(:each) do
+      node.automatic['platform_version'] = '9'
+      node.automatic['platform_family'] = 'rhel'
+      node.automatic['platform'] = 'centos'
+    end
+
+    context 'Chef::Node.centos_version?' do
+      it 'handles versions correctly' do
+        expect(node.centos_version?(8)).to eq(false)
+        expect(node.centos_version?(9)).to eq(true)
+        expect(node.centos_version?(10)).to eq(false)
+
+        expect(node.centos_version?(9.1)).to eq(false)
+        expect(node.centos_version?(9.2)).to eq(false)
+      end
+    end
+  end
+
+  context 'CentOS 9.1' do
+    before(:each) do
+      node.automatic['platform_version'] = '9.1'
+      node.automatic['platform_family'] = 'rhel'
+      node.automatic['platform'] = 'centos'
+    end
+
+    context 'Chef::Node.centos_version?' do
+      it 'handles versions correctly' do
+        {
+          8 => false,
+          9 => true,
+          9.0 => false,
+          9.1 => true,
+          9.2 => false,
+        }.each do |v, r|
+          expect(node.centos_version?(v)).to eq(r)
+          expect(node.centos_version?(v.to_s)).to eq(r)
+        end
+      end
+    end
   end
 
   context 'Debian sid' do
     before(:each) do
-      node.default['platform_version'] = 'trixie/sid'
-      node.default['platform_family'] = 'debian'
-      node.default['platform'] = 'debian'
+      node.automatic['platform_version'] = 'trixie/sid'
+      node.automatic['platform_family'] = 'debian'
+      node.automatic['platform'] = 'debian'
     end
 
     it 'should report correct version' do
@@ -195,6 +285,29 @@ describe 'Chef::Node' do
     context 'Chef::Node.debian_min_version?' do
       it 'should be min anything' do
         expect(node.debian_min_version?(999)).to eq(true)
+      end
+    end
+  end
+
+  context 'Arista EOS 4.31' do
+    before(:each) do
+      node.automatic['platform_version'] = '4.31'
+      node.automatic['platform_family'] = 'arista_eos'
+      node.automatic['platform'] = 'arista_eos'
+    end
+
+    context 'Chef::Node.aristaeos_version_plus?' do
+      it 'handles versions correctly' do
+        {
+          '4.28' => true,
+          '4.30' => true,
+          '4.31' => true,
+          '4.32' => false,
+          '4.50' => false,
+          '5' => false,
+        }.each do |v, r|
+          expect(node.aristaeos_version_plus?(v)).to eq(r)
+        end
       end
     end
   end
