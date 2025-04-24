@@ -30,6 +30,8 @@ end
 include_recipe 'fb_init_sample::site_settings'
 
 if node.centos?
+  # We turn this off to avoid clobbering /etc/yum,repos.d in the CI
+  node.default['fb_yum_repos']['manage_repos'] = false
   include_recipe 'fb_dnf'
   include_recipe 'fb_rpm'
 end
