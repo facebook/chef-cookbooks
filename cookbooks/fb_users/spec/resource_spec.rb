@@ -152,7 +152,7 @@ recipe 'fb_users::default' do |tc|
               'home' => '/var/localhome/testuser',
               'homedir_group' => 'users',
               'manage_home' => false,
-              'password' => 'myfakepassword',
+              :password => ENV['USER_PASSWORD'],
               'shell' => '/bin/bash',
               'action' => :add,
               'notifies' => {
