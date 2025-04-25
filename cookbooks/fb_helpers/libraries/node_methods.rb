@@ -95,6 +95,10 @@ class Chef
       self.rhel_family? && self['platform_version'].start_with?('9')
     end
 
+    def rhel_family10?
+      self.rhel_family? && self['platform_version'].start_with?('10')
+    end
+
     def rhel?
       self.rhel_family?
     end
