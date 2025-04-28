@@ -14,6 +14,7 @@ Attributes
 * node['fb_systemd']['udevd']['hwdb']
 * node['fb_systemd']['udevd']['rules']
 * node['fb_systemd']['journald']['config']
+* node['fb_systemd']['journald']['manage_config_with_dropin']
 * node['fb_systemd']['journal-gatewayd']['enable']
 * node['fb_systemd']['journal-remote']['enable']
 * node['fb_systemd']['journal-remote']['config']
@@ -272,6 +273,10 @@ Journald is a critical system daemon and cannot be disabled. By default we
 configure journald to use the 'auto' storage (disk if the log directory exists,
 or ram otherwise, which is the default for most distros). You can change these
 settings and more through `node['fb_systemd']['journald']['config']`.
+
+If `node['fb_systemd']['journald']['manage_config_with_dropin']` is `true`, a
+dropin will be used to implement the journald config. If `false`, chef
+overwrites `/etc/systemd/journald.conf` directly.
 
 Refer to the
 [journald documentation](https://www.freedesktop.org/software/systemd/man/journald.conf.html)

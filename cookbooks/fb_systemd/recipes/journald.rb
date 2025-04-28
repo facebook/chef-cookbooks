@@ -18,7 +18,19 @@
 # limitations under the License.
 #
 
-template '/etc/systemd/journald.conf' do
+if node['fb_systemd']['journald']['manage_config_with_dropin']
+  directory '/etc/systemd/journald.conf.d' do
+    owner node.root_user
+    group node.root_group
+    mode '0644'
+    action :create
+  end
+  journald_conf = '/etc/systemd/journald.conf.d/90-chef.conf'
+else
+  journald_conf = '/etc/systemd/journald.conf'
+end
+
+template journald_conf do
   source 'systemd.conf.erb'
   owner node.root_user
   group node.root_group

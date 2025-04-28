@@ -92,6 +92,7 @@ default['fb_systemd'] = {
     'config' => {
       'Storage' => 'auto',
     },
+    'manage_config_with_dropin' => false,
   },
   'journal-gatewayd' => {
     'enable' => false,
