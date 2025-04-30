@@ -28,7 +28,11 @@ dnf_packages = %w{
   python3-libcomps
 }
 
-unless node.fedora? && node['platform_version'].to_i >= 41
+if (node.fedora? && node['platform_version'].to_i >= 41) ||
+   (node.centos? && node['platform_version'].to_i >= 11) ||
+   node.eln?
+  dnf_packages += %w{dnf5 dnf5-plugins}
+else
   dnf_packages += %w{dnf dnf-plugins-core dnf-utils}
 end
 
