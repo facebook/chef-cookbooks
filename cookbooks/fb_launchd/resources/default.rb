@@ -43,11 +43,13 @@ action :run do
     fail "fb_launchd: prefix '#{prefix}' must not end with a trailing '.'"
   end
 
+  managed_jobs = FB::Helpers.evaluate_lazy_enumerable(node['fb_launchd']['jobs'].to_hash).reject { |_k, v| v.nil? }
+
   # Delete old jobs first.
   managed_plists(prefix).each do |path|
     label = ::File.basename(path, '.plist')
     name = label.sub(prefix + '.', '')
-    next if node['fb_launchd']['jobs'].include?(name)
+    next if managed_jobs.include?(name)
 
     # Delete with 'path' specified to enforce that we delete the right one.
     Chef::Log.debug("fb_launchd: deleting #{label}")
@@ -55,7 +57,7 @@ action :run do
   end
 
   # Set up current jobs.
-  node['fb_launchd']['jobs'].each do |name, attrs|
+  managed_jobs.each do |name, attrs|
     if attrs.keys.any? { |k| BLOCKLISTED_ATTRIBUTES.include?(k) }
       fail "fb_launchd[#{name}]: uses a blocklisted attribute (one of " +
         "#{BLOCKLISTED_ATTRIBUTES}). If you want to use them, create a " +
