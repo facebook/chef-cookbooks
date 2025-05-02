@@ -307,6 +307,14 @@ class Chef
       self.fedora? && self['platform_version'] == '40'
     end
 
+    def fedora_max_version?(version, full = false)
+      self.fedora? && self.os_max_version?(version, full)
+    end
+
+    def fedora_min_version?(version, full = false)
+      self.fedora? && self.os_min_version?(version, full)
+    end
+
     def eln?
       self['platform'] == 'fedora' &&
         self['os_release'] &&

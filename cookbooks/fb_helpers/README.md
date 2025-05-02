@@ -110,6 +110,14 @@ your node.
 * `node.fedora40?`
     Is Fedora 40
 
+* `node.fedora_max_version?(v, full=false)`
+    Is RHEL-compatible with a maximum version number of v
+    See os_max_version? for details.
+
+* `node.fedora_min_version?(v, full=false)`
+    Is RHEL-compatible with a minimum version number of v
+    See os_min_version? for details.
+
 * `node.eln?`
     Is Fedora ELN
 
