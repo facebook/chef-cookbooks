@@ -128,18 +128,18 @@ Guiding design principles
 -------------------------
 
 * Easy and fast iteration
-  * Writing a Bookworm rule or report should be as easy as grabbing bash and
-    grep
-  * Profiling and debugging hooks should be in strategic spots to make it easy
-    to debug
+   * Writing a Bookworm rule or report should be as easy as grabbing bash and
+     grep
+   * Profiling and debugging hooks should be in strategic spots to make it easy
+     to debug
 * Each new rule or report unlocks the potential for new discoveries
-  * It should be easy to use existing work, so that building reports is just a
-    matter of grabbing existing rules (or other reports)
+   * It should be easy to use existing work, so that building reports is just a
+     matter of grabbing existing rules (or other reports)
 * Zero-cost additions, so you only analyze/execute the report (and supporting
   rules) that are needed
-  * A slow rule shouldn't matter unless you're actually using it
-  * Accept that copy-paste is going to happen with rules and reports, and make
-    that simple.
+   * A slow rule shouldn't matter unless you're actually using it
+   * Accept that copy-paste is going to happen with rules and reports, and make
+     that simple.
 
 Implementation notes - Why Rubocop for AST generation
 -----------------------------------------------------
