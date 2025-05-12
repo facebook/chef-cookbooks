@@ -332,9 +332,9 @@ here:
   this cookbook specifies `/etc/bind/named.conf` as the configuration file.
   This makes it much safer for us to cleanup the directory, when desired.
 * We will intelligently exclude stuff like
-  * Our 'primary' dir
-  * The `keys-directory`
-  * The `rndc.key` file
+   * Our 'primary' dir
+   * The `keys-directory`
+   * The `rndc.key` file
 
 ### Forcing empty RFC1918 zones
 

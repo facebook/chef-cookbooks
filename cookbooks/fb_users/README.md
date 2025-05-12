@@ -241,11 +241,11 @@ Values not specified for users will be handled as follows:
 * `homedir_mode` - will default to the configured system defaults, for example
   `/etc/login.defs`. This will not be set unless `manage_home` is `true`
 * `manage_home` - this one is more complex:
-  * if `node['fb_users']['user_defaults']['manage_home']` is specified, that
-    value will be used
-  * otherwise, if the `dirname` of the `home` value appears to be on NFS or
-    `autofs`, the value will be set to `false`
-  * otherwise the value will be set to `true`
+   * if `node['fb_users']['user_defaults']['manage_home']` is specified, that
+     value will be used
+   * otherwise, if the `dirname` of the `home` value appears to be on NFS or
+     `autofs`, the value will be set to `false`
+   * otherwise the value will be set to `true`
 * `shell` - will default to `node['fb_users']['user_defaults']['shell']`
 
 `gid` is required and has no default. It must be set to a group name that appears
