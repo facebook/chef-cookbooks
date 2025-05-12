@@ -1,4 +1,5 @@
-# Other attribute-driven API cookbook repos
+Other attribute-driven API cookbook repos
+=========================================
 
 This is a list of other repos that house attribute-driven API cookbooks. If you
 send a pull request to add a repo to this, we will check the repo to ensure it

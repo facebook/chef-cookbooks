@@ -29,7 +29,7 @@ run to fail.
 
 You must point `servers` to the list of DHCP servers to forward requests to.
 Then, on Debian systems you'll want to specify which interface or interfaces to
-listen to in 'interfaces`. Finally, you'll want to specify, at a minimum the
+listen to in `interfaces`. Finally, you'll want to specify, at a minimum the
 `-iu` and `-id` options to specify upstream and downstream interface(s). For
 example, let's say you have a 3-legged router with `eth0` being WAN, `eth1`
 being the internal network that has a DHCP server and `eth2` being the internal

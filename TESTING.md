@@ -1,4 +1,5 @@
-# Testing with Test Kitchen
+Testing with Test Kitchen
+=========================
 
 The default **Test Kitchen** configuration uses **Dokken**, which is ideal for
 running tests in **GitHub Actions** in a CI environment. However, **Dokken**
@@ -9,7 +10,8 @@ To enable local testing, the **Dokken** configuration has been duplicated into
 **.kitchen.vagrant.yml**, allowing you to run tests using **Vagrant** and
 VirtualBox on a **Cinc Workstation** setup.
 
-## Setting up for Local Testing
+Setting up for Local Testing
+----------------------------
 
 Follow the "Configuring" guide below to configure your system for
 Vagrant-based testing. To ensure that Test Kitchen uses the Vagrant
@@ -19,7 +21,8 @@ configuration instead of Dokken, set the following environment variable:
 export KITCHEN_YAML=.kitchen.vagrant.yml
 ```
 
-## Listing Available Test Platforms
+Listing Available Test Platforms
+--------------------------------
 
 To see the available test platforms, run:
 
@@ -38,7 +41,8 @@ default-ubuntu-2204      Vagrant  ChefInfra    Inspec    Ssh        <Not Created
 default-ubuntu-2404      Vagrant  ChefInfra    Inspec    Ssh        <Not Created>  <None>
 ```
 
-## Running a Test on a Specific Platform
+Running a Test on a Specific Platform
+-------------------------------------
 
 To test on a specific platform, use the `kitchen converge` command:
 
@@ -63,7 +67,7 @@ Example output:
 
        Recipe: fb_init_sample::default
          * fb_helpers_reboot[process deferred reboots] action process_deferred (up to date)
-       
+
        Running handlers:
        Running handlers complete
        Infra Phase complete, 300/585 resources updated in 02 minutes 41 seconds
@@ -73,7 +77,8 @@ Example output:
 -----> Test Kitchen is finished. (7m3.84s)
 ```
 
-## Limitations and Workarounds
+Limitations and Workarounds
+---------------------------
 
 ### CentOS Stream 10/RHEL 10 require x86-64-v3 instructions
 
@@ -117,7 +122,7 @@ If a VM is still lingering, you can manually identify and remove it:
 vagrant global-status
 ```
 
-2. Force destroy the VM:
+1. Force destroy the VM:
 
 ```bash
 vagrant destroy -f <VM-ID>
@@ -136,8 +141,8 @@ KITCHEN_YAML=.kitchen.vagrant.yml kitchen converge centos-stream-9
 
 This will ensure that the specified verison is installed insdie the test VM.
 
-
-## Configuring an Ubuntu 24.04 Host for Local Testing.
+Configuring an Ubuntu 24.04 Host for Local Testing
+--------------------------------------------------
 
 To set up your **Ubuntu 24.04** machine for local testing, ensure you are
 running a **64-bit AMD64-compatible host** with **CPU virtualization enabled**
@@ -157,8 +162,8 @@ echo \
   "deb [arch=amd64 signed-by=/usr/share/keyrings/oracle-virtualbox-2016.gpg] https://download.virtualbox.org/virtualbox/debian \
   $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") contrib" | \
   sudo tee /etc/apt/sources.list.d/virtualbox.list > /dev/null
- 
-# Install the latest version of Oracle VirtualBox 
+
+# Install the latest version of Oracle VirtualBox
 sudo apt-get update
 sudo apt-get install virtualbox
 
@@ -196,7 +201,7 @@ sudo apt install vagrant
 vagrant --version
 ```
 
-Install Cinc Workstation 
+Install Cinc Workstation
 
 ```bash
 # Download and install cinc-workstatus via omnibus installer
