@@ -8,5 +8,7 @@ source_url 'https://github.com/facebook/chef-cookbooks/'
 # never EVER change this number, ever.
 version '0.1.0'
 supports 'centos'
+supports 'fedora'
+supports 'rhel'
 depends 'fb_helpers'
 depends 'fb_systemd'
