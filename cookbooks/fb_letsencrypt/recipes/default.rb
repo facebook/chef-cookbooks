@@ -19,6 +19,11 @@
 # limitations under the License.
 #
 
+timer = value_for_platform_family(
+  ['rhel', 'fedora'] => 'certbot-renew',
+  'default' => 'certbot',
+)
+
 package 'certbot packages' do
   only_if { node['fb_letsencrypt']['manage_packages'] }
   package_name lazy {
@@ -33,12 +38,12 @@ end
 
 service 'conditionally enable certbot.timer' do
   only_if { node['fb_letsencrypt']['enable_package_timer'] }
-  service_name 'certbot.timer'
+  service_name "#{timer}.timer"
   action [:enable, :start]
 end
 
 service 'conditionally disable certbot.timer' do
   not_if { node['fb_letsencrypt']['enable_package_timer'] }
-  service_name 'certbot.timer'
+  service_name "#{timer}.timer"
   action [:stop, :disable]
 end
