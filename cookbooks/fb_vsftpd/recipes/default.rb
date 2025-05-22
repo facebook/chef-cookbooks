@@ -18,8 +18,10 @@
 # limitations under the License.
 #
 
-unless node.centos? || node.debian? || node.ubuntu?
-  fail 'fb_vsftpd is only supported on CentOS, Debian or Ubuntu'
+# TODO: use debian? || fedora_derived?
+unless node.centos? || node.rhel? || node.fedora? || node.debian? ||
+    node.ubuntu?
+  fail 'fb_vsftpd is only Fedora-based and Debian-based distros'
 end
 
 package 'vsftpd' do
@@ -28,12 +30,12 @@ package 'vsftpd' do
 end
 
 prefix = value_for_platform_family(
-  'rhel' => '/etc/vsftpd',
+  ['rhel', 'fedora'] => '/etc/vsftpd',
   'debian' => '/etc',
 )
 
 user_list = value_for_platform_family(
-  'rhel' => "#{prefix}/user_list",
+  ['rhel', 'fedora'] => "#{prefix}/user_list",
   'debian' => "#{prefix}/vsftpd.user_list",
 )
 

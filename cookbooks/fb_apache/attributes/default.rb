@@ -19,7 +19,7 @@
 
 moddir = value_for_platform_family(
   # will be a symlink to the right arch dir
-  'rhel' => '/etc/httpd/modules',
+  ['rhel', 'fedora'] => '/etc/httpd/modules',
   'debian' => '/usr/lib/apache2/modules',
 )
 
@@ -51,7 +51,7 @@ sysconfig = {
 }
 
 case node['platform_family']
-when 'rhel'
+when 'rhel', 'fedora'
   modules += [
     'log_config',
     'logio',
@@ -173,22 +173,22 @@ default['fb_apache'] = {
   },
   'module_packages' => {
     'dav_svn' => value_for_platform_family(
-      'rhel' => 'mod_dav_svn',
+      ['rhel', 'fedora'] => 'mod_dav_svn',
     ),
     'ldap' => value_for_platform_family(
-      'rhel' => 'mod_ldap',
+      ['rhel', 'fedora'] => 'mod_ldap',
     ),
     'php5' => value_for_platform_family(
-      'rhel' => 'mod_php',
+      ['rhel', 'fedora'] => 'mod_php',
     ),
     'php7' => value_for_platform_family(
-      'rhel' => 'mod_php',
+      ['rhel', 'fedora'] => 'mod_php',
     ),
     'fcgid' => value_for_platform_family(
-      'rhel' => 'mod_fcgid',
+      ['rhel', 'fedora'] => 'mod_fcgid',
     ),
     'ssl' => value_for_platform_family(
-      'rhel' => 'mod_ssl',
+      ['rhel', 'fedora'] => 'mod_ssl',
     ),
   },
   'mpm' => 'prefork',

@@ -104,7 +104,7 @@ action :verify do
     end
 
     verify_cmd = value_for_platform_family(
-      'rhel' => "httpd -t -d #{tdir}",
+      ['rhel', 'fedora'] => "httpd -t -d #{tdir}",
       'debian' => "apachectl -t -d #{tdir}",
     )
     Chef::Log.debug("fb_apache: verify using #{verify_cmd}")
