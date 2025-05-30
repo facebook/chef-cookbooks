@@ -35,6 +35,7 @@ default['fb_storage'] = {
     'scheduler' => nil,
     'queue_depth' => nil,
     'over_provisioning' => 'low',
+    'over_provisioning_mapping' => {},
     'max_sectors_kb' => nil,
   },
   'format_options' => nil,
