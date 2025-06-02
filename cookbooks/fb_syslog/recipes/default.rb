@@ -40,7 +40,7 @@ else
     owner node.root_user
     group node.root_group
     mode '0644'
-    notifies :restart, 'service[rsyslog]'
+    notifies :update, 'fb_notify_merger[syslog]', :immediately
   end
 
   file sysconfig_path do
@@ -70,7 +70,11 @@ template config_file do
   owner node.root_user
   group node.root_group
   mode '0644'
-  notifies :restart, "service[#{service_name}]"
+  notifies :update, 'fb_notify_merger[syslog]', :immediately
+end
+
+fb_notify_merger 'syslog' do
+  notifies :restart, "service[#{service_name}]", :immediately
 end
 
 service service_name do
