@@ -50,7 +50,7 @@ if node.debian? || (node.ubuntu? && !node.ubuntu16?)
   # if running behind a NAT, so don't run while using VirtualBox
   # https://github.com/openspace42/aenigma/issues/48
   # https://github.com/test-kitchen/test-kitchen/issues/458
-  unless ::ChefUtils.kitchen? || node['virtualization']['system'] == 'vbox'
+  unless kitchen? || node['virtualization']['system'] == 'vbox'
     node.default['fb_ejabberd']['config']['hosts'] << 'sample.com'
     include_recipe 'fb_ejabberd'
   end

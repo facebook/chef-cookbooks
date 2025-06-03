@@ -183,8 +183,10 @@ Layout/IndentationWidth:
 Layout/InitialIndentation:
   Enabled: true
 
+# TODO(willsommers) Re-enable once Rubocop version is gte 1.67.0
 Layout/LeadingCommentSpace:
-  Enabled: true
+  Enabled: false
+  AllowRBSInlineAnnotation: true
 
 Layout/LeadingEmptyLines:
   Enabled: true

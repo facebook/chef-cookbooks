@@ -17,6 +17,7 @@ Attributes
 * node['fb_storage']['tuning']['queue_depth']
 * node['fb_storage']['tuning']['discard_max_bytes']
 * node['fb_storage']['tuning']['over_provisioning']
+* node['fb_storage']['tuning']['over_provisioning_mapping']
 * node['fb_storage']['tuning']['max_sectors_kb']
 * node['fb_storage']['fstab_use_labels']
 * node['fb_storage']['manage_packages']
@@ -325,8 +326,9 @@ storage controlled by this API: `queue_depth`, `scheduler`,
 Note: `max_sectors_kb` sets the maximum IO sizes to the minimum of the device's
 `max_hw_sectors_kb` and the one provided.
 
-The `over_provisioning` attribute is provided for storage handlers to manage
-over provisioning, but is currently not used by `fb_storage` itself.
+The `over_provisioning` and `over_provisioning_mapping` attributes are provided
+for storage handlers to manage over provisioning, but are currently not used
+by `fb_storage` itself.
 
 ### Software Raid
 
