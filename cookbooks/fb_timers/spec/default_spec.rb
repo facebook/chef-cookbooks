@@ -173,14 +173,12 @@ recipe 'fb_timers::default', :unsupported => [:mac_os_x] do |tc|
       end
     end
 
-    # TODO: T23654032 add a test to validate this correctly notifies
-    # fb_systemd_reload[system instance] to run immediately
-
     it 'should create symlink for service units' do
       unit_types.each do |type|
         timer_jobs.each do |job|
-          expect(chef_run).to run_execute(
-            "link unit file #{t_path}#{job}.#{type}",
+          expect(chef_run).to create_link("link unit file #{t_path}#{job}.#{type}").with(
+            :target_file => "#{s_path}#{job}.#{type}",
+            :to => "#{t_path}#{job}.#{type}",
           )
         end
 
@@ -189,9 +187,6 @@ recipe 'fb_timers::default', :unsupported => [:mac_os_x] do |tc|
         )
       end
     end
-
-    # TODO: T23654032 add a test to validate this correctly notifies
-    # fb_systemd_reload[system instance] to run immediately
 
     it 'should enable the timer unit' do
       expect(chef_run).to run_execute('Enable systemd timers')

@@ -146,33 +146,28 @@ action :run do
         # It's safe to use here since it's in a provider and isn't used
         # directly.
         variables :conf => conf
-        notifies :reload_needed, 'fb_timers_setup[fb_timers system setup]',
+        notifies :update, 'fb_notify_merger[reload systemd for fb_timers]',
                  :immediately
       end
 
-      execute "link unit file #{filename}" do
+      link "link unit file #{filename}" do
         not_if do
           ::File.exist?("/etc/systemd/system/#{conf['name']}.#{type}") ||
             !conf['autostart']
         end
-        command "systemctl link #{filename}"
-        # Don't notify systemd to reload; you're already talking to systemd
+        # We don't use "systemctl link" here, because it automatically does a
+        # daemon reload, which is expensive when done for every timer unit
+        target_file "/etc/systemd/system/#{conf['name']}.#{type}"
+        to filename
+        notifies :update, 'fb_notify_merger[reload systemd for fb_timers]',
+                 :immediately
       end
     end
   end
 
   # Reload systemd, but only if required
-  if Chef::VERSION.to_i >= 16
-    notify_group 'reloading systemd' do
-      only_if { node['fb_timers']['_reload_needed'] }
-      action :run
-      notifies :run, 'fb_systemd_reload[system instance]', :immediately
-    end
-  else
-    log 'reloading systemd' do
-      only_if { node['fb_timers']['_reload_needed'] }
-      notifies :run, 'fb_systemd_reload[system instance]', :immediately
-    end
+  fb_notify_merger 'reload systemd for fb_timers' do
+    notifies :run, 'fb_systemd_reload[system instance]', :immediately
   end
 
   directory '/etc/systemd/system/timers.target.wants' do
@@ -248,8 +243,4 @@ action :run do
       action :delete
     end
   end
-end
-
-action :reload_needed do
-  node.default['fb_timers']['_reload_needed'] = true
 end
