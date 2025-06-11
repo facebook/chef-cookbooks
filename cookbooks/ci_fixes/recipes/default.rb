@@ -23,7 +23,8 @@ node.default['fb_systemd']['logind']['enable'] = false
 # older versions of rsyslog try to call close() on every _possible_ fd
 # as limited by ulimit -n, which can take MINUTES to start. So drop this
 # number for CI: https://github.com/rsyslog/rsyslog/issues/5158
-if node.centos_max_version?(9)
+# TODO: Use fedora_derived?
+if node.centos? || node.rhel? || node.fedora?
   node.default['fb_limits']['*']['nofile'] = {
     'hard' => '1024',
     'soft' => '1024',
@@ -35,7 +36,8 @@ end
 # telling syslog to look at its socket. Why this is an issue only
 # on CentOS, I do not know
 whyrun_safe_ruby_block 'ci fix for postfix/syslog' do
-  only_if { node.centos? }
+  # TODO: Use fedora_derived?
+  only_if { node.centos? || node.rhel? || node.fedora? }
   block do
     node.default['fb_syslog']['rsyslog_additional_sockets'] = []
   end
@@ -43,7 +45,8 @@ end
 
 # create the certs the default apache looks at
 execute 'create certs' do
-  only_if { node.centos? }
+  # TODO: Use fedora_derived?
+  only_if { node.centos? || node.rhel? || node.fedora? }
   command 'openssl req -new -newkey rsa:4096 -x509 -sha256 -days 365 ' +
     '-nodes -out /etc/pki/tls/certs/localhost.crt ' +
     '-keyout /etc/pki/tls/private/localhost.key ' +
@@ -54,7 +57,8 @@ end
 # /run/systemd/notify, so tell the unit not to try
 # why this seems to be issue on CentOS, I do not know
 fb_systemd_override 'syslog-no-systemd' do
-  only_if { node.centos? }
+  # TODO: Use fedora_derived?
+  only_if { node.centos? || node.rhel? || node.fedora? }
   unit_name 'rsyslog.service'
   content({
             'Service' => {
