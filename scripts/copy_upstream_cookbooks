@@ -1,0 +1,155 @@
+#!/bin/bash
+
+#
+# Copyright (c) 2025-present, Phil Dibowitz
+# Copyright (c) 2025-present, Meta Platforms, Inc.
+# All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+# This script assumes it is being run from a directory with both
+#   chef-cookbooks (upstream)
+# and
+#   universe (the univere repo)
+# checked out and in the current directory.
+
+DEBUG=0
+DRYRUN=0
+MODE='copy'
+
+debug() {
+    [ "$DEBUG" -eq 1 ] || return
+    echo "DEBUG: $*" >&2
+}
+
+find_deps() {
+    dir="$1"
+    deps=()
+
+    # Walk all metadata files and get a complete list of deps mentioned
+    # and add any we don't have to deps
+    for file in "$dir"/cookbooks/*/metadata.rb; do
+        # shellcheck disable=SC2207
+        if ! tdeps=($("$dir/scripts/chef_md_extract.rb" 'depends' "$file"));
+ then
+            die "Failed to parse deps from $file"
+        fi
+
+        debug "Deps[$file]: ${tdeps[*]}"
+        if [ -z "${tdeps[*]}" ]; then
+            # if no deps, move onto next file
+            continue
+        fi
+
+        for cb in "${tdeps[@]}"; do
+            if ! [[ "$cb" =~ ^fb ]]; then
+                debug "Skipping non-upstream cookbook $cb"
+                continue
+            fi
+            if [ -d "$dir/cookbooks/$cb" ]; then
+                debug "$cb already exists, ignoring"
+                continue
+            fi
+            deps+=("$cb")
+        done
+
+        debug "Deps after processing $file: ${deps[*]}"
+    done
+
+    debug "Final deps: ${deps[*]}"
+    echo "${deps[@]}" | tr ' ' '
+' | sort -u
+}
+
+copy_cookbooks() {
+    # shellcheck disable=SC2207
+    while deps=($(find_deps './universe')); do
+        debug "loop deps: ${deps[*]}"
+        if [ -z "${deps[*]}" ]; then
+            debug "zero deps found, done"
+            break
+        fi
+
+        for cb in "${deps[@]}"; do
+            debug "Considering $cb"
+            path="universe/cookbooks/$cb"
+            if [ -e "$path" ]; then
+                debug "Skipping $cb"
+                continue
+            fi
+            upstream=$(realpath "chef-cookbooks/cookbooks/$cb")
+            echo "Copying $cb from $upstream"
+            if [ "$DRYRUN" -eq 0 ]; then
+                out=$(rsync -avz "$upstream/" "$path/")
+                if [ "$DEBUG" -eq 1 ]; then
+                    echo "$out"
+                fi
+            fi
+            debug "Contents of $cb link: $(ls "$path")"
+        done
+    done
+}
+
+clean_cookbooks() {
+    mapfile -t todel<         <(find ./universe/cookbooks -maxdepth 1 -name 'fb_*')
+    if [ -z "${todel[*]}" ]; then
+        return
+    fi
+    echo "Deleting ${todel[*]}"
+    if [ "$DRYRUN" -eq 0 ]; then
+        rm -rf "${todel[@]}"
+    fi
+}
+
+usage() {
+    cat <<EOF
+Usage: $0 [<options>]
+
+Options:
+    -C      Clean up cookbooks instead of copying them
+    -d      Enable debug
+    -h      Print this message
+    -n      Dryrun
+EOF
+}
+
+while getopts Cdhn opt; do
+    case "$opt" in
+        C)
+            MODE='clean'
+            ;;
+                d)
+            DEBUG=1
+            ;;
+        h)
+            usage
+            exit
+            ;;
+        n)
+            DRYRUN=1
+            ;;
+        ?)
+            exit 1
+            ;;
+    esac
+done
+
+case "$MODE" in
+    copy)
+        copy_cookbooks
+        ;;
+    clean)
+        clean_cookbooks
+        ;;
+esac

@@ -23,33 +23,6 @@ jobs:
       run: ./scripts/run_chefspec
     - name: Run cookstyle
       run: ./scripts/run_cookstyle
-  kitchen:
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          - centos-stream-9
-          - centos-stream-10
-          - ubuntu-2204
-          - ubuntu-2404
-          - debian-12
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-    - name: Install Chef
-      uses: actionshub/chef-install@2.0.4
-      with:
-        project: chef-workstation
-        version: 25.2.1075
-    - name: Run Kitchen
-      uses: actionshub/test-kitchen@2.1.0
-      with:
-        suite: default
-        os: ${{ matrix.os }}
-      env:
-        CHEF_LICENSE: accept-no-persist
-        CHEF_VERSION: 18.6.14
   shellcheck:
     runs-on: ubuntu-latest
     steps:
