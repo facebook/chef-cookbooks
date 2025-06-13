@@ -88,6 +88,7 @@ Dir.glob('/etc/apt/sources.list.d/*').each do |f|
   file f do
     not_if { node['fb_apt']['preserve_sources_list_d'] }
     action :delete
+    compile_time true
   end
 end
 
