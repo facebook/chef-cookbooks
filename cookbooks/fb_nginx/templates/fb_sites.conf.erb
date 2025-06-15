@@ -1,0 +1,9 @@
+<%# ~FC051 %>
+# This file is managed by chef, do not modify!
+<% node['fb_nginx']['sites'].each do |name, config| %>
+# <%= name %>
+server {
+<%=  render 'nginx_hash.erb',
+       :variables => { :config => config, :indent => 1 } -%>
+}
+<% end %>
