@@ -77,6 +77,13 @@ fb_notify_merger 'syslog' do
   notifies :restart, "service[#{service_name}]", :immediately
 end
 
+directory '/etc/rsyslog.d' do
+  not_if { node['fb_syslog']['rsyslog_d_preserve'] }
+  action :delete
+  recursive true
+  notifies :restart, "service[#{service_name}]"
+end
+
 service service_name do
   action :start
   subscribes :restart, 'package[rsyslog]'
