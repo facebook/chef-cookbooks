@@ -11,3 +11,4 @@ attribute-driven-API model.
 * [Phil's FB API Style Cookbook
   Suite](https://github.com/jaymzh/chef-fb-api-cookbooks) - FB API Cookbooks
   from Phil (formerly Facebook Phil) that Meta doesn't wish to maintain
+* [Boxcutter cookbook suite for robotics](https://github.com/boxcutter/boxcutter-chef-cookbooks) - Facebook/Meta style cookbook suite for robotics that supports both AMD64/ARM64
