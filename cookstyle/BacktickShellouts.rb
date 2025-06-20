@@ -14,9 +14,9 @@
 # limitations under the License.
 
 module RuboCop::Cop::Chef::Meta
-  class BacktickShelloutsInRecipes < Base
+  class BacktickShellouts < Base
 
-    MSG = fb_msg('Avoid using backticks for shellouts, use the execute resource instead.')
+    MSG = fb_msg('Avoid using backticks for shellouts, use the execute resource instead for recipes or the (power)shell_out helper methods.')
 
     def on_xstr(node)
       add_offense(node, :severity => :convention)

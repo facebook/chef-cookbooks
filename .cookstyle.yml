@@ -258,7 +258,7 @@ Chef/Effortless/DependsChefVault:
 Chef/Effortless/SearchForEnvironmentsOrRoles:
   Enabled: false
 
-Chef/Meta/BacktickShelloutsInRecipes:
+Chef/Meta/BacktickShellouts:
   Enabled: true
 Chef/Meta/CompoundBooleanLiteralCleanup:
   Enabled: true
