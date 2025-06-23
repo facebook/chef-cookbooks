@@ -689,7 +689,7 @@ If the has is specified, it takes one or more of the following keys:
   #   => false
 
   # Our version comparison class
-  class Version < Array
+  class Version < Array #[untyped] # rubocop:disabled Style/CommentedKeyword
     # This is intentional.
     # rubocop:disable Lint/MissingSuper
     def initialize(s)
