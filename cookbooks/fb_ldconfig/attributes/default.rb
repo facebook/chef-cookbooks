@@ -18,4 +18,5 @@
 
 default['fb_ldconfig'] = {
   'ld.so.conf' => [],
+  'protected' => [],
 }

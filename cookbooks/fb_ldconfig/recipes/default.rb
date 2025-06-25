@@ -46,8 +46,9 @@ template '/etc/ld.so.conf.d/chef.conf' do
 end
 
 files = Dir.glob('/etc/ld.so.conf.d/*').reject do |x|
-  File.basename(x) == 'chef.conf'
+  File.basename(x) == 'chef.conf' || node['fb_ldconfig']['protected'].include?(x)
 end
+
 unless files.empty?
   # RPM will exit with zero if all the files are owned by a package, and
   # non-zero if there are any strays.
