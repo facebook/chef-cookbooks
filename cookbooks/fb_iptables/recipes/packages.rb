@@ -56,13 +56,13 @@ end
 
 execute 'reload iptables' do
   only_if { node['fb_iptables']['enable'] }
-  command '/usr/sbin/fb_iptables_reload 4 reload'
+  command '/usr/bin/fb_iptables_reload 4 reload'
   action :nothing
 end
 
 ## ip6tables ##
 execute 'reload ip6tables' do
   only_if { node['fb_iptables']['enable'] }
-  command '/usr/sbin/fb_iptables_reload 6 reload'
+  command '/usr/bin/fb_iptables_reload 6 reload'
   action :nothing
 end

@@ -83,9 +83,8 @@ template '/etc/fb_iptables.conf' do
     :ip6tables_rules_file => ip6tables_rule_file,
   )
 end
-
 # DO NOT MAKE THIS A TEMPLATE! USE THE CONFIG FILE TEMPLATED ABOVE!!
-cookbook_file '/usr/sbin/fb_iptables_reload' do
+cookbook_file '/usr/bin/fb_iptables_reload' do
   source 'fb_iptables_reload.sh'
   owner node.root_user
   group node.root_group
