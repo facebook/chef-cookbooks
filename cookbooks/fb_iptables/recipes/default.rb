@@ -65,6 +65,12 @@ services.each do |svc|
     action :enable
   end
 
+  service svc do
+    only_if { node['fb_iptables']['enable'] }
+    only_if { node['fb_iptables']['start'] }
+    action :start
+  end
+
   service "disable #{svc}" do
     not_if { node['fb_iptables']['enable'] }
     service_name svc
