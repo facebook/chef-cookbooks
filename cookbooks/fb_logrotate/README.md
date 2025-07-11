@@ -233,11 +233,11 @@ systemd timer and service units. It accepts the following:
                        time value. Default 0.
 * Nice - Nice level for the logrotate process. Default 19 (lowest priority).
 * IOSchedulingClass - I/O scheduling class for executed processes. Default 3 (idle).
-* Persistent - Boolean.  If true, the last time the timer ran is stored on disk.
+* Persistent - Boolean. If true, the last time the timer ran is stored on disk.
                When the timer is activated, the service unit is triggered immediately
                if it would have been triggered at least once during the time when
-               the timer was inactive.  Useful for making up runs
-               on machines that have been powered down.  Default false.
+               the timer was inactive. Useful for making up runs
+               on machines that have been powered down. Default false.
 
 ### size and logrotate run frequency
 Note that the use of the size property together with logrotate runs that are
