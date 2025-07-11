@@ -31,6 +31,7 @@ module FB
 
       # rubocop:disable Style/ClassVars
       @@handler_cache = {}
+      @@op_mapping = {} # Facebook-ism, please ignore
       def self.get_handler(device, node)
         return @@handler_cache[device] if @@handler_cache[device]
 
