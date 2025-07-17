@@ -37,7 +37,7 @@ def get_sdparm_value(param, device)
   end
 
   match_data = match_obj[1]
-  if match_data =~ /^\s*$/
+  if /^\s*$/.match?(match_data)
     fail "fb_sdparm: could not get sdparm value for: #{param}"
   end
   match_data.to_s.strip

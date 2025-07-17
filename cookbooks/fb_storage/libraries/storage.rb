@@ -273,7 +273,7 @@ module FB
     # Special treatment is needed for /dev/loop0 because the trailing "p0" can trick the
     # regexp and we return an invalid "/dev/loo" device.
     def self.device_name_from_partition(partition)
-      if partition =~ %r{/loop[0-9]+$}
+      if %r{/loop[0-9]+$}.match?(partition)
         return partition
       end
       if partition =~ /[0-9]+p[0-9]+$/ || partition =~ %r{/(nvme|etherd|md|nbd|ram|sr)}
