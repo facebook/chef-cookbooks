@@ -32,11 +32,18 @@ describe FB::Storage::Handler do
 
   before do
     # THIS IS VERY IMPORTANT!!! If we don't mock **every** call to
-    # Mixlibh::ShellOut we can nuke the data on any machine that runs the unit
+    # Mixlib::ShellOut we can nuke the data on any machine that runs the unit
     # tests so we mock it to return BS, this ensures if we miss mocking a call
     # the tests fail rather than nuking the host
     allow_any_instance_of(Mixlib::ShellOut).to receive(:run_command).
       and_return(nil)
+
+    node.automatic['block_device'] = {}
+    node.default['fb_storage'] = {
+      '_handlers' => [
+        FB::Storage::Handler::MdHandler,
+      ],
+    }
   end
 
   let(:mock_so) do
@@ -285,12 +292,6 @@ describe FB::Storage::Handler do
           expect(File).to receive(:write).with(limit_file, 'oogabooga').
             and_return(9)
 
-          node.default['fb_storage'] = {
-            '_handlers' => [
-              FB::Storage::Handler::MdHandler,
-            ],
-          }
-          node.automatic['block_device'] = {}
           sh = FB::Storage::Handler.get_handler('/dev/md0', node)
           expect(sh).to receive(:umount_by_partition).and_return(nil)
           sh.format_partition(
@@ -336,7 +337,6 @@ describe FB::Storage::Handler do
           expect(File).not_to receive(:read).with(limit_file)
           expect(File).not_to receive(:write).with(limit_file, "0\n")
 
-          node.default['fb_storage'] = {}
           sh = FB::Storage::Handler.get_handler('/dev/md0', node)
           expect(sh).to receive(:umount_by_partition).and_return(nil)
           sh.format_partition(
@@ -408,7 +408,6 @@ describe FB::Storage::Handler do
           expect(File).to receive(:write).with(limit_file, 'oogabooga').
             and_return(9)
 
-          node.default['fb_storage'] = {}
           sh = FB::Storage::Handler.get_handler('/dev/md0', node)
           expect(sh).to receive(:umount_by_partition).and_return(nil)
           expect do
@@ -439,7 +438,6 @@ describe FB::Storage::Handler do
           expect(File).to receive(:write).with(limit_file, 'oogabooga').
             and_return(9)
 
-          node.default['fb_storage'] = {}
           sh = FB::Storage::Handler.get_handler('/dev/md0', node)
           expect(sh).to receive(:umount_by_partition).and_return(nil)
           expect do
