@@ -110,7 +110,7 @@ whyrun_safe_ruby_block 'validate storage options' do
                  "'%s' specified on device #{didx} parition #{pidx}. " +
                  'It must be a number with an optional suffix of %%kmgt'
           %w{start end}.each do |disp|
-            unless partition["partition_#{disp}"].match(
+            unless partition["partition_#{disp}"].match?(
               /^\d+(\.\d+)?([KkMmGgsTt%](iB)?)?$/,
             )
               fail format(pmsg, partition["partition_#{disp}"])

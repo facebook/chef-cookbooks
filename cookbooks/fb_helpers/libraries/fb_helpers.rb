@@ -540,10 +540,10 @@ If the has is specified, it takes one or more of the following keys:
     def self.parse_timeshard_duration(duration)
       # Multiply the number of days by 1440 min and 60 s to convert a day into
       # seconds.
-      if duration.match('^[0-9]+[dD]$')
+      if duration.match?('^[0-9]+[dD]$')
         duration = duration.to_i * 1440 * 60
       # Multiply the number of hours by 3600 s to convert hours into seconds.
-      elsif duration.match('^[0-9]+[hH]$')
+      elsif duration.match?('^[0-9]+[hH]$')
         duration = duration.to_i * 3600
       else
         errmsg = "fb_helpers: Invalid duration arg, '#{duration}' for " +

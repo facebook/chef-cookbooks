@@ -136,10 +136,10 @@ module FB
       # In this case I want this code very clear, so we're violating this lint
       # rule
       # rubocop:disable Style/IfInsideElse
-      if dev.match(/(nvme|ether)/)
-        return false if dev.match(/p\d+$/)
+      if dev.match?(/(nvme|ether)/)
+        return false if dev.match?(/p\d+$/)
       else
-        return false if dev.match(/\d+$/)
+        return false if dev.match?(/\d+$/)
       end
       # rubocop:enable Style/IfInsideElse
       # if we're not new AND we didn't find a partition, then we can keep
@@ -222,7 +222,7 @@ module FB
     # Give a device path and a partition number, return the proper
     # partition's device path
     def self.partition_device_name(device, partnum)
-      prefix = /[0-9]$/.match(device) ? 'p' : ''
+      prefix = /[0-9]$/.match?(device) ? 'p' : ''
       "#{device}#{prefix}#{partnum}"
     end
 

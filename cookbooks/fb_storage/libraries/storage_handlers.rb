@@ -97,7 +97,7 @@ module FB
           Chef::Log.debug("fb_storage: running: #{cmd}")
           s = Mixlib::ShellOut.new(cmd).run_command
           if s.error?
-            if s.stderr.match(/unrecognised disk label/)
+            if s.stderr.match?(/unrecognised disk label/)
               Chef::Log.debug(
                 'fb_storage: Allowing failed removal of ' +
                 "#{pnum} from #{@device} as the partition table is " +
