@@ -122,7 +122,7 @@ end
 
 execute 'configure pause settings for primary interface' do
   not_if do
-    FB::Hardware.primary_interface_pause_configured?(node)
+    FB::NetworkScripts.primary_interface_pause_configured?(node)
   end
 
   command lazy {

@@ -48,5 +48,27 @@ module FB
       end
       ips
     end
+
+    def self.primary_interface_pause_configured?(node)
+      interface = node['fb_network_scripts']['primary_interface']
+      interface = interface == 'br0' ? 'eth0' : interface
+
+      current = node['network']['interfaces'][interface]['pause_params']
+      pause_settings = node['fb_network_scripts']['pause']
+
+      # pause_settings are a map 'tx'/'rx'/'autonegotiate' => nil, true or false
+      if pause_settings.values.all?(&:nil?)
+        return true
+      end
+
+      pause_settings.each do |pause_type, exp_value|
+        next if exp_value.nil?
+
+        if current[pause_type] != exp_value
+          return false
+        end
+      end
+      return true
+    end
   end
 end
