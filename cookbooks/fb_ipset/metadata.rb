@@ -8,6 +8,8 @@ source_url 'https://github.com/facebook/chef-cookbooks/'
 version '0.1.0'
 %w{
   centos
+  fedora
+  redhat
   debian
   ubuntu
 }.each do |sup|

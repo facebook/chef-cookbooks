@@ -18,8 +18,9 @@
 # limitations under the License.
 #
 
-unless node.centos? || node.fedora?
-  fail 'fb_ebtables is only supported on CentOS and Fedora'
+# TODO: use fedora_derived?
+unless node.centos? || node.rhel? || node.fedora?
+  fail 'fb_ebtables is only supported on Fedora-based distros.'
 end
 
 package 'ebtables' do

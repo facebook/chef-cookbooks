@@ -28,7 +28,8 @@ jobs:
     outputs:
       os_matrix_json: ${{ steps.generate_matrix.outputs.os_matrix_json }}
     env:
-      BASE_OS_LIST: '["centos-stream-9", "centos-stream-10", "ubuntu-2204", "ubuntu-2404", "debian-12"]'
+      # fedora-41 requires DNF5
+      BASE_OS_LIST: '["centos-stream-9", "centos-stream-10", "ubuntu-2204", "ubuntu-2404", "debian-12", "fedora-40"]'
     steps:
       - name: Generate OS Matrix JSON
         id: generate_matrix
