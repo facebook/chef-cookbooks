@@ -3,7 +3,7 @@ AllCops:
   TargetRubyVersion: 2.7
   Exclude:
     # template files named `rb` instead of `erb` are a sin against ruby-nature.
-    - '**/templates/**/*.rb'#
+    - '**/templates/**/*.rb'
 
 Bundler/DuplicatedGem:
   Enabled: true
