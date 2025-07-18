@@ -1,7 +1,7 @@
 #!/opt/chef/embedded/bin/ruby
 
 def usage
-  puts "Usage: chef_md_extract <what> <metadata_file>"
+  puts 'Usage: chef_md_extract <what> <metadata_file>'
   puts
   puts "  <what> is a field such as 'depends' or 'license'"
   puts '  <metadata_file> is the path to a metadata file'
@@ -25,9 +25,9 @@ define_method(what) do |a|
   print a, ' '
 end
 
-# rubocop:disable Style/MethodMissing
+# rubocop:disable Style/MethodMissing, Style/MissingRespondToMissing
 def method_missing(*keys); end
-# rubocop:enable Style/MethodMissing
+# rubocop:enable Style/MethodMissing, Style/MissingRespondToMissing
 
 # grab only the lines that call our method
 lines = []
@@ -42,4 +42,6 @@ File.readlines(md).each do |line|
 end
 
 # eval the lines we grabbed
+# rubocop:disable Security/Eval
 eval(lines.join("\n"))
+# rubocop:enable Security/Eval

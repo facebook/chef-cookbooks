@@ -1,0 +1,15 @@
+name: Kitchen Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  kitchen:
+    strategy:
+      fail-fast: false
+    uses: ./.github/workflows/reusable-kitchen-tests.yml
+    with:
+      suite: default
+    secrets: inherit
