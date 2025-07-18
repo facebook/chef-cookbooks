@@ -1,0 +1,128 @@
+#!/bin/bash
+
+set -u
+
+# Defaults
+force_update=0
+upstream_repo='facebook/chef-cookbooks'
+universe=0
+expire_min=5
+files=(.mdl.style .mdl.rc)
+
+file_is_fresh() {
+    local file="$1"
+    local seconds="$2"
+
+    if [[ ! -e "$file" ]]; then
+        return 1
+    fi
+
+    local now
+    now=$(date +%s)
+
+    local mtime
+    # Linux || macOS
+    mtime=$(stat -c %Y "$file" 2>/dev/null || stat -f %m "$file")
+
+    local age=$((now - mtime))
+
+    if (( age < seconds )); then
+        return 0
+    else
+        return 1
+    fi
+}
+
+fetch_file() {
+    local file="$1"
+
+    local url="https://raw.githubusercontent.com/${upstream_repo}"
+    url="${url}/refs/head/main/${file}"
+    curl -o "$file" "$url"
+}
+
+fetch_configs() {
+    local sec=$((expire_min * 60))
+    for file in "${files[@]}"; do
+        if [ "$force_update" -eq 1 ] || ! file_is_fresh "$file" "$sec"; then
+            fetch_file "$file"
+        fi
+    done
+}
+
+usage() {
+    cat <<EOF
+mdl wrapper
+
+Usage: $0 <options> <mdl_options>
+
+Options to this wrapper and to mdl can be intermixed.
+
+Options:
+    --universe
+                    When enabled, will attempt to download
+                    mdl configs from the upstream chef-cookbooks
+                    repository, if they are older than
+                    --universe-config-timeout
+
+    --universe-config-timeout
+                    Minutes old config files need to be before we will
+                    pull new ones.
+
+    --universe-force-pull
+                    Pull upstream configs even if they are new
+                    enough.
+
+    --universe-help
+                    Print this help.
+
+    --universe-upstream-repo
+                    Override 'facebook/chef-cookbooks' as the upstream
+                    repo.
+EOF
+}
+
+# Parse known wrapper options, preserve rest in passthrough_args
+passthrough_args=()
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --universe)
+            universe=1
+            shift
+            ;;
+        --universe-force-pull)
+            force_update=1
+            shift
+            ;;
+        --universe-upstream-repo)
+            upstream_repo="$2"
+            shift 2
+            ;;
+        --universe-config-timeout)
+            expire_min="$2"
+            shift 2
+            ;;
+        --universe-help)
+            usage
+            exit
+            ;;
+        *)
+            passthrough_args+=("$1")
+            shift
+            ;;
+    esac
+done
+
+if ! mdl=$(which mdl); then
+    echo "No MDL found in path..."
+    exit 1
+fi
+
+if [ "$universe" -eq 1 ]; then
+    if [[ "$(pwd)" != "$(git rev-parse --show-toplevel)" ]]; then
+        echo "Please run from root of repo"
+        exit 1
+    fi
+    fetch_configs
+fi
+exec "$mdl" "${passthrough_args[@]}"
