@@ -18,7 +18,7 @@
 # limitations under the License.
 #
 
-unless node.debian? || node.ubuntu? || node.centos?
+unless node.debian? || node.ubuntu? || node.centos? || node.fedora?
   fail 'fb_apcupsd is only supported on Debian, Ubuntu or CentOS.'
 end
 
