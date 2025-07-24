@@ -33,6 +33,11 @@ debug() {
     echo "DEBUG: $*" >&2
 }
 
+die() {
+    echo "ERROR: $*" >&2
+    exit 1
+}
+
 find_deps() {
     dir="$1"
     deps=()
@@ -41,7 +46,7 @@ find_deps() {
     # and add any we don't have to deps
     for file in "$dir"/cookbooks/*/metadata.rb; do
         # shellcheck disable=SC2207
-        if ! tdeps=($("$dir/scripts/chef_md_extract.rb" 'depends' "$file"));
+        if ! tdeps=($("chef-cookbooks/scripts/chef_md_extract.rb" 'depends' "$file"));
  then
             die "Failed to parse deps from $file"
         fi
