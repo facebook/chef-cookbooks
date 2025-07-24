@@ -45,8 +45,12 @@ find_deps() {
     # Walk all metadata files and get a complete list of deps mentioned
     # and add any we don't have to deps
     for file in "$dir"/cookbooks/*/metadata.rb; do
+        # Internally ruby scripts shebangs are hardcoded to the omnibus
+        # internaly ruby, but that doesn't work in Actions, so we just call
+        # it with ruby explicitly and let the ruby we setup run it.
+        #
         # shellcheck disable=SC2207
-        if ! tdeps=($("chef-cookbooks/scripts/chef_md_extract.rb" 'depends' "$file"));
+        if ! tdeps=($("ruby" "chef-cookbooks/scripts/chef_md_extract.rb" 'depends' "$file"));
  then
             die "Failed to parse deps from $file"
         fi
