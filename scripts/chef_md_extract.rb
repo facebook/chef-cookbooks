@@ -25,9 +25,13 @@ define_method(what) do |a|
   print a, ' '
 end
 
+# Disable Ruby warnings about redefining method_missing
+old_v = $VERBOSE
+$VERBOSE = nil
 # rubocop:disable Style/MethodMissing, Style/MissingRespondToMissing
 def method_missing(*keys); end
 # rubocop:enable Style/MethodMissing, Style/MissingRespondToMissing
+$VERBOSE = old_v
 
 # grab only the lines that call our method
 lines = []
