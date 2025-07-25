@@ -1,0 +1,101 @@
+name: Reusable CI
+
+on:
+  workflow_call:
+    inputs:
+      universe:
+        description: 'Run in universe mode (checkout chef-cookbooks and copy upstream cookbooks)'
+        type: boolean
+        required: false
+        default: false
+      additional_ruby_versions:
+        description: 'JSON string array of additional Ruby versions to add to the matrix (e.g., ["3.2", "3.3"])'
+        required: false
+        type: string
+        default: '[]'
+
+jobs:
+  prepare-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      ruby_matrix_json: ${{ steps.generate_matrix.outputs.ruby_matrix_json }}
+    env:
+      BASE_RUBY_LIST: '["3.1", "3.3"]'
+    steps:
+      - name: Generate Ruby Version Matrix JSON
+        id: generate_matrix
+        run: |
+          if ! command -v jq &> /dev/null; then
+            echo "jq not found, installing..."
+            sudo apt-get update && sudo apt-get install -y jq
+          fi
+
+          COMBINED=$(jq -c -n \
+            --argjson base "${BASE_RUBY_LIST}" \
+            --argjson extra '${{ inputs.additional_ruby_versions }}' \
+            '$base + $extra | unique')
+
+          echo "ruby_matrix_json=$COMBINED" >> "$GITHUB_OUTPUT"
+          echo "Final Ruby matrix: $COMBINED"
+        shell: bash
+
+  ruby:
+    needs: prepare-matrix
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby: ${{ fromJSON(needs.prepare-matrix.outputs.ruby_matrix_json) }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout current repository
+        uses: actions/checkout@v4
+        with:
+          path: ${{ inputs.universe && 'universe' || '.' }}
+
+      - name: Checkout chef-cookbooks (Universe Mode)
+        if: inputs.universe
+        uses: actions/checkout@v4
+        with:
+          repository: facebook/chef-cookbooks
+          path: chef-cookbooks
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+
+      - name: Install dependencies
+        run: bundle install
+        working-directory: ${{ inputs.universe && 'chef-cookbooks' || '.' }}
+
+      - name: Run rspec
+        run: ./scripts/run_chefspec ${{ inputs.universe && '../universe' || '' }}
+        working-directory: ${{ inputs.universe && 'chef-cookbooks' || '.' }}
+
+      - name: Run cookstyle
+        run: ./scripts/run_cookstyle ${{ inputs.universe && '-C ../universe' || '' }}
+        working-directory: ${{ inputs.universe && 'chef-cookbooks' || '.' }}
+
+      - name: Copy MDL config (Universe Mode)
+        if: inputs.universe
+        run: |-
+          # MDL action won't accept a working-path arg, so it runs from
+          # the base directory, so that's where we put the configs, and then
+          # we just tell it what path to check
+          cp chef-cookbooks/.mdl* .
+
+      - name: Run mdl
+        uses: actionshub/markdownlint@main
+        with:
+          path: ${{ inputs.universe && 'universe' || '.' }}
+
+  shellcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout current repository
+        uses: actions/checkout@v4
+
+      - name: Run Shellcheck
+        uses: ludeeus/action-shellcheck@2.0.0
+        with:
+          working-directory: ${{ inputs.universe && 'universe' || '.' }}
