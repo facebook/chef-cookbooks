@@ -1,40 +1,10 @@
 name: Continuous Integration
+
 on:
   push:
     branches: [main]
   pull_request:
-jobs:
-  ruby:
-    strategy:
-      fail-fast: false
-      matrix:
-        ruby: ['3.1', '3.3']
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-    - name: Setup Ruby
-      uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: ${{ matrix.ruby }}
-    - name: Install dependencies
-      run: bundle install
-    - name: Run rspec
-      run: ./scripts/run_chefspec
-    - name: Run cookstyle
-      run: ./scripts/run_cookstyle
-  shellcheck:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Run Shellcheck
-        uses: ludeeus/action-shellcheck@2.0.0
-  markdownlint:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Run mdl
-        uses: actionshub/markdownlint@main
 
+jobs:
+  ci:
+    uses: ./.github/workflows/reusable-ci.yml
