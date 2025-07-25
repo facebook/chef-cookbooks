@@ -1,0 +1,37 @@
+{
+  "name": "fb_helpers",
+  "description": "Helper methods for Facebook open-source cookbooks",
+  "long_description": "",
+  "maintainer": "Facebook",
+  "maintainer_email": "noreply@facebook.com",
+  "license": "Apache-2.0",
+  "platforms": {
+    "centos": ">= 0.0.0",
+    "debian": ">= 0.0.0",
+    "ubuntu": ">= 0.0.0",
+    "freebsd": ">= 0.0.0"
+  },
+  "dependencies": {
+
+  },
+  "providing": {
+
+  },
+  "recipes": {
+
+  },
+  "version": "0.1.0",
+  "source_url": "https://github.com/facebook/chef-cookbooks/",
+  "issues_url": "",
+  "privacy": false,
+  "chef_versions": [
+
+  ],
+  "ohai_versions": [
+
+  ],
+  "gems": [
+
+  ],
+  "eager_load_libraries": true
+}
