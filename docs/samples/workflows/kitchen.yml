@@ -1,0 +1,19 @@
+name: Kitchen Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  kitchen:
+    strategy:
+      fail-fast: false
+    uses: facebook/chef-cookbooks/.github/workflows/reusable-kitchen-tests.yml@main
+    secrets: inherit
+    with:
+      universe: true
+      # You may also specify alternative `suite` (string), as well as
+      # `additional_os_list` (JSON string array).
+      # Biwth will require a local kitchen file passed in via
+      # `kitchen_local_yaml` (string).
