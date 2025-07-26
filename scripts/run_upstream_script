@@ -1,0 +1,81 @@
+#!/bin/bash
+#
+# vim: syntax=ruby:expandtab:shiftwidth=2:softtabstop=2:tabstop=2
+#
+# Copyright (c) 2025-present, Phil Dibowitz
+# Copyright (c) 2025-present, Facebook, Inc.
+# All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# This script is for Universe repos. Do not run from this repo and expect
+# it to do anything sensible.
+#
+# This script does the work of running scripts from this repo intelligently
+# for other repos.
+#
+# Run with DEBUG=1 in the env to get debug info
+
+set -eu
+
+: "${DEBUG:=0}"
+
+debug() {
+  if [ "$DEBUG" -eq 1 ]; then
+    echo "DEBUG: $*" >&2
+  fi
+}
+
+script="$1"
+shift
+
+base_dir=$(git rev-parse --show-toplevel)
+upstream_dir="$base_dir/../chef-cookbooks"
+
+args_after_double_dash=()
+args_before_double_dash=()
+found_double_dash=0
+
+for arg in "$@"; do
+  if [[ $found_double_dash -eq 1 ]]; then
+    if [[ "$arg" =~ ^/ ]]; then
+      args_after_double_dash+=("$arg")
+    else
+      args_after_double_dash+=("$PWD/$arg")
+    fi
+  elif [[ "$arg" == "--" ]]; then
+    found_double_dash=1
+  else
+    args_before_double_dash+=("$arg")
+  fi
+done
+
+if [[ $found_double_dash -eq 0 ]]; then
+  args_after_double_dash+=("$base_dir")
+fi
+
+# special case... - run_cookstyle requires
+# -C for sane external usage
+if [[ "$script" == 'run_cookstyle' ]]; then
+  args_before_double_dash+=("-C")
+fi
+
+echo "Running $script on" "${args_after_double_dash[@]}"
+cmd=(
+  "./scripts/$script"
+  "${args_before_double_dash[@]}"
+  "${args_after_double_dash[@]}"
+)
+debug "Command is (from $upstream_dir)" "${cmd[@]}"
+cd "$upstream_dir"
+exec "${cmd[@]}"

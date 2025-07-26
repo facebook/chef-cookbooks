@@ -1,0 +1,13 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  ci:
+    uses: facebook/chef-cookbooks/.github/workflows/reusable-ci.yml@main
+    with:
+      universe: true
+      # you may also specify additional_ruby_versions as a JSON string array
