@@ -1,0 +1,37 @@
+{
+  "name": "fb_ntp",
+  "description": "Installs/Configures NTP",
+  "long_description": "",
+  "maintainer": "Facebook",
+  "maintainer_email": "noreply@facebook.com",
+  "license": "Apache-2.0",
+  "platforms": {
+    "centos": ">= 0.0.0",
+    "ubuntu": ">= 0.0.0",
+    "windows": ">= 0.0.0"
+  },
+  "dependencies": {
+    "fb_helpers": ">= 0.0.0",
+    "fb_systemd": ">= 0.0.0"
+  },
+  "providing": {
+
+  },
+  "recipes": {
+
+  },
+  "version": "0.0.1",
+  "source_url": "https://github.com/facebook/chef-cookbooks/",
+  "issues_url": "",
+  "privacy": false,
+  "chef_versions": [
+
+  ],
+  "ohai_versions": [
+
+  ],
+  "gems": [
+
+  ],
+  "eager_load_libraries": true
+}
