@@ -223,6 +223,10 @@ class Chef
       self.oracle? && self.os_min_version?(version, full)
     end
 
+    def oracle10?
+      self.oracle? && self['platform_version'].start_with?('10')
+    end
+
     def oracle9?
       self.oracle? && self['platform_version'].start_with?('9')
     end
