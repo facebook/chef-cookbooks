@@ -38,9 +38,3 @@ package dnf_packages do
   only_if { node['fb_dnf']['manage_packages'] }
   action :install
 end
-
-# removing ujson
-package 'python3-ujson' do
-  only_if { node['fb_dnf']['install_ujson'] }
-  action :remove
-end

@@ -28,7 +28,6 @@ default['fb_dnf'] = {
   },
   'enable_makecache_timer' => false,
   'disable_makecache_timer' => false,
-  'install_ujson' => false,
   'manage_packages' => true,
   'modules' => {},
   'repos' => {},
