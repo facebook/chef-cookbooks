@@ -39,9 +39,8 @@ package dnf_packages do
   action :install
 end
 
-# dnf_helper.py can import ujson to serialize JSON faster
-# TODO: Move into list above once rolled out everywhere
+# removing ujson
 package 'python3-ujson' do
   only_if { node['fb_dnf']['install_ujson'] }
-  action :upgrade
+  action :remove
 end
