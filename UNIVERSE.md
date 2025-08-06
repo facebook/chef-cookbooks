@@ -13,5 +13,20 @@ read [CREATING_UNIVERSE_REPOS.md](docs/CREATING_UNIVERSE_REPOS.md).
 
 | Name/Link | Prefix | Description |
 |------|--------|------|
-| [Phil's FB API Style Cookbook Suite](https://github.com/jaymzh/chef-fb-api-cookbooks) | pd | FB API Cookbooks from Phil (formerly Facebook Phil) that Meta doesn't wish to maintain |
-| [Boxcutter cookbook suite for robotics](https://github.com/boxcutter/boxcutter-chef-cookbooks) | boxcutter | Facebook/Meta style cookbook suite for robotics that supports both AMD64/ARM64 platforms |
+| [Phil's FB API Style Cookbook Suite][pd-base] [![CI][pd-ci-badge]][pd-ci-link] [![kitchen][pd-kitchen-badge]][pd-kitchen-link] | pd | FB API Cookbooks from Phil (formerly Facebook Phil) that Meta doesn't wish to maintain |
+| [Boxcutter cookbook suite for robotics][boxcutter-base]) [![CI][boxcutter-ci-badge]][boxcutter-ci-link] [![kitchen][boxcutter-kitchen-badge]][boxcutter-kitchen-link] | boxcutter | Facebook/Meta style cookbook suite for robotics that supports both AMD64/ARM64 platforms |
+
+<!--
+  Please use your standard prefix for URL reference
+  names, and follow the pattern of -base and then -{ci,kitchen}-{link,badge}
+-->
+[pd-base]: https://github.com/jaymzh/chef-fb-api-cookbooks
+[pd-ci-link]: https://github.com/jaymzh/chef-fb-api-cookbooks/actions/workflows/ci.yml
+[pd-ci-badge]: https://github.com/jaymzh/chef-fb-api-cookbooks/actions/workflows/ci.yml/badge.svg
+[pd-kitchen-link]: https://github.com/jaymzh/chef-fb-api-cookbooks/actions/workflows/kitchen.yml
+[pd-kitchen-badge]: https://github.com/jaymzh/chef-fb-api-cookbooks/actions/workflows/kitchen.yml/badge.svg
+[boxcutter-base]: https://github.com/boxcutter/boxcutter-chef-cookbooks
+[boxcutter-ci-link]: https://github.com/boxcutter/boxcutter-chef-cookbooks/actions/workflows/ci.yml
+[boxcutter-ci-badge]: https://github.com/boxcutter/boxcutter-chef-cookbooks/actions/workflows/ci.yml/badge.svg
+[boxcutter-kitchen-link]: https://github.com/boxcutter/boxcutter-chef-cookbooks/actions/workflows/kitchen.yml
+[boxcutter-kitchen-badge]: https://github.com/boxcutter/boxcutter-chef-cookbooks/actions/workflows/kitchen.yml/badge.svg
