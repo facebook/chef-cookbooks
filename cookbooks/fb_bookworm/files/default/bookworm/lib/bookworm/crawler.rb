@@ -13,12 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require 'rubocop'
-require 'parser/current'
-
-# TODO(dcrosby) Bookworm key should determine which AST parser is chosen. This
-# would allow multiple AST parsers (ie ripper) and a way of ingesting non-Ruby
-# files like JSON/YAML
 
 module Bookworm
   class Crawler
@@ -47,23 +41,12 @@ module Bookworm
     def process_paths(key)
       queue = @intake_queue[key]
       processed_files = {}
+      parser = BOOKWORM_KEYS[key]['parser']
       until queue.empty?
         path = queue.pop
-        processed_files[path] = generate_ast(File.read(path))
+        processed_files[path] = parser.parse(File.read(path))
       end
       @processed_files[key] = processed_files
     end
-
-    # In order to keep rules from barfing on a nil value (when no AST is
-    # generated at all from eg. an empty source code file), we supply a
-    # single node called bookworm_found_nil. It's a magic value that is
-    # 'unique enough' for our purposes
-    EMPTY_RUBOCOP_AST = ::RuboCop::AST::Node.new('bookworm_found_nil').freeze
-    def generate_rubocop_ast(code)
-      ::RuboCop::ProcessedSource.new(code, RUBY_VERSION.to_f)&.ast ||
-        EMPTY_RUBOCOP_AST
-    end
-
-    alias generate_ast generate_rubocop_ast
   end
 end

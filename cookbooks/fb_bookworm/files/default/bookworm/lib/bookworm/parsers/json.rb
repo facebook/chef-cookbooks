@@ -1,4 +1,6 @@
-# Copyright (c) 2022-present, Meta Platforms, Inc. and affiliates
+# frozen_string_literal: true
+
+# Copyright (c) 2025-present, Meta Platforms, Inc. and affiliates
 # All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,12 +14,20 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-description 'Helper rule to show existence of a recipe'
-keys %w{
-  recipe
-  recipejson
-}
+#
 
-def output
-  true
+require 'json'
+
+module Bookworm
+  class Parsers
+    class JSON < ::Bookworm::KeyParserBase
+      def self.parse(str)
+        ::JSON.parse(str)
+      end
+
+      def self.parser_output_key
+        'object'
+      end
+    end
+  end
 end

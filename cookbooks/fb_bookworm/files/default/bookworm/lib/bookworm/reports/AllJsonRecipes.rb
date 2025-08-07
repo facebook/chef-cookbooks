@@ -1,4 +1,4 @@
-# Copyright (c) 2022-present, Meta Platforms, Inc. and affiliates
+# Copyright (c) 2025-present, Meta Platforms, Inc. and affiliates
 # All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,12 +12,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-description 'Helper rule to show existence of a recipe'
-keys %w{
-  recipe
-  recipejson
-}
+description 'Lists all JSON Chef Recipes'
+needs_rules ['RecipeExists']
+
+def to_a
+  @kb.recipejsons.keys.sort
+end
 
 def output
-  true
+  to_a
 end

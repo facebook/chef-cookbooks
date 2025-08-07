@@ -16,6 +16,8 @@
 # limitations under the License.
 #
 
+require 'bookworm/parsers/builtin_parsers'
+
 module Bookworm
   # These keys are how we generalize and generate a lot of code within Bookworm
   #
@@ -27,6 +29,9 @@ module Bookworm
   # dont_init_kb_key: Don't initialize the keys on knowledge base creation
   # determine_cookbook_name: Determines the cookbook name from the given path
   # path_name_regex: A regex with a capture to determine the prettified name of the file
+  #
+  # TODO: handle cookbook root alias files like cookbook/attributes.rb
+  # https://github.com/chef/chef/blob/d22fa4cdc46c58e450198427b86c4de4ed9a90e3/docs/dev/design_documents/cookbook_root_aliases.md?plain=1#L25-L28
   BOOKWORM_KEYS = {
     'cookbook' => {
       'metakey' => true,
@@ -45,6 +50,12 @@ module Bookworm
     'recipe' => {
       'determine_cookbook_name' => true,
       'path_name_regex' => 'recipes/(.*)\.rb',
+    },
+    'recipejson' => {
+      'determine_cookbook_name' => true,
+      'glob_pattern' => '*/recipes/*.json',
+      'path_name_regex' => 'recipes/(.*)\.json',
+      'parser' => ::Bookworm::Parsers::JSON,
     },
     'attribute' => {
       'determine_cookbook_name' => true,
@@ -69,6 +80,7 @@ module Bookworm
   BOOKWORM_KEYS.each do |k, v|
     BOOKWORM_KEYS[k]['determine_cookbook_name'] ||= false
     BOOKWORM_KEYS[k]['plural'] ||= "#{k}s"
+    BOOKWORM_KEYS[k]['parser'] ||= ::Bookworm::Parsers::RuboCop
     BOOKWORM_KEYS[k]['source_dirs'] ||= 'cookbook_dirs'
     BOOKWORM_KEYS[k]['glob_pattern'] ||= "*/#{v['plural']}/*.rb"
   end

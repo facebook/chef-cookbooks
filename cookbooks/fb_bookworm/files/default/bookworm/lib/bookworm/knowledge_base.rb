@@ -88,10 +88,11 @@ module Bookworm
     def init_key(key, files)
       self[key] = {}
       path_name_regex = BOOKWORM_KEYS[key]['path_name_regex']
-      files.each do |path, ast|
+      parser_output_key = BOOKWORM_KEYS[key]['parser'].parser_output_key
+      files.each do |path, output|
         m = path.match(/#{path_name_regex}/)
         file_name = m[1]
-        self[key][file_name] = { 'path' => path, 'ast' => ast }
+        self[key][file_name] = { 'path' => path, parser_output_key => output }
       end
     end
 
@@ -104,13 +105,14 @@ module Bookworm
       self[key] = {}
       self['cookbook'] ||= {}
       path_name_regex = BOOKWORM_KEYS[key]['path_name_regex']
-      files.each do |path, ast|
+      parser_output_key = BOOKWORM_KEYS[key]['parser'].parser_output_key
+      files.each do |path, output|
         m = path.match(%r{/?([\w-]+)/#{path_name_regex}})
         cookbook_name = m[1]
         file_name = m[2]
         self['cookbook'][cookbook_name] ||= {}
         self[key]["#{cookbook_name}::#{file_name}"] =
-          { 'path' => path, 'cookbook' => cookbook_name, 'ast' => ast }
+          { 'path' => path, 'cookbook' => cookbook_name, parser_output_key => output }
       end
     end
   end
