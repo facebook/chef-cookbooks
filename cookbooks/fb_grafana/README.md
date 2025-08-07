@@ -13,6 +13,8 @@ Attributes
 * node['fb_grafana']['gen_selfsigned_cert']
 * node['fb_grafana']['plugins']
 * node['fb_grafana']['plugins'][$PLUGIN]
+* node['fb_grafana']['immutable_plugins']
+* node['fb_grafana']['immutable_plugins'][$PLUGIN]
 * node['fb_grafana']['datasources']
 * node['fb_grafana']['datasources'][$NAME]
 * node['fb_grafana']['datasources'][$NAME][$CONFIG]
@@ -56,6 +58,20 @@ version will be pinned.
 
 Note that we ensure these are managed idempotently, a plugin is never touched if
 it's on the desired version.
+
+Note that some plugins are considered "immutable" - they are part of the
+distribution of Grafana itself. Since they get extracted into the same plugins
+directory, there is no programatic way to tell them apart. As such we keep an
+`immutable_plugins` hash that's the same structure as the `plugins` hash. Plugins
+in this list (which we attempt to keep up-to-date in `attributes/default.rb`, but
+you may add to if your distribution has different immutable plugins), will not be
+removed by this cookbook, even if they are not in the `plugins` list. Note that
+the _value_ is ignored, and thus should be set to `nil` for consistency. It is
+a hash instead of an array for easy modification.
+
+If an immutable plugin appears in `plugins` at a specific version, a warning
+will be displayed saying that the plugin cannot be directly managed, and then
+that plugin will be ignored.
 
 ### Data Sources
 You can populate datasources by adding them to the hash

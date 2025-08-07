@@ -12,6 +12,12 @@ default['fb_grafana'] = {
   },
   'gen_selfsigned_cert' => false,
   'plugins' => {},
+  'immutable_plugins' => {
+    'grafana-exploretraces-app' => nil,
+    'grafana-lokiexplore-app' => nil,
+    'grafana-metricsdrilldown-app' => nil,
+    'grafana-pyroscope-app' => nil,
+  },
   'datasources' => {},
   'version' => nil,
 }

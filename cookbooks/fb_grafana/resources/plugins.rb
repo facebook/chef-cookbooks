@@ -11,6 +11,15 @@ action :manage do
     '/var/lib/grafana/plugins'
   basecmd = "grafana-cli --pluginsDir #{plugin_dir}"
   node['fb_grafana']['plugins'].each do |plugin, version|
+    if node['fb_grafana']['immutable_plugins'].key?(plugin) && !version.nil?
+      Chef::Log.warn(
+        "fb_grafana: Plugin #{plugin} is configured to be installed at " +
+        "version #{version}, but #{plugin} is a built-in/immutable plugin " +
+        'that cannot be managed by the user.',
+      )
+      next
+    end
+
     # If a version is specified, see if it's installed and on that version...
     if version && installed[plugin] == version
       Chef::Log.debug(
@@ -50,7 +59,8 @@ action :manage do
     # NOTE WELL: Cannot use ruby-style
     #    if node['fb_grafana']['plugins'][plugin]
     # because the value can be nil, which evaluates to false!
-    next if node['fb_grafana']['plugins'].include?(plugin)
+    next if node['fb_grafana']['plugins'].key?(plugin)
+    next if node['fb_grafana']['immutable_plugins'].key?(plugin)
 
     execute "Uninstall grafana plugin #{plugin}" do
       command "#{basecmd} plugins uninstall #{plugin}"
