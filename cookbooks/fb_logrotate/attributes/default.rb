@@ -103,6 +103,7 @@ default['fb_logrotate'] = {
   'systemd_timer' => systemd_timer,
   'systemd_settings' => {
     'OnCalendar' => 'daily',
+    'Persistent' => false,
     'RandomizedDelaySec' => 0,
     'Nice' => 19,
     'IOSchedulingClass' => 3,
