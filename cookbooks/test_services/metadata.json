@@ -1,0 +1,45 @@
+{
+  "name": "test_services",
+  "description": "Includes all cookbooks not in init for testing purposes",
+  "long_description": "",
+  "maintainer": "Facebook",
+  "maintainer_email": "noreply@facebook.com",
+  "license": "Apache-2.0",
+  "platforms": {
+    "centos": ">= 0.0.0"
+  },
+  "dependencies": {
+    "fb_apache": ">= 0.0.0",
+    "fb_apt_cacher": ">= 0.0.0",
+    "fb_bind": ">= 0.0.0",
+    "fb_dhcprelay": ">= 0.0.0",
+    "fb_ejabberd": ">= 0.0.0",
+    "fb_influxdb": ">= 0.0.0",
+    "fb_kea": ">= 0.0.0",
+    "fb_reprepro": ">= 0.0.0",
+    "fb_sasl": ">= 0.0.0",
+    "fb_smokeping": ">= 0.0.0",
+    "fb_spamassassin": ">= 0.0.0",
+    "fb_vsftpd": ">= 0.0.0"
+  },
+  "providing": {
+
+  },
+  "recipes": {
+
+  },
+  "version": "0.0.1",
+  "source_url": "https://github.com/facebook/chef-cookbooks/",
+  "issues_url": "",
+  "privacy": false,
+  "chef_versions": [
+
+  ],
+  "ohai_versions": [
+
+  ],
+  "gems": [
+
+  ],
+  "eager_load_libraries": true
+}

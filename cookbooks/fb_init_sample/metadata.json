@@ -1,0 +1,92 @@
+{
+  "name": "fb_init_sample",
+  "description": "Setup a base runlist for using Facebook cookbooks",
+  "long_description": "",
+  "maintainer": "Facebook",
+  "maintainer_email": "noreply@facebook.com",
+  "license": "Apache-2.0",
+  "platforms": {
+    "centos": ">= 0.0.0",
+    "debian": ">= 0.0.0",
+    "ubuntu": ">= 0.0.0"
+  },
+  "dependencies": {
+    "fb_apcupsd": ">= 0.0.0",
+    "fb_apt": ">= 0.0.0",
+    "fb_chrony": ">= 0.0.0",
+    "fb_collectd": ">= 0.0.0",
+    "fb_cron": ">= 0.0.0",
+    "fb_dnf": ">= 0.0.0",
+    "fb_dnsmasq": ">= 0.0.0",
+    "fb_dracut": ">= 0.0.0",
+    "fb_e2fsprogs": ">= 0.0.0",
+    "fb_ebtables": ">= 0.0.0",
+    "fb_ethers": ">= 0.0.0",
+    "fb_ethtool": ">= 0.0.0",
+    "fb_fstab": ">= 0.0.0",
+    "fb_grub": ">= 0.0.0",
+    "fb_grubby": ">= 0.0.0",
+    "fb_hddtemp": ">= 0.0.0",
+    "fb_hdparm": ">= 0.0.0",
+    "fb_helpers": ">= 0.0.0",
+    "fb_hostconf": ">= 0.0.0",
+    "fb_hostname": ">= 0.0.0",
+    "fb_hosts": ">= 0.0.0",
+    "fb_ipc": ">= 0.0.0",
+    "fb_iproute": ">= 0.0.0",
+    "fb_ipset": ">= 0.0.0",
+    "fb_iptables": ">= 0.0.0",
+    "fb_launchd": ">= 0.0.0",
+    "fb_ldconfig": ">= 0.0.0",
+    "fb_less": ">= 0.0.0",
+    "fb_limits": ">= 0.0.0",
+    "fb_logrotate": ">= 0.0.0",
+    "fb_mlocate": ">= 0.0.0",
+    "fb_modprobe": ">= 0.0.0",
+    "fb_motd": ">= 0.0.0",
+    "fb_networkmanager": ">= 0.0.0",
+    "fb_nscd": ">= 0.0.0",
+    "fb_nsswitch": ">= 0.0.0",
+    "fb_postfix": ">= 0.0.0",
+    "fb_profile": ">= 0.0.0",
+    "fb_rpm": ">= 0.0.0",
+    "fb_rsync": ">= 0.0.0",
+    "fb_screen": ">= 0.0.0",
+    "fb_sdparm": ">= 0.0.0",
+    "fb_securetty": ">= 0.0.0",
+    "fb_smartmon": ">= 0.0.0",
+    "fb_storage": ">= 0.0.0",
+    "fb_stunnel": ">= 0.0.0",
+    "fb_sudo": ">= 0.0.0",
+    "fb_swap": ">= 0.0.0",
+    "fb_sysctl": ">= 0.0.0",
+    "fb_sysfs": ">= 0.0.0",
+    "fb_syslog": ">= 0.0.0",
+    "fb_sysstat": ">= 0.0.0",
+    "fb_systemd": ">= 0.0.0",
+    "fb_timers": ">= 0.0.0",
+    "fb_tmpclean": ">= 0.0.0",
+    "fb_users": ">= 0.0.0",
+    "fb_util_linux": ">= 0.0.0"
+  },
+  "providing": {
+
+  },
+  "recipes": {
+
+  },
+  "version": "0.0.1",
+  "source_url": "https://github.com/facebook/chef-cookbooks/",
+  "issues_url": "",
+  "privacy": false,
+  "chef_versions": [
+
+  ],
+  "ohai_versions": [
+
+  ],
+  "gems": [
+
+  ],
+  "eager_load_libraries": true
+}

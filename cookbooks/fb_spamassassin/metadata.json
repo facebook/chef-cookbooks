@@ -1,0 +1,34 @@
+{
+  "name": "fb_spamassassin",
+  "description": "Installs/Configures spamassassin",
+  "long_description": "",
+  "maintainer": "Meta Platforms, Inc.",
+  "maintainer_email": "noreply@meta.com",
+  "license": "Apache-2.0",
+  "platforms": {
+
+  },
+  "dependencies": {
+    "fb_helpers": ">= 0.0.0"
+  },
+  "providing": {
+
+  },
+  "recipes": {
+
+  },
+  "version": "0.1.0",
+  "source_url": "",
+  "issues_url": "",
+  "privacy": false,
+  "chef_versions": [
+
+  ],
+  "ohai_versions": [
+
+  ],
+  "gems": [
+
+  ],
+  "eager_load_libraries": true
+}

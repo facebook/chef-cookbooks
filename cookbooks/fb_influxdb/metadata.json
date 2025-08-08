@@ -1,0 +1,34 @@
+{
+  "name": "fb_influxdb",
+  "description": "Installs/Configures InfluxDB",
+  "long_description": "",
+  "maintainer": "Meta Platforms, Inc.",
+  "maintainer_email": "noreply@meta.com",
+  "license": "Apache-2.0",
+  "platforms": {
+
+  },
+  "dependencies": {
+
+  },
+  "providing": {
+
+  },
+  "recipes": {
+
+  },
+  "version": "0.1.0",
+  "source_url": "",
+  "issues_url": "",
+  "privacy": false,
+  "chef_versions": [
+
+  ],
+  "ohai_versions": [
+
+  ],
+  "gems": [
+
+  ],
+  "eager_load_libraries": true
+}
