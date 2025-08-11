@@ -27,6 +27,7 @@ needs_rules %w{
   LibraryExists
   ResourceExists
   ProviderExists
+  RecipeExists
   ExplicitMetadataDepends
   IncludeRecipeLiterals
   IncludeRecipeDynamic

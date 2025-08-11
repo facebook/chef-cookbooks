@@ -14,10 +14,10 @@
 # limitations under the License.
 description 'Determines all recipes that are directly referenced in roles and recipes' +
             ' but were not found by the crawler'
-needs_rules ['RoleRunListRecipes', 'IncludeRecipeLiterals']
+needs_rules ['RoleRunListRecipes', 'IncludeRecipeLiterals', 'RecipeExists']
 
 def to_h
-  known_recipes = Set.new @kb.recipes.keys
+  known_recipes = Set.new(@kb.recipes.keys + @kb.recipejsons.keys)
   missing = { 'roles' => {}, 'recipes' => {} }
   @kb.roles.each do |role, metadata|
     metadata['RoleRunListRecipes'].each do |recipe|

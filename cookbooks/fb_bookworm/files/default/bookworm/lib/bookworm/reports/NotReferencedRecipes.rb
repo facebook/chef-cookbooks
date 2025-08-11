@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 description 'Determines all recipes that are not directly referenced either in roles or recipes'
-needs_rules ['RoleRunListRecipes', 'IncludeRecipeLiterals']
+needs_rules ['RoleRunListRecipes', 'IncludeRecipeLiterals', 'RecipeExists']
 
 def to_a
   referenced_recipes = Set.new
@@ -27,7 +27,7 @@ def to_a
       referenced_recipes << recipe
     end
   end
-  all_recipes = Set.new(@kb.recipes.keys)
+  all_recipes = Set.new(@kb.recipes.keys + @kb.recipejsons.keys)
   # Any recipes which weren't included via roles or include_recipe are not referenced
   (all_recipes - referenced_recipes).sort.to_a
 end
