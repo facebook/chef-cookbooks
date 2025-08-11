@@ -81,8 +81,12 @@ action :manage do
                 node['fb_networkd']['links'].keys).uniq
   interfaces.each do |iface|
     next if iface == 'lo'
-
     execute "networkctl reconfigure #{iface}" do
+      # If someone set up a networkd config for an interface
+      # that doesn't exist (yet) shelling out would fail.
+      if node.in_shard?(0)
+        only_if { ohai_ifaces.include?(iface) }
+      end
       command "/bin/networkctl reconfigure #{iface}"
       action :nothing
     end
