@@ -84,7 +84,7 @@ action :manage do
     execute "networkctl reconfigure #{iface}" do
       # If someone set up a networkd config for an interface
       # that doesn't exist (yet) shelling out would fail.
-      if node.in_shard?(44)
+      if node.in_shard?(74)
         only_if { ohai_ifaces.include?(iface) }
       end
       command "/bin/networkctl reconfigure #{iface}"
