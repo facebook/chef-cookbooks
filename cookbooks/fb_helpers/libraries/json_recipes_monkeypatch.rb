@@ -1,3 +1,7 @@
+#
+# Monkey patches to bring https://github.com/chef/chef/pull/15094
+# into older Chef
+#
 if Chef::VERSION < '16'
   # The `from_hash` functionality that YAML and JSON recipes use was added in Chef 16
   Chef::Log.warn('[chef_json_recipes_backport] Not loading JSON recipe monkeypatch,')
