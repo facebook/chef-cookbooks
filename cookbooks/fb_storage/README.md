@@ -101,9 +101,16 @@ be careful.
   recipe - i.e. it will erase *all* of your non-root devices and then set them
   back up. Once it converges, it will remove the file.
 
-For additional safety, you can define a check method in
-`node['fb_storage']['_clowntown_override_file_method']`
-that will be invoked whenever override files are evaluated.
+NOTE: These files are ignored by default, and you *MUST* have a method defined
+in `node['fb_storage']['_clowntown_override_file_method']`.
+
+This method is defined for you to validate these files in some additional
+way (i.e. you could require the contents of the files to be the hostname
+of the system they're on). If you want them to work by default, just do:
+
+```ruby
+node.default['fb_storage']['_clowntown_override_file_method'] = proc { true }
+```
 
 You can also use files in `/var/chef/hotswap_replaced_disks/` as described in
 `Disk Replacement` below to test individual disk setup. However, note that this
