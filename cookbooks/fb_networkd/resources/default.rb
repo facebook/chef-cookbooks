@@ -94,6 +94,7 @@ action :manage do
     # up yet, add it here.
     unless ohai_ifaces.include?(iface)
       execute "udevadm trigger #{iface}" do
+        only_if { Dir.exist?("/sys/class/net/#{iface}") }
         command "/bin/udevadm trigger --action=add /sys/class/net/#{iface}"
         action :nothing
       end
