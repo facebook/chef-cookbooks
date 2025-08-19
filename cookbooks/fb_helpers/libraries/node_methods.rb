@@ -1470,6 +1470,14 @@ class Chef
       false
     end
 
+    # JSON recipes are a fairly new Chef feature (as of August 2025), and we
+    # can't assume everyone is using them yet. To ensure there's no downstream breakage,
+    # we'll be using this method as a way to support Chef clients that don't include the backport
+    def json_recipes_supported?
+      return @json_recipes_supported unless @json_recipes_supported.nil?
+      @json_recipes_supported ||= Chef::VERSION >= '19.1.53' || Chef::VERSION >= '18.7.28'
+    end
+
     # A gate which can be used to limit dangerous code to only run during
     # provisioning or upon boot
     def disruptable?

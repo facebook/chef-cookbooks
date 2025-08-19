@@ -552,6 +552,11 @@ your node.
     pass `CHEF_BOOT_SERVICE=true` as an environment variable from your
     boot-time chef invocation.
 
+* `node.json_recipes_support?`
+    A check on if JSON recipes are supported. Will eventually use the
+    backport mechanism in this cookbook, but for now just checks the
+    version numbers.
+
 ### FB::Helpers
 The following constants are available:
 
