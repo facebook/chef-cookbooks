@@ -1,0 +1,9 @@
+{
+  "resources": [
+    {
+      "type": "log",
+      "name": "hello",
+      "message": "hello"
+    }
+  ]
+}
