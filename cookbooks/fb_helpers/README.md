@@ -930,6 +930,31 @@ The `:merge` which triggers the actual aggregated notification should only happe
 a single time, immediately before the resource which is being notified; all
 other flows are fundamentally flawed.
 
+#### include_recipe_at_converge_time
+
+***EXPERIMENTAL AS HECK!***
+
+*Changes to this resource in the future are expected (as of Sept 2025), and the
+resource may be removed entirely in some future commit, so it's advised to
+avoid external use until this scary warning is removed. It is being documented
+and included in fb_helpers to ensure no inadvertent downstream breakage.*
+
+Many resources *could* be moved to JSON recipes if there was some way of
+delaying the resource additions to converge time when a node attribute can be
+read (a common feature in the FB API model). It shouldn't be used where
+conditional logic can be used at compile time (eg when using `node.centos?`) -
+use a normal `include_recipe` call instead. This resource is intended to load
+JSON recipes where the resources are static in their constitution - while Ruby
+recipes *can* be loaded, you really shouldn't.
+
+Usage example:
+
+```ruby
+include_recipe_at_converge_time 'fb_example::json_recipe_with_package_resources' do
+  only_if { node['fb_example']['manage_packages'] }
+end
+```
+
 ### Reboot control
 If it's safe for Chef to reboot your host, set `reboot_allowed` to true in
 your cookbook:
