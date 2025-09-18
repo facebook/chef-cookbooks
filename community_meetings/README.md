@@ -20,15 +20,31 @@ In order to run the report, checkout
 For the purposes of this, we will assume it's checked out at the same level as
 this repo.
 
+NOTE: You shouldn't run the report until Wednesday after noon.
+NOTE: If you run it Thursday, you'll need to do so manually (see below)
+and pass in `--date` to `repo_stats`.
+
 Then, in this directory, simply run:
 
 ```shell
-../../oss-stats/bin/repo_stats
+./run_report.sh
 ```
 
-Note that you will need rbenv or rvm setup with ruby 3.2+
+Note that you will need rbenv or rvm setup with ruby 3.2+.
 
-Take the output, put it at the end of this header:
+Take the output and post it to slack. Feel free to schedule it
+for 9:15am Thursday morning.
+
+### Manual generation
+
+If the script fails for some reason, or if you need to pass in specific
+options to `repo_stats`, simply run:
+
+```shell
+<path_to_oss_stats>/bin/repo_stats
+```
+
+Then, take the output, put it at the end of this header:
 
 ```text
 :facebook: :cook: *_FB ATTRIBUTE-API COOKBOOKS UPDATE_* :facebook: :cook:
