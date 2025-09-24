@@ -18,8 +18,13 @@
 
 resource_name :include_recipe_at_converge_time
 provides :include_recipe_at_converge_time
-unified_mode(true)
 default_action :include_recipe
+
+# TODO there appears to be a bug in unified mode where `action` isn't respected
+# in JSON recipes when using include_recipe_at_converge_time. This looks like a
+# debugging rabbit hole, and strictly speaking unified mode isn't needed here.
+# LMK if you find yourself dealing with this at some point! -dcrosby
+unified_mode(false)
 
 property :recipe, String, :name_property => true
 
