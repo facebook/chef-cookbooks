@@ -78,11 +78,27 @@ class Chef
 
     def from_json(string)
       res = JSONCompat.from_json(string)
-      unless res.is_a?(Hash) && res.key?("resources")
-        raise ArgumentError, "JSON recipe '#{source_file}' must contain a top-level 'resources' hash"
+      unless res.is_a?(Hash) && (res.key?("resources") || res.key?("include_recipes"))
+        raise ArgumentError, "JSON recipe '#{source_file}' must contain a top-level 'resources' or 'include_recipes' hash key"
       end
 
       from_hash(res)
+    end
+
+
+    def from_hash(hash)
+      hash["resources"]&.each do |rhash|
+        type = rhash.delete("type").to_sym
+        name = rhash.delete("name")
+        res = declare_resource(type, name)
+        rhash.each do |key, value|
+          # FIXME?: we probably need a way to instance_exec a string that contains block code against the property?
+          res.send(key, value)
+        end
+      end
+      hash["include_recipes"]&.each do |recipe|
+        run_context.include_recipe recipe
+      end
     end
   end
 end
