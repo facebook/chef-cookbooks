@@ -3,6 +3,6 @@
 
 <% unless node['fb_postfix'][@db_file].nil? %>
 <%   node['fb_postfix'][@db_file].to_hash.each do |k, v| %>
-<%=    k %> <%= v %>
+<%=    k %> <%= v.is_a?(FB::Helpers::RedactedString) ? v.value : v %>
 <%   end %>
 <% end %>
