@@ -81,6 +81,17 @@ action :run do
       notifies :run, "execute[generate #{name} keyring]", :immediately
     end
 
+    # If the dest file gets deleted but we don't need to update the
+    # src file, we'll never notice and never create the dest, so here's
+    # a special trigger just for that situation
+    ruby_block "force generation of #{dst}" do
+      # not_if, since it runs at run-time, will only trigger this
+      # if the above resource's 'immediate' notifies did not create it
+      not_if { ::File.exist?(dst) }
+      block { true }
+      notifies :run, "execute[generate #{name} keyring]", :immediately
+    end
+
     file dst do
       action :nothing
     end
