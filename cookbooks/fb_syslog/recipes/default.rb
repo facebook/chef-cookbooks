@@ -73,6 +73,13 @@ template config_file do
   notifies :update, 'fb_notify_merger[syslog]', :immediately
 end
 
+directory '/etc/rsyslog.d' do
+  not_if { node['fb_syslog']['rsyslog_d_preserve'] }
+  action :delete
+  recursive true
+  notifies :update, 'fb_notify_merger[syslog]', :immediately
+end
+
 fb_notify_merger 'syslog' do
   notifies :restart, "service[#{service_name}]", :immediately
 end
