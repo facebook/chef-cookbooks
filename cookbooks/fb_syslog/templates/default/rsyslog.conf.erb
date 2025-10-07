@@ -81,6 +81,11 @@ $AddUnixListenSocket <%= sock %>
 <%   end %>
 
 <% end %>
+<% if node['fb_syslog']['include_rsyslog_d_config'] -%>
+# Include all configuration files in /etc/rsyslog.d/
+$IncludeConfig /etc/rsyslog.d/*.conf
+
+<% end -%>
 <% node['fb_syslog']['syslog-entries'].to_hash.each_value do |entry| -%>
 
 <%   if entry['comment'] -%>
