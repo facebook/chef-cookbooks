@@ -47,6 +47,12 @@ module Bookworm
       'determine_cookbook_name' => true,
       'path_name_regex' => '(metadata\.rb)',
     },
+    'metadatajson' => {
+      'glob_pattern' => '*/metadata.json',
+      'determine_cookbook_name' => true,
+      'path_name_regex' => '(metadata\.json)',
+      'parser' => ::Bookworm::Parsers::JSON,
+    },
     'recipe' => {
       'determine_cookbook_name' => true,
       'path_name_regex' => 'recipes/(.*)\.rb',

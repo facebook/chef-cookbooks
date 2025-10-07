@@ -24,7 +24,7 @@ describe Bookworm::InferRules::ExplicitMetadataDepends do
   RUBY
   end
   it 'captures the metadata.rb dependencies' do
-    rule = described_class.new({ 'ast' => ast })
+    rule = described_class.new({ 'path' => 'fake_cookbook/metadata.rb', 'ast' => ast })
     expect(rule.to_a).to eq(['fake_cookbook1', 'fake_cookbook2'])
   end
 end

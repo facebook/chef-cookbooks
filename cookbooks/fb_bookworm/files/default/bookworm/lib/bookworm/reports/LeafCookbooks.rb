@@ -18,7 +18,12 @@ needs_rules ['ExplicitMetadataDepends']
 def to_a
   buffer = Set.new
   @kb.metadatarbs.each do |_, metadata|
-    metadata['ExplicitMetadataDepends'].each do |cb|
+    metadata['ExplicitMetadataDepends']&.each do |cb|
+      buffer << cb
+    end
+  end
+  @kb.metadatajsons.each do |_, metadata|
+    metadata['ExplicitMetadataDepends']&.each do |cb|
       buffer << cb
     end
   end

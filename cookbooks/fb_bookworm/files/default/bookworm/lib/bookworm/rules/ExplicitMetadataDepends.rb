@@ -13,10 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 description 'Extract depends usage from a cookbook\'s metadata.rb'
-keys ['metadatarb']
+keys ['metadatarb', 'metadatajson']
 
 def_node_search :explicit_depends, '`(send nil? :depends (str $_))'
 
 def to_a
-  explicit_depends(@metadata['ast']).to_a.uniq
+  if @metadata['path'].end_with?('.rb')
+    return explicit_depends(@metadata['ast']).to_a.uniq
+  elsif @metadata['object'].key?('dependencies') # Assuming metadata.json here
+    return @metadata['object']['dependencies'].keys
+  end
 end
