@@ -12,6 +12,12 @@
 
 module FB
   class Helpers
+    class SecretString < String
+      def to_s
+        self
+      end
+    end
+
     class RedactedString < String
       def initialize(*args)
         # Have the internal value be REDACTED to cover off cases we missed!
@@ -22,7 +28,7 @@ module FB
       end
 
       def value
-        @actual_string
+        FB::Helpers::SecretString.new(@actual_string)
       end
 
       def to_s
