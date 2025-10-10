@@ -1162,19 +1162,21 @@ class Chef
     def firstboot_os?
       # this has to work even when we fail early on so we can call this from
       # broken runs in handlers
-      self['fb_init']['firstboot_os']
+      return @_firstboot_os unless @_firstboot_os.nil?
+      @_firstboot_os = self['fb_init']['firstboot_os']
     rescue StandardError
       prefix = macos? ? '/var/root' : '/root'
-      File.exist?(File.join(prefix, 'firstboot_os'))
+      @_firstboot_os = File.exist?(File.join(prefix, 'firstboot_os'))
     end
 
     def firstboot_tier?
       # this has to work even when we fail early on so we can call this from
       # broken runs in handlers
-      self['fb_init']['firstboot_tier']
+      return @_firstboot_tier unless @_firstboot_tier.nil?
+      @_firstboot_tier = self['fb_init']['firstboot_tier']
     rescue StandardError
       prefix = macos? ? '/var/root' : '/root'
-      File.exist?(File.join(prefix, 'firstboot_tier'))
+      @_firstboot_tier = File.exist?(File.join(prefix, 'firstboot_tier'))
     end
 
     def firstboot_any_phase?
