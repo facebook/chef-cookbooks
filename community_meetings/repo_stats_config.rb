@@ -16,6 +16,9 @@
 
 default_days 7
 mode %w{pr ci}
+# shipit doesn't "merge" prs, it closes them
+# so we need to count them in the stats
+count_unmerged_prs true
 organizations(
   {
     'facebook' => {
