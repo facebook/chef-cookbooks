@@ -35,6 +35,11 @@ syslog_file = value_for_platform_family(
   'debian' => '/var/log/syslog',
 )
 
+authlog = value_for_platform_family(
+  ['rhel', 'fedora'] => '/var/log/secure',
+  'default' => '/var/log/auth.log',
+)
+
 # Add in some reasonable defaults for all syslog.confs
 default['fb_syslog'] = {
   'syslog-entries' => {
@@ -43,8 +48,13 @@ default['fb_syslog'] = {
       'comment' => 'Log anything info level or higher. A lot ' +
                    'of things go into their own file.',
       'selector' => '*.info;mail,authpriv,cron,' +
-        'local0,local1,local2,local3,local5,local6,local7.none',
+        'local0,local1,local2,local3,local4,local5,local6,local7.none',
       'action' => "-#{syslog_file}",
+    },
+    'authlog' => {
+      'comment' => 'Log all auth stuff',
+      'selector' => 'auth,authpriv.*',
+      'action' => authlog,
     },
     'mail' => {
       'comment' => 'Log all the mail messages in one place.',
@@ -74,6 +84,7 @@ default['fb_syslog'] = {
     },
   },
   'rsyslog_server' => false,
+  'rsyslog_server_force_no_listen' => false,
   'rsyslog_server_address' => nil,
   'rsyslog_rulesets' => {},
   'rsyslog_nonruleset_ports' => {
@@ -88,6 +99,7 @@ default['fb_syslog'] = {
     '$DirCreateMode 0755',
     '$Umask 0002',
   ],
+  'rsyslog_d_preserve' => false,
   'rsyslog_late_lines' => [],
   'include_rsyslog_d_config' => false,
   'rsyslog_additional_sockets' => [],
