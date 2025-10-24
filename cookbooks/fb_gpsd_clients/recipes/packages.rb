@@ -10,10 +10,12 @@ unless node.centos?
   fail 'fb_gpsd_clients only supports CentOS'
 end
 
-package 'gpsd-clients' do
-  action :remove
-end
-
-package 'gpsd-minimal-clients' do
-  action :upgrade
+if node.centos10?
+  package 'gpsd-clients' do
+    action :upgrade
+  end
+else
+  package 'gpsd-minimal-clients' do
+    action :upgrade
+  end
 end
