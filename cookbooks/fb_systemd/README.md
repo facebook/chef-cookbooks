@@ -188,6 +188,30 @@ fb_systemd_override 'disable-controllers' do
 end
 ```
 
+  The `custom_install_dir` allows for creation of a drop-in file that is
+  intended to be applied to a service manually by a human, typically in the
+  context of a SEV. `fb_systemd_override` will manage the unit's drop-in
+  directory for you, but does not manage `custom_install_dir` directly.
+
+```ruby
+directory '/root/recovery_tools' do
+  owner node.root_user
+  group node.root_group
+end
+
+fb_systemd_override 'enable-recovery-mode' do
+  unit_name 'foo.service'
+  # This drop-in is intended for a human to put in place during a SEV.
+  # Managing it this way prevents chef from running and erasing any
+  # human-applied kill-switches.
+  custom_install_dir '/root/recovery_tools'
+  content <<-EOU.gsub(/^\s+/, '')
+  [Service]
+  Environment=RECOVERY_MODE=1
+  EOU
+end
+```
+
 * a `fb_systemd_reload` LWRP to safetly trigger a daemon reload for a systemd
   instance (at the system or user level)
 

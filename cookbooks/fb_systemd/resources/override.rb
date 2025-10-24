@@ -24,6 +24,9 @@ property :source, String, :required => false
 property :triggers_reload, [true, false], :default => true
 property :instance, :kind_of => String, :default => 'system'
 
+# This directory must already exist
+property :custom_install_dir, [String, nil], :default => nil
+
 default_action :create
 
 action_class do
@@ -55,6 +58,7 @@ action :create do
   end
 
   override_dir = get_override_dir
+  install_dir = new_resource.custom_install_dir || override_dir
   override_file = "#{FB::Systemd.sanitize(new_resource.override_name)}.conf"
 
   directory override_dir do
@@ -63,7 +67,7 @@ action :create do
     mode '0755'
   end
 
-  template ::File.join(override_dir, override_file) do # rubocop:disable Chef/Meta/AvoidCookbookProperty
+  template ::File.join(install_dir, override_file) do # rubocop:disable Chef/Meta/AvoidCookbookProperty
     # If source is specified, use it, otherwise use our template...
     if new_resource.source
       source new_resource.source
@@ -90,10 +94,11 @@ end
 
 action :delete do
   override_dir = get_override_dir
+  install_dir = new_resource.custom_install_dir || override_dir
   override_file = "#{FB::Systemd.sanitize(new_resource.override_name)}.conf"
 
   if ::Dir.exist?(override_dir)
-    file ::File.join(override_dir, override_file) do
+    file ::File.join(install_dir, override_file) do
       action :delete
       if new_resource.triggers_reload
         notifies :run,
