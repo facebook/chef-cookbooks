@@ -394,7 +394,7 @@ your node.
 * `node.in_flexible_shard?(shard, shard_size)`
    True if the flexible shard we are in is less-than-or-equal to `shard`.  In
    other words, `node.in_flexible_shard?(24, 1000)` is true if you are in
-   shards 0-24 per-thousandth (the equivalent to 0%-2.4%).  This sharding is
+   shards 0-23 per-thousandth (the equivalent to 2.4%).  This sharding is
    *not* compatible with the `node.in_shard?()` implementation, so please choose
    one or the other when starting your experiment.
 
