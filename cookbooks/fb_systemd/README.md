@@ -212,6 +212,21 @@ fb_systemd_override 'enable-recovery-mode' do
 end
 ```
 
+```ruby
+fb_systemd_override 'disable-controllers' do
+  unit_name 'foo.slice'
+  source 'disable-controllers.conf.erb'
+  action :delete
+  reap_empty_override_dir false
+end
+```
+
+  `reap_empty_override_dir` defaults to `true`, which allows the provider to
+  clean up override directory for `:delete` action if it's empty. If the
+  override directory is not exclusively managed by `fb_systemd_override`, the
+  deletion could interfere with later setup. Set `reap_empty_override_dir` to
+  `false` leaves the override directory behind even when it's empty.
+
 * a `fb_systemd_reload` LWRP to safetly trigger a daemon reload for a systemd
   instance (at the system or user level)
 
