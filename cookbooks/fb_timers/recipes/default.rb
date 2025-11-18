@@ -59,5 +59,5 @@ file 'fb_timers readme' do
 end
 
 fb_timers_setup 'fb_timers system setup' do
-  not_if { node.firstboot_any_phase? }
+  not_if { node.firstboot_os? || node.firstboot_tier? } # rubocop:disable Chef/Meta/UseFirstbootAnyPhase See D87345851
 end
