@@ -2,7 +2,7 @@
 # Cookbook:: fb_sasl
 # Recipe:: default
 #
-# Copyright (c) 2025-present, Meta Platforms, Inc.
+# Copyright (c) 2025-present, Meta Platforms, Inc. and affiliates.
 # Copyright (c) 2025-present, Phil Dibowitz
 # All rights reserved.
 #

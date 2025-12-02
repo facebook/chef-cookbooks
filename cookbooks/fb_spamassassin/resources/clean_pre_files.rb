@@ -1,7 +1,7 @@
 #
 # vim: syntax=ruby:expandtab:shiftwidth=2:softtabstop=2:tabstop=2
 #
-# Copyright (c) 2025-present, Meta Platforms, Inc.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 # Copyright (c) 2025-present, Phil Dibowitz
 # All rights reserved.
 #
