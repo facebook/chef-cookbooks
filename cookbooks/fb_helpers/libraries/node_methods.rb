@@ -1451,7 +1451,7 @@ class Chef
       else
         return self.nw_changes_allowed? ||
           ['ip6tnl0', 'tunlany0', 'tunl0'].include?(interface) ||
-          interface.match(Regexp.new('^tunlany\d+:\d+'))
+          interface.match?(Regexp.new('^tunlany\d+:\d+'))
       end
     end
 
