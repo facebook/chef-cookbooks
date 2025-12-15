@@ -93,7 +93,7 @@ signed by that key. `fb_apt` will take the PEM, generate a keyring in
 For example:
 
 ```ruby
-node.default['fb_apt']['keys']['cool'] = <<-eos
+node.default['fb_apt']['keymap']['cool'] = <<-eos
 -----BEGIN PGP PUBLIC KEY BLOCK-----
 ...
 -----END PGP PUBLIC KEY BLOCK-----
@@ -105,13 +105,18 @@ node.default['fb_apt']['sources']['cool_app'] = {
 }
 ```
 
-You can also make the value a http/https URL, but if you do, the file will be
+You can also make the keymap value a http/https URL, but if you do, the file will be
 placed as-is in `trusted.gpg.d`, so it must be of the right format. Chef's
 `remote_file` resource will be used to manage the file. This is intended for
 repos who make full keyrings available instead of armored PEMs.
 
+For example:
+```ruby
+node.default['fb_apt']['keymap']['cool'] = 'https://www.example.com/repo-key.gpg'
+```
+
 Anything in `/etc/apt/trusted.gpg.d` that is owned by a package or by this
-cookbook will be kept, but any other file in there will be removed.  unless you
+cookbook will be kept, but any other file in there will be removed. Unless you
 set `preserve_unknown_keyrings` to false.
 
 If a keyring owned by a package is found to have been modified (based on
