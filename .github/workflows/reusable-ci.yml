@@ -76,6 +76,21 @@ jobs:
         run: ./scripts/run_cookstyle ${{ inputs.universe && '-C ../universe' || '' }}
         working-directory: ${{ inputs.universe && 'chef-cookbooks' || '.' }}
 
+  mdl:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout current repository
+        uses: actions/checkout@v4
+        with:
+          path: ${{ inputs.universe && 'universe' || '.' }}
+
+      - name: Checkout chef-cookbooks (Universe Mode)
+        if: inputs.universe
+        uses: actions/checkout@v4
+        with:
+          repository: facebook/chef-cookbooks
+          path: chef-cookbooks
+
       - name: Copy MDL config (Universe Mode)
         if: inputs.universe
         run: |-
