@@ -16,8 +16,6 @@
 require './spec/spec_helper'
 
 recipe 'fb_bookworm::default', :unsupported => [:mac_os_x] do |tc|
-  include FB::Spec::Helpers
-
   let(:chef_run) do
     tc.chef_run
   end
