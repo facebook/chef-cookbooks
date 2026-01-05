@@ -147,7 +147,7 @@ service 'disable postfix' do
   action [:stop, :disable]
 end
 
-if Chef::VERSION.to_i >= 16
+if Chef::VERSION >= 16
   notify_group 'masking postfix' do
     only_if do
       !node['fb_postfix']['enable'] && node['fb_postfix']['mask_service']

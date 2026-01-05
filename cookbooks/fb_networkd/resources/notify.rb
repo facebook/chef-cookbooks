@@ -20,7 +20,7 @@ unified_mode(false) if Chef::VERSION >= 18 # TODO(T144966423)
 default_action :trigger
 
 action :trigger do
-  if Chef::VERSION.to_i >= 16
+  if Chef::VERSION >= 16
     notify_group 'notify resources after networkd change' do # rubocop:disable Chef/Meta/Chef16
       node['fb_networkd']['notify_resources'].each do |my_r, my_a|
         notifies my_a, my_r
@@ -38,7 +38,7 @@ action :trigger do
 end
 
 action :stop do
-  if Chef::VERSION.to_i >= 16
+  if Chef::VERSION >= 16
     notify_group 'stop resources before networkd change' do # rubocop:disable Chef/Meta/Chef16
       node['fb_networkd']['stop_before'].each do |r|
         notifies :stop, r, :immediately
@@ -56,7 +56,7 @@ action :stop do
 end
 
 action :start do
-  if Chef::VERSION.to_i >= 16
+  if Chef::VERSION >= 16
     notify_group 'start resources after networkd change' do # rubocop:disable Chef/Meta/Chef16
       node['fb_networkd']['stop_before'].each do |r|
         notifies :start, r
