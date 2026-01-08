@@ -83,7 +83,8 @@ end
 
 def determine_cookbook_dependencies
   @kb.cookbooks.each do |cb, m|
-    m['dependencies'] ||= @kb.metadatarbs["#{cb}::metadata.rb"]['ExplicitMetadataDepends'].flatten.to_set
+    metadata_hash = @kb.metadatarbs["#{cb}::metadata.rb"] || @kb.metadatajsons["#{cb}::metadata.json"]
+    m['dependencies'] ||= metadata_hash['ExplicitMetadataDepends'].flatten.to_set
   end
 end
 
