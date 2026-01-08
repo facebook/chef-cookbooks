@@ -6,18 +6,18 @@ and enforce consistent UIDs and GIDs.
 Requirements
 ------------
 - Requires use of the optional Ohai plugin `:Passwd` to populate `node['etc']` data. We suggest adding it to `required_plugins`.
- 
+
 Attributes
 ----------
-* node['fb_users']['user_defaults']
-* node['fb_users']['user_defaults']['gid']
-* node['fb_users']['user_defaults']['manage_home']
-* node['fb_users']['user_defaults']['shell']
-* node['fb_users']['users']
-* node['fb_users']['users'][$USER]
-* node['fb_users']['groups']
-* node['fb_users']['groups'][$GROUP]
-* node['fb_users']['set_passwords_on_windows']
+- node['fb_users']['user_defaults']
+- node['fb_users']['user_defaults']['gid']
+- node['fb_users']['user_defaults']['manage_home']
+- node['fb_users']['user_defaults']['shell']
+- node['fb_users']['users']
+- node['fb_users']['users'][$USER]
+- node['fb_users']['groups']
+- node['fb_users']['groups'][$GROUP]
+- node['fb_users']['set_passwords_on_windows']
 
 Usage
 -----
@@ -235,19 +235,19 @@ set and the user will not be to authenticate via password.
 
 Values not specified for users will be handled as follows:
 
-* `gid` - will default to `node['fb_users']['user_defaults']['gid']`
-* `home` - will default to `/home/$USER`
-* `homedir_group` - will default to the user's GID. This will not be set
+- `gid` - will default to `node['fb_users']['user_defaults']['gid']`
+- `home` - will default to `/home/$USER`
+- `homedir_group` - will default to the user's GID. This will not be set
    unless `manage_home` is `true`
-* `homedir_mode` - will default to the configured system defaults, for example
+- `homedir_mode` - will default to the configured system defaults, for example
   `/etc/login.defs`. This will not be set unless `manage_home` is `true`
-* `manage_home` - this one is more complex:
-   * if `node['fb_users']['user_defaults']['manage_home']` is specified, that
+- `manage_home` - this one is more complex:
+   - if `node['fb_users']['user_defaults']['manage_home']` is specified, that
      value will be used
-   * otherwise, if the `dirname` of the `home` value appears to be on NFS or
+   - otherwise, if the `dirname` of the `home` value appears to be on NFS or
      `autofs`, the value will be set to `false`
-   * otherwise the value will be set to `true`
-* `shell` - will default to `node['fb_users']['user_defaults']['shell']`
+   - otherwise the value will be set to `true`
+- `shell` - will default to `node['fb_users']['user_defaults']['shell']`
 
 `gid` is required and has no default. It must be set to a group name that appears
 in `GID_MAP`.
