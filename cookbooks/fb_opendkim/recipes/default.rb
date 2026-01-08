@@ -2,7 +2,7 @@
 # Cookbook:: fb_opendkim
 # Recipe:: default
 #
-# Copyright:: 2025-present, Meta Platforms, Inc.
+# Copyright:: 2025-present, Meta Platforms, Inc. and affiliates.
 # Copyright:: 2025-present, Phil Dibowitz
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

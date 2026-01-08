@@ -1,4 +1,5 @@
 #
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 # Copyright (c) 2021-present, Vicarious, Inc.
 # All rights reserved.
 #

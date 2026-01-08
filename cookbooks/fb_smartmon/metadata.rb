@@ -1,4 +1,5 @@
-# Copyright (c) 2022-present, Viarious, Inc.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
+# Copyright (c) 2022-present, Vicarious, Inc.
 name 'fb_smartmon'
 maintainer 'Facebook'
 maintainer_email 'noreply@facebook.com'

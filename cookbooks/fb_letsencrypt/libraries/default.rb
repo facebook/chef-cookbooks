@@ -1,5 +1,5 @@
 #
-# Copyright:: 2025-present, Meta Platforms, Inc.
+# Copyright:: 2025-present, Meta Platforms, Inc. and affiliates.
 # Copyright:: 2025-present, Phil Dibowitz
 # All rights reserved.
 #
