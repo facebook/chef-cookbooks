@@ -1,5 +1,6 @@
 all
 rule 'MD003', :style => :setext_with_atx
+rule 'MD004', :style => :consistent
 rule 'MD013', :ignore_code_blocks => true, :tables => false, :line_length => 120
 rule 'MD046', :style => :fenced
 rule 'MD007', :indent => 3
