@@ -5,7 +5,8 @@ and enforce consistent UIDs and GIDs.
 
 Requirements
 ------------
-
+- Requires use of the optional Ohai plugin `:Passwd` to populate `node['etc']` data
+ 
 Attributes
 ----------
 * node['fb_users']['user_defaults']
