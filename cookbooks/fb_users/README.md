@@ -5,6 +5,7 @@ and enforce consistent UIDs and GIDs.
 
 Requirements
 ------------
+Requires use of the optional Ohai plugin `:Passwd` to populate `node['etc']` data. We suggest adding it to `required_plugins`.
 
 Attributes
 ----------
