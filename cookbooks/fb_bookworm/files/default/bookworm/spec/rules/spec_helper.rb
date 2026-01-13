@@ -19,10 +19,13 @@ require 'bookworm/exceptions'
 require 'bookworm/infer_engine'
 
 # Load all rule files
-files = Dir.glob("#{__dir__}/../../lib/bookworm/rules/*.rb")
-files.each do |f|
-  name = Pathname(f).basename.to_s.gsub('.rb', '')
-  ::Bookworm.load_rule_class name, :dir => "#{__dir__}/../../lib/bookworm/rules"
+# Guard against double-loading when running full spec suite
+unless defined?(Bookworm::InferRules) && Bookworm::InferRules.constants.any?
+  files = Dir.glob("#{__dir__}/../../lib/bookworm/rules/*.rb")
+  files.each do |f|
+    name = Pathname(f).basename.to_s.gsub('.rb', '')
+    ::Bookworm.load_rule_class name, :dir => "#{__dir__}/../../lib/bookworm/rules"
+  end
 end
 
 require_relative '../spec_helper'

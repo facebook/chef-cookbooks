@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-require_relative './helper'
+require_relative './spec_helper'
 
 describe Bookworm::InferRules::IncludeRecipeLiterals do
   it 'returns empty array when no include_recipe' do
