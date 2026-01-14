@@ -27,6 +27,11 @@ def to_a
       referenced_recipes << recipe
     end
   end
+  @kb.recipejsons.each do |_, metadata|
+    metadata['IncludeRecipeLiterals'].each do |recipe|
+      referenced_recipes << recipe
+    end
+  end
   all_recipes = Set.new(@kb.recipes.keys + @kb.recipejsons.keys)
   # Any recipes which weren't included via roles or include_recipe are not referenced
   (all_recipes - referenced_recipes).sort.to_a

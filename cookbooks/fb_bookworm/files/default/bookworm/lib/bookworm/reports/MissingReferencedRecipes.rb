@@ -35,6 +35,14 @@ def to_h
       end
     end
   end
+  @kb.recipejsons.each do |kbrecipe, metadata|
+    metadata['IncludeRecipeLiterals'].each do |recipe|
+      unless known_recipes.include? recipe
+        missing['recipes'][kbrecipe] ||= []
+        missing['recipes'][kbrecipe].append recipe
+      end
+    end
+  end
   missing
 end
 

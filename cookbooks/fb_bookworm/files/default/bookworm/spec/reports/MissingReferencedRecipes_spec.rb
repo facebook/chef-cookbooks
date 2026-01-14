@@ -75,4 +75,27 @@ describe Bookworm::Reports::MissingReferencedRecipes do
       expect(output).to include('fb_nonexistent::setup')
     end
   end
+
+  describe 'with JSON recipes referencing missing recipes' do
+    let(:roles) { {} }
+    let(:recipes) do
+      {
+        'fb_existing::default' => {
+          'IncludeRecipeLiterals' => [],
+        },
+      }
+    end
+    let(:recipejsons) do
+      {
+        'fb_json::default' => {
+          'IncludeRecipeLiterals' => ['fb_existing::default', 'fb_missing_from_json::setup'],
+        },
+      }
+    end
+
+    it 'returns missing recipes from JSON recipes' do
+      result = report.to_h
+      expect(result['recipes']['fb_json::default']).to eq(['fb_missing_from_json::setup'])
+    end
+  end
 end

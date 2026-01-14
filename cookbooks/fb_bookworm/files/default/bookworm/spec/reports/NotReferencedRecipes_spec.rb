@@ -56,7 +56,9 @@ describe Bookworm::Reports::NotReferencedRecipes do
     end
     let(:recipejsons) do
       {
-        'fb_json_unused::default' => {},
+        'fb_json_unused::default' => {
+          'IncludeRecipeLiterals' => [],
+        },
       }
     end
 
@@ -72,6 +74,28 @@ describe Bookworm::Reports::NotReferencedRecipes do
         'fb_json_unused::default',
         'fb_unused::default',
       ])
+    end
+  end
+
+  describe 'with JSON recipes referencing other recipes' do
+    let(:roles) { {} }
+    let(:recipes) do
+      {
+        'fb_target::default' => {
+          'IncludeRecipeLiterals' => [],
+        },
+      }
+    end
+    let(:recipejsons) do
+      {
+        'fb_json::default' => {
+          'IncludeRecipeLiterals' => ['fb_target::default'],
+        },
+      }
+    end
+
+    it 'marks recipes referenced by JSON recipes as referenced' do
+      expect(report.to_a).to eq(['fb_json::default'])
     end
   end
 end
