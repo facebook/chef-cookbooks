@@ -80,6 +80,11 @@ module Bookworm
       'determine_cookbook_name' => true,
       'path_name_regex' => 'providers/(.*)\.rb',
     },
+    'cookbookrspec' => {
+      'glob_pattern' => '*/spec/*_spec.rb',
+      'determine_cookbook_name' => true,
+      'path_name_regex' => 'spec/(.*)_spec\.rb',
+    },
   }.freeze
 
   # Set defaults

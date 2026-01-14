@@ -25,7 +25,7 @@ describe 'Bookworm::BOOKWORM_KEYS' do
   it 'contains expected key types' do
     expected_keys = %w{
       cookbook role metadatarb metadatajson recipe recipejson
-      attribute library resource provider
+      attribute library resource provider cookbookrspec
     }
     expect(keys.keys).to match_array(expected_keys)
   end
@@ -77,8 +77,8 @@ describe 'Bookworm::BOOKWORM_KEYS' do
   end
 
   describe 'determine_cookbook_name' do
-    it 'is true for recipe, attribute, library, resource, provider' do
-      %w{recipe attribute library resource provider}.each do |key|
+    it 'is true for recipe, attribute, library, resource, provider, cookbookrspec' do
+      %w{recipe attribute library resource provider cookbookrspec}.each do |key|
         expect(keys[key]['determine_cookbook_name']).to eq(true)
       end
     end

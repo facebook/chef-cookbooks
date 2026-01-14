@@ -111,6 +111,17 @@ describe Bookworm::KnowledgeBase do
                                    } })
   end
 
+  it 'holds all yer cookbookrspecs' do
+    kb = Bookworm::KnowledgeBase.new(
+      { 'cookbookrspec' => [['mycookbook/spec/default_spec.rb', '(ast)']] },
+    )
+    expect(kb.cookbookrspecs).to eq({ 'mycookbook::default' => {
+                                      'path' => 'mycookbook/spec/default_spec.rb',
+                                      'cookbook' => 'mycookbook',
+                                      'ast' => '(ast)',
+                                    } })
+  end
+
   it 'handles empty input' do
     kb = Bookworm::KnowledgeBase.new({})
     expect(kb.recipes).to eq({})
