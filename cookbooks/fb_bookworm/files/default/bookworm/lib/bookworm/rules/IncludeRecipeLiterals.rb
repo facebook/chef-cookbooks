@@ -13,25 +13,32 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 description 'Extracts recipes that are used by include_recipe with string literals'
-keys ['recipe']
+keys ['recipe', 'recipejson']
 
 def_node_search :include_recipe_string_literals, '`(send nil? :include_recipe (str $_))'
 
 def to_a
   arr = []
-  include_recipe_string_literals(@metadata['ast']).each do |x|
-    arr << x
-  end
-  return [] if arr.empty?
-  arr.map! do |x|
-    if x.start_with?('::')
-      "#{@metadata['cookbook']}#{x}"
-    elsif !x.include?('::')
-      "#{x}::default"
-    else
-      x
+  if @metadata['ast'] # Ruby recipe
+    include_recipe_string_literals(@metadata['ast']).each do |x|
+      arr << x
+    end
+    return [] if arr.empty?
+    arr.map! do |x|
+      if x.start_with?('::')
+        "#{@metadata['cookbook']}#{x}"
+      elsif !x.include?('::')
+        "#{x}::default"
+      else
+        x
+      end
+    end
+  elsif @metadata['object'] # JSON recipe
+    if @metadata['object'].key?('include_recipes')
+      arr = @metadata['object']['include_recipes']
     end
   end
+
   arr.uniq!
   arr.sort!
 end

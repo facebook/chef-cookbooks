@@ -56,4 +56,36 @@ describe Bookworm::InferRules::IncludeRecipeLiterals do
     # Note - output is sorted
     expect(rule.output).to eq(['fake_cookbook::bar', 'fake_cookbook::foo'])
   end
+
+  context 'with JSON recipes' do
+    it 'extracts include_recipes from JSON object' do
+      rule = described_class.new({
+                                   'object' => { 'include_recipes' => ['foo::bar', 'baz::qux'] },
+                                 })
+      expect(rule.output).to eq(['baz::qux', 'foo::bar'])
+    end
+
+    it 'returns empty array when no include_recipes key' do
+      rule = described_class.new({
+                                   'object' => { 'some_other_key' => 'value' },
+                                 })
+      expect(rule.output).to eq([])
+    end
+
+    it 'returns empty array when include_recipes is empty' do
+      rule = described_class.new({
+                                   'object' => { 'include_recipes' => [] },
+                                 })
+      expect(rule.output).to eq([])
+    end
+
+    it 'deduplicates include_recipes' do
+      rule = described_class.new({
+                                   'object' => {
+                                     'include_recipes' => ['foo::bar', 'foo::bar', 'baz::qux'],
+                                   },
+                                 })
+      expect(rule.output).to eq(['baz::qux', 'foo::bar'])
+    end
+  end
 end
