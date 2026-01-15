@@ -32,11 +32,7 @@ include_recipe 'fb_kea'
   node.default['fb_kea']["enable_#{svc}"] = false
 end
 
-# Currently fb_vsftpd is broken on debian
-# https://github.com/facebook/chef-cookbooks/issues/149
-unless node.debian?
-  include_recipe 'fb_vsftpd'
-end
+include_recipe 'fb_vsftpd'
 
 include_recipe 'fb_apache'
 if node.debian? || (node.ubuntu? && !node.ubuntu16?)
