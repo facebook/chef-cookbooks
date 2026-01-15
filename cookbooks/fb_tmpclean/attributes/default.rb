@@ -15,6 +15,8 @@
 # limitations under the License.
 #
 
+excludes = []
+directories = {}
 if node.rhel_family?
   excludes = [
     '.X11-unix',
@@ -23,9 +25,7 @@ if node.rhel_family?
     '.ICE-unix',
     '.Test-unix',
   ]
-elsif node.windows?
-  excludes = []
-else
+elsif node.debian_family?
   excludes = [
     '.X*-{lock,unix,unix/*}',
     'ICE-{unix,unix/*}',
@@ -35,11 +35,14 @@ else
     'journal.dat',
     'quota.{user,group}',
   ]
+  directories = {
+    '/tmp/.' => 240,
+  }
 end
 
 default['fb_tmpclean'] = {
   'default_files' => 240,
-  'directories' => {},
+  'directories' => directories,
   'timestamptype' => 'mtime',
   'extra_lines' => [],
   'excludes' => excludes,
