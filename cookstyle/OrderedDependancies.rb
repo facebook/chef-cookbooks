@@ -28,6 +28,7 @@ module RuboCop::Cop::Chef::Meta
     # able to offer an autocorrect that doesn't lose items when correcting
     def on_new_investigation
       src = processed_source
+      return unless src.ast
 
       node = src.ast
       # only keep `depends ...`
