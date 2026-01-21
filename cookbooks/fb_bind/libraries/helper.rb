@@ -27,7 +27,7 @@ module FB
 
       def self.address_match_key?(key)
         key.start_with?(
-          *%w{allow acl blackhole deny keep no response sort match},
+          *%w{acl allow blackhole deny keep match no response sort transfer},
         )
       end
 
