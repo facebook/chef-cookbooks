@@ -1,0 +1,6 @@
+# https://editorconfig.org
+root = true
+[*.rb]
+indent_style = space
+indent_size = 2
+tab_width = 2
