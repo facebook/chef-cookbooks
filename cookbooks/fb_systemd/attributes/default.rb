@@ -114,6 +114,7 @@ default['fb_systemd'] = {
   },
   'networkd' => {
     'enable' => enable_networkd,
+    'disable_restart' => false,
     'use_networkd_socket_with_networkd' => false,
     'config' => {},
   },

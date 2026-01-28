@@ -81,6 +81,7 @@ end
 
 service 'systemd-networkd.service' do
   only_if { node['fb_systemd']['networkd']['enable'] }
+  not_if { node['fb_systemd']['networkd']['disable_restart'] }
   action [:enable, :start]
 end
 

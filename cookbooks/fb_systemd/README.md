@@ -24,6 +24,7 @@ Attributes
 * node['fb_systemd']['logind']['enable']
 * node['fb_systemd']['logind']['config']
 * node['fb_systemd']['networkd']['enable']
+* node['fb_systemd']['networkd']['disable_restart']
 * node['fb_systemd']['networkd']['config']
 * node['fb_systemd']['nspawn']['enable']
 * node['fb_systemd']['resolved']['enable']
@@ -368,6 +369,9 @@ Note that this cookbook does not manage network configuration profiles. If you
 drop `netdev`, `link`, `network` definitions under `/etc/systemd/network` from
 another cookbook you'll want to request a restart of the `systemd-networkd`
 service.
+
+You can choose to disable chef restarts of `systemd-networkd` with the
+`node['fb_systemd']['networkd']['disable_restart']` attribute, which defaults to `false`.
 
 ### resolved configuration
 You can choose whether or not to enable `systemd-resolved` with the
