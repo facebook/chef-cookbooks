@@ -206,6 +206,22 @@ class Chef
       self.rocky? && self.os_min_version?(version, full)
     end
 
+    def almalinux?
+      self['platform'] == 'almalinux'
+    end
+
+    def almalinux_max_version?(version, full = false)
+      self.almalinux? && self.os_max_version?(version, full)
+    end
+
+    def almalinux_min_version?(version, full = false)
+      self.almalinux? && self.os_min_version?(version, full)
+    end
+
+    def almalinux_version?(v)
+      self.almalinux? && self._platform_version_helper?(v)
+    end
+
     def redhat?
       self['platform'] == 'redhat'
     end
