@@ -23,9 +23,26 @@ Attributes
 
 Usage
 -----
-Anywhere, in any cookbook, you can set tmpclean to be tuned to the needs of a
-tier or server. By default, tmpclean takes time in hours, or you may suffix
-with `m` (minutes), `h` (hours), or `d` (days).
+### READ THIS: Warnings
+
+First, for Linux systems, we highly recommend you use the systemd-tmpfiles
+mechanism exposed through `fb_systemd` in a clean way. This cookbook was
+originally written with specific design constraints that attempted to provide a
+single API to 3 different temp file cleaning tools that are quiet different,
+and as a result, are quite awkward with all 3.
+
+Second, in order to support different times for different files and
+directories, this cookbook overwrites the cron script included with
+tmpclean/tmpreaper to call the relevant comamnd several times for each
+different directory. This means that the standard config variables used in, for
+example, `/etc/tmpreaper.conf` aren't used, so using this cookbook means using
+these packages a bit differently than you might be used to.
+
+### Overview
+
+This cookbook allows you to easily add/change directory cleanup rules and
+provide per-directory settings, easily. By default, tmpclean takes time in
+hours, or you may suffix with `m` (minutes), `h` (hours), or `d` (days).
 
 The attributes are used like this:
 
@@ -80,7 +97,7 @@ To ensure that empty directories get removed, we still force tmpreaper to use
 mtime on directories even when using atime for files, since directories' atime
 get updated when their contents get tested.
 
-#### timestamptype per directory (Linux)
+#### timestamptype per directory (RHEL-based systems only)
 
 On Linux the risk of trusting on `node['fb_tmpclean']['timestamptype']` is at
 the cost of impacting other cookbooks. If during your chef run multiple
@@ -88,13 +105,15 @@ cookbooks setup the value it will impact others, the last to set value in the
 order will be the final config. Meaning if you set `atime` but someones changes
 to `mtime` your cookbook might not run as expected.
 
-This previous constrain raises the issue where impacting dependencies. A good
+This previous constraint raises the issue where impacting dependencies. A good
 practice to follow is to set the timestamptype per directory level, meaning you
 only modify yours.
 
 To set the timestamp type for specific directory follow next example:
 `node['fb_tmpclean']['directories']['/the/directory']['timestamptype'] = 'mtime'`
 `node['fb_tmpclean']['directories']['/the/directory']['interval'] = '3d'`
+
+This is supported only on tmpclean-based systems (RHEL family).
 
 ### extra_lines
 
