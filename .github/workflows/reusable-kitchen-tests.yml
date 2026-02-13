@@ -89,25 +89,22 @@ jobs:
         run: echo "KITCHEN_LOCAL_YAML=${{ inputs.kitchen_local_yaml }}" >> $GITHUB_ENV
         shell: bash
 
-      - name: Run Kitchen
+        # the latest chef-workstation doesn't have a new-enough kitchen-dokken
+        # to handle breaking changes in docker 29.x, so upgrade it.
+      - name: Upgrade kitchen-dokken
+        run: chef gem install kitchen-dokken
         env:
           CHEF_LICENSE: accept-no-persist
-        run: |-
-          cd ${{ inputs.universe && 'universe' || '.' }}
-          PATH=/home/runner/.chef/gem/ruby/3.1.0/bin:$PATH
-          chef gem install kitchen-dokken
-          kitchen converge ${{inputs.suite}}-${{ matrix.os }}
 
-      # Eventually we will move back to the pre-canned workflow, but
-      # the updates to Docker broke kitchen-dokken and so we need to
-      # temporarily switch to a custom script.
-  
-      #- name: Run Kitchen
-      #  uses: actionshub/test-kitchen@main
-      #  with:
-      #    suite: ${{ inputs.suite }}
-      #    os: ${{ matrix.os }}
-      #    working-directory: ${{ inputs.universe && 'universe' || '.' }}
-      #  env:
-      #    CHEF_LICENSE: accept-no-persist
-      #    CHEF_VERSION: 18.6.14
+      - name: Run Kitchen
+        uses: actionshub/test-kitchen@main
+        with:
+          suite: ${{ inputs.suite }}
+          os: ${{ matrix.os }}
+          working-directory: ${{ inputs.universe && 'universe' || '.' }}
+        env:
+          CHEF_LICENSE: accept-no-persist
+          CHEF_VERSION: 18.6.14
+          # needed only because of the `chef gem ...` above, we can remove
+          # this once a new workstation release is out
+          PATH: /home/runner/.chef/gem/ruby/3.1.0/bin:${{ env.PATH }}
