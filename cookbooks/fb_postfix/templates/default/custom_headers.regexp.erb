@@ -4,6 +4,10 @@
 <% custom_headers = node['fb_postfix']['custom_headers'].to_hash %>
 <% custom_headers.keys.sort.each do |name| %>
 <%   hdr = node['fb_postfix']['custom_headers'][name] %>
+<%   line = "#{hdr['regexp']} #{hdr['action']}" %>
+<%   if hdr['header'] %>
+<%     line += " #{hdr['header']}: #{hdr['value']}" %>
+<%   end %>
 # Name: <%= name %>
-<%=  hdr['regexp'] %> <%= hdr['action'] %> <%= hdr['header'] %>: <%= hdr['value'] %>
+<%=  line %>
 <% end %>
