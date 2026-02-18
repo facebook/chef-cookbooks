@@ -18,4 +18,4 @@
 # I'd like to believe this won't be permanent, but these things last for years...
 
 $LOAD_PATH.unshift("#{__dir__}/lib")
-load 'bin/bookworm'
+load "#{__dir__}/bin/bookworm"

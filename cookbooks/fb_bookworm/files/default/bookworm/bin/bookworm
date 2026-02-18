@@ -122,10 +122,10 @@ module Bookworm
       @cli_help_message = cli_help_message
       validate_cli_args(cli_options)
       set_irb_breakpoints(cli_options)
-      generate_config
-      validate_config_file
-      load_src_dirs
       determine_action(cli_options)
+      generate_config
+      validate_config_file if @action == :report
+      load_src_dirs
       binding.irb if irb_breakpoint?('config') # rubocop:disable Lint/Debugger
     end
 
@@ -296,7 +296,7 @@ module Bookworm
 end
 
 # TODO refactor this file so the below PROGRAM_NAME hack isn't necessary
-if __FILE__ == $PROGRAM_NAME || $PROGRAM_NAME == './bin/bookworm' || $PROGRAM_NAME == './bookworm.rb'
+if __FILE__ == $PROGRAM_NAME || $PROGRAM_NAME.end_with?('bookworm.rb')
   run = Bookworm::Run.new(options, parser.help)
   run.do_action
 end
