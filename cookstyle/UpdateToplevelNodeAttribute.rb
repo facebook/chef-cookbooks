@@ -93,7 +93,7 @@ module RuboCop::Cop::Chef::Meta
       return if migrated_assignment?(top_node)
 
       new_write = top_node.source.gsub(tlk, tlk_replacement)
-      new_write.gsub!(/\]\s*=.*/, '] = ')
+      new_write.gsub!(/\][^\[].*/m, '] = ')
 
       # If we got a match, rewrite to the new method
       add_offense(top_node, :severity => :warning) do |corrector|
