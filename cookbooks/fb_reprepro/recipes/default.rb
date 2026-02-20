@@ -18,7 +18,7 @@
 # limitations under the License.
 #
 
-unless node
+unless node.debian? || node.ubuntu?
   fail 'fb_reprepro is only supported on Debian and Ubuntu.'
 end
 
@@ -27,7 +27,7 @@ package 'reprepro' do
 end
 
 directory 'repository' do
-  only_if { node['fb_reprepro']['options']['basedir'] }
+  not_if { node['fb_reprepro']['options']['basedir'].nil? }
   path lazy { node['fb_reprepro']['options']['basedir'] }
   owner lazy { node['fb_reprepro']['user'] }
   group lazy { node['fb_reprepro']['group'] }
@@ -35,7 +35,7 @@ directory 'repository' do
 end
 
 directory 'repository/conf' do
-  only_if { node['fb_reprepro']['options']['basedir'] }
+  not_if { node['fb_reprepro']['options']['basedir'].nil? }
   path lazy { "#{node['fb_reprepro']['options']['basedir']}/conf" }
   owner lazy { node['fb_reprepro']['user'] }
   group lazy { node['fb_reprepro']['group'] }
@@ -48,13 +48,13 @@ end
 }.each do |dir|
   directory "repository/#{dir}" do
     only_if do
-      node['fb_reprepro']['options']['basedir'] &&
+      !node['fb_reprepro']['options']['basedir'].nil? &&
         node['fb_reprepro']['incoming'][dir]
     end
-    path lazy do
+    path lazy {
       "#{node['fb_reprepro']['options']['basedir']}/" +
         node['fb_reprepro']['incoming'][dir]
-    end
+    }
     owner lazy { node['fb_reprepro']['user'] }
     group lazy { node['fb_reprepro']['group'] }
     mode '0644'
@@ -69,12 +69,12 @@ end
 }.each do |conffile|
   template "repository/conf/#{conffile}" do
     only_if do
-      node['fb_reprepro']['options']['basedir'] &&
+      !node['fb_reprepro']['options']['basedir'].nil? &&
         node['fb_reprepro'][conffile]
     end
-    path lazy do
+    path lazy {
       "#{node['fb_reprepro']['options']['basedir']}/conf/#{conffile}"
-    end
+    }
     source 'config.erb'
     owner node.root_user
     group node.root_group
@@ -86,10 +86,10 @@ end
 end
 
 template 'repository/conf/options' do
-  only_if { node['fb_reprepro']['options']['basedir'] }
-  path lazy do
+  not_if { node['fb_reprepro']['options']['basedir'].nil? }
+  path lazy {
     "#{node['fb_reprepro']['options']['basedir']}/conf/options"
-  end
+  }
   source 'options.erb'
   owner node.root_user
   group node.root_group
