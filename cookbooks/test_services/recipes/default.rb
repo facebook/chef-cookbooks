@@ -55,9 +55,9 @@ end
 
 include_recipe 'fb_spamassassin'
 
-# Currently fb_reprepro is broken
-# https://github.com/facebook/chef-cookbooks/issues/78
-# include_recipe 'fb_reprepro'
+if node.debian? || node.ubuntu?
+  include_recipe 'fb_reprepro'
+end
 
 # Test JSON recipes
 if node.json_recipes_supported?
