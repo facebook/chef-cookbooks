@@ -37,6 +37,11 @@ use the Facebook Cookbook Model, but that they are maintained in this repo.
 Local cookbooks or cookbooks in other repositories that implement this model
 should not use this prefix, but should reference this document in their docs.
 
+We *highly* recommend using [Line Cook](line-cook/README.md), or bot to sync
+these cookbooks into your own repo, so that you can easily pull in updates and
+fixes. It's like Dependabot, but for FB-Style Chef cookbooks, and it supports
+UNIVERSE repos as well.
+
 APIs
 ----
 

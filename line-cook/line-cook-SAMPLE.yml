@@ -1,0 +1,30 @@
+# Example fbchefsync_bot.yaml configuration
+
+# Bot label for PRs and issues (singular)
+bot_label: "fbchef_sync_bot"
+
+# Label for split PRs
+split_label: "fbchef_sync_bot_pr_split"
+
+# Bot command prefix
+bot_command_prefix: "#fbchefsync"
+
+# Additional universe upstreams
+# Each entry requires 'prefix' and 'repo_url'
+# Remote names are automatically: {prefix}upstream (e.g., pd_upstream)
+universe_upstreams:
+  pd-chef-cookbooks:   # name doesn't matter, just needs to be unique
+    prefix: pd_
+    repo_url: https://github.com/jaymzh/chef-fb-api-cookbooks.git
+    branch: main        # Optional, defaults to 'main'
+    ignore_cookbooks: []  # Optional, defaults to empty list
+
+  # You can add more upstreams:
+  # another-upstream:
+  #   prefix: xyz_
+  #   repo_url: https://github.com/example/chef-cookbooks.git
+  #   ignore_cookbooks:
+  #     - xyz_test
+
+# IMPORTANT: Each upstream must have a unique prefix
+# The bot will validate this on startup and fail if duplicates are found

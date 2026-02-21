@@ -1,0 +1,140 @@
+name: Line Cook - Reusable Workflow
+
+on:
+  workflow_call:
+    inputs:
+      base_branch:
+        description: 'Branch in your repository'
+        required: false
+        type: string
+        default: 'main'
+      pr_branch_prefix:
+        description: 'Prefix for automated PR branches'
+        required: false
+        type: string
+        default: 'fbchef_sync'
+      python_version:
+        description: 'Python version to use'
+        required: false
+        type: string
+        default: '3.11'
+      dry_run:
+        description: 'Run in dry-run mode (no actual changes)'
+        required: false
+        type: boolean
+        default: false
+      # the rest of these are for testing/developing line cook itself
+      # and generally should not be set by users of the reusable workflow.
+      line_cook_repository:
+        description: 'Linecook repository, in {owner}/{repo} format'
+        required: false
+        type: string
+        default: 'facebook/chef-cookbooks'
+      line_cook_repo_ref:
+        description: 'Ref of the Linecook repository to sync with'
+        required: false
+        type: string
+        default: 'main'
+      line_cook_path:
+        description: 'Path to the sync script in the Linecook repository'
+        required: false
+        type: string
+        default: 'line-cook/bin/line-cook.py'
+    secrets:
+      gh_token:
+        description: 'GitHub token for API access'
+        required: false
+
+jobs:
+  sync:
+    name: Run sync bot
+    runs-on: ubuntu-latest
+
+    # skip this job if it's a PR from a fork (no secrets)
+    if: github.event.pull_request == null ||
+        github.event.pull_request.head.repo.full_name == github.repository
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          ref: ${{ format('refs/heads/{0}', inputs.base_branch) }}
+          persist-credentials: true
+          path: 'universe'
+
+      - name: Checkout Line Cook repository
+        uses: actions/checkout@v6
+        with:
+          repository: ${{ inputs.line_cook_repository }}
+          ref: ${{ inputs.line_cook_repo_ref }}
+          path: 'line-cook'
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ inputs.python_version }}
+
+      - name: Install dependencies
+        run: |
+          cd line-cook
+          python -m pip install --upgrade pip
+          pip install -r line-cook/requirements.txt
+
+      - name: Configure git
+        run: |
+          cd universe
+          git config --global core.autocrlf false
+          git config --global apply.whitespace nowarn
+          git config --global merge.renormalize true
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "noreply@github.com"
+
+      # If a downstream user wants to make a PR to their own repo which
+      # will run a test of the workflow (say, they are changing their workflow
+      # that references this), then this step will set things up properly.
+      # 
+      # Not needed in any other case since the main branch will already be
+      # setup.
+      - name: Ensure main branch setup is correctly (for PRs only)
+        if: github.event_name == 'pull_request'
+        run: |
+          cd universe
+          # Having initialized the repo with the PR branch we need to
+          # ensure 'main' is correctly setup for the bot to work
+          git fetch origin ${{ inputs.base_branch }}
+          git checkout -B main origin/main
+          git reset --hard origin/main
+          git clean -fdx
+          git checkout ${{ inputs.base_branch }}
+
+
+      - name: Run Line Cook
+        env:
+          TARGET_REMOTE: origin
+          BASE_BRANCH: ${{ inputs.base_branch }}
+          PR_BRANCH_PREFIX: ${{ inputs.pr_branch_prefix }}
+          GH_TOKEN: ${{ secrets.gh_token || github.token }}
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+          GITHUB_EVENT_PATH: ${{ github.event_path }}
+        run: |
+          cd universe
+          # Be clear where we are running from, just in case
+          echo "Running script from branch: $(git branch --show-current)"
+
+          # normalize line-endings or cherry-picking fails
+          git add --renormalize .
+          # but stash the normalization so that it doesn't appear
+          # as a commit on any PRs we make
+          git stash push -k -m "temp normalization"
+
+          # ensure we have no local diffs before proceeding
+          git diff --check
+
+          # Build the command with optional dry-run flag
+          CMD="../line-cook/${{ inputs.line_cook_path }}"
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            CMD="$CMD --dry-run"
+          fi
+
+          eval $CMD
