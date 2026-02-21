@@ -1,0 +1,143 @@
+name: Chef Sync Bot - Reusable Workflow
+
+on:
+  workflow_call:
+    inputs:
+      upstream_repo_url:
+        description: 'URL of the upstream repository to sync from'
+        type: string
+        default: 'https://www.github.com/facebook/chef-cookbooks.git'
+      upstream_remote_name:
+        description: 'Name to use for the upstream remote'
+        required: false
+        type: string
+        default: 'fb-upstream'
+      upstream_branch:
+        description: 'Branch name in upstream repository'
+        required: false
+        type: string
+        default: 'main'
+      base_branch:
+        description: 'Base branch in your repository'
+        required: false
+        type: string
+        default: 'main'
+      target_branch:
+        description: 'Target branch for syncing'
+        required: false
+        type: string
+        default: 'main'
+      pr_branch_prefix:
+        description: 'Prefix for automated PR branches'
+        required: false
+        type: string
+        default: 'fbchef_sync'
+      python_version:
+        description: 'Python version to use'
+        required: false
+        type: string
+        default: '3.11'
+      dry_run:
+        description: 'Run in dry-run mode (no actual changes)'
+        required: false
+        type: boolean
+        default: false
+    secrets:
+      gh_token:
+        description: 'GitHub token for API access'
+        required: false
+
+jobs:
+  sync:
+    # Skip this job if it's a PR from a fork (no secrets)
+    if: |
+      github.event.pull_request == null ||
+      github.event.pull_request.head.repo.full_name == github.repository
+    name: Run sync bot
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          ref: ${{ format('refs/heads/{0}', inputs.base_branch) }}
+          persist-credentials: true
+          path: 'universe'
+
+      - name: Checkout FB ChefCookbooks repository
+        uses: actions/checkout@v6
+        with:
+          # TODO: switch this back before merging
+          #repository: facebook/chef-cookbooks
+          repository: jaymzh/chef-cookbooks
+          path: 'chef-cookbooks'
+          # TODO: Remove this before merging
+          ref: 'bot'
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ inputs.python_version }}
+
+      - name: Install dependencies
+        run: |
+          cd universe
+          python -m pip install --upgrade pip
+          pip install -r scripts/requirements.txt
+
+      - name: Configure git
+        run: |
+          cd universe
+          git config --global core.autocrlf false
+          git config --global apply.whitespace nowarn
+          git config --global merge.renormalize true
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "noreply@github.com"
+          git remote add ${{ inputs.upstream_remote_name }} ${{ inputs.upstream_repo_url }}
+          git fetch ${{ inputs.upstream_remote_name }}
+
+      - name: Ensure main branch setup is correctly (for PRs only)
+        if: github.event_name == 'pull_request'
+        run: |
+          cd universe
+          # Having initialized the repo with the PR branch we need to
+          # ensure 'main' is correctly setup for the bot to work
+          git fetch origin ${{ inputs.base_branch }}
+          git checkout -B main origin/main
+          git reset --hard origin/main
+          git clean -fdx
+          git checkout ${{ inputs.base_branch }}
+
+      - name: Run sync bot
+        env:
+          UPSTREAM_REMOTE: ${{ inputs.upstream_remote_name }}
+          UPSTREAM_BRANCH: ${{ inputs.upstream_branch }}
+          TARGET_REMOTE: origin
+          BASE_BRANCH: ${{ inputs.base_branch }}
+          TARGET_BRANCH: ${{ inputs.target_branch }}
+          PR_BRANCH_PREFIX: ${{ inputs.pr_branch_prefix }}
+          GH_TOKEN: ${{ secrets.gh_token || github.token }}
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+          GITHUB_EVENT_PATH: ${{ github.event_path }}
+        run: |
+          cd universe
+          # Be clear where we are running from, just in case
+          echo "Running script from branch: $(git branch --show-current)"
+
+          # normalize line-endings or cherry-picking fails
+          git add --renormalize .
+          # but stash the normalization so that it doesn't appear
+          # as a commit on any PRs we make
+          git stash push -k -m "temp normalization"
+
+          # ensure we have no local diffs before proceeding
+          git diff --check
+
+          # Build the command with optional dry-run flag
+          CMD="../chef-cookbooks/scripts/fbchef_sync_bot.py"
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            CMD="$CMD --dry-run"
+          fi
+
+          eval $CMD
