@@ -20,11 +20,11 @@ read [CREATING_UNIVERSE_REPOS.md](docs/CREATING_UNIVERSE_REPOS.md).
   Please use your standard prefix for URL reference
   names, and follow the pattern of -base and then -{ci,kitchen}-{link,badge}
 -->
-[pd-base]: https://github.com/jaymzh/chef-fb-api-cookbooks
-[pd-ci-link]: https://github.com/jaymzh/chef-fb-api-cookbooks/actions/workflows/ci.yml
-[pd-ci-badge]: https://github.com/jaymzh/chef-fb-api-cookbooks/actions/workflows/ci.yml/badge.svg
-[pd-kitchen-link]: https://github.com/jaymzh/chef-fb-api-cookbooks/actions/workflows/kitchen.yml
-[pd-kitchen-badge]: https://github.com/jaymzh/chef-fb-api-cookbooks/actions/workflows/kitchen.yml/badge.svg
+[pd-base]: https://github.com/jaymzh/pd-chef-cookbooks
+[pd-ci-link]: https://github.com/jaymzh/pd-chef-cookbooks/actions/workflows/ci.yml
+[pd-ci-badge]: https://github.com/jaymzh/pd-chef-cookbooks/actions/workflows/ci.yml/badge.svg
+[pd-kitchen-link]: https://github.com/jaymzh/pd-chef-cookbooks/actions/workflows/kitchen.yml
+[pd-kitchen-badge]: https://github.com/jaymzh/pd-chef-cookbooks/actions/workflows/kitchen.yml/badge.svg
 [boxcutter-base]: https://github.com/boxcutter/boxcutter-chef-cookbooks
 [boxcutter-ci-link]: https://github.com/boxcutter/boxcutter-chef-cookbooks/actions/workflows/ci.yml
 [boxcutter-ci-badge]: https://github.com/boxcutter/boxcutter-chef-cookbooks/actions/workflows/ci.yml/badge.svg
