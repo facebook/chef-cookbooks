@@ -53,6 +53,7 @@ if node.macos?
   include_recipe 'fb_launchd'
 end
 include_recipe 'fb_nsswitch'
+include_recipe 'fb_sssd'
 # HERE: ssh
 include_recipe 'fb_less'
 if node.linux? && !node.embedded? && !node.container?
