@@ -26,7 +26,7 @@ property :instance, :kind_of => String, :default => 'system'
 property :reap_empty_override_dir, [true, false], :default => true
 
 # This directory must already exist
-property :custom_install_dir, [String, nil], :default => nil
+property :custom_install_dir, [String, nil]
 
 default_action :create
 
