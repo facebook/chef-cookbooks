@@ -1317,6 +1317,7 @@ Style/SymbolProc:
 
 Style/TernaryParentheses:
   Enabled: true
+  EnforcedStyle: require_parentheses_when_complex
 
 Style/TrailingBodyOnClass:
   Enabled: true
