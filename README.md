@@ -21,7 +21,7 @@ Specifically:
   enforce a base standard, which can be adjusted by the service owners using
   cookbooks later in the run-list.
 * It assumes a "run from main" type environment. At Facebook we use [Grocery
-  Delivery](http://www.github.com/facebook/grocery-delivery) to sync the main
+  Delivery](https://github.com/facebook/grocery-delivery) to sync the main
   branch of our source control repo with all of our Chef servers. Grocery
   Delivery is not necessary to use these cookbooks, but since they were built
   with this model in mind, the versions never change (relatedly: we do not use
@@ -29,13 +29,18 @@ Specifically:
 * It assumes you have a testing toolset that allows anyone modifying later
   cookbooks to ensure that their use of the API worked as expected on a live
   node before committing. For this, we use [Taste
-  Tester](http://www.github.com/facebook/taste-tester).
+  Tester](https://github.com/facebook/taste-tester).
 
 Cookbooks in this repo all begin with `fb_` to denote that not only do they
 use the Facebook Cookbook Model, but that they are maintained in this repo.
 
 Local cookbooks or cookbooks in other repositories that implement this model
 should not use this prefix, but should reference this document in their docs.
+
+We highly recommend using the [Line Cook](https://github.com/jaymzh/line-cook)
+bot to sync these cookbooks into your own repo, so that you can easily pull in
+updates and fixes. It's like Dependabot, but for FB-Style Chef cookbooks, and
+it supports UNIVERSE repos as well.
 
 APIs
 ----
