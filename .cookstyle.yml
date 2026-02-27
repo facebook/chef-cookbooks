@@ -94,6 +94,8 @@ Chef/Correctness/TmpPath:
 
 Chef/Deprecations/ChefDKGenerators:
   Enabled: true
+Chef/Deprecations/Cheffile:
+  Enabled: true
 Chef/Deprecations/ChefHandlerRecipe:
   Enabled: true
 Chef/Deprecations/ChefHandlerUsesSupports:
@@ -109,8 +111,6 @@ Chef/Deprecations/ChefSpecLegacyRunner:
 Chef/Deprecations/ChefSugarHelpers:
   Enabled: true
 Chef/Deprecations/ChefWindowsPlatformHelper:
-  Enabled: true
-Chef/Deprecations/Cheffile:
   Enabled: true
 Chef/Deprecations/ChocolateyPackageUninstallAction:
   Enabled: true
@@ -138,9 +138,9 @@ Chef/Deprecations/DeprecatedWindowsVersionCheck:
   Enabled: true
 Chef/Deprecations/DeprecatedYumRepositoryProperties:
   Enabled: true
-Chef/Deprecations/EOLAuditModeUsage:
-  Enabled: true
 Chef/Deprecations/EasyInstallResource:
+  Enabled: true
+Chef/Deprecations/EOLAuditModeUsage:
   Enabled: true
 Chef/Deprecations/EpicFail:
   Enabled: true
@@ -257,21 +257,6 @@ Chef/Effortless/DependsChefVault:
   Enabled: false
 Chef/Effortless/SearchForEnvironmentsOrRoles:
   Enabled: false
-
-Chef/Meta/BacktickShellouts:
-  Enabled: true
-Chef/Meta/CompoundBooleanLiteralCleanup:
-  Enabled: true
-Chef/Meta/ConditionalBooleanLiteralCleanup:
-  Enabled: true
-Chef/Meta/InvertedBooleanLiteralCleanup:
-  Enabled: true
-Chef/Meta/OrderedDependancies:
-  Enabled: true
-  Include:
-    - !ruby/regexp /\/metadata.rb/
-Chef/Meta/PythonCaps:
-  Enabled: true
 
 Chef/Modernize/ActionMethodInResource:
   Enabled: true
@@ -500,4 +485,24 @@ Chef/Style/OverlyComplexSupportsDependsMetadata:
 Chef/Style/SimplifyPlatformMajorVersionCheck:
   Enabled: true
 Chef/Style/UnnecessaryOSCheck:
+  Enabled: true
+
+Chef/Meta/BacktickShellouts:
+  Enabled: true
+
+Chef/Meta/CompoundBooleanLiteralCleanup:
+  Enabled: true
+
+Chef/Meta/ConditionalBooleanLiteralCleanup:
+  Enabled: true
+
+Chef/Meta/InvertedBooleanLiteralCleanup:
+  Enabled: true
+
+Chef/Meta/OrderedDependancies:
+  Enabled: true
+  Include:
+    - !ruby/regexp /\/metadata.rb/
+
+Chef/Meta/PythonCaps:
   Enabled: true
