@@ -304,7 +304,7 @@ module FB
               raise e
             end
             # We want to skip btrfs subvolumes as
-            # it's valid to specifiy the same device multiple times
+            # it's valid to specify the same device multiple times
             [data['device'], cdev].include?(fs_spec) &&
               !self.btrfs_subvol?(data['type'], data['opts'])
           end
