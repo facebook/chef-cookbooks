@@ -18,6 +18,17 @@ def fb_msg(msg)
   "#{msg} (https://github.com/facebook/chef-cookbooks)".freeze
 end
 
+# Timeshard duration parsing for timeshard validation cops
+def parse_timeshard_duration(duration)
+  if duration.match?('^[0-9]+[dD]$')
+    duration.to_i * 1440 * 60
+  elsif duration.match?('^[0-9]+[hH]$')
+    duration.to_i * 3600
+  else
+    fail "Invalid duration arg, '#{duration}'"
+  end
+end
+
 # Predefine modules for compact style, cannot be compact
 module RuboCop # rubocop:disable Chef/Meta/CookstyleCompactClassStyle
   module Cop

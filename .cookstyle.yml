@@ -509,3 +509,6 @@ Chef/Meta/OrderedDependancies:
 
 Chef/Meta/PythonCaps:
   Enabled: true
+
+Chef/Meta/TimeshardIsValid:
+  Enabled: true
