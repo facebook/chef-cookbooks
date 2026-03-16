@@ -502,6 +502,9 @@ Chef/Meta/CompoundBooleanLiteralCleanup:
 Chef/Meta/ConditionalBooleanLiteralCleanup:
   Enabled: true
 
+Chef/Meta/DontUseSearch:
+  Enabled: true
+
 Chef/Meta/InvertedBooleanLiteralCleanup:
   Enabled: true
 
