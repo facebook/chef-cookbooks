@@ -487,6 +487,9 @@ Chef/Style/SimplifyPlatformMajorVersionCheck:
 Chef/Style/UnnecessaryOSCheck:
   Enabled: true
 
+Chef/Meta/AvoidCookbookProperty:
+  Enabled: true
+
 Chef/Meta/AvoidUnicode:
   Enabled: true
 
