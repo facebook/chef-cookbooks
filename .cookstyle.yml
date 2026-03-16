@@ -518,3 +518,6 @@ Chef/Meta/PythonCaps:
 
 Chef/Meta/TimeshardIsValid:
   Enabled: true
+
+Chef/Meta/WindowsTaskAbsolutePaths:
+  Enabled: true
