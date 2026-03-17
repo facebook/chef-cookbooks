@@ -521,3 +521,6 @@ Chef/Meta/TimeshardIsValid:
 
 Chef/Meta/WindowsTaskAbsolutePaths:
   Enabled: true
+
+Chef/Meta/WindowsTaskExecutionTimeLimit:
+  Enabled: true
