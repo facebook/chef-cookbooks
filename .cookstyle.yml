@@ -508,6 +508,9 @@ Chef/Meta/DontUseSearch:
 Chef/Meta/InvertedBooleanLiteralCleanup:
   Enabled: true
 
+Chef/Meta/NodeDefaultWritesOnly:
+  Enabled: true
+
 Chef/Meta/OrderedDependancies:
   Enabled: true
   Include:
