@@ -517,6 +517,9 @@ Chef/Meta/InvertedBooleanLiteralCleanup:
 Chef/Meta/NodeDefaultWritesOnly:
   Enabled: true
 
+Chef/Meta/NodeSelfReference:
+  Enabled: true
+
 Chef/Meta/OrderedDependancies:
   Enabled: true
   Include:
