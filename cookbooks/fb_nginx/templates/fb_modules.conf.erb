@@ -1,0 +1,4 @@
+# This file is managed by Chef, do not modify!
+<% node['fb_nginx']['modules'].each do |file| %>
+load_module modules/<%= file %>
+<% end %>
