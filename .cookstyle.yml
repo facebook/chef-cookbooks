@@ -499,6 +499,9 @@ Chef/Meta/AvoidUnicode:
 Chef/Meta/BacktickShellouts:
   Enabled: true
 
+Chef/Meta/BadIncludeRecipe:
+  Enabled: true
+
 Chef/Meta/CompoundBooleanLiteralCleanup:
   Enabled: true
 
