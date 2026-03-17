@@ -519,6 +519,9 @@ Chef/Meta/OrderedDependancies:
 Chef/Meta/PythonCaps:
   Enabled: true
 
+Chef/Meta/RemoteDirectoryWithoutPurge:
+  Enabled: true
+
 Chef/Meta/TimeshardIsValid:
   Enabled: true
 
