@@ -505,6 +505,9 @@ Chef/Meta/BacktickShellouts:
 Chef/Meta/BadIncludeRecipe:
   Enabled: true
 
+Chef/Meta/BashCommand:
+  Enabled: true
+
 Chef/Meta/CompoundBooleanLiteralCleanup:
   Enabled: true
 
