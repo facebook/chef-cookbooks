@@ -517,6 +517,9 @@ Chef/Meta/ConditionalBooleanLiteralCleanup:
 Chef/Meta/DontUseSearch:
   Enabled: true
 
+Chef/Meta/InvalidServiceResourceName:
+  Enabled: true
+
 Chef/Meta/InvertedBooleanLiteralCleanup:
   Enabled: true
 
