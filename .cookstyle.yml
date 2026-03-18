@@ -514,6 +514,9 @@ Chef/Meta/CompoundBooleanLiteralCleanup:
 Chef/Meta/ConditionalBooleanLiteralCleanup:
   Enabled: true
 
+Chef/Meta/DefinedKeywordWithQuotes:
+  Enabled: true
+
 Chef/Meta/DontUseSearch:
   Enabled: true
 
