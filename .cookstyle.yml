@@ -525,6 +525,9 @@ Chef/Meta/OrderedDependancies:
   Include:
     - !ruby/regexp /\/metadata.rb/
 
+Chef/Meta/PreferPowershellExec:
+  Enabled: true
+
 Chef/Meta/PythonCaps:
   Enabled: true
 
