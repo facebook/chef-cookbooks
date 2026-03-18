@@ -490,6 +490,9 @@ Chef/Style/UnnecessaryOSCheck:
 Chef/Meta/AvoidCookbookProperty:
   Enabled: true
 
+Chef/Meta/AvoidIncludeAttribute:
+  Enabled: true
+
 Chef/Meta/AvoidPowershellWithoutGuard:
   Enabled: true
 
