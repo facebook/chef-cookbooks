@@ -101,7 +101,7 @@ action_class do
           "as #{url} is blocklisted.",
         )
         new_values =
-          node.default['fb_choco']['sources'].to_h.reject { |k, _| k == feed }
+          node['fb_choco']['sources'].to_h.reject { |k, _| k == feed }
         node.default['fb_choco']['sources'] = new_values
       end
     end
@@ -140,7 +140,7 @@ action :change do
   end
 
   converge_if_changed :features do
-    node.default['fb_choco']['features'].each do |feature, enabled|
+    node['fb_choco']['features'].each do |feature, enabled|
       resource_action = :disable
       resource_action = :enable if enabled
       chocolatey_feature feature do
