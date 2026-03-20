@@ -82,7 +82,7 @@ file 'windows-tmpclean-ps-script' do
           }
 end
 
-windows_task 'create-cleanup-task' do # rubocop:disable Chef/Meta/WindowsTaskAbsolutePaths
+windows_task 'create-cleanup-task' do # rubocop:disable Chef/Meta/WindowsTaskAbsolutePaths, Chef/Meta/WindowsTaskExecutionTimeLimit
   # This is an absolute path - the linter is wrong
   command lazy {
             'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -File ' +
