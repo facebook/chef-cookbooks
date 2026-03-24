@@ -84,7 +84,7 @@ action_class do
       group node.root_group
     end
 
-    powershell_script 'chocolatey_install' do
+    powershell_script 'chocolatey_install' do # rubocop:todo Chef/Meta/AvoidPowershellWithoutGuard
       code choco_install_ps1
       environment bootstrap_vars
       action :run
