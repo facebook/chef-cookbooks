@@ -54,6 +54,7 @@ service 'apcupsd' do
 end
 
 service 'disable apcupsd' do
+  service_name 'apcupsd'
   not_if { node['fb_apcupsd']['enable'] }
   action [:stop, :disable]
 end

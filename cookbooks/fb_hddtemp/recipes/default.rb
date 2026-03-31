@@ -48,6 +48,7 @@ service 'hddtemp' do
 end
 
 service 'disable hddtemp' do
+  service_name 'hddtemp'
   not_if { node['fb_hddtemp']['enable'] }
   action [:stop, :disable]
 end

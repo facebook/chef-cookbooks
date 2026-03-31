@@ -151,6 +151,7 @@ service 'consul' do
 end
 
 service 'disable consul' do
+  service_name 'consul'
   not_if { node['fb_consul']['enable'] }
   action [:stop, :disable]
 end
