@@ -552,6 +552,9 @@ Chef/Meta/RemoteDirectoryWithoutPurge:
 Chef/Meta/TimeshardIsValid:
   Enabled: true
 
+Chef/Meta/UseNodeDefault:
+  Enabled: true
+
 Chef/Meta/WindowsTaskAbsolutePaths:
   Enabled: true
 
