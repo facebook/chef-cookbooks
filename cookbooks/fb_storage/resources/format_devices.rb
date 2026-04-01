@@ -172,7 +172,7 @@ action :run do
         not_if { dev.start_with?('nvme') && max_hw_sectors_kb >= 1024 }
         type :int
         value max_sectors_kb
-        ignore_failure ignore_failure # rubocop:ignore Chef/Meta/DontIgnoreFailures
+        ignore_failure ignore_failure # rubocop:disable Chef/Meta/DontIgnoreFailures
       end
     end
   end

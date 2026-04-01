@@ -383,7 +383,7 @@ action :manage do
       execute "networkctl down #{iface}" do
         only_if { node.interface_change_allowed?(iface) }
         command "/bin/networkctl down #{iface}"
-        ignore_failure true # rubocop:ignore Chef/Meta/DontIgnoreFailures -- interface may already be down
+        ignore_failure true # rubocop:disable Chef/Meta/DontIgnoreFailures -- interface may already be down
         action :nothing
       end
 
@@ -407,7 +407,7 @@ action :manage do
       execute "udevadm trigger #{iface}" do
         only_if { node.interface_change_allowed?(iface) }
         command "/bin/udevadm trigger --action=add /sys/class/net/#{iface}"
-        ignore_failure true # rubocop:ignore Chef/Meta/DontIgnoreFailures -- if the device is already down, etc.
+        ignore_failure true # rubocop:disable Chef/Meta/DontIgnoreFailures -- if the device is already down, etc.
         action :nothing
       end
 
@@ -430,7 +430,7 @@ action :manage do
       execute "networkctl delete #{iface}" do
         only_if { node.interface_change_allowed?(iface) }
         command "/bin/networkctl delete #{iface}"
-        ignore_failure true # rubocop:ignore Chef/Meta/DontIgnoreFailures -- interface may already be down
+        ignore_failure true # rubocop:disable Chef/Meta/DontIgnoreFailures -- interface may already be down
         action :nothing
       end
 
