@@ -554,6 +554,8 @@ Chef/Meta/TimeshardIsValid:
 
 Chef/Meta/UseNodeDefault:
   Enabled: true
+  Exclude:
+    - !ruby/regexp /\/spec\//
 
 Chef/Meta/WindowsTaskAbsolutePaths:
   Enabled: true
