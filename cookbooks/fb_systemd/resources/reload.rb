@@ -77,7 +77,7 @@ action_class do
           # This can fail if the session is in a weird state, which is fine, as
           # it'll get respawned of the next login (which has the same effect
           # as running the action).
-          ignore_failure true # rubocop:ignore Chef/Meta/DontIgnoreFailures
+          ignore_failure true # rubocop:disable Chef/Meta/DontIgnoreFailures
         end
       end
       if failed
