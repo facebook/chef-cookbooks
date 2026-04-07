@@ -523,6 +523,9 @@ Chef/Meta/DontIgnoreFailures:
 Chef/Meta/DontUseSearch:
   Enabled: true
 
+Chef/Meta/InvalidRubocopDirective:
+  Enabled: true
+
 Chef/Meta/InvalidServiceResourceName:
   Enabled: true
 
