@@ -198,7 +198,7 @@ else
   # needs to be clobbered directly. Note that CentOS and Debian use different
   # files for their main syslog configuration.
   syslog_config = value_for_platform_family(
-    ['rhel', 'fedora'] => '/etc/logrotate.d/syslog',
+    ['rhel', 'fedora'] => node.centos10? ? '/etc/logrotate.d/rsyslog' : '/etc/logrotate.d/syslog',
     'debian' => '/etc/logrotate.d/rsyslog',
   )
 
