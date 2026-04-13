@@ -81,11 +81,11 @@ r+/YMDYOWgLN6i4UeYG/3/hsnAEHm5ITojfh6cLfdlhjohFTnD0IYw3AsNJXRzKB
 -----END PGP PUBLIC KEY BLOCK-----
 EOF
 
-# rubocop:disable ChefModernize/ExecuteAptUpdate
+# rubocop:disable Chef/Modernize/ExecuteAptUpdate
 execute 'apt-get update' do
   action :nothing
 end
-# rubocop:enable ChefModernize/ExecuteAptUpdate
+# rubocop:enable Chef/Modernize/ExecuteAptUpdate
 
 package 'grafana-pinned' do
   only_if { node['fb_grafana']['version'] }
