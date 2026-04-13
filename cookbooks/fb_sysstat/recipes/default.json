@@ -1,0 +1,6 @@
+{
+  "include_recipes": [
+    "fb_sysstat::packages",
+    "fb_sysstat::cron"
+  ]
+}
