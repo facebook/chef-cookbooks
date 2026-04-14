@@ -18,7 +18,6 @@
 # limitations under the License.
 #
 
-package %w{iproute iproute-tc} do
+include_recipe_at_converge_time 'fb_iproute::packages_upgrade' do
   only_if { node['fb_iproute']['manage_packages'] }
-  action :upgrade
 end

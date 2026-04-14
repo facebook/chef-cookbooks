@@ -19,7 +19,6 @@
 # limitations under the License.
 #
 
-package ['logrotate', 'pigz'] do
+include_recipe_at_converge_time 'fb_logrotate::packages_upgrade' do
   only_if { node['fb_logrotate']['manage_packages'] }
-  action :upgrade
 end

@@ -1,0 +1,9 @@
+{
+  "resources": [
+    {
+      "type": "package",
+      "name": ["iproute", "iproute-tc"],
+      "action": "upgrade"
+    }
+  ]
+}
