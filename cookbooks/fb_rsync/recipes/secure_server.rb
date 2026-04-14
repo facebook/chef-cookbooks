@@ -44,7 +44,6 @@ systemd_unit 'stunnel_rsyncd.service' do
     [Install]
     WantedBy=multi-user.target
   EOU
-  notifies :run, 'fb_systemd_reload[system instance]', :immediately
 end
 
 template '/etc/stunnel/stunnel_rsyncd.conf' do
