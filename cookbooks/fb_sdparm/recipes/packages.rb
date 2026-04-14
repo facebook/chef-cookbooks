@@ -18,7 +18,6 @@
 # limitations under the License.
 #
 
-package 'sdparm' do
+include_recipe_at_converge_time 'fb_sdparm::packages_upgrade' do
   only_if { node['fb_sdparm']['manage_packages'] }
-  action :upgrade
 end

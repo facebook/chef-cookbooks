@@ -17,7 +17,9 @@ require './spec/spec_helper'
 
 recipe 'fb_sdparm::packages', :unsupported => [:mac_os_x] do |tc|
   let(:chef_run) do
-    tc.chef_run
+    tc.chef_run(
+      :step_into => ['include_recipe_at_converge_time'],
+    )
   end
 
   context 'when manage_packages is true' do

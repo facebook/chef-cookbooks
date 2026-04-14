@@ -18,7 +18,6 @@
 # limitations under the License.
 #
 
-package 'postfix' do
+include_recipe_at_converge_time 'fb_postfix::packages_upgrade' do
   only_if { node['fb_postfix']['manage_packages'] }
-  action :upgrade
 end

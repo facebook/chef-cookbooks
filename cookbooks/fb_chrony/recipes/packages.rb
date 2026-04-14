@@ -19,7 +19,6 @@
 # limitations under the License.
 #
 
-package 'chrony' do
+include_recipe_at_converge_time 'fb_chrony::packages_upgrade' do
   only_if { node['fb_chrony']['manage_packages'] }
-  action :upgrade
 end
