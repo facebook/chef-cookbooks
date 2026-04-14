@@ -18,9 +18,8 @@
 # limitations under the License.
 #
 
-package 'e2fsprogs' do
+include_recipe_at_converge_time 'fb_e2fsprogs::e2fsprogs_upgrade' do
   only_if { node['fb_e2fsprogs']['manage_packages'] }
-  action :upgrade
 end
 
 %w{

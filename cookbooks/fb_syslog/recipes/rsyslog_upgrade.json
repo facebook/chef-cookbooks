@@ -1,0 +1,9 @@
+{
+  "resources": [
+    {
+      "type": "package",
+      "name": "rsyslog",
+      "action": "upgrade"
+    }
+  ]
+}

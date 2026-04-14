@@ -1,0 +1,9 @@
+{
+  "resources": [
+    {
+      "type": "package",
+      "name": "e2fsprogs",
+      "action": "upgrade"
+    }
+  ]
+}

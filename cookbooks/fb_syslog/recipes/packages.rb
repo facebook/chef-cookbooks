@@ -19,9 +19,8 @@
 #
 return if node.macos?
 
-package 'rsyslog' do
+include_recipe_at_converge_time 'fb_syslog::rsyslog_upgrade' do
   only_if { node['fb_syslog']['manage_packages'] }
-  action :upgrade
 end
 
 # TODO(davide125): Document this

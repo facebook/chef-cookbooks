@@ -19,9 +19,8 @@
 # limitations under the License.
 #
 
-package 'less' do
+include_recipe_at_converge_time 'fb_less::less_upgrade' do
   only_if { node.linux? && node['fb_less']['manage_packages'] }
-  action :upgrade
 end
 
 cookbook_file '/usr/local/bin/lesspipe.sh' do
