@@ -18,12 +18,6 @@
 # limitations under the License.
 #
 
-pkgs = ['ipset']
-if node.centos? && !node.centos6?
-  pkgs << 'ipset-service'
-end
-
-package pkgs do
+include_recipe_at_converge_time 'fb_ipset::default_packages_upgrade' do
   only_if { node['fb_ipset']['manage_packages'] }
-  action :upgrade
 end

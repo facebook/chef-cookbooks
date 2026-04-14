@@ -19,24 +19,6 @@
 # limitations under the License.
 #
 
-pkgs = %w{
-  util-linux
-  libblkid
-  libuuid
-}
-
-unless node.centos6?
-  pkgs += %w{
-    libmount
-    libsmartcols
-  }
-
-  unless node.centos7?
-    pkgs << 'libfdisk'
-  end
-end
-
-package pkgs do
+include_recipe_at_converge_time 'fb_util_linux::packages_upgrade' do
   only_if { node['fb_util_linux']['manage_packages'] }
-  action :upgrade
 end

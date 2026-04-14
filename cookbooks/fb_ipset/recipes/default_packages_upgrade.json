@@ -1,0 +1,9 @@
+{
+  "resources": [
+    {
+      "type": "package",
+      "name": ["ipset", "ipset-service"],
+      "action": "upgrade"
+    }
+  ]
+}

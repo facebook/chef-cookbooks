@@ -1,0 +1,16 @@
+{
+  "resources": [
+    {
+      "type": "package",
+      "name": [
+        "util-linux",
+        "libblkid",
+        "libuuid",
+        "libmount",
+        "libsmartcols",
+        "libfdisk"
+      ],
+      "action": "upgrade"
+    }
+  ]
+}
