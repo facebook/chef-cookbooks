@@ -19,17 +19,20 @@
 
 case node['platform_family']
 when 'rhel', 'fedora'
-  pkg = 'tmpwatch'
+  include_recipe_at_converge_time 'fb_tmpclean::packages_upgrade' do
+    only_if { node['fb_tmpclean']['manage_packages'] }
+  end
 when 'debian'
-  pkg = 'tmpreaper'
+  package 'tmpreaper' do
+    only_if { node['fb_tmpclean']['manage_packages'] }
+    action :upgrade
+  end
 when 'mac_os_x'
-  pkg = 'tmpreaper'
+  package 'tmpreaper' do
+    only_if { node['fb_tmpclean']['manage_packages'] }
+    action :upgrade
+  end
 else
   fail "Unsupported platform_family #{node['platform_family']}, cannot" +
-    'continue'
-end
-
-package pkg do
-  only_if { node['fb_tmpclean']['manage_packages'] && (!node.fedora? || node['platform_version'].to_i <= 41) }
-  action :upgrade
+    ' continue'
 end

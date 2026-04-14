@@ -18,10 +18,9 @@
 # limitations under the License.
 #
 
-package 'net-tools' do
+include_recipe_at_converge_time 'fb_ethers::net_tools_upgrade' do
   only_if { node.linux? }
   only_if { node['fb_ethers']['manage_packages'] }
-  action :upgrade
 end
 
 template '/etc/ethers' do

@@ -20,16 +20,11 @@
 
 case node['platform_family']
 when 'rhel', 'fedora', 'suse'
-  package_name = 'vixie-cron'
-  if node['platform'] == 'amazon' || node['platform_version'].to_i >= 6
-    package_name = 'cronie'
+  include_recipe_at_converge_time 'fb_cron::packages_upgrade' do
+    only_if { node['fb_cron']['manage_packages'] }
   end
 when 'debian'
-  package_name = 'cron'
-end
-
-if package_name
-  package package_name do
+  package 'cron' do
     only_if { node['fb_cron']['manage_packages'] }
     action :upgrade
   end
