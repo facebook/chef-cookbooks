@@ -19,8 +19,7 @@
 # limitations under the License.
 #
 
-package 'sudo' do
+include_recipe_at_converge_time 'fb_sudo::packages_upgrade' do
   only_if { node['fb_sudo']['manage_packages'] }
   not_if { node.macos? }
-  action :upgrade
 end

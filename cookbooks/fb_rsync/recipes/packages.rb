@@ -18,8 +18,7 @@
 # limitations under the License.
 #
 
-package 'rsync' do
-  not_if { node.macos? || node.aristaeos? } # provided by Xcode
-  action :upgrade
+include_recipe_at_converge_time 'fb_rsync::packages_upgrade' do
+  not_if { node.macos? || node.aristaeos? }
   only_if { node['fb_rsync']['manage_packages'] }
 end

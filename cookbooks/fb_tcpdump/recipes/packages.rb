@@ -10,7 +10,6 @@ unless node.centos?
   fail 'fb_tcpdump only supports CentOS'
 end
 
-package 'tcpdump' do
+include_recipe_at_converge_time 'fb_tcpdump::packages_upgrade' do
   only_if { node['fb_tcpdump']['manage_packages'] }
-  action :upgrade
 end
