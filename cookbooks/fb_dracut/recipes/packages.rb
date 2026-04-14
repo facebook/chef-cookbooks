@@ -18,9 +18,8 @@
 # limitations under the License.
 #
 
-package 'dracut' do
+include_recipe_at_converge_time 'fb_dracut::packages_upgrade' do
   only_if do
     node['fb_dracut']['manage_packages'] && !node['fb_dracut']['disable']
   end
-  action :upgrade
 end

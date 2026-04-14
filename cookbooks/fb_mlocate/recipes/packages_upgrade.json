@@ -1,0 +1,9 @@
+{
+  "resources": [
+    {
+      "type": "package",
+      "name": "mlocate",
+      "action": "upgrade"
+    }
+  ]
+}

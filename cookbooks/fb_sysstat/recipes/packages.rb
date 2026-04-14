@@ -19,7 +19,6 @@
 # limitations under the License.
 #
 
-package 'sysstat' do
+include_recipe_at_converge_time 'fb_sysstat::packages_upgrade' do
   only_if { node['fb_sysstat']['manage_packages'] }
-  action :upgrade
 end

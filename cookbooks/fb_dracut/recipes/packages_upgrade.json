@@ -1,0 +1,9 @@
+{
+  "resources": [
+    {
+      "type": "package",
+      "name": "dracut",
+      "action": "upgrade"
+    }
+  ]
+}

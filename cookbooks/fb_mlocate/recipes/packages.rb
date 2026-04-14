@@ -19,7 +19,6 @@
 # limitations under the License.
 #
 
-package 'mlocate' do
+include_recipe_at_converge_time 'fb_mlocate::packages_upgrade' do
   only_if { node['fb_mlocate']['want_mlocate'] }
-  action :upgrade
 end
