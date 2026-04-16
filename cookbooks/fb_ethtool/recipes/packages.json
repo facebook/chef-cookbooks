@@ -1,0 +1,9 @@
+{
+  "resources": [
+    {
+      "type": "package",
+      "name": "ethtool",
+      "action": ["upgrade"]
+    }
+  ]
+}

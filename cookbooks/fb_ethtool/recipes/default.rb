@@ -23,4 +23,6 @@ unless node.linux?
   fail 'fb_ethtool: this cookbook is only supported on Linux'
 end
 
-include_recipe 'fb_ethtool::packages'
+include_recipe_at_converge_time 'fb_ethtool::packages' do
+  only_if { node['fb_ethtool']['manage_packages'] }
+end
