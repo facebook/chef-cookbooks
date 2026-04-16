@@ -22,7 +22,6 @@ unless node.centos?
   fail 'fb_jq only supports CentOS'
 end
 
-package 'jq' do
+include_recipe_at_converge_time 'fb_jq::packages_upgrade' do
   only_if { node['fb_jq']['manage_packages'] }
-  action :upgrade
 end
