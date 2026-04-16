@@ -23,4 +23,6 @@ unless node.linux?
   fail 'fb_screen: this cookbook is only supported on Linux'
 end
 
-include_recipe 'fb_screen::packages'
+include_recipe_at_converge_time 'fb_screen::packages' do
+  only_if { node['fb_screen']['manage_packages'] }
+end

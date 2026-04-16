@@ -20,21 +20,8 @@ recipe 'fb_screen::packages', :unsupported => [:mac_os_x] do |tc|
     tc.chef_run
   end
 
-  context 'when manage_packages is true' do
-    it 'upgrades the screen package' do
-      chef_run.converge(described_recipe) do |node|
-        node.default['fb_screen']['manage_packages'] = true
-      end
-      expect(chef_run).to upgrade_package('screen')
-    end
-  end
-
-  context 'when manage_packages is false' do
-    it 'does not upgrade the screen package' do
-      chef_run.converge(described_recipe) do |node|
-        node.default['fb_screen']['manage_packages'] = false
-      end
-      expect(chef_run).not_to upgrade_package('screen')
-    end
+  it 'upgrades the screen package' do
+    chef_run.converge(described_recipe)
+    expect(chef_run).to upgrade_package('screen')
   end
 end
