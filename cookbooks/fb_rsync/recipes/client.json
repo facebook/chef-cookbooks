@@ -1,0 +1,5 @@
+{
+  "include_recipes": [
+    "fb_rsync::packages"
+  ]
+}
