@@ -17,7 +17,7 @@ require './spec/spec_helper'
 
 recipe 'fb_dbus::packages', :unsupported => [:mac_os_x] do |tc|
   let(:chef_run) do
-    tc.chef_run
+    tc.chef_run(:step_into => ['include_recipe_at_converge_time'])
   end
 
   context 'when manage_packages is false' do
@@ -26,7 +26,7 @@ recipe 'fb_dbus::packages', :unsupported => [:mac_os_x] do |tc|
         node.default['fb_dbus']['manage_packages'] = false
       end
       expect(chef_run).not_to upgrade_package(%w{dbus dbus-libs})
-      expect(chef_run).not_to upgrade_package(%w{dbus-tools})
+      expect(chef_run).not_to upgrade_package('dbus-tools')
       expect(chef_run).not_to upgrade_package('dbus-broker')
     end
   end
@@ -45,7 +45,7 @@ recipe 'fb_dbus::packages', :unsupported => [:mac_os_x] do |tc|
           node.default['fb_dbus']['manage_packages'] = true
           node.default['fb_dbus']['manage_dbus_tools'] = false
         end
-        expect(chef_run).not_to upgrade_package(%w{dbus-tools})
+        expect(chef_run).not_to upgrade_package('dbus-tools')
       end
     end
 
@@ -55,7 +55,7 @@ recipe 'fb_dbus::packages', :unsupported => [:mac_os_x] do |tc|
           node.default['fb_dbus']['manage_packages'] = true
           node.default['fb_dbus']['manage_dbus_tools'] = true
         end
-        expect(chef_run).to upgrade_package(%w{dbus-tools})
+        expect(chef_run).to upgrade_package('dbus-tools')
       end
     end
 

@@ -19,24 +19,23 @@
 #
 
 # dbus-broker relies on the dbus packages, so we install those unconditionally
-package %w{dbus dbus-libs} do
+include_recipe_at_converge_time 'fb_dbus::dbus_base_packages_upgrade' do
   only_if { node['fb_dbus']['manage_packages'] }
-  action :upgrade
 end
 
 # only install dbus-tools when requested
-package %w{dbus-tools} do
+include_recipe_at_converge_time 'install dbus-tools' do
   only_if do
     node['fb_dbus']['manage_packages'] &&
       node['fb_dbus']['manage_dbus_tools']
   end
-  action :upgrade
+  recipe 'fb_dbus::dbus_tools_upgrade'
 end
 
-package 'dbus-broker' do
+include_recipe_at_converge_time 'install dbus-broker' do
   only_if do
     node['fb_dbus']['manage_packages'] &&
       (node['fb_dbus']['implementation'] == 'dbus-broker')
   end
-  action :upgrade
+  recipe 'fb_dbus::dbus_broker_upgrade'
 end
