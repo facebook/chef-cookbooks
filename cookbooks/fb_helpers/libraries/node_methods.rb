@@ -415,6 +415,9 @@ class Chef
     end
 
     def eln?
+      # ELN recently changed to ship ID=eln in /etc/os-release, but we need to
+      # support this and the old scheme for detecting if this system is ELN
+      return true if self['platform'] == 'eln'
       self['platform'] == 'fedora' &&
         self['os_release'] &&
         self['os_release']['variant_id'] &&
