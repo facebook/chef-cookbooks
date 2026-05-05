@@ -45,7 +45,8 @@ module FB
 
     def self.gen_repo_config(node, name, config = {})
       unless node.centos? || node.fedora? || node.rocky?
-        fail "fb_yum_repos[gen_repo_config]: unsupported platform #{platform}"
+        fail 'fb_yum_repos[gen_repo_config]: unsupported platform ' +
+             node[:platform].to_s
       end
 
       unless config['name']
