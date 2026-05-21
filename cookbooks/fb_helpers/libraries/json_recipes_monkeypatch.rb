@@ -80,6 +80,11 @@ class Chef
   end
 
   class Recipe
+    JSON_RECIPE_VALUE_SUBSTITUTIONS = {
+      "@node.root_user"  => -> { ::Chef.node.root_user },
+      "@node.root_group" => -> { ::Chef.node.root_group },
+    }.freeze
+
     def from_json_file(filename)
       self.source_file = filename
       if File.file?(filename) && File.readable?(filename)
@@ -106,6 +111,11 @@ class Chef
         name = rhash.delete("name")
         res = declare_resource(type, name)
         rhash.each do |key, value|
+          if JSON_RECIPE_VALUE_SUBSTITUTIONS.key?(value)
+            new_value = JSON_RECIPE_VALUE_SUBSTITUTIONS[value].call
+            Chef::Log.debug("Substituting #{value} with #{new_value} in #{type}[#{name}].#{key}")
+            value = new_value
+          end
           # FIXME?: we probably need a way to instance_exec a string that contains block code against the property?
           res.send(key, value)
         end
