@@ -55,6 +55,14 @@ else
   end
 end
 
+# Sysstat on C10 onwards publishes its own timer to export data.
+# We do not need this.
+if node.centos_min_version?(10) && node.in_shard?(0) # __BUMP__
+  systemd_unit 'sysstat-collect.timer' do
+    action [:stop, :disable, :mask]
+  end
+end
+
 # the sa[12] commands here trample on those defined in the
 # sysstat_accounting_[12] jobs
 file '/etc/cron.d/sysstat' do # rubocop:disable Chef/Modernize/CronDFileOrTemplate
