@@ -19,9 +19,27 @@
 # Reference: Chef platform_family values
 # https://docs.chef.io/infra_language/checking_platforms/#platform_family-values
 
+class ChefUtilsProxy
+  include ChefUtils
+
+  def initialize(node)
+    @node = node
+  end
+
+  def __getnode
+    @node
+  end
+end
+
 class Chef
   # Our extensions of the node object
   class Node
+
+    # A way to explicitly call a ChefUtils function instead of a
+    # fb_helpers function to aid in migration
+    def chefutils
+      ChefUtilsProxy.new(self)
+    end
 
     def linux?
       return @_fb_helpers_linux unless @_fb_helpers_linux.nil?

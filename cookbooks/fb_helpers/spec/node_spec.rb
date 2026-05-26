@@ -315,6 +315,35 @@ describe 'Chef::Node' do
     end
   end
 
+  context 'Chef::Node.chefutils' do
+    it 'returns true for debian? when platform_family is debian' do
+      node.automatic['platform'] = 'debian'
+      node.automatic['platform_family'] = 'debian'
+      expect(node.chefutils.debian?).to be(true)
+    end
+
+    it 'returns false for debian? when platform_family is not debian' do
+      node.automatic['platform'] = 'centos'
+      node.automatic['platform_family'] = 'rhel'
+      expect(node.chefutils.debian?).to be(false)
+    end
+
+    it 'differs from node.debian? for ubuntu (platform_family=debian, platform=ubuntu)' do
+      node.automatic['platform'] = 'ubuntu'
+      node.automatic['platform_family'] = 'debian'
+      # fb_helpers checks platform == 'debian', so ubuntu is false
+      expect(node.debian?).to be(false)
+      # ChefUtils checks platform_family == 'debian', so ubuntu is true
+      expect(node.chefutils.debian?).to be(true)
+    end
+
+    it 'returns true for rhel? when platform_family is rhel' do
+      node.automatic['platform'] = 'centos'
+      node.automatic['platform_family'] = 'rhel'
+      expect(node.chefutils.rhel?).to be(true)
+    end
+  end
+
   context 'Chef::Node.disruptable?' do
     it 'is not disruptable by default' do
       expect(node.disruptable?).to be(false)
