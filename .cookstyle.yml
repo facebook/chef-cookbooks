@@ -555,6 +555,14 @@ Chef/Meta/RemoteDirectoryWithoutPurge:
 Chef/Meta/TimeshardIsValid:
   Enabled: true
 
+# META: This should *only* be done on node methods that are in use in
+# fb_helpers/open-source cookbooks. Internal methods should be added in
+# the internal cookstyle configuration file. -dcrosby
+Chef/Meta/UpdateNodeMethod:
+  Enabled: true
+  Changes:
+    centos5?: 'centos_version?(5)'
+
 Chef/Meta/UseNodeDefault:
   Enabled: true
   Exclude:
