@@ -121,7 +121,7 @@ end
   end
 end
 
-if node.debian? || node.ubuntu?
+if node.chefutils.debian?
   # CentOS makes this symlink to the right module dir, and we make assumptions
   # it exists, so be sure to do the same on debian
   link '/etc/apache2/modules' do
@@ -143,7 +143,7 @@ fb_apache_cleanup_modules 'doit' do
 end
 
 template "#{moddir}/fb_modules.conf" do
-  not_if { node.centos6? }
+  not_if { node.centos_version?(6) }
   owner node.root_user
   group node.root_group
   mode '0644'
@@ -206,7 +206,7 @@ fb_apache_verify_configs 'doit' do
   action :nothing
 end
 
-if node['platform_family'] == 'debian'
+if node.chefutils.debian?
   # By default the apache package lays down a '000-default.conf' symlink to
   # sites-available/000-default.conf which contains a generic :80 listener.
   # This can conflict if we want to control :80 ourselves.

@@ -23,7 +23,7 @@ moddir = value_for_platform_family(
   'debian' => '/usr/lib/apache2/modules',
 )
 
-auth_core_suffix = node.centos6? ? 'default' : 'core'
+auth_core_suffix = node.centos_version?(6) ? 'default' : 'core'
 
 modules = [
   'alias',
@@ -58,7 +58,7 @@ when 'rhel', 'fedora'
     'ssl',
   ]
 
-  unless node.centos6?
+  unless node.centos_version?(6)
     modules += [
       'socache_shmcb',
       'systemd',

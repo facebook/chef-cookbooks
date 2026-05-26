@@ -73,7 +73,7 @@ action :verify do
     # resource collection and hence not track it for "updates".
     build_resource(:template,
                    "#{tdir}/#{new_resource.moddir}/fb_modules.conf") do
-      not_if { node.centos6? }
+      not_if { node.centos_version?(6) }
       owner 'root'
       group 'root'
       mode '0644'

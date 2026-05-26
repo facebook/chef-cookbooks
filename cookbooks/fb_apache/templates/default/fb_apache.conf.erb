@@ -1,5 +1,5 @@
 # This file is controlled by Chef, do not edit!
-<%  if node.centos6? %>
+<%  if node.centos_version?(6) %>
 <%=   render 'apache_modules.erb' %>
 
 <%  end %>
