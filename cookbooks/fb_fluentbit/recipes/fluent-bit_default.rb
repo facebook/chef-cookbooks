@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-unless node.rhel_family? || node.windows?
+unless node.rhel_family? || ChefUtils.windows?
   fail 'fb_fluentbit: unsupported platform. The list of supported platforms is
        [RHEL, windows]'
 end
@@ -62,7 +62,7 @@ state_dir = value_for_platform_family(
 directory 'runtime state directory' do
   action :create
   path state_dir
-  if node.windows?
+  if ChefUtils.windows?
     rights :full_control, 'Administrators'
   else
     owner node.root_user
@@ -72,13 +72,13 @@ directory 'runtime state directory' do
 end
 
 include_recipe 'fb_fluentbit::fluent-bit_rhel' if node.rhel_family?
-include_recipe 'fb_fluentbit::fluent-bit_windows' if node.windows?
+include_recipe 'fb_fluentbit::fluent-bit_windows' if ChefUtils.windows?
 
 template 'plugins config' do
   action :create
   source 'plugins.conf.erb'
   path plugins_file_path
-  if node.windows?
+  if ChefUtils.windows?
     rights :full_control, 'Administrators'
     notifies :restart, 'windows_service[FluentBit]'
   else
@@ -93,7 +93,7 @@ template 'parsers config' do
   action :create
   source 'parsers.conf.erb'
   path parsers_file_path
-  if node.windows?
+  if ChefUtils.windows?
     rights :full_control, 'Administrators'
     notifies :restart, 'windows_service[FluentBit]'
   else
@@ -109,7 +109,7 @@ remote_file 'remote config' do
   action :create
   source lazy { node['fb_fluentbit']['external_config_url'] }
   path main_file_path
-  if node.windows?
+  if ChefUtils.windows?
     rights :full_control, 'Administrators'
     notifies :restart, 'windows_service[FluentBit]'
   else
@@ -125,7 +125,7 @@ template 'local config' do
   action :create
   source 'conf.erb'
   path main_file_path
-  if node.windows?
+  if ChefUtils.windows?
     rights :full_control, 'Administrators'
     notifies :restart, 'windows_service[FluentBit]'
   else
@@ -136,7 +136,7 @@ template 'local config' do
   end
 end
 
-if node.windows?
+if ChefUtils.windows?
   windows_service 'FluentBit' do
     if node['fb_fluentbit']['custom_svc_restart_command']
       restart_command node['fb_fluentbit']['custom_svc_restart_command']
