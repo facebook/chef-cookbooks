@@ -74,7 +74,7 @@ end
 action :manage do
   # The idea of primary groups doesn't exist on windows, so none of this
   # is necessary
-  unless node.windows?
+  unless ChefUtils.windows?
     bootstrap_pgroups
   end
 
@@ -84,7 +84,7 @@ action :manage do
     data_bag_passwords = {}
   end
 
-  set_passwords = !node.windows? || node['fb_users']['set_passwords_on_windows']
+  set_passwords = !ChefUtils.windows? || node['fb_users']['set_passwords_on_windows']
 
   # Now we can add all the users
   node['fb_users']['users'].each do |username, info|
@@ -105,7 +105,7 @@ action :manage do
     if manage_homedir.nil?
       if node['fb_users']['user_defaults']['manage_home'].nil?
         manage_homedir = true
-        unless node.windows?
+        unless ChefUtils.windows?
           homebase = ::File.dirname(homedir)
           if node['filesystem']['by_mountpoint'][homebase]
             homebase_type =
