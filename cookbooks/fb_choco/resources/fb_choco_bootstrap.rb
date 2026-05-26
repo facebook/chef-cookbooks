@@ -41,7 +41,7 @@ load_current_value do
 end
 
 action :install do
-  unless node.windows?
+  unless ChefUtils.windows?
     fail "fb_choco: Chocolatey is not supported on #{node['os']}."
   end
 
