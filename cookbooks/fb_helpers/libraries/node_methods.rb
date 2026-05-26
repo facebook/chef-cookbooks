@@ -26,7 +26,7 @@ class ChefUtilsProxy
     @node = node
   end
 
-  def __getnode
+  def __getnode(_skip_global = false)
     @node
   end
 end
@@ -38,7 +38,9 @@ class Chef
     # A way to explicitly call a ChefUtils function instead of a
     # fb_helpers function to aid in migration
     def chefutils
-      ChefUtilsProxy.new(self)
+      # rubocop:disable Naming/MemoizedInstanceVariableName
+      @_fb_helpers_chefutils_proxy ||= ChefUtilsProxy.new(self)
+      # rubocop:enable Naming/MemoizedInstanceVariableName
     end
 
     def linux?
