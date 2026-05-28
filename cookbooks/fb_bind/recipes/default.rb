@@ -122,7 +122,7 @@ primary_dir = ::File.join(zones_dir, 'primary')
 directory primary_dir do
   owner node.root_group
   group usrgrp
-  mode '0755'
+  mode '0775'
 end
 
 fb_bind_zonefiles 'doit' do
