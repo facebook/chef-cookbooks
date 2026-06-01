@@ -590,7 +590,7 @@ If the has is specified, it takes one or more of the following keys:
 
     # sysnative_path() determines the sysnative path on Windows
     def self.sysnative_path
-      fail unless self.windows?
+      fail unless self.chefutils.windows?
 
       if RUBY_PLATFORM.include?('64')
         "#{ENV['WINDIR']}\\system32\\"
