@@ -17,6 +17,8 @@
 #
 
 # Allow locking 1/1024th of total system memory
+
+# rubocop:disable Chef/Meta/RemoveStateFromAttributes
 total_system_memory_kbytes = node['memory']['total'].to_i
 memlock_limit_kbytes = total_system_memory_kbytes / 1024
 default['fb_limits']['*'] = {

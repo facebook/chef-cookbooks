@@ -18,6 +18,8 @@
 
 # it makes sense for passwd and group to be the same settings, at least
 # for most cases.
+
+# rubocop:disable Chef/Meta/RemoveStateFromAttributes
 user_defaults = {
   'enable-cache' => false,
   'positive-time-to-live' => 600,

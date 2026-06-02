@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+# rubocop:disable Chef/Meta/RemoveStateFromAttributes
 version = node.centos6? ? 1 : 2
 grub2_base_dir = '/boot/grub2'
 case node['platform']

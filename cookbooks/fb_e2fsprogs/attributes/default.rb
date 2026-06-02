@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+# rubocop:disable Chef/Meta/RemoveStateFromAttributes
 ext4_features = %w{
   has_journal
   extent

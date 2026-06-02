@@ -17,6 +17,8 @@
 
 # RHEL 10 and later don't support hash maps anymore
 # https://src.fedoraproject.org/rpms/postfix/c/6a2621e4d73d59337dc64ba45922132286b841a1
+
+# rubocop:disable Chef/Meta/RemoveStateFromAttributes
 if node.el_min_version?(10) || node.eln?
   map_type = 'lmdb'
 else

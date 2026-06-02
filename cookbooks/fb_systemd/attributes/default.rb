@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+# rubocop:disable Chef/Meta/RemoveStateFromAttributes
 tmpfiles = {}
 {
   '/dev/log' => '/run/systemd/journal/dev-log',

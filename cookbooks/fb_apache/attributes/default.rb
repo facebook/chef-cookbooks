@@ -17,6 +17,7 @@
 # limitations under the License.
 #
 
+# rubocop:disable Chef/Meta/RemoveStateFromAttributes
 moddir = value_for_platform_family(
   # will be a symlink to the right arch dir
   ['rhel', 'fedora'] => '/etc/httpd/modules',

@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+# rubocop:disable Chef/Meta/RemoveStateFromAttributes
 primary_int = 'eth0'
 
 default['fb_networkd'] = {

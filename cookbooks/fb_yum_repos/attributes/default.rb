@@ -17,6 +17,8 @@
 #
 
 # TODO: add a sensible per-distro default
+
+# rubocop:disable Chef/Meta/RemoveStateFromAttributes
 repos = {}
 
 default['fb_yum_repos'] = {

@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+# rubocop:disable Chef/Meta/RemoveStateFromAttributes
 if (node.centos? && node['platform_version'].to_i < 9) ||
    (node.fedora? && node['platform_version'].to_i < 29)
   implementation = 'dbus-daemon'

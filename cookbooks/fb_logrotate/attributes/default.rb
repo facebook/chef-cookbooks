@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 
+# rubocop:disable Chef/Meta/RemoveStateFromAttributes
 globals = {
   'rotate' => '14',
   'maxage' => '14',

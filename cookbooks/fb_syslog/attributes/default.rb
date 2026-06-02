@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 
+# rubocop:disable Chef/Meta/RemoveStateFromAttributes
 if node.systemd? || node.macos?
   sysconfig = {}
 else

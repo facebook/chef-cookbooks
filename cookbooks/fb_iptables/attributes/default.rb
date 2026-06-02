@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+# rubocop:disable Chef/Meta/RemoveStateFromAttributes
 DEFAULT_POLICY = 'ACCEPT'.freeze
 
 iptables = {

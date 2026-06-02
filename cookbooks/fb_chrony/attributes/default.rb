@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+# rubocop:disable Chef/Meta/RemoveStateFromAttributes
 server_list = %w{
   time1.facebook.com
   time2.facebook.com

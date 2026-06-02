@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 
+# rubocop:disable Chef/Meta/RemoveStateFromAttributes
 excludes = []
 directories = {}
 if node.rhel_family?
