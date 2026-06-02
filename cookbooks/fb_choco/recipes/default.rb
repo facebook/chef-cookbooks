@@ -16,7 +16,7 @@
 # Cookbook Name:: fb_choco
 # Recipe:: default
 
-unless node.windows?
+unless ChefUtils.windows?
   fail 'fb_choco is only supported on Windows.'
 end
 
