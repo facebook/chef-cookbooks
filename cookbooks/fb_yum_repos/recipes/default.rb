@@ -44,11 +44,8 @@ whyrun_safe_ruby_block 'clean chef yum metadata' do
   action :nothing
 end
 
-directory '/etc/yum.repos.d' do
-  owner node.root_user
-  group node.root_group
-  mode '0755'
-end
+# /etc/yum.repos.d is created at image build time via JSON.
+include_recipe 'fb_yum_repos::yum_repos_directory_install'
 
 fb_yum_repos 'manage repos' do
   only_if { node['fb_yum_repos']['manage_repos'] }
