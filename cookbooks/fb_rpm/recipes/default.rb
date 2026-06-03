@@ -25,11 +25,8 @@ end
 
 include_recipe 'fb_rpm::packages'
 
-directory '/etc/rpm' do
-  owner node.root_user
-  group node.root_group
-  mode '0755'
-end
+# /etc/rpm is created at image build time via JSON.
+include_recipe 'fb_rpm::rpm_directory_install'
 
 whyrun_safe_ruby_block 'set database backend' do
   block do
