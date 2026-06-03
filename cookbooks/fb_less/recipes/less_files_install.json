@@ -1,0 +1,20 @@
+{
+  "resources": [
+    {
+      "type": "cookbook_file",
+      "name": "/usr/local/bin/lesspipe.sh",
+      "source": "lesspipe.sh",
+      "owner": "@node.root_user",
+      "group": "@node.root_group",
+      "mode": "0755"
+    },
+    {
+      "type": "cookbook_file",
+      "name": "/etc/profile.d/fbless.sh",
+      "source": "profile.d/fbless.sh",
+      "owner": "@node.root_user",
+      "group": "@node.root_group",
+      "mode": "0644"
+    }
+  ]
+}

@@ -23,16 +23,5 @@ include_recipe_at_converge_time 'fb_less::less_upgrade' do
   only_if { node.linux? && node['fb_less']['manage_packages'] }
 end
 
-cookbook_file '/usr/local/bin/lesspipe.sh' do
-  source 'lesspipe.sh'
-  owner node.root_user
-  group node.root_group
-  mode '0755'
-end
-
-cookbook_file '/etc/profile.d/fbless.sh' do
-  source 'profile.d/fbless.sh'
-  owner node.root_user
-  group node.root_group
-  mode '0644'
-end
+# Static cookbook_files moved to less_files_install.json for image build time.
+include_recipe 'fb_less::less_files_install'
