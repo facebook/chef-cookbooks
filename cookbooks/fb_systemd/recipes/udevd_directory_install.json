@@ -1,0 +1,11 @@
+{
+  "resources": [
+    {
+      "type": "directory",
+      "name": "/etc/udev/hwdb.d",
+      "owner": "@node.root_user",
+      "group": "@node.root_group",
+      "mode": "0755"
+    }
+  ]
+}

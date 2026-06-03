@@ -41,11 +41,8 @@ execute 'update hwdb' do
   action :nothing
 end
 
-directory '/etc/udev/hwdb.d' do
-  owner node.root_user
-  group node.root_group
-  mode '0755'
-end
+# /etc/udev/hwdb.d is created at image build time via JSON.
+include_recipe 'fb_systemd::udevd_directory_install'
 
 template '/etc/udev/hwdb.d/00-chef.hwdb' do
   source 'hwdb.erb'
