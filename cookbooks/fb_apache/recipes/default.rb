@@ -121,7 +121,7 @@ end
   end
 end
 
-if node.chefutils.debian?
+if ChefUtils.debian?
   # CentOS makes this symlink to the right module dir, and we make assumptions
   # it exists, so be sure to do the same on debian
   link '/etc/apache2/modules' do
@@ -206,7 +206,7 @@ fb_apache_verify_configs 'doit' do
   action :nothing
 end
 
-if node.chefutils.debian?
+if ChefUtils.debian?
   # By default the apache package lays down a '000-default.conf' symlink to
   # sites-available/000-default.conf which contains a generic :80 listener.
   # This can conflict if we want to control :80 ourselves.
