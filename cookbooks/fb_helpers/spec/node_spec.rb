@@ -367,4 +367,43 @@ describe 'Chef::Node' do
       expect(node.disruptable?).to be(true)
     end
   end
+
+  context 'Chef::Node.domain_controller?' do
+    before(:each) do
+      node.default['kernel'] = {
+        'os_info' => {},
+        'cs_info' => {},
+      }
+    end
+
+    it 'should return false on non-windows nodes' do
+      node.default['platform_family'] = 'linux'
+      node.domain_controller?.should eq(false)
+    end
+
+    it 'should return false on a Windows member server' do
+      node.default['platform_family'] = 'windows'
+      node.default['kernel']['os_info']['product_type'] = 3
+      node.default['kernel']['cs_info']['domain_role'] = 3
+      expect(node.domain_controller?).to eq(false)
+    end
+
+    it 'should return true on `Domain Controller` product type' do
+      node.default['platform_family'] = 'windows'
+      node.default['kernel']['os_info']['product_type'] = 2
+      expect(node.domain_controller?).to eq(true)
+    end
+
+    it 'should return true for the PDC Win32_ComputerSystem domain role' do
+      node.default['platform_family'] = 'windows'
+      node.default['kernel']['cs_info']['domain_role'] = 4
+      expect(node.domain_controller?).to eq(true)
+    end
+
+    it 'should return true for the backup DC Win32_ComputerSystem domain role' do
+      node.default['platform_family'] = 'windows'
+      node.default['kernel']['cs_info']['domain_role'] = 5
+      expect(node.domain_controller?).to eq(true)
+    end
+  end
 end

@@ -1577,5 +1577,12 @@ class Chef
       end
       unowned_files
     end
+
+    def domain_controller?
+      windows? && (
+        self['kernel']['os_info']['product_type'] == 2 ||
+        [4, 5].include?(self['kernel']['cs_info']['domain_role'])
+      )
+    end
   end
 end
