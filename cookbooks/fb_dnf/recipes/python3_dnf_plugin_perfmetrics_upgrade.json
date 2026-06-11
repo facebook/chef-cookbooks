@@ -1,0 +1,9 @@
+{
+  "resources": [
+    {
+      "type": "package",
+      "name": "python3-dnf-plugin-perfmetrics",
+      "action": ["upgrade"]
+    }
+  ]
+}
