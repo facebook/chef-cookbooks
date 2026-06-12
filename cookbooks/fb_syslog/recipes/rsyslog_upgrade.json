@@ -3,7 +3,10 @@
     {
       "type": "package",
       "name": "rsyslog",
-      "action": "upgrade"
+      "action": "upgrade",
+      "exception": "sev-fixing",
+      "oncall": "prod_chef",
+      "exception_firstboot": false
     }
   ]
 }
