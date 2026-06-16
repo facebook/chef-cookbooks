@@ -30,7 +30,12 @@ module RuboCop::Cop::Chef::Meta
     def on_send(node)
       return unless node.receiver
       lvar = node.receiver.lvar_type? && node.receiver.source == 'node'
-      return unless node.self_receiver? ||
+      # A `self` receiver only resolves to Chef::Node helpers inside instance
+      # methods. Inside a class method (`def self.foo` or `class << self`),
+      # `self` is the class itself, so rewriting e.g. `self.windows?` into
+      # `self.chefutils.windows?` would raise NoMethodError at runtime. Only
+      # treat a `self` receiver as a node when not inside a singleton method.
+      return unless (node.self_receiver? && !inside_singleton_method?(node)) ||
         (node.receiver.send_type? && node.receiver.method?(:node)) ||
         lvar
       replacement_method = changes[node.method_name.to_s]
@@ -43,6 +48,25 @@ module RuboCop::Cop::Chef::Meta
           replacement_method,
         )
       end
+    end
+
+    private
+
+    # True when `node` is inside a singleton (class) method, where `self` is the
+    # class object rather than a Chef::Node instance. Covers both `def self.foo`
+    # and methods under `class << self`. The nearest enclosing method definition
+    # wins, so an instance method nested inside a class method is still treated
+    # as an instance method.
+    def inside_singleton_method?(node)
+      method_def = node.each_ancestor(:def, :defs).first
+      return false unless method_def
+      return true if method_def.defs_type?
+
+      # A plain `def` is also a singleton method when wrapped in `class << self`.
+      enclosing_scope = method_def.each_ancestor(
+        :sclass, :class, :module, :def, :defs
+      ).first
+      enclosing_scope&.sclass_type? || false
     end
   end
 end
