@@ -193,6 +193,13 @@ if node.centos9? || node.fedora38? || node.fedora39?
   package 'rsyslog-logrotate' do
     action :remove
   end
+  if node.centos9?
+    # depending on package version, this file may be installed by
+    # rsyslog-logrotate, or it may be installed by the rsyslog package itself
+    file '/etc/logrotate.d/rsyslog' do
+      action 'delete'
+    end
+  end
 else
   # On all other systems the config is part of the main rsyslog package and
   # needs to be clobbered directly. Note that CentOS and Debian use different
