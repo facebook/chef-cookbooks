@@ -57,7 +57,7 @@ end
 
 # Sysstat on C10 onwards publishes its own timer to export data.
 # We do not need this.
-if node.centos_min_version?(10) && node.in_shard?(0) # __BUMP__
+if node.centos_min_version?(10)
   systemd_unit 'sysstat-collect.timer' do
     action [:stop, :disable, :mask]
   end
