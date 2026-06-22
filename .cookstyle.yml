@@ -568,6 +568,9 @@ Chef/Meta/UseNodeDefault:
   Exclude:
     - !ruby/regexp /\/spec\//
 
+Chef/Meta/UseSymbolForActionProperty:
+  Enabled: true
+
 Chef/Meta/WindowsTaskAbsolutePaths:
   Enabled: true
 
