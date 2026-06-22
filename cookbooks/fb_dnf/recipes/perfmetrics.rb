@@ -39,8 +39,3 @@ template config do
   group node.root_group
   mode '0644'
 end
-
-file config do
-  not_if { node['fb_dnf']['perfmetrics'] }
-  action :delete
-end
