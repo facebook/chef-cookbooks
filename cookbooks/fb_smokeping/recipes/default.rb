@@ -78,17 +78,28 @@ directory '/etc/smokeping/config.d' do
 end
 
 %w{
-  Alerts
   General
-  Database
-  Presentation
   Probes
-  Slaves
   Targets
-  pathnames
 }.each do |config|
   template "/etc/smokeping/config.d/#{config}" do
     source "#{config}.erb"
+    mode '0644'
+    owner node.root_user
+    group node.root_group
+    notifies :restart, 'service[smokeping]'
+  end
+end
+
+%w{
+  Alerts
+  Database
+  Presentation
+  Slaves
+  pathnames
+}.each do |config|
+  cookbook_file "/etc/smokeping/config.d/#{config}" do
+    source config
     mode '0644'
     owner node.root_user
     group node.root_group
