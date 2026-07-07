@@ -23,7 +23,7 @@ hints_base = ::File.join(node.host_chef_base_path, FB::ChefHints::HINTS_BASE)
 directory hints_base do
   owner node.root_user
   group node.root_group
-  if node.windows?
+  if ChefUtils.windows?
     rights :read_execute, 'Everyone'
     rights :full_control, 'Administrators'
   else
