@@ -36,7 +36,7 @@ rhel_configs = {
       'missingok' => true,
       'sharedscripts' => true,
       'postrotate' => (node.systemd? ?
-         '/bin/systemctl kill -s HUP rsyslog || true' :
+         '/bin/systemctl reload rsyslog || true' :
          '(/bin/kill -HUP `cat /var/run/syslogd.pid 2> /dev/null` 2> ' +
          '/dev/null || true) && ' +
          '(/bin/kill -HUP `cat /var/run/rsyslogd.pid 2> /dev/null` 2> ' +
