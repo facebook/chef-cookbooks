@@ -210,6 +210,68 @@ node.default['fb_users']['users']['acidburn'] = {
 }
 ```
 
+### The `fb_users_user` resource
+
+As an alternative to populating `node['fb_users']['users']` directly, you may
+declare a user with the `fb_users_user` resource. It is a thin wrapper that, at
+compile time, writes the same entry into `node['fb_users']['users']`; the user
+is still created (or removed) by the `fb_users` recipe at converge time. Because
+the attribute is written at compile time, the resource behaves correctly no
+matter where it appears in the run list.
+
+```ruby
+fb_users_user 'john' do
+  gid 'users'
+  shell '/bin/zsh'
+  action :add
+end
+```
+
+is exactly equivalent to:
+
+```ruby
+node.default['fb_users']['users']['john'] = {
+  'gid' => 'users',
+  'shell' => '/bin/zsh',
+  'action' => :add,
+}
+```
+
+The resource name is the username. `action` may be `:add` (the default) or
+`:delete`. The supported properties map directly to the keys documented above:
+`gid`, `home`, `homedir_group`, `homedir_mode`, `manage_home`, `password`,
+`shell`, and `secure_token`.
+
+The advanced `only_if` / `notifies` keys are not exposed by this resource; use
+the attribute API for those.
+
+### The `fb_users_group` resource
+
+The group counterpart to `fb_users_user`, and an alternative to populating
+`node['fb_users']['groups']` directly. It writes the group entry at compile
+time; the group is created (or removed) by the `fb_users` recipe at converge
+time.
+
+```ruby
+fb_users_group 'admins' do
+  members ['john']
+  action :add
+end
+```
+
+is equivalent to:
+
+```ruby
+node.default['fb_users']['groups']['admins'] = {
+  'members' => ['john'],
+  'action' => :add,
+}
+```
+
+The resource name is the group name. `action` may be `:add` (the default) or
+`:delete`, and `members` is optional. As with `fb_users_user`, the `only_if` /
+`notifies` keys are not exposed; use the attribute API for those.
+
 ### Passwords in data_bags
 
 `fb_users` will also look for user passwords in a data_bag called
