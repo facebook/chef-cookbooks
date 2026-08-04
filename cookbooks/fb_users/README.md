@@ -262,15 +262,64 @@ end
 is equivalent to:
 
 ```ruby
-node.default['fb_users']['groups']['admins'] = {
-  'members' => ['john'],
-  'action' => :add,
-}
+node.default['fb_users']['groups']['admins']['members'] = ['john']
+node.default['fb_users']['groups']['admins']['action'] = :add
 ```
+
+Note that it writes one key at a time rather than replacing the whole entry,
+so it will not disturb keys it does not set.
 
 The resource name is the group name. `action` may be `:add` (the default) or
 `:delete`, and `members` is optional. As with `fb_users_user`, the `only_if` /
 `notifies` keys are not exposed; use the attribute API for those.
+
+#### Omitting `members` versus emptying it
+
+Properties are written into the group entry one key at a time, so anything the
+resource does not set is left as it was. Omitting `members` preserves whatever
+membership is already there; passing an empty array clears it.
+
+```ruby
+# leaves existing membership alone
+fb_users_group 'admins' do
+  action :add
+end
+
+# explicitly empties the group
+fb_users_group 'admins' do
+  members []
+  action :add
+end
+```
+
+This matters most around deletion, because `:delete` is a *state*, not an
+event. Only the final value of the attribute is converged, so a later `:add`
+cancels an earlier `:delete` outright and the group is never removed. That
+makes whatever the deleting recipe leaves in `members` the membership the
+re-adding recipe inherits:
+
+```ruby
+# recipe 1
+fb_users_group 'admins' do
+  members ['john']
+end
+
+# recipe 2 - omits members, so john rides through the round trip
+fb_users_group 'admins' do
+  action :delete
+end
+
+# recipe 3
+fb_users_group 'admins' do
+  action :add
+end
+
+# 'admins' is created with john still in it, and is never removed
+```
+
+Had recipe 2 passed `members []`, recipe 3 would leave `admins` empty. If a
+deletion should clobber membership no matter what runs after it, say so
+explicitly.
 
 ### Passwords in data_bags
 
@@ -366,6 +415,12 @@ Since initializing a group nicely involves setting `members` to an empty array
 so it may be appended to, we provide a simple method `FB::Users.initialize_group`
 which, *if* the group does not exist in the hash *or* was set to delete, will
 initialize it as an empty group to add.
+
+Because it seeds a `members` key, any group it has touched carries that key
+into a later `:delete` entry. That is allowed - `members`, `action`,
+`notifies` and `only_if` are the keys permitted on a group being removed, and
+`members` is ignored at converge time - but see the `fb_users_group` section
+above for what it means when the group is added back later in the run.
 
 #### FB::Users.uid_to_name(uid)
 

@@ -47,5 +47,10 @@ def after_created
   data = {}
   data['members'] = members unless members.nil?
   data['action'] = Array(action).first
-  node.default['fb_users']['groups'][groupname] = data
+
+  # We iterate over `data` Hash so that we can allow for nil `members` property
+  # that doesn't clobber *existing* group `members`
+  data.each do |k, v|
+    node.default['fb_users']['groups'][groupname][k] = v
+  end
 end

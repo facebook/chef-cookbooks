@@ -122,9 +122,17 @@ module FB
         end
 
         if info['action'] == :delete
-          if info.keys.count > 1
-            fail "fb_users[group]: Group #{group} has action :delete, but " +
-              "also other keys: #{info}"
+          # `only_if` guards the removal and `notifies` fires on it - see the
+          # group loop in the fb_users resource. `members` is ignored there,
+          # but callers need to be able to pass an empty one to clear
+          # membership a previous recipe left behind; see the fb_users_group
+          # section of the README.
+          allowed_remove_properties = %w{members action notifies only_if}
+          extra_keys = info.keys - allowed_remove_properties
+          unless extra_keys.empty?
+            fail "fb_users[group]: Group #{group} has action :delete with " +
+              "invalid keys: #{extra_keys}. Allowed keys are " +
+              allowed_remove_properties.to_s
           end
           next
         end
@@ -143,6 +151,8 @@ module FB
     end
 
     def self.initialize_group(node, group)
+      # This causes minor DMC flaps because it needs to check for group
+      # existence before it adds defaults. AFAIK it can't be helped -dcrosby
       if node['fb_users']['groups'][group] &&
           node['fb_users']['groups'][group]['action'] != :delete
         Chef::Log.debug(

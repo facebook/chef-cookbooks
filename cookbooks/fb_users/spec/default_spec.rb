@@ -105,5 +105,69 @@ recipe 'fb_users::default' do |_tc|
         )
       end
     end
+
+    context 'Group deletion validation' do
+      before(:each) do
+        stub_const('FB::Users::UID_MAP', {})
+        stub_const('FB::Users::GID_MAP', { 'testgroup' => { 'gid' => 4242 } })
+        node.default['fb_users'] = {
+          'user_defaults' => {},
+          'users' => {},
+          'groups' => {},
+        }
+      end
+
+      # `members` is meaningless once a group is being removed, but callers
+      # need to be able to pass an empty one to clear membership a previous
+      # recipe left behind - see the fb_users_group section of the README.
+      it 'should allow members alongside action on a delete' do
+        node.default['fb_users']['groups']['testgroup'] = {
+          'members' => [],
+          'action' => :delete,
+        }
+        expect { FB::Users._validate(node) }.not_to raise_error
+      end
+
+      it 'should allow a populated members list on a delete' do
+        node.default['fb_users']['groups']['testgroup'] = {
+          'members' => ['testuser'],
+          'action' => :delete,
+        }
+        expect { FB::Users._validate(node) }.not_to raise_error
+      end
+
+      # the converge path fires these on removal (resources/default.rb), so
+      # validation must let them reach it
+      it 'should allow notifies alongside action on a delete' do
+        node.default['fb_users']['groups']['testgroup'] = {
+          'action' => :delete,
+          'notifies' => {
+            'restart foo' => {
+              'resource' => 'service[foo]',
+              'action' => 'restart',
+            },
+          },
+        }
+        expect { FB::Users._validate(node) }.not_to raise_error
+      end
+
+      it 'should allow only_if alongside action on a delete' do
+        node.default['fb_users']['groups']['testgroup'] = {
+          'action' => :delete,
+          'only_if' => proc { true },
+        }
+        expect { FB::Users._validate(node) }.not_to raise_error
+      end
+
+      it 'should fail on keys outside the allowlist' do
+        node.default['fb_users']['groups']['testgroup'] = {
+          'gid' => 'testgroup',
+          'action' => :delete,
+        }
+        expect { FB::Users._validate(node) }.to raise_error(
+          RuntimeError, /has action :delete with invalid keys: \["gid"\]/
+        )
+      end
+    end
   end
 end

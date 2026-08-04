@@ -105,5 +105,113 @@ recipe 'fb_users::default' do |tc|
         'action' => :delete,
       )
     end
+
+    it 'preserves existing members when the resource omits members' do
+      chef_run.node.default['fb_users']['groups']['admins'] = {
+        'members' => ['john'],
+        'action' => :add,
+      }
+      build_resource(:fb_users_group, 'admins')
+      expect(chef_run.node['fb_users']['groups']['admins'].to_h).to eq(
+        'members' => ['john'],
+        'action' => :add,
+      )
+    end
+
+    it 'overwrites existing members when the resource sets them' do
+      chef_run.node.default['fb_users']['groups']['admins'] = {
+        'members' => ['john'],
+        'action' => :add,
+      }
+      build_resource(:fb_users_group, 'admins') do
+        members ['ada']
+      end
+      expect(chef_run.node['fb_users']['groups']['admins'].to_h).to eq(
+        'members' => ['ada'],
+        'action' => :add,
+      )
+    end
+
+    # Writing key-at-a-time means a :delete declared through the resource
+    # inherits whatever the attribute API already put on the entry. Validation
+    # has to tolerate the keys the converge path consumes on removal, or the
+    # whyrun_safe_ruby_block in the recipe aborts the whole run.
+    it 'does not trip validation when a delete inherits notifies' do
+      stub_const('FB::Users::UID_MAP', {})
+      stub_const('FB::Users::GID_MAP', { 'users' => { 'gid' => 100 } })
+      chef_run.node.default['fb_users']['groups']['admins'] = {
+        'members' => [],
+        'action' => :add,
+        'notifies' => {
+          'restart foo' => {
+            'resource' => 'service[foo]',
+            'action' => 'restart',
+          },
+        },
+      }
+      build_resource(:fb_users_group, 'admins') do
+        action :delete
+      end
+      entry = chef_run.node['fb_users']['groups']['admins']
+      expect(entry['action']).to eq(:delete)
+      expect(entry['notifies']['restart foo']['resource']).to eq('service[foo]')
+      expect { FB::Users._validate(chef_run.node) }.not_to raise_error
+    end
+
+    it 'preserves members seeded by initialize_group' do
+      FB::Users.initialize_group(chef_run.node, 'admins')
+      build_resource(:fb_users_group, 'admins') do
+        members ['ada']
+      end
+      build_resource(:fb_users_group, 'admins')
+      expect(chef_run.node['fb_users']['groups']['admins'].to_h).to eq(
+        'members' => ['ada'],
+        'action' => :add,
+      )
+    end
+  end
+
+  # Deletion is a *state*, not an event: only the final attribute value is
+  # converged, so a later :add cancels an earlier :delete outright and the
+  # group is never removed. That makes whatever the deleting recipe leaves in
+  # `members` the membership the re-adding recipe inherits.
+  context 'fb_users_group deleted and re-added' do
+    it 'keeps membership when the delete omits members' do
+      build_resource(:fb_users_group, 'admins') do
+        members ['john']
+      end
+      build_resource(:fb_users_group, 'admins') do
+        action :delete
+      end
+      expect(chef_run.node['fb_users']['groups']['admins'].to_h).to eq(
+        'members' => ['john'],
+        'action' => :delete,
+      )
+
+      build_resource(:fb_users_group, 'admins') do
+        action :add
+      end
+      expect(chef_run.node['fb_users']['groups']['admins'].to_h).to eq(
+        'members' => ['john'],
+        'action' => :add,
+      )
+    end
+
+    it 'clears membership when the delete passes an empty members' do
+      build_resource(:fb_users_group, 'admins') do
+        members ['john']
+      end
+      build_resource(:fb_users_group, 'admins') do
+        members []
+        action :delete
+      end
+      build_resource(:fb_users_group, 'admins') do
+        action :add
+      end
+      expect(chef_run.node['fb_users']['groups']['admins'].to_h).to eq(
+        'members' => [],
+        'action' => :add,
+      )
+    end
   end
 end

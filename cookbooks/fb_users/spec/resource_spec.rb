@@ -218,6 +218,12 @@ recipe 'fb_users::default' do |tc|
             'cleanup' => {
               'action' => :delete,
             },
+            # deliberately absent from GID_MAP: the delete path must not
+            # consult it, nor act on the leftover members
+            'staleteam' => {
+              'members' => ['testuser'],
+              'action' => :delete,
+            },
           },
         }
       end
@@ -349,6 +355,15 @@ recipe 'fb_users::default' do |tc|
 
       it 'deletes the group' do
         expect(chef_run).to remove_group('cleanup')
+      end
+
+      it 'deletes a group that still lists members' do
+        expect(chef_run).to remove_group('staleteam')
+        expect(chef_run).not_to create_group('staleteam')
+      end
+
+      it 'ignores members when deleting a group' do
+        expect(chef_run.group('staleteam').members).to eq([])
       end
 
       it 'notifies expected things' do
