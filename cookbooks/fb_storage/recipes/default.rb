@@ -56,7 +56,7 @@ end
 # Required by WDS hostagent to start. We make sure it exists.
 # It's created on the mclassica rootfs already, eventually this can be dropped
 # when the entire fleet will run on a recent enough rootfs
-if node.in_shard?(0)
+if node.in_shard?(9)
   node.default['fb_systemd']['tmpfiles']['/run/mdadm'] = {
     'type' => 'd',
     'mode' => '0710',
