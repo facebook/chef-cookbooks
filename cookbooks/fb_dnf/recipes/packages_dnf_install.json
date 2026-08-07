@@ -1,0 +1,20 @@
+{
+  "resources": [
+    {
+      "type": "package",
+      "name": [
+        "dnf-data",
+        "libcomps",
+        "libdnf",
+        "libsolv",
+        "python3-dnf",
+        "python3-dnf-plugins-core",
+        "python3-libcomps",
+        "dnf",
+        "dnf-plugins-core",
+        "dnf-utils"
+      ],
+      "action": ["install"]
+    }
+  ]
+}

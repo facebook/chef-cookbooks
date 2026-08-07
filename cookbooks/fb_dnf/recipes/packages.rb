@@ -18,23 +18,18 @@
 # limitations under the License.
 #
 
-dnf_packages = %w{
-  dnf-data
-  libcomps
-  libdnf
-  libsolv
-  python3-dnf
-  python3-dnf-plugins-core
-  python3-libcomps
-}
-
+# The dnf package stack is expressed as JSON recipes (packages_dnf_install /
+# packages_dnf5_install) so that Antlir image builds can pre-bake these RPMs
+# into the image instead of installing them on every run. The platform fork
+# stays here as compile-time Ruby (it depends only on stable node facts); the
+# manage_packages guard moves onto include_recipe_at_converge_time because JSON
+# recipes cannot carry only_if guards.
 if node.fedora_min_version?(41) || node.el_min_version?(11) || node.eln?
-  dnf_packages += %w{dnf5 dnf5-plugins}
+  include_recipe_at_converge_time 'fb_dnf::packages_dnf5_install' do
+    only_if { node['fb_dnf']['manage_packages'] }
+  end
 else
-  dnf_packages += %w{dnf dnf-plugins-core dnf-utils}
-end
-
-package dnf_packages do
-  only_if { node['fb_dnf']['manage_packages'] }
-  action :install
+  include_recipe_at_converge_time 'fb_dnf::packages_dnf_install' do
+    only_if { node['fb_dnf']['manage_packages'] }
+  end
 end
