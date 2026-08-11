@@ -56,14 +56,12 @@ end
 # Required by WDS hostagent to start. We make sure it exists.
 # It's created on the mclassica rootfs already, eventually this can be dropped
 # when the entire fleet will run on a recent enough rootfs
-if node.in_shard?(49)
-  node.default['fb_systemd']['tmpfiles']['/run/mdadm'] = {
-    'type' => 'd',
-    'mode' => '0710',
-    'uid' => node.root_user,
-    'gid' => node.root_group,
-  }
-end
+node.default['fb_systemd']['tmpfiles']['/run/mdadm'] = {
+  'type' => 'd',
+  'mode' => '0710',
+  'uid' => node.root_user,
+  'gid' => node.root_group,
+}
 
 whyrun_safe_ruby_block 'validate storage options' do
   not_if { node['fb_storage']['devices'].empty? }
