@@ -33,7 +33,7 @@ if node.macos?
 end
 
 whyrun_safe_ruby_block 'enforce ACL hardening' do
-  not_if { node.windows? }
+  not_if { ChefUtils.windows? }
   block do
     # Prepend this to whatever default the end-user overrode
     acl_entries = [
@@ -68,7 +68,7 @@ whyrun_safe_ruby_block 'enforce ACL hardening' do
 end
 
 template '/etc/ntp.conf' do
-  not_if { node.windows? }
+  not_if { ChefUtils.windows? }
   source 'ntp.conf.erb'
   owner node.root_user
   group node.root_group
@@ -110,7 +110,7 @@ end
 # You can't configure the service unless it's up, so this has to be
 # *after* the `service` call above. It does need to notify the service
 # as the commands make the change live and persistent.
-if node.windows?
+if ChefUtils.windows?
   fb_ntp_windows_config 'doit'
 end
 
