@@ -25,6 +25,7 @@ if node.rhel_family?
     '.font-unix',
     '.ICE-unix',
     '.Test-unix',
+    'systemd-private-*',   # systemd PrivateTmp= dirs; deleting these breaks ExecStop*
   ]
 elsif node.debian_family? || node.mac_os_x?
   excludes = [
