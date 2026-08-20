@@ -1,0 +1,16 @@
+<%# ~FC051 %>
+<% @indent = 1 if not @indent %>
+<% ind = '  ' * @indent %>
+<% @config.each do |key, val| %>
+<%   next if key.start_with?('_') %>
+<%   if val.is_a?(Array) %>
+<%=    ind %><%=      key  %> <%= val.join(' ') %>;
+<%   elsif val.is_a?(Hash) %>
+<%=    ind %><%=    key  %> {
+<%=    render 'nginx_hash.erb',
+         :variables => { :config => val, :indent => @indent + 1} -%>
+<%=    ind %>}
+<%   else %>
+<%=    ind %><%=      key  %> <%= val %>;
+<%   end %>
+<% end %>
