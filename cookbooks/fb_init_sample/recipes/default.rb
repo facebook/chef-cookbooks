@@ -53,7 +53,16 @@ if node.macos?
   include_recipe 'fb_launchd'
 end
 include_recipe 'fb_nsswitch'
-# HERE: ssh
+# On a normal system, systemd-tmp-files will create all this, but in a container
+# where ssh gets installed late, it doesn't exist, so we create it here
+if node.ubuntu? || node.debian?
+  directory '/run/sshd' do
+    owner node.root_user
+    group node.root_group
+    mode '0755'
+  end
+end
+include_recipe 'fb_ssh'
 include_recipe 'fb_less'
 if node.linux? && !node.embedded? && !node.container?
   include_recipe 'fb_ethtool'
