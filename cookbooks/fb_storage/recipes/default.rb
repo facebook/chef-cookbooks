@@ -64,7 +64,7 @@ node.default['fb_systemd']['tmpfiles']['/run/mdadm'] = {
 }
 
 # Required by WDS hostagent to start.
-if node.in_shard?(0)
+if node.in_shard?(9)
   node.default['fb_systemd']['tmpfiles']['/run/cryptsetup'] = {
     'type' => 'd',
     'mode' => '0700',
