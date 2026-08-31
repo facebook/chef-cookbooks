@@ -63,6 +63,16 @@ node.default['fb_systemd']['tmpfiles']['/run/mdadm'] = {
   'gid' => node.root_group,
 }
 
+# Required by WDS hostagent to start.
+if node.in_shard?(0)
+  node.default['fb_systemd']['tmpfiles']['/run/cryptsetup'] = {
+    'type' => 'd',
+    'mode' => '0700',
+    'uid' => node.root_user,
+    'gid' => node.root_group,
+  }
+end
+
 whyrun_safe_ruby_block 'validate storage options' do
   not_if { node['fb_storage']['devices'].empty? }
   block do
