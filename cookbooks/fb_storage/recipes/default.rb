@@ -64,14 +64,12 @@ node.default['fb_systemd']['tmpfiles']['/run/mdadm'] = {
 }
 
 # Required by WDS hostagent to start.
-if node.in_shard?(49)
-  node.default['fb_systemd']['tmpfiles']['/run/cryptsetup'] = {
-    'type' => 'd',
-    'mode' => '0700',
-    'uid' => node.root_user,
-    'gid' => node.root_group,
-  }
-end
+node.default['fb_systemd']['tmpfiles']['/run/cryptsetup'] = {
+  'type' => 'd',
+  'mode' => '0700',
+  'uid' => node.root_user,
+  'gid' => node.root_group,
+}
 
 whyrun_safe_ruby_block 'validate storage options' do
   not_if { node['fb_storage']['devices'].empty? }
