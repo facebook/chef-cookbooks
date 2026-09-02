@@ -1313,6 +1313,21 @@ class Chef
       end
     end
 
+    # Returns the version-release of an rpm installed, or nil if not present,
+    # read from the package snapshot ohai took at the start of the run.
+    #
+    # Unlike `rpm_version` this does not follow changes made to the rpm
+    # database during the run, but it also does not talk to the package
+    # manager. The first `rpm_version` call in a run has to build the whole
+    # package manager cache, which is expensive, so prefer this whenever a
+    # snapshot is good enough - see the `rpm_version` entry in the README.
+    def rpm_version_from_ohai(name)
+      pkg = self['packages']&.dig(name)
+      return nil unless pkg && pkg['version']
+
+      [pkg['version'], pkg['release']].compact.reject(&:empty?).join('-')
+    end
+
     def selinux_mode
       self['selinux']['status']['current_mode'] || 'unknown'
     end

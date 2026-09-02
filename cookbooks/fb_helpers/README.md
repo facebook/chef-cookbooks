@@ -468,8 +468,17 @@ your node.
 * `node.rpm_version(name)`
    Returns the version of an RPM if installed, or `nil` if not installed. This
    method follows changes to the RPM database during a run if a package is
-   installed or removed. For most use cases, please use `node['packages']` as
-   it is cheaper.
+   installed or removed. For most use cases, please use
+   `node.rpm_version_from_ohai(name)` as it is cheaper.
+
+* `node.rpm_version_from_ohai(name)`
+   Returns the version-release of an RPM if installed, or `nil` if not
+   installed, read from the package snapshot ohai took at the start of the run.
+   Prefer this over `node.rpm_version`: the first `rpm_version` call in a run
+   has to build the whole package manager cache, which can take several
+   seconds. The tradeoff is that this does not see packages installed or
+   removed during the run, so use `node.rpm_version` when you need a live
+   answer - for example inside a resource action or a `not_if`/`only_if`.
 
 * `node.selinux_mode`
    Returns the current SELinux mode (one of `enforcing`, `permissive`,

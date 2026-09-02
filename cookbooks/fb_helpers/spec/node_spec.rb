@@ -377,4 +377,64 @@ describe 'Chef::Node' do
       expect(node.domain_controller?).to eq(true)
     end
   end
+
+  context 'Chef::Node.rpm_version_from_ohai' do
+    it 'should join version and release the way rpm_version does' do
+      node.automatic['packages']['python3-rpm'] = {
+        'epoch' => '0',
+        'version' => '4.19.1.1',
+        'release' => '14.1.hsx.el10',
+        'arch' => 'x86_64',
+      }
+      expect(node.rpm_version_from_ohai('python3-rpm')).
+        to eq('4.19.1.1-14.1.hsx.el10')
+    end
+
+    it 'should return just the version when release is empty' do
+      node.automatic['packages']['somepkg'] = {
+        'version' => '1.2.3',
+        'release' => '',
+      }
+      expect(node.rpm_version_from_ohai('somepkg')).to eq('1.2.3')
+    end
+
+    it 'should return just the version when release is missing' do
+      node.automatic['packages']['somepkg'] = { 'version' => '1.2.3' }
+      expect(node.rpm_version_from_ohai('somepkg')).to eq('1.2.3')
+    end
+
+    it 'should return nil for a package that is not installed' do
+      node.automatic['packages']['somepkg'] = {
+        'version' => '1.2.3',
+        'release' => '1',
+      }
+      expect(node.rpm_version_from_ohai('otherpkg')).to eq(nil)
+    end
+
+    it 'should return nil when ohai collected no package data' do
+      expect(node.rpm_version_from_ohai('somepkg')).to eq(nil)
+    end
+
+    it 'should return nil when the entry has no version' do
+      node.automatic['packages']['somepkg'] = { 'arch' => 'x86_64' }
+      expect(node.rpm_version_from_ohai('somepkg')).to eq(nil)
+    end
+
+    # When more than one version/arch of a package is installed ohai keeps a
+    # 'versions' array and the top-level keys hold whichever entry `rpm -qa`
+    # emitted last. We deliberately read the top-level keys and do not try to
+    # pick a "best" one - callers that care must look at 'versions' themselves.
+    it 'should use the top-level keys for a multi-arch package' do
+      node.automatic['packages']['openssl'] = {
+        'version' => '3.5.5',
+        'release' => '1',
+        'arch' => 'i686',
+        'versions' => [
+          { 'version' => '3.5.5', 'release' => '1', 'arch' => 'x86_64' },
+          { 'version' => '3.5.5', 'release' => '1', 'arch' => 'i686' },
+        ],
+      }
+      expect(node.rpm_version_from_ohai('openssl')).to eq('3.5.5-1')
+    end
+  end
 end
