@@ -55,6 +55,7 @@
     "fb_sdparm": ">= 0.0.0",
     "fb_securetty": ">= 0.0.0",
     "fb_smartmon": ">= 0.0.0",
+    "fb_ssh": ">= 0.0.0",
     "fb_storage": ">= 0.0.0",
     "fb_stunnel": ">= 0.0.0",
     "fb_sudo": ">= 0.0.0",
