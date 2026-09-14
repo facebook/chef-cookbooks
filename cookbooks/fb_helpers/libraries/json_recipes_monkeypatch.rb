@@ -14,21 +14,51 @@
 # limitations under the License.
 #
 # Monkey patches to bring https://github.com/chef/chef/pull/15094
-# into older Chef
+# into older Chef and support Meta-specific JSON recipe value substitutions.
 #
 if Chef::VERSION < '16'
   # The `from_hash` functionality that YAML and JSON recipes use was added in Chef 16
   Chef::Log.warn('[fb_helpers] Not loading JSON recipe monkeypatch,')
   Chef::Log.warn('[fb_helpers] unsupported below Chef client version 16')
   return
-elsif Chef::VERSION >= '19.1.53' || Chef::VERSION >= '18.7.28'
-  Chef::Log.info('[fb_helpers] Not loading JSON recipe monkeypatch,')
-  Chef::Log.info("[fb_helpers] since it's already in this version of Chef")
+end
+
+# rubocop:disable all
+class Chef
+  class Recipe
+    JSON_RECIPE_VALUE_SUBSTITUTIONS = {
+      "@node.root_user"  => -> { ::Chef.node.root_user },
+      "@node.root_group" => -> { ::Chef.node.root_group },
+    }.freeze
+
+    def from_hash(hash)
+      hash["resources"]&.each do |rhash|
+        type = rhash.delete("type").to_sym
+        name = rhash.delete("name")
+        res = declare_resource(type, name)
+        rhash.each do |key, value|
+          if JSON_RECIPE_VALUE_SUBSTITUTIONS.key?(value)
+            new_value = JSON_RECIPE_VALUE_SUBSTITUTIONS[value].call
+            Chef::Log.debug("Substituting #{value} with #{new_value} in #{type}[#{name}].#{key}")
+            value = new_value
+          end
+          # FIXME?: we probably need a way to instance_exec a string that contains block code against the property?
+          res.send(key, value)
+        end
+      end
+      hash["include_recipes"]&.each do |recipe|
+        run_context.include_recipe recipe
+      end
+    end
+  end
+end
+
+if Chef::VERSION >= '19.1.53' || Chef::VERSION >= '18.7.28'
+  Chef::Log.info('[fb_helpers] Already loaded Meta-specific JSON recipe substitutions')
   return
 end
 Chef::Log.info('[fb_helpers] Loading JSON recipe monkeypatch')
 
-# rubocop:disable all
 class Chef
   class CookbookVersion
     # Note - this is the only modified method on the upstream release
@@ -80,11 +110,6 @@ class Chef
   end
 
   class Recipe
-    JSON_RECIPE_VALUE_SUBSTITUTIONS = {
-      "@node.root_user"  => -> { ::Chef.node.root_user },
-      "@node.root_group" => -> { ::Chef.node.root_group },
-    }.freeze
-
     def from_json_file(filename)
       self.source_file = filename
       if File.file?(filename) && File.readable?(filename)
@@ -102,27 +127,6 @@ class Chef
       end
 
       from_hash(res)
-    end
-
-
-    def from_hash(hash)
-      hash["resources"]&.each do |rhash|
-        type = rhash.delete("type").to_sym
-        name = rhash.delete("name")
-        res = declare_resource(type, name)
-        rhash.each do |key, value|
-          if JSON_RECIPE_VALUE_SUBSTITUTIONS.key?(value)
-            new_value = JSON_RECIPE_VALUE_SUBSTITUTIONS[value].call
-            Chef::Log.debug("Substituting #{value} with #{new_value} in #{type}[#{name}].#{key}")
-            value = new_value
-          end
-          # FIXME?: we probably need a way to instance_exec a string that contains block code against the property?
-          res.send(key, value)
-        end
-      end
-      hash["include_recipes"]&.each do |recipe|
-        run_context.include_recipe recipe
-      end
     end
   end
 end
