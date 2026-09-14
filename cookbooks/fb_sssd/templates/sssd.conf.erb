@@ -1,0 +1,7 @@
+# This file is managed by Chef, do not edit manually!
+<% node['fb_sssd']['config'].each do |section, conf| %>
+[<%= section %>]
+<%   conf.each do |key, val| %>
+<%=    key %> = <%= val.is_a?(Array) ? val.join(', ') : val %>
+<%   end %>
+<% end %>
