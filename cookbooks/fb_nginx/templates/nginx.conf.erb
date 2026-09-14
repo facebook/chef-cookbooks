@@ -1,0 +1,19 @@
+<%# ~FC051 %>
+# This file is managed by Chef, do not modify!
+<% node['fb_nginx']['config'].each do |section, config| %>
+<%   if section == '_global' %>
+<%     indent = 0 %>
+<%   else %>
+<%     indent = 1 %>
+<%=    section %> {
+<%   end %>
+<%=  render "nginx_hash.erb",
+       :variables => { :config => config, :indent => indent } -%>
+<%   if section == 'http' %>
+  include <%= @sitesdir %>/fb_sites.conf;
+<%   end %>
+<%   unless section == '_global' %>
+}
+<%   end %>
+
+<% end %>

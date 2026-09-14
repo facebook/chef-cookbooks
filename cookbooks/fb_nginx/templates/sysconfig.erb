@@ -1,0 +1,6 @@
+# This file is controlled by Chef do not edit!
+<% node['fb_nginx']['sysconfig'].to_hash.each do |key, val| %>
+<%   next if val.empty? %>
+<%   val = val.join(' ') if val.is_a?(Array) %>
+<%=  key.upcase %>="<%= val %>"
+<% end %>
