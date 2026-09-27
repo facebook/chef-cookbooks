@@ -30,7 +30,7 @@ default['fb_opendkim'] = {
     'UserID' => 'opendkim',
     'UMask' => '007',
     'Socket' => "local:#{rundir}/opendkim.sock",
-    'PidFile' => '/run/opendkim/opendkim.pid',
+    'PidFile' => "#{rundir}/opendkim.pid",
     'TrustAnchorFile' => '/usr/share/dns/root.key',
   },
   'sysconfig' => {
