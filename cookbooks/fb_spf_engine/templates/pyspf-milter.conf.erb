@@ -1,0 +1,6 @@
+# This file is controlled by Chef, do not modify!
+<% node['fb_spf_engine']['config'].keys.sort.each do |key| %>
+<%   val = node['fb_spf_engine']['config'][key] %>
+<%   myval = val.is_a?(Array) ? val.join(',') : val %>
+<%=  key %> = <%= myval %>
+<% end %>
