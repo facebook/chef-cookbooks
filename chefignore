@@ -29,6 +29,15 @@ lib/arcanist/.phutil_module_cache
 *.tfstate.backup
 .terraform/
 
+# LLM agent rules and skills #
+##############################
+# Repo-local guidance for AI coding agents. Useful when editing a cookbook,
+# useless once it is uploaded, so keep it out of the shipped cookbook.
+# Globs are anchored at the cookbook root, so the second entry is needed for
+# directories nested below it, the same way */.hg/* is needed below.
+.llms/*
+*/.llms/*
+
 # OS generated files #
 ######################
 .DS_Store
