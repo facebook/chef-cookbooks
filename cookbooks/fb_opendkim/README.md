@@ -41,3 +41,53 @@ You can customize some options that the Unit file will read in the
 `node['fb_opendkim']['sysconfig']` hash. Note that if you specify `socket`, it
 will override the socket in the config file, and for this reason we recommend
 not setting socket here.
+
+### Using with `fb_postfix`
+
+To use this with `fb_postfix`, there are a few necessary steps:
+
+Create a directory in postfix's chroot for the socket and set the milter
+to put its socket there:
+
+```ruby
+rundir = '/var/spool/postfix/opendkim'
+directory rundir do
+  owner 'opendkim'
+  group 'postfix'
+  mode '0750'
+end
+
+node.default['fb_opendkim']['sysconfig']['rundir'] = rundir
+node.default['fb_opendkim']['config']['Socket'] =
+  "local:#{rundir}/opendkim.sock"
+```
+
+Make sure the `postfix` user is in the `opendkim` group:
+
+```ruby
+group 'opendkim' do
+  members 'postfix'
+end
+```
+
+Or, if you use `fb_users`, then:
+
+```ruby
+node.default['fb_users']['groups']['opendkim']['members'] << 'postfix'
+```
+
+Finally, add the milter to postfix's `smtpd_milters`:
+
+```ruby
+node.default['fb_postfix']['main.cf']['smtpd_milters'] =
+  'local:opendkim/opendkim.sock'
+```
+
+If you're using `fb_spf_engine` as well, make sure that opendkim is first:
+
+```ruby
+node.default['fb_postfix']['main.cf']['smtpd_milters'] = [
+  'local:opendkim/opendkim.sock',
+  'local:spf_engine/pyspf-milter.sock',
+].join(',')
+```
