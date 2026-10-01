@@ -78,7 +78,7 @@ module FB
 
     def self.gen_repo_entry(node, name, config = {})
       out = "\n[#{name}]\n"
-      self.gen_repo_config(node, name, config).each do |key, val|
+      self.gen_repo_config(node, name, config).sort.each do |key, val|
         v = self.gen_config_value(key, val)
         out += "#{key}=#{v}\n"
       end
