@@ -18,7 +18,11 @@
 # rubocop:disable Chef/Meta/RemoveStateFromAttributes
 excludes = []
 directories = {}
-if node.rhel_family?
+# tmpwatch platforms: the recipe treats the 'rhel' and 'fedora' platform
+# families alike, so the excludes must too. Fedora is its own platform_family
+# and is NOT node.rhel_family?; leaving it out silently dropped every exclude
+# (including systemd-private-*) on Fedora workstations.
+if node.rhel_family? || node.fedora?
   excludes = [
     '.X11-unix',
     '.XIM-unix',
