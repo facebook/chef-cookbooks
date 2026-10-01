@@ -87,6 +87,7 @@ action :run do
   storage.config.each_key do |device|
     dev = FB::Storage.device_name_from_path(device)
 
+    # rubocop:todo Chef/Meta/UseHostProfilesForSysctlSysfs
     if node['fb_storage']['tuning']['scheduler']
       fb_sysfs "/sys/block/#{dev}/queue/scheduler" do
         # Kernels prior to 4.11 do not have multi-queue support - t19377518
@@ -102,9 +103,11 @@ action :run do
         value node['fb_storage']['tuning']['queue_depth']
       end
     end
+    # rubocop:enable Chef/Meta/UseHostProfilesForSysctlSysfs
 
     if node['fb_storage']['tuning']['discard_max_bytes']
       fname = "/sys/block/#{dev}/device/discard_max_bytes"
+      # rubocop:todo Chef/Meta/UseHostProfilesForSysctlSysfs
       fb_sysfs fname do
         only_if do
           # Only enables this setting when file exists and
@@ -120,6 +123,7 @@ action :run do
         type :int
         value node['fb_storage']['tuning']['discard_max_bytes']
       end
+      # rubocop:enable Chef/Meta/UseHostProfilesForSysctlSysfs
     end
 
     # put a hard maximum on max_sectors_kb for nvme devices by default
@@ -166,6 +170,7 @@ action :run do
         max_sectors_kb = max_hw_sectors_kb
       end
 
+      # rubocop:todo Chef/Meta/UseHostProfilesForSysctlSysfs
       fb_sysfs "/sys/block/#{dev}/queue/max_sectors_kb" do
         # Due to a bug the kernel will override user settings every time the
         # driver revalidates the namespace, so don't bother with nvme devs
@@ -174,6 +179,7 @@ action :run do
         value max_sectors_kb
         ignore_failure ignore_failure # rubocop:disable Chef/Meta/DontIgnoreFailures
       end
+      # rubocop:enable Chef/Meta/UseHostProfilesForSysctlSysfs
     end
   end
 end

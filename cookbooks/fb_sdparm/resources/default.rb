@@ -139,9 +139,11 @@ action :set do
       end
     end
     desired_cache_type, cache_type_path = get_cache_type_desired_and_path(disk)
+    # rubocop:todo Chef/Meta/UseHostProfilesForSysctlSysfs
     fb_sysfs cache_type_path do
       type :string
       value desired_cache_type + "\n"
     end
+    # rubocop:enable Chef/Meta/UseHostProfilesForSysctlSysfs
   end
 end
