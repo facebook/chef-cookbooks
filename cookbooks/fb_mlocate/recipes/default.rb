@@ -28,6 +28,7 @@ end
 # node['fb_mlocate']['want_mlocate']
 
 conf_path = '/etc/updatedb.conf'
+locate_package = node.el_min_version?(10) ? 'plocate' : 'mlocate'
 
 include_recipe 'fb_mlocate::packages'
 
@@ -40,9 +41,9 @@ template conf_path do
   action :create
 end
 
-package 'remove mlocate' do
+package "remove #{locate_package}" do
   not_if { node['fb_mlocate']['want_mlocate'] }
-  package_name 'mlocate'
+  package_name locate_package
   action :remove
 end
 
@@ -59,7 +60,12 @@ end
   end
 end
 
-if node.centos8? || node.centos9?
+if node.el_min_version?(10)
+  systemd_unit 'plocate-updatedb.timer' do
+    only_if { node['fb_mlocate']['want_mlocate'] }
+    action [:enable, :start]
+  end
+elsif node.centos8? || node.centos9?
   systemd_unit 'mlocate-updatedb.timer' do
     only_if { node['fb_mlocate']['want_mlocate'] }
     action [:enable, :start]

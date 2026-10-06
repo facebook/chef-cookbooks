@@ -31,6 +31,20 @@ recipe 'fb_mlocate::packages', :unsupported => [:mac_os_x] do |tc|
     end
   end
 
+  context 'on CentOS 10' do
+    before do
+      chef_run.node.stub(:el_min_version?).with(10).and_return(true)
+    end
+
+    it 'upgrades plocate instead of the unavailable mlocate package' do
+      chef_run.converge(described_recipe) do |node|
+        node.default['fb_mlocate']['want_mlocate'] = true
+      end
+      expect(chef_run).to upgrade_package('plocate')
+      expect(chef_run).not_to upgrade_package('mlocate')
+    end
+  end
+
   context 'when want_mlocate is false' do
     it 'does not upgrade the mlocate package' do
       chef_run.converge(described_recipe) do |node|

@@ -35,6 +35,22 @@ recipe 'fb_mlocate::default', :unsupported => [:mac_os_x] do |tc|
     end
   end
 
+  context 'on CentOS 10' do
+    before do
+      chef_run.node.stub(:el_min_version?).with(10).and_return(true)
+      chef_run.node.stub(:centos8?).and_return(false)
+      chef_run.node.stub(:centos9?).and_return(false)
+    end
+
+    it 'enables and starts the plocate timer' do
+      chef_run.converge(described_recipe) do |node|
+        node.default['fb_mlocate']['want_mlocate'] = true
+      end
+      expect(chef_run).to enable_systemd_unit('plocate-updatedb.timer')
+      expect(chef_run).to start_systemd_unit('plocate-updatedb.timer')
+    end
+  end
+
   context 'on unsupported CentOS releases' do
     before do
       chef_run.node.stub(:centos8?).and_return(false)
