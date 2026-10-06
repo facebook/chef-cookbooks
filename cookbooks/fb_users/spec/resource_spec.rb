@@ -94,14 +94,9 @@ recipe 'fb_users::default' do |tc|
     }
   end
 
-  let(:mock_db_item) { { 'password' => 'w000t' } }
-  let(:mock_fb_users_db) { { 'complex' => mock_db_item } }
-
   before(:example) do
     stub_const('FB::Users::UID_MAP', uid_map)
     stub_const('FB::Users::GID_MAP', gid_map)
-    stub_data_bag('fb_users_auth').and_return(mock_fb_users_db)
-    stub_data_bag_item('fb_users_auth', 'complex').and_return(mock_db_item)
   end
 
   context 'with user_defaults' do
@@ -263,14 +258,14 @@ recipe 'fb_users::default' do |tc|
         )
       end
 
-      it 'uses the password from the databag if it exists' do
+      it 'does not set a password if none was provided to the api' do
         expect(chef_run).to create_user('complex').with(
           :uid => 77,
           :gid => 7777,
           :shell => '/bin/myshell',
           :home => '/var/localhome/complex',
           :manage_home => true,
-          :password => 'w000t',
+          :password => nil,
           :comment => 'look a testuser',
         )
       end

@@ -321,27 +321,6 @@ Had recipe 2 passed `members []`, recipe 3 would leave `admins` empty. If a
 deletion should clobber membership no matter what runs after it, say so
 explicitly.
 
-### Passwords in data_bags
-
-`fb_users` will also look for user passwords in a data_bag called
-`fb_users_auth`. The node takes precedent, but if no password is set there,
-then data_bags will be checked. This feature is to allow automation of password
-generation or syncing.
-
-To use this the item must be named the same as the user, and the element inside
-of the item should be `password`. For example,
-`data_bags/fb_users_auth/testuser.json` might have the content:
-
-```json
-{"id":"testuser","password":<encryptedpassword>}
-```
-
-An encrypted password string suitable for passing to the Chef `user` resource
-is expected.
-
-If a password is not found in either the node or a data_bag, no password is
-set and the user will not be to authenticate via password.
-
 ### Defaults for users
 
 Values not specified for users will be handled as follows:

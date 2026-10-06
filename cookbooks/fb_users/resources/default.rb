@@ -78,12 +78,6 @@ action :manage do
     bootstrap_pgroups
   end
 
-  begin
-    data_bag_passwords = data_bag('fb_users_auth')
-  rescue Net::HTTPServerException
-    data_bag_passwords = {}
-  end
-
   set_passwords = !ChefUtils.windows? || node['fb_users']['set_passwords_on_windows']
 
   # Now we can add all the users
@@ -135,10 +129,6 @@ action :manage do
     end
 
     pass = info['password']
-    if !pass && data_bag_passwords.include?(username)
-      Chef::Log.debug("fb_users[#{username}]: Using password from data_bag")
-      pass = data_bag_item('fb_users_auth', username)['password']
-    end
 
     # disabling fc009 because it triggers on 'secure_token' below which
     # is already guarded by a version 'if'
