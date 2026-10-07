@@ -27,6 +27,9 @@ recipe 'fb_timers::default', :unsupported => [:mac_os_x] do |tc|
   let(:timer_jobs) { %w{multiple simple complex params onboot} }
 
   before do
+    allow(::Dir).to receive(:glob).and_call_original
+    allow(File).to receive(:symlink?).and_call_original
+    allow(File).to receive(:readlink).and_call_original
     [t_path, s_path].each do |path|
       allow(::Dir).to receive(:glob).with("#{path}*").
         and_return(dir_content.map { |f| "#{path}#{f}" })
