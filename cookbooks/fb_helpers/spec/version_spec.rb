@@ -97,3 +97,66 @@ describe FB::Version do
     end
   end
 end
+
+describe FB::RpmVersion do
+  def rv(s)
+    FB::RpmVersion.new(s)
+  end
+
+  # rubocop:disable Lint/BinaryOperatorWithIdenticalOperands,Style/CaseEquality
+  it 'compares version before release' do
+    expect(rv('0.7-2') <=> rv('0.7.1-1')).to eq(-1)
+    expect(rv('0.7-2.el10_4') <=> rv('0.7.1-1.el10_4')).to eq(-1)
+    expect(rv('0.7-2.hsx.el9') <=> rv('0.7.1-1.hsx.el9')).to eq(-1)
+    expect(rv('0.7.1-1') > rv('0.7-2')).to eq(true)
+  end
+
+  it 'compares releases when versions match' do
+    expect(rv('6.9.0-0_fbk2') <=> rv('6.9.0-0_fbk3')).to eq(-1)
+    expect(rv('3.6.8-56.el8_10.0') <=> rv('3.6.8-51.el8_9.2')).to eq(1)
+  end
+
+  it 'sorts a missing release before any release' do
+    expect(rv('1.0') <=> rv('1.0-1')).to eq(-1)
+    expect(rv('1.0-') <=> rv('1.0')).to eq(0)
+  end
+
+  it 'handles epochs' do
+    expect(rv('1:1.0') <=> rv('2.0')).to eq(1)
+    expect(rv('0:1.0') <=> rv('1.0')).to eq(0)
+  end
+
+  it 'ignores leading zeros' do
+    expect(rv('1.0') <=> rv('1.00')).to eq(0)
+    expect(rv('550.90.07') <=> rv('550.90.7')).to eq(0)
+  end
+
+  it 'handles alpha segments' do
+    expect(rv('1.a') <=> rv('1.1')).to eq(-1)
+    expect(rv('1.a') <=> rv('1.b')).to eq(-1)
+  end
+
+  it 'handles tilde and caret' do
+    expect(rv('1.0~rc1') <=> rv('1.0')).to eq(-1)
+    expect(rv('1.0~rc1') <=> rv('1.0~rc2')).to eq(-1)
+    expect(rv('1.0^git1') <=> rv('1.0')).to eq(1)
+    expect(rv('1.0^git1') <=> rv('1.0.1')).to eq(-1)
+  end
+
+  it 'compares against nil, strings and FB::Version' do
+    expect(rv('1.0') <=> nil).to eq(1)
+    expect(rv(nil) <=> rv(nil)).to eq(0)
+    expect(rv('0.7-2') <=> '0.7.1-1').to eq(-1)
+    expect(rv('0.7-2') <=> FB::Version.new('0.7.1-1')).to eq(-1)
+  end
+
+  it 'keeps loose matching from FB::Version' do
+    expect(rv('1.2.36') === rv('1.2')).to eq(true)
+    expect(rv('1.2.36') === rv('1.1')).to eq(false)
+  end
+
+  it 'differs from FB::Version when the version gains a component' do
+    expect(FB::Version.new('0.7-2') <=> FB::Version.new('0.7.1-1')).to eq(1)
+  end
+  # rubocop:enable Lint/BinaryOperatorWithIdenticalOperands,Style/CaseEquality
+end

@@ -759,4 +759,130 @@ If the has is specified, it takes one or more of the following keys:
       @string_form
     end
   end
+
+  # Version comparison following RPM (`rpmdev-vercmp`) semantics: the string
+  # is parsed as `[epoch:]version[-release]`, and epoch, version and release
+  # are compared in that order using `rpmvercmp`. Unlike `FB::Version`, the
+  # release is not flattened into the version, so:
+  #   RpmVersion.new('0.7-2') < RpmVersion.new('0.7.1-1')
+  #   => true
+  #   Version.new('0.7-2') < Version.new('0.7.1-1')
+  #   => false
+  # Loose matching (`===`) behaves like `FB::Version`.
+  class RpmVersion < Version
+    def evr
+      @evr ||= self.class.parse_evr(@string_form)
+    end
+
+    # Split `[epoch:]version[-release]` the way `rpmdev-vercmp` does: the
+    # epoch is everything before the first ':', and the release is
+    # everything after the first '-' following it. An empty release is
+    # treated as missing.
+    def self.parse_evr(s)
+      epoch, sep, rest = s.to_s.partition(':')
+      if sep.empty?
+        rest = epoch
+        epoch = ''
+      end
+      version, _sep, release = rest.partition('-')
+      [epoch.empty? ? '0' : epoch, version, release.empty? ? nil : release]
+    end
+
+    RPM_SEPARATOR = /[^0-9A-Za-z~^]/.freeze
+    RPM_DIGIT = /[0-9]/.freeze
+    RPM_ALPHA = /[A-Za-z]/.freeze
+
+    # Port of rpm's `rpmvercmp()` (lib/rpmvercmp.c), including the `~`
+    # (sorts before anything) and `^` (sorts after the base version)
+    # separators. Returns -1, 0 or 1.
+    def self.rpmvercmp(a, b)
+      return 0 if a == b
+
+      i = 0
+      j = 0
+      la = a.length
+      lb = b.length
+      while i < la || j < lb
+        i += 1 while i < la && a[i].match?(RPM_SEPARATOR)
+        j += 1 while j < lb && b[j].match?(RPM_SEPARATOR)
+        ca = a[i]
+        cb = b[j]
+
+        if ca == '~' || cb == '~'
+          return 1 if ca != '~'
+          return -1 if cb != '~'
+
+          i += 1
+          j += 1
+          next
+        end
+
+        if ca == '^' || cb == '^'
+          return -1 if ca.nil?
+          return 1 if cb.nil?
+          return 1 if ca != '^'
+          return -1 if cb != '^'
+
+          i += 1
+          j += 1
+          next
+        end
+
+        break if ca.nil? || cb.nil?
+
+        isnum = ca.match?(RPM_DIGIT)
+        seg_class = isnum ? RPM_DIGIT : RPM_ALPHA
+        si = i
+        sj = j
+        i += 1 while i < la && a[i].match?(seg_class)
+        j += 1 while j < lb && b[j].match?(seg_class)
+        seg_a = a[si...i]
+        seg_b = b[sj...j]
+
+        # Segments of different types: numeric is newer than alpha.
+        return isnum ? 1 : -1 if seg_b.empty?
+
+        if isnum
+          seg_a = seg_a.sub(/\A0+/, '')
+          seg_b = seg_b.sub(/\A0+/, '')
+          if seg_a.length != seg_b.length
+            return seg_a.length <=> seg_b.length
+          end
+        end
+        rc = seg_a <=> seg_b
+        return rc unless rc.zero?
+      end
+
+      return 0 if i >= la && j >= lb
+
+      i >= la ? -1 : 1
+    end
+
+    # Mirrors rpm's `labelCompare()`: a missing release sorts before any
+    # release.
+    def self.compare_evr(a, b)
+      rc = rpmvercmp(a[0], b[0])
+      return rc unless rc.zero?
+
+      rc = rpmvercmp(a[1], b[1])
+      return rc unless rc.zero?
+
+      return 0 if a[2].nil? && b[2].nil?
+      return -1 if a[2].nil?
+      return 1 if b[2].nil?
+
+      rpmvercmp(a[2], b[2])
+    end
+
+    def compare(other, exact = true)
+      return super unless exact
+
+      unless other.is_a?(FB::RpmVersion)
+        other = FB::RpmVersion.new(other.is_a?(FB::Version) ? other.to_s : other)
+      end
+      self.class.compare_evr(evr, other.evr)
+    end
+
+    alias_method '<=>', :compare
+  end
 end

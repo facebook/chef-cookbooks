@@ -699,6 +699,20 @@ The following methods are available:
    => false
    ```
 
+* `FB::RpmVersion.new(version)`
+   Like `FB::Version`, but comparisons follow RPM (`rpmdev-vercmp`)
+   semantics: strings are parsed as `[epoch:]version[-release]`, and epoch,
+   version, and release are compared in that order with `rpmvercmp`
+   (including `~` and `^`). A version with no release sorts before the same
+   version with a release. Use it for package versions:
+
+   ```ruby
+   FB::RpmVersion.new('0.7-2') < FB::RpmVersion.new('0.7.1-1')
+   => true
+   FB::Version.new('0.7-2') < FB::Version.new('0.7.1-1')
+   => false
+   ```
+
 ### Custom resources
 The following custom resources are available
 
