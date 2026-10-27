@@ -1,0 +1,12 @@
+{
+  "resources": [
+    {
+      "type": "cookbook_file",
+      "name": "/etc/ld.so.conf",
+      "source": "ld.so.conf",
+      "owner": "@node.root_user",
+      "group": "@node.root_group",
+      "mode": "0644"
+    }
+  ]
+}

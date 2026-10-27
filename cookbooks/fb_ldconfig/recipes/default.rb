@@ -28,11 +28,13 @@ execute 'ldconfig' do
   action :nothing
 end
 
-cookbook_file '/etc/ld.so.conf' do
-  source 'ld.so.conf'
-  owner node.root_user
-  group node.root_group
-  mode '0644'
+# Lives in a JSON recipe so the image build can bake it. JSON recipes can't
+# notify, so the notify_group relays a change to ldconfig.
+include_recipe 'fb_ldconfig::ld_so_conf_install'
+
+notify_group 'run ldconfig after an ld.so.conf change' do
+  action :nothing
+  subscribes :run, 'cookbook_file[/etc/ld.so.conf]', :immediately
   # immediately because stuff in the run probably needs this
   notifies :run, 'execute[ldconfig]', :immediately
 end
