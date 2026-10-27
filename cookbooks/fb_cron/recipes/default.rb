@@ -140,12 +140,8 @@ if root_crontab
   end
 end
 
-cookbook_file '/usr/local/bin/exclusive_cron.sh' do
-  source 'exclusive_cron.sh'
-  owner node.root_user
-  group node.root_group
-  mode '0755'
-end
+# Lives in a JSON recipe so the image build can bake it.
+include_recipe 'fb_cron::exclusive_cron_install'
 
 if node.macos?
   cookbook_file '/usr/local/bin/osx_make_crond.sh' do

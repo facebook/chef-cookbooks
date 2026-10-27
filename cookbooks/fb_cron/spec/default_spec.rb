@@ -20,6 +20,13 @@ require './spec/spec_helper'
 recipe 'fb_cron::default' do |tc|
   let(:chef_run) { tc.chef_run }
 
+  it 'should install the exclusive cron wrapper' do
+    chef_run.converge(described_recipe)
+    expect(chef_run).to create_cookbook_file(
+      '/usr/local/bin/exclusive_cron.sh',
+    ).with(:source => 'exclusive_cron.sh', :mode => '0755')
+  end
+
   it 'should render basic crontab' do
     chef_run.converge(described_recipe) do |node|
       node.default['fb_cron']['jobs']['do_this_thing'] = {

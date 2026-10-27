@@ -1,0 +1,12 @@
+{
+  "resources": [
+    {
+      "type": "cookbook_file",
+      "name": "/usr/local/bin/exclusive_cron.sh",
+      "source": "exclusive_cron.sh",
+      "owner": "@node.root_user",
+      "group": "@node.root_group",
+      "mode": "0755"
+    }
+  ]
+}
