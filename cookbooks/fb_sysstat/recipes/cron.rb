@@ -56,11 +56,10 @@ else
 end
 
 # Sysstat on C10 onwards publishes its own timer to export data.
-# We do not need this.
+# We do not need this. The mask lives in a JSON recipe so image builds can
+# bake it.
 if node.centos_min_version?(10)
-  systemd_unit 'sysstat-collect.timer' do
-    action [:stop, :disable, :mask]
-  end
+  include_recipe 'fb_sysstat::sysstat_collect_timer_mask'
 end
 
 # the sa[12] commands here trample on those defined in the

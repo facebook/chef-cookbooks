@@ -1,0 +1,9 @@
+{
+  "resources": [
+    {
+      "type": "systemd_unit",
+      "name": "sysstat-collect.timer",
+      "action": ["stop", "disable", "mask"]
+    }
+  ]
+}
