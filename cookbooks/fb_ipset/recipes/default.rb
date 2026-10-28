@@ -45,11 +45,8 @@ if node.centos6?
   end
 end
 
-directory '/etc/ipset' do
-  owner node.root_user
-  group node.root_group
-  mode '0755'
-end
+# Lives in a JSON recipe so the image build can bake it.
+include_recipe 'fb_ipset::ipset_directory'
 
 fb_ipset 'fb_ipset' do
   action :update
