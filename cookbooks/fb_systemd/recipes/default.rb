@@ -92,14 +92,25 @@ link '/etc/tmpfiles.d/selinux-policy.conf' do
   to '/dev/null'
 end
 
+# ohai's packages plugin can time out on a loaded host and leave no systemd
+# entry. Version-dependent steps treat an unknown version as "don't", rather
+# than failing the run on nil['version'].
+systemd_version = lambda do
+  version = node.dig('packages', 'systemd', 'version')
+  version && FB::Version.new(version)
+end
+systemd_at_least = lambda do |min|
+  version = systemd_version.call
+  !version.nil? && version >= FB::Version.new(min)
+end
+
 # FIXME: Remove after https://github.com/systemd/systemd/pull/23205 is
 # resolved and released.
 execute 'Ensure systemd-network user exists' do
   only_if do
-    systemd_version = FB::Version.new(node['packages']['systemd']['version'])
     # 'systemd-sysusers' was introduced in v.215, but the --inline flag was
     # only added in 238.
-    systemd_version >= FB::Version.new('238')
+    systemd_at_least.call('238')
   end
   # rubocop:disable Layout/LineLength
   command "#{systemd_prefix}/bin/systemd-sysusers --inline \"u systemd-network 192 \\\"systemd Network Management\\\"\""
@@ -165,8 +176,7 @@ execute 'set default target' do
   only_if do
     current = shell_out('systemctl get-default').stdout.strip
     is_ignored = node['fb_systemd']['ignore_targets'].include?(current)
-    is_supported = FB::Version.new(node['packages']['systemd'][
-      'version']) >= FB::Version.new('205')
+    is_supported = systemd_at_least.call('205')
     is_supported && !is_ignored &&
       current != node['fb_systemd']['default_target']
   end
@@ -178,8 +188,8 @@ end
 link '/etc/systemd/system/default.target' do
   only_if { node['fb_systemd']['manage_default_target'] }
   only_if do
-    FB::Version.new(node['packages']['systemd'][
-      'version']) < FB::Version.new('205')
+    version = systemd_version.call
+    !version.nil? && version < FB::Version.new('205')
   end
   to lazy {
     "/lib/systemd/system/#{node['fb_systemd']['default_target']}.target"

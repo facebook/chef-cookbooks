@@ -61,4 +61,24 @@ recipe 'fb_systemd::default', :unsupported => [:mac_os_x] do |tc|
     chef_run.converge(described_recipe)
     expect(chef_run).not_to run_execute('set default target')
   end
+
+  it 'should set a different default target when systemd is new enough' do
+    chef_run.converge(described_recipe) do |node|
+      node.default['fb_systemd']['default_target'] = '/lib/systemd/system/graphical.target'
+      node.automatic['packages']['systemd'] = { 'version' => '252' }
+    end
+    expect(chef_run).to run_execute('set default target')
+  end
+
+  it 'should leave the default target alone when ohai has no systemd package' do
+    # ohai's packages plugin can time out on a loaded host; this used to
+    # raise NoMethodError on nil['version'].
+    expect do
+      chef_run.converge(described_recipe) do |node|
+        node.default['fb_systemd']['default_target'] = '/lib/systemd/system/graphical.target'
+        node.automatic['packages'].delete('systemd')
+      end
+    end.not_to raise_error
+    expect(chef_run).not_to run_execute('set default target')
+  end
 end
