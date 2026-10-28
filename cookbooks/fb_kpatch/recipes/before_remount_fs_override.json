@@ -1,0 +1,15 @@
+{
+  "resources": [
+    {
+      "type": "fb_systemd_override",
+      "name": "before-remount-fs",
+      "unit_name": "kpatch.service",
+      "content": {
+        "Unit": {
+          "DefaultDependencies": "no",
+          "Before": "systemd-remount-fs.service"
+        }
+      }
+    }
+  ]
+}

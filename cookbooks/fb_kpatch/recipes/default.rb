@@ -38,12 +38,5 @@ service 'disable kpatch' do
   action [:stop, :disable]
 end
 
-fb_systemd_override 'before-remount-fs' do
-  unit_name 'kpatch.service'
-  content({
-            'Unit' => {
-              'DefaultDependencies' => 'no',
-              'Before' => 'systemd-remount-fs.service',
-            },
-          })
-end
+# Lives in a JSON recipe so image builds can bake it.
+include_recipe 'fb_kpatch::before_remount_fs_override'
