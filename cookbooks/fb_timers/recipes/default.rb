@@ -23,13 +23,9 @@ unless node.systemd?
   fail 'fb_timers is only available for use on systemd-managed machines.'
 end
 
-# The default timer location
-directory '/etc/systemd/timers' do
-  owner node.root_user
-  group node.root_group
-  mode '0755'
-  action :create
-end
+# The default timer location. It lives in a JSON recipe so the image build can
+# bake it.
+include_recipe 'fb_timers::timers_directory'
 
 # The custom timer location (if different from the default)
 # We create the default in addition to the custom path so the custom path

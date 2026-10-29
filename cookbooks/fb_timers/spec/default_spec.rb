@@ -85,6 +85,16 @@ recipe 'fb_timers::default', :unsupported => [:mac_os_x] do |tc|
   end
 
   context 'clean timer setup' do
+    before do
+      stubs_for_resource('fb_timers_setup[fb_timers system setup]') do
+        allow(FB::Timers).to receive(:get_systemd_unit_status) do |units|
+          units.to_h do |unit|
+            [unit, { :Active => 'inactive', :UnitFileState => 'disabled' }]
+          end
+        end
+      end
+    end
+
     cached(:chef_run) do
       tc.chef_run(
         :step_into => ['fb_timers_setup'],
@@ -165,6 +175,12 @@ recipe 'fb_timers::default', :unsupported => [:mac_os_x] do |tc|
           },
         }
       end
+    end
+
+    it 'should create the default timer directory' do
+      expect(chef_run).to create_directory('/etc/systemd/timers').with(
+        :mode => '0755',
+      )
     end
 
     it 'should create timer unit files' do

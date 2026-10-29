@@ -1,0 +1,12 @@
+{
+  "resources": [
+    {
+      "type": "directory",
+      "name": "/etc/systemd/timers",
+      "owner": "@node.root_user",
+      "group": "@node.root_group",
+      "mode": "0755",
+      "action": "create"
+    }
+  ]
+}
