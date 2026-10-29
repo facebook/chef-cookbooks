@@ -18,26 +18,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cookbook_file '/sbin/mount.rtxfs' do
-  only_if { node.centos? }
-  owner node.root_user
-  group node.root_group
-  mode '0755'
+# mount.rtxfs, and fsck for XFS with realtime devices (rtxfs filesystem type).
+# They live in a JSON recipe so the image build can bake them.
+if node.centos?
+  include_recipe 'fb_storage::rtxfs_helpers_install'
 end
 
-# fsck for XFS with realtime devices (rtxfs filesystem type)
-cookbook_file '/sbin/fsck.rtxfs' do
-  only_if { node.centos? }
-  owner node.root_user
-  group node.root_group
-  mode '0755'
-end
-
-directory FB::Storage::REPLACED_DISKS_DIR do
-  owner node.root_user
-  group node.root_group
-  mode '0755'
-end
+# FB::Storage::REPLACED_DISKS_DIR, in a JSON recipe for the same reason.
+include_recipe 'fb_storage::replaced_disks_directory'
 
 # we use these to disable things while setuping up storage so make
 # sure the directories exist

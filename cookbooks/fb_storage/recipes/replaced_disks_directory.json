@@ -1,0 +1,11 @@
+{
+  "resources": [
+    {
+      "type": "directory",
+      "name": "/var/chef/hotswap_replaced_disks",
+      "owner": "@node.root_user",
+      "group": "@node.root_group",
+      "mode": "0755"
+    }
+  ]
+}

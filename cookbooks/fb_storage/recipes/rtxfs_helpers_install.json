@@ -1,0 +1,18 @@
+{
+  "resources": [
+    {
+      "type": "cookbook_file",
+      "name": "/sbin/mount.rtxfs",
+      "owner": "@node.root_user",
+      "group": "@node.root_group",
+      "mode": "0755"
+    },
+    {
+      "type": "cookbook_file",
+      "name": "/sbin/fsck.rtxfs",
+      "owner": "@node.root_user",
+      "group": "@node.root_group",
+      "mode": "0755"
+    }
+  ]
+}
