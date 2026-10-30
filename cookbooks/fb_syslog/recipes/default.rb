@@ -57,11 +57,8 @@ if node.centos?
       'missingok' => true,
     },
   }
-  directory '/var/spool/rsyslog' do
-    owner node.root_user
-    group node.root_group
-    mode '0700'
-  end
+  # The spool directory lives in a JSON recipe so image builds can bake it.
+  include_recipe 'fb_syslog::rsyslog_spool_directory'
 end
 
 include_recipe 'fb_syslog::packages'

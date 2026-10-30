@@ -1,0 +1,11 @@
+{
+  "resources": [
+    {
+      "type": "link",
+      "name": "/etc/systemd/system/syslog.service",
+      "to": "/lib/systemd/system/rsyslog.service",
+      "owner": "root",
+      "group": "root"
+    }
+  ]
+}

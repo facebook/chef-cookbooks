@@ -24,14 +24,10 @@ include_recipe_at_converge_time 'fb_syslog::rsyslog_upgrade' do
 end
 
 # TODO(davide125): Document this
+# The drop-in lives in a JSON recipe so image builds can bake it.
 if node.systemd?
-  fb_systemd_override 'override' do
+  include_recipe_at_converge_time 'fb_syslog::syslog_socket_override' do
     only_if { node['fb_syslog']['_enable_syslog_socket_override'] }
-    unit_name 'rsyslog.service'
-    content({
-              'Unit' => { 'Requires' => 'syslog.socket' },
-              'Install' => { 'Alias' => 'syslog.service' },
-            })
   end
 end
 

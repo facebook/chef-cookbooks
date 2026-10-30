@@ -1,0 +1,17 @@
+{
+  "resources": [
+    {
+      "type": "fb_systemd_override",
+      "name": "override",
+      "unit_name": "rsyslog.service",
+      "content": {
+        "Unit": {
+          "Requires": "syslog.socket"
+        },
+        "Install": {
+          "Alias": "syslog.service"
+        }
+      }
+    }
+  ]
+}

@@ -19,11 +19,14 @@
 
 # this is almost identical to running 'systemctl enable rsyslog', except that it
 # has no run-time requirements and can be run while setting up a container.
+# The link lives in a JSON recipe so image builds can bake it. JSON recipes
+# can't carry notifications, so relay the reload here.
 if node.systemd?
-  link '/etc/systemd/system/syslog.service' do
-    to '/lib/systemd/system/rsyslog.service'
-    owner 'root'
-    group 'root'
+  include_recipe 'fb_syslog::syslog_service_link'
+
+  notify_group 'reload systemd after syslog.service link change' do
+    action :nothing
+    subscribes :run, 'link[/etc/systemd/system/syslog.service]', :immediately
     notifies :run, 'fb_systemd_reload[system instance]', :immediately
   end
 end

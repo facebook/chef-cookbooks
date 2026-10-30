@@ -69,4 +69,13 @@ recipe 'fb_syslog::default', :unsupported => [:mac_os_x] do |tc|
         with_content(tc.fixture('rsyslog-kern.conf'))
     end
   end
+
+  it 'creates the rsyslog spool directory' do
+    chef_run.converge('fb_systemd::reload', described_recipe)
+    expect(chef_run).to create_directory('/var/spool/rsyslog').with(
+      :owner => 'root',
+      :group => 'root',
+      :mode => '0700',
+    )
+  end
 end
